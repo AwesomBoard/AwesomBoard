@@ -7,8 +7,8 @@ import { PlayerOrNone } from 'src/app/jscaip/Player';
 
 export class AbaloneState extends GameStateWithTable<FourStatePiece> {
 
-    public static isOnBoard(coord: Coord): boolean {
-        return coord.isInRange(9, 9) &&
+    public override isOnBoard(coord: Coord): boolean {
+        return super.isOnBoard(coord) &&
                AbaloneRules.get().getInitialState().getPieceAt(coord) !== FourStatePiece.UNREACHABLE;
     }
 

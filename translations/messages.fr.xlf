@@ -214,6 +214,10 @@
         <source>You are in charge of a hive full of insects. Use the abilities of your insects to block the opponent&apos;s queen in order to win!</source>
         <target>Vous contrôlez une colonie d'insectes. Utilisez les capacités de vos insectes pour bloquer la reine de votre adversaire afin de gagner !</target>
       </trans-unit>
+      <trans-unit id="7475733938620811391" datatype="html">
+        <source>The famous checkers game, international version!</source>
+        <target>Le fameux jeu de dames, sa version internationale !</target>
+      </trans-unit>
       <trans-unit id="3910056094130316471" datatype="html">
         <source>Your goal is simple: reach the last line. But the piece you move depends on your opponent&apos;s last move!</source>
         <target>Votre but est simple : atteindre la dernière ligne. Mais la pièce que vous déplacez dépend du mouvement de votre adversaire !</target>
@@ -548,6 +552,10 @@
       <trans-unit id="6233664534580457703" datatype="html">
         <source>Trigo</source>
         <target>Trigo</target>
+      </trans-unit>
+      <trans-unit id="5226075040149407867" datatype="html">
+        <source>International Checkers</source>
+        <target>Dames Internationales</target>
       </trans-unit>
       <trans-unit id="1760292529513431093" datatype="html">
         <source>Trexo</source>
@@ -2775,25 +2783,45 @@
          Dans ce cas, le dernier joueur à avoir déplacé une pièce perd la partie.
          Ici, votre adversaire a déplacé sa pièce verte en dernier, vous êtes donc vainqueur !</target>
       </trans-unit>
-      <trans-unit id="4481226927895530871" datatype="html">
-        <source>A capture should be a double diagonal step. Look at the green indicators to help you!</source>
+      <trans-unit id="248546743321704928" datatype="html">
+        <source>A capture should be diagonal. Look at the green indicators to help you!</source>
         <target>Les captures doivent être des sauts de deux pas en diagonale ! Regardez les indications en vert pour vous aider !</target>
       </trans-unit>
-      <trans-unit id="924257200871471773" datatype="html">
-        <source>You must move in a single diagonal step!</source>
-        <target>Les déplacements doivent être des simples pas en diagonale !</target>
+      <trans-unit id="964675748683334375" datatype="html">
+        <source>Normal pieces cannot move like this!</source>
+        <target>Les pièces normales ne peuvent pas se déplacer comme ceci !</target>
+      </trans-unit>
+      <trans-unit id="7075234186922635323" datatype="html">
+        <source>Normal pieces cannot capture like this!</source>
+        <target>Les pièces normales ne peuvent pas capturer comme ceci !</target>
+      </trans-unit>
+      <trans-unit id="602226871567193977" datatype="html">
+        <source>No piece can do long jump!</source>
+        <target>Aucune pièce ne peut se déplacer de plus d'un pas !</target>
+      </trans-unit>
+      <trans-unit id="7543542187423910186" datatype="html">
+        <source>Cannot do orthogonal capture!</source>
+        <target></target>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
         <source>You cannot jump over the same square several times!</source>
         <target>Vous ne pouvez pas sauter au dessus d'une même case plusieurs fois !</target>
       </trans-unit>
+      <trans-unit id="1505463377783719524" datatype="html">
+        <source>You must do the biggest capture possible!</source>
+        <target>Vous devez faire la plus grande capture possible !</target>
+      </trans-unit>
+      <trans-unit id="6151712512701871680" datatype="html">
+        <source>Cannot jump over several pieces!</source>
+        <target>Vous ne pouvez pas sauter par dessus plusieurs pièces !</target>
+      </trans-unit>
+      <trans-unit id="596239006245525122" datatype="html">
+        <source>The goal of checkers is to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+        <target>Le but aux Dames est de rendre l'adversaire incapable de jouer, soit en capturant toutes ses pièces, soit en les bloquant.</target>
+      </trans-unit>
       <trans-unit id="3581037377692107358" datatype="html">
         <source>You cannot go backward with normal pieces!</source>
         <target>Vous ne pouvez pas aller en arrière avec une pièce normale !</target>
-      </trans-unit>
-      <trans-unit id="2164034395199252113" datatype="html">
-        <source>You cannot capture an empty square, nor jump over it!</source>
-        <target>Vous ne pouvez pas capturer une case vide, ni sauter par dessus !</target>
       </trans-unit>
       <trans-unit id="1347067654692503433" datatype="html">
         <source>You must capture when it is possible!</source>
@@ -2807,12 +2835,12 @@
         <source>Lasca: origins</source>
         <target>Lasca : les origines</target>
       </trans-unit>
-      <trans-unit id="3954016636522783040" datatype="html">
-        <source>Lasca is a game based on draughts created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
+      <trans-unit id="3082102783316586508" datatype="html">
+        <source>Lasca is a game based on checkers, created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
         <target>Lasca est un jeu basé sur le jeu de dames, créé en 1911 par Emanuel Lasker, champion du monde d'échecs. Lasca se joue sur un plateau de 7x7 cases, chaque joueur a 11 pièces.</target>
       </trans-unit>
-      <trans-unit id="4475600219932113977" datatype="html">
-        <source>The goal of Lasca is, like for draughts, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+      <trans-unit id="7912613915101567284" datatype="html">
+        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
         <target>Le but de Lasca est, comme aux dames, de rendre l'adversaire incapable de jouer, soit en capturant toutes ses pièces, soit en les bloquant.</target>
       </trans-unit>
       <trans-unit id="1534367694207535197" datatype="html">
@@ -2826,6 +2854,14 @@
       <trans-unit id="7013110290486741787" datatype="html">
         <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, go ahead.</source>
         <target>Une capture arrive quand vous sautez diagonalement par dessus une pièce adverse et atterrissez immédiatement derrière. Vous devez capturer quand vous le pouvez. C'est le cas ici : cliquez sur la pièce qui doit capturer, et ensuite sur sa destination&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites une capture !</target>
+      </trans-unit>
+      <trans-unit id="7318689477424356735" datatype="html">
+        <source>Backward captures</source>
+        <target>Captures en arrière</target>
+      </trans-unit>
+      <trans-unit id="553047259468217661" datatype="html">
+        <source>A capture can also be done backward&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, you have to do one capture backward, go ahead.</source>
+        <target>Un capture peut aussi être faite en arrière.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, vous devez faire une capture en arrière, Allez-y !</target>
       </trans-unit>
       <trans-unit id="3662184238859847370" datatype="html">
         <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>
@@ -2842,6 +2878,18 @@
       <trans-unit id="3052116389115675860" datatype="html">
         <source>You did not choose the correct stack, and got no promotion.</source>
         <target>Vous n'avez pas choisi la bonne pile, et vous n'avez pas causé de promotion.</target>
+      </trans-unit>
+      <trans-unit id="9030049945272757280" datatype="html">
+        <source>Queen move</source>
+        <target>Déplacement de la Reine</target>
+      </trans-unit>
+      <trans-unit id="1609034897374459946" datatype="html">
+        <source>Queens can move forward like the others, and capture backward like the others. But they can also move backward without capturing. They are also able to do what we call &quot;flying&quot;. This means doing longer steps, without jumping any piece to move, or by jumping exactly one opponent piece to capture it, then land wherever is wanting in the same line.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, move your queen!</source>
+        <target>Les Reines peuvent se déplacer en avant, comme les autres pièces, et capturer en arrières également. Mais elles peuvent aussi se déplacer en arrière sans capturer. Elles peuvent aussi faire ce qui s'appelle "voler". Ceci signifie faire des plus longs sauts, sans sauter par dessus une pièce adverse, ou en sauter par dessus exactement une pièce adverse, pour la capturer, et ensuite atterir où elle veux sur cette même ligne.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, déplacez votre Reine !</target>
+      </trans-unit>
+      <trans-unit id="3154252720872976153" datatype="html">
+        <source>You did not move your queen.</source>
+        <target>Vous n'avez pas déplacé votre reine.</target>
       </trans-unit>
       <trans-unit id="4252782057421264089" datatype="html">
         <source>Officer move</source>
@@ -3289,7 +3337,24 @@
       <trans-unit id="6535908388530528403" datatype="html">
         <source>Wrong choice, your opponent will win in the next turn no matter which piece is dropped!</source>
         <target>Mauvais choix, votre adversaire va gagner au prochain tour quelle que soit la pièce déposée !</target>
-      </trans-unit><trans-unit id="6434791622277704389" datatype="html">
+      </trans-unit>
+      <trans-unit id="6642451818461891790" datatype="html">
+        <source>Stack piece instead of capturing it</source>
+        <target>Empiler les pièces plutôt que les capturer</target>
+      </trans-unit>
+      <trans-unit id="7021784120606335572" datatype="html">
+        <source>You must capture the highest number of piece</source>
+        <target>Vous devez capturer le plus grand nombre de pièces</target>
+      </trans-unit>
+      <trans-unit id="8927712614062039032" datatype="html">
+        <source>Simple piece can back-capture</source>
+        <target>Les simples pièces peuvent capturer en arrière</target>
+      </trans-unit>
+      <trans-unit id="5102353447213251496" datatype="html">
+        <source>Promoted pieces can travel long distance</source>
+        <target>Les pièces promies peuvent de déplacer sur de longues distances</target>
+      </trans-unit>
+      <trans-unit id="6434791622277704389" datatype="html">
         <source>Rightmost Focus</source>
         <target>Priorité de droite</target>
       </trans-unit>

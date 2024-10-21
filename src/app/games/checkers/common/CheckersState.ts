@@ -11,7 +11,7 @@ export class CheckersPiece {
     public static readonly ZERO_PROMOTED: CheckersPiece = new CheckersPiece(Player.ZERO, true);
     public static readonly ONE_PROMOTED: CheckersPiece = new CheckersPiece(Player.ONE, true);
 
-    public static getPlayerOfficer(player: Player): CheckersPiece {
+    public static getPlayerPromoted(player: Player): CheckersPiece {
         if (player === Player.ZERO) {
             return CheckersPiece.ZERO_PROMOTED;
         } else {
@@ -87,7 +87,7 @@ export class CheckersStack {
         if (commander.isPromoted) {
             return this;
         } else {
-            commander = CheckersPiece.getPlayerOfficer(commander.player);
+            commander = CheckersPiece.getPlayerPromoted(commander.player);
             const remainingStack: CheckersStack = this.getPiecesUnderCommander();
             const commandingStack: CheckersStack = new CheckersStack([commander]);
             return commandingStack.addStackBelow(remainingStack);

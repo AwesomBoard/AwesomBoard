@@ -4,15 +4,15 @@ describe('CheckersState', () => {
 
     const zero: CheckersPiece = CheckersPiece.ZERO;
     const one: CheckersPiece = CheckersPiece.ONE;
-    const zeroOfficer: CheckersPiece = CheckersPiece.ZERO_PROMOTED;
-    const oneOfficer: CheckersPiece = CheckersPiece.ONE_PROMOTED;
+    const zeroPromoted: CheckersPiece = CheckersPiece.ZERO_PROMOTED;
+    const onePromoted: CheckersPiece = CheckersPiece.ONE_PROMOTED;
     const __u: CheckersStack = new CheckersStack([zero]);
-    const __O: CheckersStack = new CheckersStack([zeroOfficer]);
+    const __O: CheckersStack = new CheckersStack([zeroPromoted]);
     const __v: CheckersStack = new CheckersStack([one]);
     const _vu: CheckersStack = new CheckersStack([one, zero]);
     const _uv: CheckersStack = new CheckersStack([zero, one]);
-    const _Ov: CheckersStack = new CheckersStack([zeroOfficer, one]);
-    const __X: CheckersStack = new CheckersStack([oneOfficer]);
+    const _Ov: CheckersStack = new CheckersStack([zeroPromoted, one]);
+    const __X: CheckersStack = new CheckersStack([onePromoted]);
     const ___: CheckersStack = CheckersStack.EMPTY;
 
     describe('toString', () => {

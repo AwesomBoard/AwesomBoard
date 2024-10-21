@@ -20,12 +20,12 @@ export class LascaTutorial extends Tutorial {
     public tutorial: TutorialStep[] = [
         TutorialStep.informational(
             $localize`Lasca: origins`,
-            $localize`Lasca is a game based on draughts created in 1911 by Emanuel Lasker, chess world champion. It's played on a 7x7 board, each player has 11 pieces.`,
+            $localize`Lasca is a game based on checkers, created in 1911 by Emanuel Lasker, chess world champion. It's played on a 7x7 board, each player has 11 pieces.`,
             LascaRules.get().getInitialState(defaultConfig),
         ),
         TutorialStep.informational(
             TutorialStepMessage.OBJECT_OF_THE_GAME(),
-            $localize`The goal of Lasca is, like for draughts, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.`,
+            $localize`The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.`,
             LascaRules.get().getInitialState(defaultConfig),
         ),
         TutorialStep.anyMove(

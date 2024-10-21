@@ -134,7 +134,7 @@ export class TaflPieceAndInfluenceHeuristic<M extends TaflMove> extends TaflPiec
     }
 
     protected isAThreat(coord: Coord, state: TaflState, opponent: Player): boolean {
-        if (state.isOnBoard(coord) === false) {
+        if (state.isNotOnBoard(coord)) {
             return false;
         }
         if (state.getAbsoluteOwner(coord) === opponent) {

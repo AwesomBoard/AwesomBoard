@@ -341,7 +341,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
             if (direction.isFailure()) {
                 return direction.toOtherFallible();
             } else if (direction.get().isOrthogonal()) {
-                return MGPValidation.failure(CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE());
+                return MGPValidation.failure(CheckersFailure.CANNOT_DO_ORTHOGONAL_CAPTURE());
             }
             const flyiedOverPlayer: Player[] = this.getFlyiedOverPlayers(previousCoord, landingCoord, state);
             let isCapture: boolean;
@@ -445,7 +445,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                 }
             }
         } else { // No piece are allow flying
-            return MGPValidation.failure(CheckersFailure.NO_PIECE_CAN_FLY());
+            return MGPValidation.failure(CheckersFailure.NO_PIECE_CAN_DO_LONG_JUMP());
         }
     }
 

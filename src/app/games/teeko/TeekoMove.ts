@@ -36,9 +36,9 @@ export class TeekoTranslationMove extends MoveCoordToCoord {
         MoveCoordToCoord.getFallibleEncoder(TeekoTranslationMove.from);
 
     public static from(start: Coord, end: Coord): MGPFallible<TeekoTranslationMove> {
-        if (TeekoState.isOnBoard(start) === false) {
+        if (TeekoState.isNotOnBoard(start)) {
             return MGPFallible.failure(CoordFailure.OUT_OF_RANGE(start));
-        } else if (TeekoState.isOnBoard(end) === false) {
+        } else if (TeekoState.isNotOnBoard(end)) {
             return MGPFallible.failure(CoordFailure.OUT_OF_RANGE(end));
         } else if (start.equals(end)) {
             return MGPFallible.failure(RulesFailure.MOVE_CANNOT_BE_STATIC());

@@ -96,7 +96,7 @@ describe('InternationalCheckersRules', () => {
             const move: CheckersMove = CheckersMove.fromStep(new Coord(6, 6), new Coord(6, 4));
 
             // Then the move should be illegal
-            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
+            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_CAPTURE();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 

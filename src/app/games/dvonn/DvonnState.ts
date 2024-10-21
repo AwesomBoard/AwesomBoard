@@ -38,6 +38,10 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
         return DvonnState.balancedBoard()[coord.y][coord.x] !== DvonnPieceStack.UNREACHABLE;
     }
 
+    public static isNotOnBoard(coord: Coord): boolean {
+        return DvonnState.isOnBoard(coord) === false;
+    }
+
     public constructor(board: Table<DvonnPieceStack>,
                        turn: number,
                        // Did a PASS move have been performed on the last turn?

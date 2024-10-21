@@ -66,7 +66,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         this.mode.abstractBoardHeight = this.constructedState.getHeight();
         this.mode.abstractBoardWidth = this.constructedState.getWidth();
         this.legalMoves = this.moveGenerator.getListMoves(this.node, this.config);
-        this.showPossibleMoves();
+        this.showPossibleClicks();
     }
 
     public getSquareClass(x: number, y: number): string[] {
@@ -78,9 +78,9 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         if (this.currentMoveClicks.concat(this.lastMoveds).some((c: Coord) => c.equals(coord))) {
             classes.push('moved-fill');
         }
-        if (this.capturableCoords.some((c: Coord) => c.equals(coord))) {
-            classes.push('capturable-fill');
-        }
+        // if (this.capturableCoords.some((c: Coord) => c.equals(coord))) {
+        //     classes.push('capturable-stroke');
+        // }
         return classes;
     }
 
@@ -96,7 +96,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         return classes;
     }
 
-    public isPieceOfficer(x: number, y: number, z: number): boolean {
+    public isPiecePromoted(x: number, y: number, z: number): boolean {
         const coord: Coord = new Coord(x, y);
         const square: CheckersStack = this.constructedState.getPieceAt(coord);
         const max: number = square.getStackSize() - 1;
@@ -122,16 +122,19 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         }
     }
 
-    private showPossibleMoves(): void {
+    private showPossibleClicks(): void {
         this.possibleClicks = new Set();
         if (this.interactive) {
             for (const validMove of this.legalMoves) {
-                const startingCoord: Coord = validMove.getStartingCoord();
-                this.possibleClicks = this.possibleClicks.addElement(startingCoord);
+                const numberOfClicks: number = this.currentMoveClicks.length;
+                if (numberOfClicks < validMove.coords.size()) {
+                    const possibleCoord: Coord = validMove.coords.get(numberOfClicks);
+                    this.possibleClicks = this.possibleClicks.addElement(possibleCoord);
+                }
             }
         }
     }
-
+// TODO: when step finish: no interactivity !!!
     public override hideLastMove(): void {
         this.lastCaptures = [];
         this.lastMoveds = [];
@@ -161,10 +164,10 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         this.capturedCoords = [];
         this.selectedStack = MGPOptional.empty();
         this.capturableCoords = [];
-        this.showPossibleMoves();
+        this.showPossibleClicks();
     }
 
-    public async moveClick(clicked: Coord): Promise<MGPValidation> {
+    private async moveClick(clicked: Coord): Promise<MGPValidation> {
         if (clicked.equals(this.currentMoveClicks[0])) {
             return this.cancelMove();
         }
@@ -192,8 +195,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         const lastCoord: Coord = this.currentMoveClicks[numberOfClicks - 1];
         const delta: Vector = lastCoord.getVectorToward(clicked);
         if (delta.isDiagonal() === false) {
-            // TODO: rectify this message "should be diagonal"
-            return this.cancelMove(CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL());
+            return this.cancelMove(CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
         } else {
             for (const flyiedOver of lastCoord.getCoordsToward(clicked)) {
                 if (this.constructedState.getPieceAt(flyiedOver).isOccupied()) {
@@ -203,6 +205,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
             this.currentMoveClicks.push(clicked);
             const currentMove: CheckersMove = CheckersMove.fromCapture(this.currentMoveClicks).get();
             if (this.legalMoves.some((capture: CheckersMove) => capture.isPrefix(currentMove))) {
+                this.showPossibleClicks();
                 return this.applyPartialCapture();
             } else {
                 return this.chooseMove(currentMove);
@@ -241,26 +244,11 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         this.selectedStack = MGPOptional.of(coord);
         if (this.legalMoves.some((move: CheckersMove) => move.getStartingCoord().equals(coord))) {
             this.currentMoveClicks = [coord];
-            this.showPossibleLandings(coord, this.constructedState);
+            this.showPossibleClicks();
+            // this.showPossibleLandings(coord, this.constructedState);
             return MGPValidation.SUCCESS;
         } else {
             return this.cancelMove(CheckersFailure.THIS_PIECE_CANNOT_MOVE());
-        }
-    }
-
-    private showPossibleLandings(coord: Coord, state: CheckersState): void {
-        this.possibleClicks = new Set();
-        const config: CheckersConfig = this.getConfig().get();
-        const possibleCaptures: CheckersMove[] = this.rules.getPieceCaptures(state, coord, config);
-        if (possibleCaptures.length === 0) {
-            const possibleSteps: CheckersMove[] = this.rules.getPieceSteps(state, coord, config);
-            for (const possibleStep of possibleSteps) {
-                this.possibleClicks = this.possibleClicks.addElement(possibleStep.getEndingCoord());
-            }
-        } else {
-            const nextLegalLandings: Coord[] = possibleCaptures
-                .map((capture: CheckersMove) => capture.coords.get(1));
-            this.capturableCoords = nextLegalLandings;
         }
     }
 
@@ -287,11 +275,11 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
             .join(' ');
     }
 
-    public getParallelogramCoordsForCheckers(): Coord[] {
+    private getParallelogramCoordsForCheckers(): Coord[] {
         return this.getParallelogramCoords(this.mode);
     }
 
-    public getParallelogramCenter(): Coord {
+    private getParallelogramCenter(): Coord {
         const parallelogramCoords: Coord[] = this.getParallelogramCoordsForCheckers();
         return this.getParallelogramCenterOf(
             parallelogramCoords[0],
@@ -308,7 +296,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
      * @param d coord of the parallelogram opposite to b
      * @returns the center of the parallelogram
      */
-    public getParallelogramCenterOf(a: Coord, b: Coord, c: Coord, d: Coord): Coord {
+    private getParallelogramCenterOf(a: Coord, b: Coord, c: Coord, d: Coord): Coord {
         const maxX: number = Math.max(a.x, b.x, c.x, d.x);
         const maxY: number = Math.max(a.y, b.y, c.y, d.y);
         const minX: number = Math.min(a.x, b.x, c.x, d.x);

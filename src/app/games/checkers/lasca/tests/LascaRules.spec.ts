@@ -99,7 +99,7 @@ describe('LascaRules', () => {
             const move: CheckersMove = CheckersMove.fromStep(new Coord(1, 5), new Coord(1, 3));
 
             // Then the move should be illegal
-            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
+            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_CAPTURE();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
@@ -164,7 +164,7 @@ describe('LascaRules', () => {
             const move: CheckersMove = CheckersMove.fromStep(new Coord(6, 6), new Coord(3, 3));
 
             // Then it should be illegal
-            const reason: string = CheckersFailure.NO_PIECE_CAN_FLY();
+            const reason: string = CheckersFailure.NO_PIECE_CAN_DO_LONG_JUMP();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 

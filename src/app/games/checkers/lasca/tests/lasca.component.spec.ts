@@ -142,7 +142,7 @@ describe('LascaComponent', () => {
 
             // When clicking on an empty square in (+2; +1) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL();
+            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
             await testUtils.expectClickFailure('#coord-6-5', reason);
         }));
 
@@ -162,7 +162,7 @@ describe('LascaComponent', () => {
 
             // When clicking on an empty square in (+0; -2) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL();
+            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
             await testUtils.expectClickFailure('#coord-5-3', reason);
         }));
 
@@ -289,8 +289,10 @@ describe('LascaComponent', () => {
             // When doing the first capture
             await testUtils.expectClickSuccess('#coord-4-4');
 
-            // Then it should already be shown as captured, and the next possibles ones displayed
+            // Then it should already be shown as captured
             testUtils.expectElementToHaveClass('#square-3-3', 'captured-fill');
+            // And the next possibles ones displayed
+            testUtils.expectElementToHaveClass('#clickable-highlight-6-6', 'clickable-stroke');
         }));
 
         it('should cancel capturing a piece you cannot capture', fakeAsync(async() => {
@@ -340,7 +342,7 @@ describe('LascaComponent', () => {
             await testUtils.expectClickSuccess('#coord-0-2'); // Making the first click
 
             // When clicking on an invalid landing piece
-            await testUtils.expectClickFailure('#coord-0-1', CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL());
+            await testUtils.expectClickFailure('#coord-0-1', CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
 
             // Then the highlight should be at the expected place only, not at their symmetric point
             testUtils.expectElementToHaveClass('#clickable-highlight-0-2', 'clickable-stroke');
@@ -406,7 +408,7 @@ describe('LascaComponent', () => {
             await testUtils.expectClickSuccess('#coord-4-4');
 
             // When doing the last clic that make an illegal step
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL();
+            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
             await testUtils.expectClickFailure('#coord-6-5', reason);
 
             // Then the move should be cancelled and stack should be back in place

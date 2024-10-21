@@ -34,7 +34,7 @@ export class AbaloneMoveGenerator extends MoveGenerator<AbaloneMove, AbaloneStat
                                 break;
                             }
                             const second: Coord = first.getNext(alignment, distance);
-                            if (AbaloneState.isOnBoard(second)) {
+                            if (state.isOnBoard(second)) {
                                 const translation: AbaloneMove = AbaloneMove.ofDoubleCoord(first, second, dir);
                                 if (AbaloneRules.get().isLegal(translation, state).isSuccess()) {
                                     moves.push(translation);

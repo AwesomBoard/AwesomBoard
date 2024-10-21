@@ -35,7 +35,6 @@
              [attr.transform]="getTranslationAtXYZ(coord.x, coord.y, 0)"
              (click)="onClick(coord.x, coord.y)"
              [attr.points]="getParallelogramPoints()"
-             [ngClass]="getSquareClass(coord.x, coord.y)"
              class="base no-fill clickable-stroke small-stroke"
     />
 
@@ -53,7 +52,7 @@
                  [ngClass]="getPieceClasses(coordAndContent.coord.x, coordAndContent.coord.y, z)"
                  class="base mid-stroke"/>
             <circle id="square-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}-piece-{{ z }}-promoted-symbol"
-                    *ngIf="isPieceOfficer(coordAndContent.coord.x, coordAndContent.coord.y, z)"
+                    *ngIf="isPiecePromoted(coordAndContent.coord.x, coordAndContent.coord.y, z)"
                     [attr.cx]="SPACE_SIZE * 0.4"
                     [attr.cy]="SPACE_SIZE * 0.575"
                     [attr.r]="SPACE_SIZE * 0.045"

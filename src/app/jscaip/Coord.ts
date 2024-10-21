@@ -149,7 +149,7 @@ export class Coord extends Vector {
         return new Vector(this.x, this.y);
     }
 
-    // TODO: note in ]/[this, c]/[ notation
+    // ]this, c[
     public getCoordsToward(c: Coord): Coord[] {
         Utils.assert(c.isAlignedWith(this), 'Should only call getCoordsTowards on aligned coords');
         if (c.equals(this)) {
@@ -165,7 +165,7 @@ export class Coord extends Vector {
         return coords;
     }
 
-    // TODO: note in ]/[this, c]/[ notation
+    // [this, end]
     public getAllCoordsToward(end: Coord): Coord[] {
         let coords: Coord[] = [this];
         if (this.equals(end) === false) {

@@ -100,7 +100,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
          * 4: the threatened square is a piece         -> delegate calculation
          */
         const threatened: Coord = landingPawn.getNext(d);
-        if (state.isOnBoard(threatened) === false) {
+        if (state.isNotOnBoard(threatened)) {
             return MGPOptional.empty(); // 1: the threatened square dont exist, no capture
         }
         const threatenedPawnOwner: RelativePlayer = state.getRelativeOwner(player, threatened);

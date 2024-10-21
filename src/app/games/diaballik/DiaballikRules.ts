@@ -82,11 +82,11 @@ export class DiaballikRules extends Rules<DiaballikMove, DiaballikState, Diaball
         let currentState: DiaballikState = state;
         for (const subMove of move.getSubMoves()) {
             const start: Coord = subMove.getStart();
-            if (state.isOnBoard(start) === false) {
+            if (state.isNotOnBoard(start)) {
                 return MGPFallible.failure(CoordFailure.OUT_OF_RANGE(start));
             }
             const end: Coord = subMove.getEnd();
-            if (state.isOnBoard(end) === false) {
+            if (state.isNotOnBoard(end)) {
                 return MGPFallible.failure(CoordFailure.OUT_OF_RANGE(end));
             }
             const legality: MGPFallible<DiaballikState> = this.isLegalSubMove(currentState, subMove);

@@ -33,7 +33,7 @@
         </g>
     </g>
     <g *ngFor="let coord of clickableCoords">
-        <rect *ngIf="getState().isOnBoard(coord) === false"
+        <rect *ngIf="getState().isNotOnBoard(coord)"
               id="square_{{ coord.x }}_{{ coord.y }}"
               (click)="clickSquare(coord.x, coord.y)"
               [attr.x]="SPACE_SIZE * coord.x"

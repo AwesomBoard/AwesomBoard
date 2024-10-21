@@ -66,7 +66,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         }
         if (pushingPieces <= opponentPieces) {
             return MGPFallible.failure(AbaloneFailure.NOT_ENOUGH_PIECE_TO_PUSH());
-        } else if (AbaloneState.isOnBoard(firstOpponent)) {
+        } else if (state.isOnBoard(firstOpponent)) {
             if (state.getPieceAt(firstOpponent) === FourStatePiece.EMPTY) {
                 newBoard[firstOpponent.y][firstOpponent.x] = opponent;
             }
@@ -120,7 +120,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         }
         if (pieces > 3) {
             return MGPFallible.failure(AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
-        } else if (AbaloneState.isOnBoard(tested) === false) {
+        } else if (state.isNotOnBoard(tested)) {
             return MGPFallible.success(newBoard);
         }
         newBoard[tested.y][tested.x] = player;
@@ -136,13 +136,13 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         let tested: Coord = move.coord;
         const player: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
         const newBoard: FourStatePiece[][] = state.getCopiedBoard();
-        while (tested.equals(last) === false && AbaloneState.isOnBoard(tested)) {
+        while (tested.equals(last) === false && state.isOnBoard(tested)) {
             if (state.getPieceAt(tested) !== player) {
                 return MGPFallible.failure(AbaloneFailure.MUST_ONLY_TRANSLATE_YOUR_PIECES());
             }
             const landing: Coord = tested.getNext(move.dir);
             newBoard[tested.y][tested.x] = FourStatePiece.EMPTY;
-            if (AbaloneState.isOnBoard(landing)) {
+            if (state.isOnBoard(landing)) {
                 if (state.isPiece(landing)) {
                     return MGPFallible.failure(AbaloneFailure.TRANSLATION_IMPOSSIBLE());
                 }

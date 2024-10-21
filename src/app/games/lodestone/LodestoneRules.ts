@@ -227,7 +227,8 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
         for (const direction of directions) {
             for (let coord: Coord = lodestone.getNext(direction); // eslint-disable-next-line indent
                  state.isOnBoard(coord); // eslint-disable-next-line indent
-                 coord = coord.getNext(direction)) {
+                 coord = coord.getNext(direction))
+            {
                 const pieceOnTarget: LodestonePiece = board[coord.y][coord.x];
                 const next: Coord = coord.getNext(direction);
                 if (state.isOnBoard(next)) {

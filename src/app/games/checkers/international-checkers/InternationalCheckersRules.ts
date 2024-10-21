@@ -9,7 +9,7 @@ export class InternationalCheckersRules extends AbstractCheckersRules {
 
     public static readonly RULES_CONFIG_DESCRIPTION: RulesConfigDescription<CheckersConfig> =
         new RulesConfigDescription<CheckersConfig>({
-            name: (): string => $localize`InternationalCheckers`,
+            name: (): string => $localize`International Checkers`,
             config: {
                 playerRows: new NumberConfig(4,
                                              RulesConfigDescriptionLocalizable.NUMBER_OF_PIECES_ROWS,

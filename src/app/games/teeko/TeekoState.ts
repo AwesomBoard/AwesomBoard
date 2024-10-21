@@ -9,6 +9,10 @@ export class TeekoState extends PlayerOrNoneGameStateWithTable {
         return coord.isInRange(TeekoState.WIDTH, TeekoState.WIDTH);
     }
 
+    public static isNotOnBoard(coord: Coord): boolean {
+        return TeekoState.isOnBoard(coord) === false;
+    }
+
     public isInDropPhase(): boolean {
         return this.turn < 8;
     }

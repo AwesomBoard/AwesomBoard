@@ -48,7 +48,7 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
     }
 
     public isNotOnBoard(coord: Coord): boolean {
-        return this.isOnBoard(coord) === false; // TODO reuse
+        return this.isOnBoard(coord) === false;
     }
 
     public getPieceAtXY(x: number, y: number): P {

@@ -10,20 +10,20 @@ export class CheckersFailure {
 
     public static readonly THIS_PIECE_CANNOT_MOVE: Localized = () => $localize`This piece cannot move!`;
 
-    public static readonly CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL: Localized = () => $localize`A capture should be a double diagonal step. Look at the green indicators to help you!`;
+    public static readonly CAPTURE_STEPS_MUST_BE_DIAGONAL: Localized = () => $localize`A capture should be diagonal. Look at the green indicators to help you!`;
 
-    public static readonly NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS: Localized = () => $localize`NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS`;
+    public static readonly NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS: Localized = () => $localize`Normal pieces cannot move like this!`;
 
-    public static readonly NORMAL_PIECES_CANNOT_CAPTURE_LIKE_THIS: Localized = () => $localize`NORMAL_PIECES_CANNOT_CAPTURE_LIKE_THIS`;
+    public static readonly NORMAL_PIECES_CANNOT_CAPTURE_LIKE_THIS: Localized = () => $localize`Normal pieces cannot capture like this!`;
 
-    public static readonly NO_PIECE_CAN_FLY: Localized = () => $localize`NO_PIECE_CAN_FLY`;
+    public static readonly NO_PIECE_CAN_DO_LONG_JUMP: Localized = () => $localize`No piece can do long jump!`;
 
-    public static readonly CANNOT_DO_ORTHOGONAL_MOVE: Localized = () => $localize`CANNOT_DO_ORTHOGONAL_CAPTURE`;
+    public static readonly CANNOT_DO_ORTHOGONAL_CAPTURE: Localized = () => $localize`Cannot do orthogonal capture!`;
 
     public static readonly CANNOT_CAPTURE_TWICE_THE_SAME_COORD: Localized = () => $localize`You cannot jump over the same square several times!`;
 
-    public static readonly MUST_DO_BIGGEST_CAPTURE: Localized = () => $localize`You must do the biggest capture possible`;
+    public static readonly MUST_DO_BIGGEST_CAPTURE: Localized = () => $localize`You must do the biggest capture possible!`;
 
-    public static readonly CANNOT_JUMP_OVER_SEVERAL_PIECES: Localized = () => $localize`CANNOT_JUMP_OVER_SEVERAL_PIECES`;
+    public static readonly CANNOT_JUMP_OVER_SEVERAL_PIECES: Localized = () => $localize`Cannot jump over several pieces!`;
 
 }

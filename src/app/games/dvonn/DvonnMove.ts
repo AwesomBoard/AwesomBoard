@@ -20,10 +20,10 @@ export class DvonnMove extends MoveCoordToCoord {
             return MGPFallible.success(DvonnMove.PASS);
         }
         // Move should be on board
-        if (DvonnState.isOnBoard(start) === false) {
+        if (DvonnState.isNotOnBoard(start)) {
             return MGPFallible.failure('Starting coord of DvonnMove must be on the board, not at ' + start.toString());
         }
-        if (DvonnState.isOnBoard(end) === false) {
+        if (DvonnState.isNotOnBoard(end)) {
             return MGPFallible.failure('End coord of DvonnMove must be on the board, not at ' + start.toString());
         }
         // Move should be a straight line

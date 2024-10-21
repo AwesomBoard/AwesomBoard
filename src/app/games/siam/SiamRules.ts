@@ -100,13 +100,13 @@ export class SiamRules extends ConfigurableRules<SiamMove, SiamState, SiamConfig
     }
 
     private getMoveValidity(move: SiamMove, state: SiamState): MGPValidation {
-        const startedOutside: boolean = state.isOnBoard(move.coord) === false;
+        const startedOutside: boolean = state.isNotOnBoard(move.coord);
         if (move.isRotation()) {
             if (startedOutside) {
                 return MGPFallible.failure($localize`Cannot rotate piece outside the board: ${move.toString()}`);
             }
         } else {
-            const finishedOutside: boolean = state.isOnBoard(move.coord.getNext(move.direction.get())) === false;
+            const finishedOutside: boolean = state.isNotOnBoard(move.coord.getNext(move.direction.get()));
             if (finishedOutside) {
                 if (startedOutside) {
                     return MGPFallible.failure($localize`SiamMove should end or start on the board: ${ move.toString() }`);
@@ -217,7 +217,7 @@ export class SiamRules extends ConfigurableRules<SiamMove, SiamState, SiamConfig
                               movingPiece !== SiamPiece.EMPTY &&
                               totalForce > 0;
         }
-        if (state.isOnBoard(landingCoord) === false) {
+        if (state.isNotOnBoard(landingCoord)) {
             if (currentDirection.equalsValue(pushingDir)) totalForce++;
             else if (currentDirection.equalsValue(resistingDir)) totalForce--;
         }
@@ -430,7 +430,7 @@ export class SiamRules extends ConfigurableRules<SiamMove, SiamState, SiamConfig
                 lineInfo.closestPusher.distance--;
             }
         }
-        if (state.isOnBoard(lineInfo.closestPusher.coord) === false) {
+        if (state.isNotOnBoard(lineInfo.closestPusher.coord)) {
             lineInfo.missingForce -= 1;
             if (state.countCurrentPlayerPawn() === config.numberOfPiece) {
                 return MGPOptional.empty();
@@ -509,7 +509,7 @@ export class SiamRules extends ConfigurableRules<SiamMove, SiamState, SiamConfig
         const moves: SiamMove[] = [];
         for (const direction of Orthogonal.ORTHOGONALS) {
             const entrance: Coord = new Coord(x, y).getPrevious(direction);
-            if (state.isOnBoard(entrance) === false) {
+            if (state.isNotOnBoard(entrance)) {
                 for (const orientation of Orthogonal.ORTHOGONALS) {
                     const move: SiamMove =
                         SiamMove.of(entrance.x, entrance.y, MGPOptional.of(direction), orientation);

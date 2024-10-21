@@ -383,8 +383,8 @@
       <trans-unit id="6233664534580457703" datatype="html">
         <source>Trigo</source>
       </trans-unit>
-      <trans-unit id="2817381576957664721" datatype="html">
-        <source>International-Checkers</source>
+      <trans-unit id="5226075040149407867" datatype="html">
+        <source>International Checkers</source>
       </trans-unit>
       <trans-unit id="2218572265318708454" datatype="html">
         <source>Registering</source>
@@ -961,9 +961,6 @@
       <trans-unit id="5102353447213251496" datatype="html">
         <source>Promoted pieces can travel long distance</source>
       </trans-unit>
-      <trans-unit id="8981438512825680894" datatype="html">
-        <source>Promoted pieces can travel long distance after capture</source>
-      </trans-unit>
       <trans-unit id="318262165361158083" datatype="html">
         <source>Control</source>
       </trans-unit>
@@ -972,9 +969,6 @@
       </trans-unit>
       <trans-unit id="3581037377692107358" datatype="html">
         <source>You cannot go backward with normal pieces!</source>
-      </trans-unit>
-      <trans-unit id="2164034395199252113" datatype="html">
-        <source>You cannot capture an empty square, nor jump over it!</source>
       </trans-unit>
       <trans-unit id="1347067654692503433" datatype="html">
         <source>You must capture when it is possible!</source>
@@ -985,38 +979,32 @@
       <trans-unit id="6689969573280113485" datatype="html">
         <source>This piece cannot move!</source>
       </trans-unit>
-      <trans-unit id="4481226927895530871" datatype="html">
-        <source>A capture should be a double diagonal step. Look at the green indicators to help you!</source>
+      <trans-unit id="248546743321704928" datatype="html">
+        <source>A capture should be diagonal. Look at the green indicators to help you!</source>
       </trans-unit>
-      <trans-unit id="594119571083164349" datatype="html">
-        <source>NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS</source>
+      <trans-unit id="964675748683334375" datatype="html">
+        <source>Normal pieces cannot move like this!</source>
       </trans-unit>
-      <trans-unit id="924257200871471773" datatype="html">
-        <source>You must move in a single diagonal step!</source>
+      <trans-unit id="7075234186922635323" datatype="html">
+        <source>Normal pieces cannot capture like this!</source>
       </trans-unit>
-      <trans-unit id="3595865169368481611" datatype="html">
-        <source>CANNOT_DO_ORTHOGONAL_CAPTURE</source>
+      <trans-unit id="602226871567193977" datatype="html">
+        <source>No piece can do long jump!</source>
+      </trans-unit>
+      <trans-unit id="7543542187423910186" datatype="html">
+        <source>Cannot do orthogonal capture!</source>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
         <source>You cannot jump over the same square several times!</source>
       </trans-unit>
-      <trans-unit id="7787908540299707455" datatype="html">
-        <source>You must do the biggest capture possible</source>
+      <trans-unit id="1505463377783719524" datatype="html">
+        <source>You must do the biggest capture possible!</source>
       </trans-unit>
-      <trans-unit id="502962431546322250" datatype="html">
-        <source>CANNOT_JUMP_OVER_SEVERAL_PIECES</source>
+      <trans-unit id="6151712512701871680" datatype="html">
+        <source>Cannot jump over several pieces!</source>
       </trans-unit>
-      <trans-unit id="7790194647684259354" datatype="html">
-        <source>InternationalCheckers</source>
-      </trans-unit>
-      <trans-unit id="8274439231274366704" datatype="html">
-        <source>Lasca: origins</source>
-      </trans-unit>
-      <trans-unit id="3954016636522783040" datatype="html">
-        <source>Lasca is a game based on draughts created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
-      </trans-unit>
-      <trans-unit id="4475600219932113977" datatype="html">
-        <source>The goal of Lasca is, like for draughts, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+      <trans-unit id="596239006245525122" datatype="html">
+        <source>The goal of checkers is to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
       </trans-unit>
       <trans-unit id="1534367694207535197" datatype="html">
         <source>Steps</source>
@@ -1030,11 +1018,59 @@
       <trans-unit id="7013110290486741787" datatype="html">
         <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, go ahead.</source>
       </trans-unit>
-      <trans-unit id="3662184238859847370" datatype="html">
-        <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>
+      <trans-unit id="7318689477424356735" datatype="html">
+        <source>Backward captures</source>
+      </trans-unit>
+      <trans-unit id="553047259468217661" datatype="html">
+        <source>A capture can also be done backward&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, you have to do one capture backward, go ahead.</source>
       </trans-unit>
       <trans-unit id="3104604410220998192" datatype="html">
         <source>Multiple captures</source>
+      </trans-unit>
+      <trans-unit id="4420963395072765293" datatype="html">
+        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same coord.&lt;br/&gt;&lt;br/&gt;You are playing Dark, a double capture is possible, go ahead.</source>
+      </trans-unit>
+      <trans-unit id="248134916259829943" datatype="html">
+        <source>Maximal captures</source>
+      </trans-unit>
+      <trans-unit id="9192360642045120418" datatype="html">
+        <source>If at some turn you have several capture choice, you have to capture the maximal number of pieces.&lt;br/&gt;&lt;br/&gt;You are playing Dark, two captures are possible, go ahead.</source>
+      </trans-unit>
+      <trans-unit id="2693455583384082674" datatype="html">
+        <source>Promotion</source>
+      </trans-unit>
+      <trans-unit id="5155854598987833227" datatype="html">
+        <source>When a piece reaches the last line, it is promoted and becomes a queen, and gains abilities that will be explained in next step! One of your piece could be promoted now.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark. Do it.</source>
+      </trans-unit>
+      <trans-unit id="2350466795039227682" datatype="html">
+        <source>You did not choose the correct piece, and got no promotion.</source>
+      </trans-unit>
+      <trans-unit id="9030049945272757280" datatype="html">
+        <source>Queen move</source>
+      </trans-unit>
+      <trans-unit id="1609034897374459946" datatype="html">
+        <source>Queens can move forward like the others, and capture backward like the others. But they can also move backward without capturing. They are also able to do what we call &quot;flying&quot;. This means doing longer steps, without jumping any piece to move, or by jumping exactly one opponent piece to capture it, then land wherever is wanting in the same line.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, move your queen!</source>
+      </trans-unit>
+      <trans-unit id="3154252720872976153" datatype="html">
+        <source>You did not move your queen.</source>
+      </trans-unit>
+      <trans-unit id="7062389198958064827" datatype="html">
+        <source>Jump rule</source>
+      </trans-unit>
+      <trans-unit id="4980307632807526674" datatype="html">
+        <source>When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.&lt;br/&gt;Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same coord.&lt;br/&gt;&lt;br/&gt;You are playing Dark, go ahead.</source>
+      </trans-unit>
+      <trans-unit id="8274439231274366704" datatype="html">
+        <source>Lasca: origins</source>
+      </trans-unit>
+      <trans-unit id="3082102783316586508" datatype="html">
+        <source>Lasca is a game based on checkers, created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
+      </trans-unit>
+      <trans-unit id="7912613915101567284" datatype="html">
+        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+      </trans-unit>
+      <trans-unit id="3662184238859847370" datatype="html">
+        <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>
       </trans-unit>
       <trans-unit id="8288645478824152244" datatype="html">
         <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same stack.&lt;br/&gt;&lt;br/&gt;You are playing Dark, a double capture is possible, go ahead.</source>
@@ -1044,9 +1080,6 @@
       </trans-unit>
       <trans-unit id="4604841825883708598" datatype="html">
         <source>If you have several capture choices, you are allowed to choose any of them. For example if one choice is to capture one piece, and the other choice is to capture two pieces, you can choose either.</source>
-      </trans-unit>
-      <trans-unit id="2693455583384082674" datatype="html">
-        <source>Promotion</source>
       </trans-unit>
       <trans-unit id="2042191715997917496" datatype="html">
         <source>When a stack reaches the last line, its commander becomes an officer, and gains the ability to go backward, which is illegal for the other pieces! One of your piece could be promoted now.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark. Do it.</source>

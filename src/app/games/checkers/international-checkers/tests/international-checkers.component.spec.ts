@@ -26,8 +26,6 @@ describe('InternationalCheckersComponent', () => {
     let testUtils: ComponentTestUtils<InternationalCheckersComponent>;
 // TODO: when I can still capture with selected piece: HIGHLIGHT POSSIBLE NEXT CAPTURE
 // TODO: when clicking on the second part of the capture with a horse-step, the move should be cancelled correctly
-// TODO: not show stack of piece when not stacking ??
-// TODO: test in LascaRules that piece don't go twice over the same stack (1-2-1)
 
     beforeEach(fakeAsync(async() => {
         testUtils = await ComponentTestUtils.forGame<InternationalCheckersComponent>('InternationalCheckers');
@@ -177,7 +175,7 @@ describe('InternationalCheckersComponent', () => {
 
             // When clicking on an empty square in (+2; +1) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL();
+            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
             await testUtils.expectClickFailure('#coord-6-7', reason);
         }));
 
@@ -187,7 +185,7 @@ describe('InternationalCheckersComponent', () => {
 
             // When clicking on an empty square in (+0; -2) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL();
+            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
             await testUtils.expectClickFailure('#coord-6-4', reason);
         }));
 
@@ -230,17 +228,6 @@ describe('InternationalCheckersComponent', () => {
             testUtils.expectElementToHaveClass('#square-2-6-piece-0', 'selected-stroke');
         }));
 
-        it('should allow simple step', fakeAsync(async() => {
-            // Given any board on which a step could be done and with a selected piece
-            await testUtils.expectClickSuccess('#coord-4-6');
-
-            // When doing a step
-            const move: CheckersMove = CheckersMove.fromStep(new Coord(4, 6), new Coord(3, 5));
-
-            // Then it should succeed
-            await testUtils.expectMoveSuccess('#coord-3-5', move);
-        }));
-
         it('should show left square after single step', fakeAsync(async() => {
             // Given any board on which a step could be done and with a selected piece
             await testUtils.expectClickSuccess('#coord-4-6');
@@ -252,27 +239,6 @@ describe('InternationalCheckersComponent', () => {
             // Then left square and landed square should be showed as moved
             testUtils.expectElementToHaveClass('#square-4-6', 'moved-fill');
             testUtils.expectElementToHaveClass('#square-3-5', 'moved-fill');
-        }));
-
-        it('should allow simple capture', fakeAsync(async() => {
-            // Given a board with a selected piece and a possible capture
-            const state: CheckersState = CheckersState.of([
-                [V, _, V, _, V, _, V],
-                [_, V, _, V, _, V, _],
-                [V, _, V, _, V, _, V],
-                [_, U, _, _, _, _, _],
-                [_, _, U, _, U, _, U],
-                [_, _, _, U, _, U, _],
-                [U, _, _, _, U, _, U],
-            ], 1);
-            await testUtils.setupState(state);
-            await testUtils.expectClickSuccess('#coord-2-2');
-
-            // When doing a capture
-            const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
-
-            // Then it should be a success
-            await testUtils.expectMoveSuccess('#coord-0-4', move);
         }));
 
         it(`should have a promotion's symbol on the piece that just got promoted`, fakeAsync(async() => {
@@ -314,8 +280,10 @@ describe('InternationalCheckersComponent', () => {
             // When doing the first capture
             await testUtils.expectClickSuccess('#coord-4-4');
 
-            // Then it should already be shown as captured, and the next possibles ones displayed
+            // Then it should already be shown as captured
             testUtils.expectElementToHaveClass('#square-3-3', 'captured-fill');
+            // And the next possibles ones displayed
+            testUtils.expectElementToHaveClass('#clickable-highlight-6-6', 'clickable-stroke');
         }));
 
         it('should cancel capturing a piece you cannot capture', fakeAsync(async() => {
@@ -337,56 +305,6 @@ describe('InternationalCheckersComponent', () => {
 
             // Then the move should be illegal
             await testUtils.expectMoveFailure('#coord-0-4', RulesFailure.CANNOT_SELF_CAPTURE(), move);
-        }));
-
-        it('should allow doing flying capture with queen with close-landing', fakeAsync(async() => {
-            // Given a board with a selected queen and a possible capture
-            const state: CheckersState = CheckersState.of([
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, V, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, O, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-            ], 0);
-            await testUtils.setupState(state);
-            await testUtils.expectClickSuccess('#coord-4-4');
-
-            // When doing a capture
-            const move: CheckersMove = CheckersMove.fromCapture([new Coord(4, 4), new Coord(0, 0)]).get();
-
-            // Then it should be a success
-            await testUtils.expectMoveSuccess('#coord-0-0', move);
-        }));
-
-        it('should allow doing flying multiple-capture with queen with far-landing', fakeAsync(async() => {
-            // Given a board with a selected queen and a possible multiple-capture
-            const state: CheckersState = CheckersState.of([
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, V, _, _, _, _, _, _, _, _],
-                [_, _, _, _, V, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, V, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, O, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-            ], 0);
-            await testUtils.setupState(state);
-            await testUtils.expectClickSuccess('#coord-6-6');
-            await testUtils.expectClickSuccess('#coord-2-2');
-
-            // When doing a capture
-            const captures: Coord[] = [new Coord(6, 6), new Coord(2, 2), new Coord(0, 0)];
-            const move: CheckersMove = CheckersMove.fromCapture(captures).get();
-
-            // Then it should be a success
-            await testUtils.expectMoveSuccess('#coord-0-0', move);
         }));
 
         it('should only highlight captured piece when doing flying capture with queen', fakeAsync(async() => {
@@ -418,6 +336,88 @@ describe('InternationalCheckersComponent', () => {
             testUtils.expectElementNotToHaveClass('#square-4-4', 'captured-fill');
         }));
 
+        it('should allow doing flying capture with queen with close-landing', fakeAsync(async() => {
+            // Given a board with a selected queen and a possible capture
+            const state: CheckersState = CheckersState.of([
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, V, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, O, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+            ], 0);
+            await testUtils.setupState(state);
+            await testUtils.expectClickSuccess('#coord-4-4');
+
+            // When doing a capture
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(4, 4), new Coord(0, 0)]).get();
+
+            // Then it should be a success
+            await testUtils.expectMoveSuccess('#coord-0-0', move);
+        }));
+
+        it('should allow simple capture', fakeAsync(async() => {
+            // Given a board with a selected piece and a possible capture
+            const state: CheckersState = CheckersState.of([
+                [V, _, V, _, V, _, V],
+                [_, V, _, V, _, V, _],
+                [V, _, V, _, V, _, V],
+                [_, U, _, _, _, _, _],
+                [_, _, U, _, U, _, U],
+                [_, _, _, U, _, U, _],
+                [U, _, _, _, U, _, U],
+            ], 1);
+            await testUtils.setupState(state);
+            await testUtils.expectClickSuccess('#coord-2-2');
+
+            // When doing a capture
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
+
+            // Then it should be a success
+            await testUtils.expectMoveSuccess('#coord-0-4', move);
+        }));
+
+        it('should allow simple step', fakeAsync(async() => {
+            // Given any board on which a step could be done and with a selected piece
+            await testUtils.expectClickSuccess('#coord-4-6');
+
+            // When doing a step
+            const move: CheckersMove = CheckersMove.fromStep(new Coord(4, 6), new Coord(3, 5));
+
+            // Then it should succeed
+            await testUtils.expectMoveSuccess('#coord-3-5', move);
+        }));
+
+        it('should allow doing flying multiple-capture with queen with far-landing', fakeAsync(async() => {
+            // Given a board with a selected queen and a possible multiple-capture
+            const state: CheckersState = CheckersState.of([
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, V, _, _, _, _, _, _, _, _],
+                [_, _, _, _, V, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, V, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, O, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+            ], 0);
+            await testUtils.setupState(state);
+            await testUtils.expectClickSuccess('#coord-6-6');
+            await testUtils.expectClickSuccess('#coord-2-2');
+
+            // When doing a capture
+            const captures: Coord[] = [new Coord(6, 6), new Coord(2, 2), new Coord(0, 0)];
+            const move: CheckersMove = CheckersMove.fromCapture(captures).get();
+
+            // Then it should be a success
+            await testUtils.expectMoveSuccess('#coord-0-0', move);
+        }));
+
     });
 
     describe('experience as second player (reversed board)', () => {
@@ -445,7 +445,7 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectClickSuccess('#coord-1-3'); // Making the first click
 
             // When clicking on an invalid landing piece
-            await testUtils.expectClickFailure('#coord-2-5', CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL());
+            await testUtils.expectClickFailure('#coord-2-5', CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
 
             // Then the highlight should be at the expected place only, not at their symmetric point
             testUtils.expectElementToHaveClass('#clickable-highlight-1-3', 'clickable-stroke');
@@ -544,7 +544,7 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectClickSuccess('#coord-4-4');
 
             // When doing the last clic that make an illegal step
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL();
+            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
             await testUtils.expectClickFailure('#coord-6-5', reason);
 
             // Then the move should be cancelled and stack should be back in place
