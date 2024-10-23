@@ -45,7 +45,7 @@ export class TaflPieceAndInfluenceHeuristic<M extends TaflMove> extends TaflPiec
                     let influence: number = 0;
                     for (const dir of Orthogonal.ORTHOGONALS) {
                         let testedCoord: Coord = coord.getNext(dir, 1);
-                        while (state.isOnBoard(testedCoord) && state.getPieceAt(testedCoord) === empty) {
+                        while (state.hasPieceAt(testedCoord, empty)) {
                             influence++;
                             testedCoord = testedCoord.getNext(dir, 1);
                         }
@@ -115,13 +115,11 @@ export class TaflPieceAndInfluenceHeuristic<M extends TaflMove> extends TaflPiec
                         continue;
                     }
                     let futureCapturer: Coord = coord.getNext(dir, 1);
-                    while (state.isOnBoard(futureCapturer) &&
-                           state.getPieceAt(futureCapturer) === TaflPawn.UNOCCUPIED)
-                    {
+                    while (state.hasPieceAt(futureCapturer, TaflPawn.UNOCCUPIED)) {
                         futureCapturer = futureCapturer.getNext(captureDirection);
                     }
                     if (state.isOnBoard(futureCapturer) &&
-                        state.getAbsoluteOwner(futureCapturer) === threatenerPlayer &&
+                        state.getAbsoluteOwner(futureCapturer) === threatenerPlayer && // TODO
                         coord.getNext(dir, 1).equals(futureCapturer) === false)
                     {
                         movingThreats.push(futureCapturer);

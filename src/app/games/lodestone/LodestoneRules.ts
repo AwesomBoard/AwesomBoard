@@ -225,15 +225,16 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
         const moved: Coord[] = [];
         const directions: readonly Ordinal[] = orientation === 'diagonal' ? Ordinal.DIAGONALS : Ordinal.ORTHOGONALS;
         for (const direction of directions) {
-            for (let coord: Coord = lodestone.getNext(direction); // eslint-disable-next-line indent
-                 state.isOnBoard(coord); // eslint-disable-next-line indent
-                 coord = coord.getNext(direction))
+            for (
+                let coord: Coord = lodestone.getNext(direction);
+                state.isOnBoard(coord);
+                coord = coord.getNext(direction))
             {
                 const pieceOnTarget: LodestonePiece = board[coord.y][coord.x];
                 const next: Coord = coord.getNext(direction);
-                if (state.isOnBoard(next)) {
+                if (state.coordIsOwnedBy(next, currentPlayer)) {
                     const pieceToMove: LodestonePiece = board[next.y][next.x];
-                    if (pieceToMove.isPlayerPiece() && pieceToMove.owner === currentPlayer) {
+                    if (pieceToMove.isPlayerPiece() && pieceToMove.owner === currentPlayer) { // TODO KILL USELESS CHECK
                         // We move player piece of the next coord to the current coord
                         // hence in the opposite of direction
                         if (pieceOnTarget.isEmpty()) {
@@ -249,6 +250,8 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
                             moved.push(next);
                             board[next.y][next.x] = LodestonePieceNone.EMPTY;
                         }
+                    } else {
+                        console.log('lel de kek');
                     }
                 }
             }
@@ -273,9 +276,9 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
                  coord.equals(lodestone) === false; // eslint-disable-next-line indent
                  coord = coord.getPrevious(direction))
             {
-                if (state.isOnBoard(coord)) {
+                if (state.coordIsOwnedBy(coord, opponent)) {
                     const pieceToMove: LodestonePiece = board[coord.y][coord.x];
-                    if (pieceToMove.isPlayerPiece() && pieceToMove.owner === opponent) {
+                    if (pieceToMove.isPlayerPiece()) {
                         const next: Coord = coord.getNext(direction);
                         if (state.isOnBoard(next)) {
                             const pieceOnTarget: LodestonePiece = board[next.y][next.x];

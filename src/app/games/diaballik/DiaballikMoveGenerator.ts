@@ -258,17 +258,15 @@ export class DiaballikMoveGenerator extends MoveGenerator<DiaballikMove, Diaball
      */
     public getPassEnds(state: DiaballikState, start: Coord): Coord[] {
         const player: Player = state.getCurrentPlayer();
+        const opponent: Player = state.getCurrentOpponent();
         const ends: Coord[] = [];
         // A pass is in any direction, as long as it reaches a player piece and is not obstructed
         for (const direction of Ordinal.factory.all) {
             let coord: Coord = start.getNext(direction);
-            while (state.isOnBoard(coord)) {
+            while (state.coordIsNotOwnedBy(coord, opponent)) {
                 const piece: DiaballikPiece = state.getPieceAt(coord);
                 if (piece.owner === player) {
                     ends.push(coord);
-                    break;
-                } else if (piece.owner !== PlayerOrNone.NONE) {
-                    // This pass is obstructed
                     break;
                 }
                 coord = coord.getNext(direction);
@@ -285,7 +283,7 @@ export class DiaballikMoveGenerator extends MoveGenerator<DiaballikMove, Diaball
         // A legal translation is an orthogonal translation that ends on an empty space
         for (const direction of Orthogonal.factory.all) {
             const end: Coord = start.getNext(direction);
-            if (state.isOnBoard(end) && state.getPieceAt(end).owner.isNone()) {
+            if (state.coordIsOwnerByNone(end)) {
                 ends.push(end);
             }
         }

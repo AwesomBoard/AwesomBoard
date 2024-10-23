@@ -5,7 +5,7 @@ export class TeekoState extends PlayerOrNoneGameStateWithTable {
 
     public static readonly WIDTH: number = 5;
 
-    public static isOnBoard(coord: Coord): boolean {
+    public static isOnBoard(coord: Coord): boolean { // TODO: move them on non-static then reduce isOnBoard && getPieceAt ==> to hasPieceAt
         return coord.isInRange(TeekoState.WIDTH, TeekoState.WIDTH);
     }
 

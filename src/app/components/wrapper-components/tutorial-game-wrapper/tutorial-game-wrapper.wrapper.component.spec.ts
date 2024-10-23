@@ -1,16 +1,17 @@
 /* eslint-disable max-lines-per-function */
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { Comparable, MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { TutorialGameWrapperComponent, TutorialGameWrapperMessages } from './tutorial-game-wrapper.component';
 import { TutorialStep } from './TutorialStep';
 import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
 import { QuartoState } from 'src/app/games/quarto/QuartoState';
 import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
 import { ComponentTestUtils, expectValidRouting } from 'src/app/utils/tests/TestUtils.spec';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { QuartoComponent } from '../../../games/quarto/quarto.component';
-import { Comparable, MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { TutorialFailure } from './TutorialFailure';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { Router } from '@angular/router';
 import { LocalGameWrapperComponent } from '../local-game-wrapper/local-game-wrapper.component';
 import { OnlineGameCreationComponent } from '../../normal-component/online-game-creation/online-game-creation.component';
 import { GameWrapperMessages } from '../GameWrapper';

@@ -154,13 +154,11 @@ export class GipfRules extends Rules<GipfMove, GipfState, GipfLegalityInformatio
             const moved: Coord[] = [];
             moved.push(placement.coord);
             let cur: Coord = placement.coord.getNext(dir);
-            while (stateAfterCapture.isOnBoard(cur) &&
-                stateAfterCapture.getPieceAt(cur) !== FourStatePiece.EMPTY) {
+            while (stateAfterCapture.hasInequalPieceAt(cur, FourStatePiece.EMPTY)) {
                 moved.push(cur);
                 cur = cur.getNext(dir);
             }
-            Utils.assert(stateAfterCapture.isOnBoard(cur) &&
-                         stateAfterCapture.getPieceAt(cur) === FourStatePiece.EMPTY,
+            Utils.assert(stateAfterCapture.hasPieceAt(cur, FourStatePiece.EMPTY),
                          'getPiecesMoved called with an invalid placement performed on a full line');
             // This is the space filled by the last pushed piece
             moved.push(cur);
@@ -355,7 +353,7 @@ export class GipfRules extends Rules<GipfMove, GipfState, GipfLegalityInformatio
         const dir: HexaDirection = linePortion[2];
         const oppositeDir: HexaDirection = dir.getOpposite();
         let cur: Coord = start.getNext(oppositeDir);
-        while (state.isOnBoard(cur) && state.getPieceAt(cur) !== FourStatePiece.EMPTY) {
+        while (state.hasInequalPieceAt(cur, FourStatePiece.EMPTY)) {
             // Go backwards to identify capturable pieces before the 4 aligned pieces
             capturable.push(cur);
             cur = cur.getNext(oppositeDir);
@@ -365,7 +363,7 @@ export class GipfRules extends Rules<GipfMove, GipfState, GipfLegalityInformatio
             capturable.push(coord);
         }
         for (let coord: Coord = end;
-            state.isOnBoard(coord) && state.getPieceAt(coord) !== FourStatePiece.EMPTY;
+            state.hasInequalPieceAt(coord, FourStatePiece.EMPTY);
             coord = coord.getNext(dir))
         {
             // Go forward to identify capturable pieces after the 4 aligned pieces

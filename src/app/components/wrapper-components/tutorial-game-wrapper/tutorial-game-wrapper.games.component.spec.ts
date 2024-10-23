@@ -1,11 +1,12 @@
 /* eslint-disable max-lines-per-function */
+import { fakeAsync } from '@angular/core/testing';
+import { Comparable, MGPFallible, MGPOptional, MGPValidation, MGPValidationTestUtils, Utils } from '@everyboard/lib';
+
 import { TutorialGameWrapperComponent } from './tutorial-game-wrapper.component';
 import { ComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
-import { fakeAsync } from '@angular/core/testing';
 import { GameWrapper } from '../GameWrapper';
 import { Click, TutorialPredicate, TutorialStep } from './TutorialStep';
-import { Comparable, MGPFallible, MGPOptional, MGPValidation, MGPValidationTestUtils, Utils } from '@everyboard/lib';
 import { Move } from 'src/app/jscaip/Move';
 import { Coord } from 'src/app/jscaip/Coord';
 import { AbstractRules, SuperRules } from 'src/app/jscaip/Rules';
@@ -84,18 +85,24 @@ import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
 import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
 
 describe('TutorialGameWrapperComponent (games)', () => {
+
     describe('Game should load correctly', () => {
+
         for (const gameInfo of GameInfo.getAllGames()) {
+
             it(gameInfo.urlName, fakeAsync(async() => {
                 const wrapper: GameWrapper<Comparable> =
                     (await ComponentTestUtils.forGameWithWrapper(gameInfo.urlName, TutorialGameWrapperComponent))
                         .getWrapper();
                 expect(wrapper).toBeTruthy();
             }));
+
         }
+
     });
 
     describe('Tutorials', () => {
+
         it('should have healthy behavior for predicate steps', fakeAsync(async() => {
             const apagosTutorial: TutorialStep[] = new ApagosTutorial().tutorial;
             const conspirateursTutorial: TutorialStep[] = new ConspirateursTutorial().tutorial;
@@ -376,7 +383,9 @@ describe('TutorialGameWrapperComponent (games)', () => {
                 i++;
             }
         }));
+
         for (const gameInfo of GameInfo.getAllGames()) {
+
             it('should make sure all solution moves are legal for ' + gameInfo.name, fakeAsync(async() => {
                 const gameComponent: AbstractGameComponent =
                     (await ComponentTestUtils.forGameWithWrapper(gameInfo.urlName,
@@ -406,6 +415,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     }
                 }
             }));
+
             it('should display the step and solution move without error for ' + gameInfo.name, fakeAsync(async() => {
                 const testUtils: ComponentTestUtils<AbstractGameComponent, Comparable> =
                     await ComponentTestUtils.forGameWithWrapper(gameInfo.urlName, TutorialGameWrapperComponent);
@@ -430,6 +440,9 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     }
                 }
             }));
+
         }
+
     });
+
 });

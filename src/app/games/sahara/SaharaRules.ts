@@ -134,7 +134,7 @@ export class SaharaRules extends Rules<SaharaMove, SaharaState> {
 
     public getLandingCoords(board: Table<FourStatePiece>, coord: Coord): Coord[] {
         const isOnBoardAndEmpty: (c: Coord) => boolean = (c: Coord) => {
-            return SaharaState.isOnBoard(c) &&
+            return SaharaState.isOnBoard(c) && // TODO: eh ?
                    board[c.y][c.x] === FourStatePiece.EMPTY;
         };
         const landings: CoordSet =

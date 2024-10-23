@@ -23,4 +23,9 @@ export class KamisadoState extends GameStateWithTable<KamisadoPiece> {
     {
         super(TableUtils.copy(board), turn);
     }
+
+    public isEmptyAt(coord: Coord): boolean {
+        return this.hasPieceAt(coord, KamisadoPiece.EMPTY);
+    }
+
 }

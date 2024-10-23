@@ -25,12 +25,21 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
     public getPieceAt(coord: Coord): P {
         Utils.assert(this.isOnBoard(coord),
                      'Accessing coord not on board ' + coord + '.');
+        return this.getUnsafe(coord);
+    }
+
+    public getUnsafe(coord: Coord): P {
         return this.board[coord.y][coord.x];
     }
 
     public hasPieceAt(coord: Coord, value: P): boolean {
         return this.isOnBoard(coord) &&
-               comparableEquals(this.getPieceAt(coord), value);
+               comparableEquals(this.getUnsafe(coord), value);
+    }
+
+    public hasInequalPieceAt(coord: Coord, value: P): boolean {
+        return this.isOnBoard(coord) &&
+               comparableEquals(this.getUnsafe(coord), value) === false;
     }
 
     public tryToGetPieceAt(coord: Coord): MGPOptional<P> {
@@ -55,7 +64,7 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
         return this.getPieceAt(new Coord(x, y));
     }
 
-    public getOptionalPieceAtXY(x: number, y: number): MGPOptional<P> {
+    public getOptionalPieceAtXY(x: number, y: number): MGPOptional<P> { // TODO: deduplicate with tryToGetPieceAt
         const coord: Coord = new Coord(x, y);
         if (this.isOnBoard(coord)) {
             return MGPOptional.of(this.getPieceAt(coord));
@@ -74,10 +83,10 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
         }
     }
 
-    public getCoordsAndContents(): {coord: Coord, content: P}[] {
+    public getCoordsAndContents(): {coord: Coord, content: P}[] { // TODO: check that this is not overriden for no reason
         const coordsAndContents: {coord: Coord, content: P}[] = [];
         for (let y: number = 0; y < this.getHeight(); y++) {
-            for (let x: number = 0; x < this.board[y].length; x++) {
+            for (let x: number = 0; x < this.getWidth(); x++) {
                 const coord: Coord = new Coord(x, y);
                 if (this.isOnBoard(coord)) { // Could be overriden for unreachable coords
                     coordsAndContents.push({

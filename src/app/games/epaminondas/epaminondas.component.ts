@@ -88,9 +88,7 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
         }
         const previousNode: EpaminondasNode = this.node.parent.get();
         const previousOpponent: Player = this.getState().getPreviousOpponent();
-        while (previousNode.gameState.isOnBoard(moved) &&
-               previousNode.gameState.getPieceAt(moved) === previousOpponent)
-        {
+        while (previousNode.gameState.tryToGetPieceAt(moved).equalsValue(previousOpponent)) {
             this.capturedCoords.push(moved);
             moved = moved.getNext(move.direction, 1);
         }

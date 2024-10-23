@@ -64,7 +64,7 @@ export class TaflEscapeThenPieceThenControlHeuristic<M extends TaflMove> extends
         for (const piece of previousGen) {
             for (const dir of Orthogonal.ORTHOGONALS) {
                 let landing: Coord = piece.getNext(dir, 1);
-                while (state.isOnBoard(landing) && state.getPieceAt(landing) === TaflPawn.UNOCCUPIED) {
+                while (state.hasPieceAt(landing, TaflPawn.UNOCCUPIED)) {
                     if (handledCoords.every((coord: Coord) => coord.equals(landing) === false)) {
                         // coord is new
                         newGen.push(landing);

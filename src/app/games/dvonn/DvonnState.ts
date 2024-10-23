@@ -3,6 +3,7 @@ import { HexagonalGameState } from 'src/app/jscaip/state/HexagonalGameState';
 import { Table, TableUtils } from 'src/app/jscaip/TableUtils';
 import { DvonnPieceStack } from './DvonnPieceStack';
 import { HexagonalUtils } from 'src/app/jscaip/HexagonalUtils';
+import { MGPOptional } from 'lib/dist';
 
 export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
 
@@ -55,7 +56,7 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
         for (let y: number = 0; y < DvonnState.HEIGHT; y++) {
             for (let x: number = 0; x < DvonnState.WIDTH; x++) {
                 const coord: Coord = new Coord(x, y);
-                if (this.isOnBoard(coord) && this.getPieceAt(coord).hasPieces()) {
+                if (this.coordHasPieces(coord)) {
                     pieces.push(coord);
                 }
             }
@@ -66,7 +67,7 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
     public numberOfNeighbors(coord: Coord): number {
         const neighbors: Coord[] = HexagonalUtils.getNeighbors(coord, 1);
         const occupiedNeighbors: Coord[] = neighbors.filter((c: Coord): boolean =>
-            this.isOnBoard(c) && this.getPieceAt(c).hasPieces());
+            this.coordHasPieces(c));
         return occupiedNeighbors.length;
     }
 
@@ -81,5 +82,16 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
             return false;
         }
         return this.board[coord.y][coord.x] !== DvonnPieceStack.UNREACHABLE;
+        // TODO: put in common with others ? And with static
     }
+
+    public coordHasPieces(coord: Coord): boolean {
+        const optional: MGPOptional<DvonnPieceStack> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().hasPieces();
+        } else {
+            return false;
+        }
+    }
+
 }

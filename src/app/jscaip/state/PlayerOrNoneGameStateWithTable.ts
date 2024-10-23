@@ -17,4 +17,5 @@ export class PlayerOrNoneGameStateWithTable extends GameStateWithTable<PlayerOrN
                 };
             });
     }
+
 }

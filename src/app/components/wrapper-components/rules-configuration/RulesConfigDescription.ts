@@ -1,7 +1,7 @@
-import { MGPValidator, MGPValidators } from 'src/app/utils/MGPValidator';
-
-import { ConfigDescriptionType, DefaultConfigDescription, EmptyRulesConfig, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { Set, Utils } from '@everyboard/lib';
+
+import { MGPValidator, MGPValidators } from 'src/app/utils/MGPValidator';
+import { ConfigDescriptionType, DefaultConfigDescription, EmptyRulesConfig, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { GobanConfig } from 'src/app/jscaip/GobanConfig';
 import { Localized } from 'src/app/utils/LocaleUtils';
 

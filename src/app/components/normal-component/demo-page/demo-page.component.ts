@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MGPFallible, MGPOptional } from '@everyboard/lib';
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { Move } from 'src/app/jscaip/Move';
-import { MGPFallible, MGPOptional } from '@everyboard/lib';
 import { TutorialStep } from '../../wrapper-components/tutorial-game-wrapper/TutorialStep';
 import { GameInfo } from '../pick-game/pick-game.component';
 import { AbstractNode } from 'src/app/jscaip/AI/GameNode';

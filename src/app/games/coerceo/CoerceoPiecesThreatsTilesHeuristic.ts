@@ -125,8 +125,7 @@ export class CoerceoPiecesThreatsTilesHeuristic extends CoerceoHeuristic {
     private isMovingThreat(coord: Coord, movingThreat: Coord, state: CoerceoState, directThreats: Coord[]): boolean {
         const threatenerPlayer: Player = state.getPieceAt(coord).getPlayer() as Player;
         const opponent: Player = threatenerPlayer.getOpponent();
-        return state.isOnBoard(movingThreat) &&
-               state.getPieceAt(movingThreat).is(opponent) &&
+        return state.coordIs(movingThreat, opponent) &&
                directThreats.some((c: Coord) => c.equals(movingThreat)) === false;
     }
 

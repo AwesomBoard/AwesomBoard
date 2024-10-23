@@ -15,33 +15,31 @@ export class AbaloneMoveGenerator extends MoveGenerator<AbaloneMove, AbaloneStat
         const moves: AbaloneMove[] = [];
         const state: AbaloneState = node.gameState;
         const player: Player = state.getCurrentPlayer();
-        for (let y: number = 0; y < 9; y++) {
-            for (let x: number = 0; x < 9; x++) {
-                const first: Coord = new Coord(x, y);
-                if (state.getPieceAt(first).is(player) === false) {
+        for (const coordAndContent of state.getCoordsAndContents()) {
+            const first: Coord = coordAndContent.coord;
+            if (state.getPieceAt(first).is(player) === false) {
+                continue;
+            }
+            for (const dir of HexaDirection.factory.all) {
+                const move: AbaloneMove = AbaloneMove.ofSingleCoord(first, dir);
+                if (this.isAcceptablePush(move, state)) {
+                    moves.push(move);
+                } else {
                     continue;
                 }
-                for (const dir of HexaDirection.factory.all) {
-                    const move: AbaloneMove = AbaloneMove.ofSingleCoord(first, dir);
-                    if (this.isAcceptablePush(move, state)) {
-                        moves.push(move);
-                    } else {
-                        continue;
-                    }
-                    for (const alignment of HexaDirection.factory.all) {
-                        for (let distance: number = 1; distance <= 2; distance++) {
-                            if (alignment.equals(dir)) {
-                                break;
+                for (const alignment of HexaDirection.factory.all) {
+                    for (let distance: number = 1; distance <= 2; distance++) {
+                        if (alignment.equals(dir)) {
+                            break;
+                        }
+                        const second: Coord = first.getNext(alignment, distance);
+                        if (state.isOnBoard(second)) {
+                            const translation: AbaloneMove = AbaloneMove.ofDoubleCoord(first, second, dir);
+                            if (AbaloneRules.get().isLegal(translation, state).isSuccess()) {
+                                moves.push(translation);
                             }
-                            const second: Coord = first.getNext(alignment, distance);
-                            if (state.isOnBoard(second)) {
-                                const translation: AbaloneMove = AbaloneMove.ofDoubleCoord(first, second, dir);
-                                if (AbaloneRules.get().isLegal(translation, state).isSuccess()) {
-                                    moves.push(translation);
-                                }
-                            } else {
-                                break;
-                            }
+                        } else {
+                            break;
                         }
                     }
                 }

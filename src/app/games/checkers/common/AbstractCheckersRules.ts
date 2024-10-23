@@ -130,8 +130,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
             return this.getFirstCapturableCoordForFlyingCapture(state, coord, direction, flyiedOvers);
         } else {
             const nextCoord: Coord = coord.getNext(direction, 1);
-            if (state.isOnBoard(nextCoord) &&
-                state.getPieceAt(nextCoord).isCommandedBy(opponent) &&
+            if (state.coordIsCommandedBy(nextCoord, opponent) &&
                 flyiedOvers.some((c: Coord) => c.equals(nextCoord)) === false)
             {
                 return MGPOptional.of(nextCoord);
@@ -151,16 +150,14 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
     {
         let possibleLanding: Coord = captured.getNext(direction, 1);
         const possibleLandings: Coord[] = [];
-        if (state.isOnBoard(possibleLanding) &&
-            state.getPieceAt(possibleLanding).isEmpty() &&
+        if (state.coordIsEmpty(possibleLanding) &&
             flyiedOvers.some((c: Coord) => c.equals(possibleLanding)) === false)
         {
             possibleLandings.push(possibleLanding);
             const isPromotedPiece: boolean = state.getPieceAt(coord).getCommander().isPromoted;
             if (config.promotedPiecesCanFly && isPromotedPiece) {
                 possibleLanding = possibleLanding.getNext(direction, 1);
-                while (state.isOnBoard(possibleLanding) &&
-                       state.getPieceAt(possibleLanding).isEmpty() &&
+                while (state.coordIsEmpty(possibleLanding) &&
                        flyiedOvers.some((c: Coord) => c.equals(possibleLanding)) === false)
                 {
                     possibleLandings.push(possibleLanding);
@@ -238,7 +235,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                 let previousJumpWasPossible: boolean = true;
                 while (previousJumpWasPossible) {
                     landing = landing.getNext(direction, 1);
-                    previousJumpWasPossible = state.isOnBoard(landing) && state.getPieceAt(landing).isEmpty();
+                    previousJumpWasPossible = state.coordIsEmpty(landing);
                     if (previousJumpWasPossible) {
                         const newStep: CheckersMove = CheckersMove.fromStep(coord, landing);
                         pieceMoves.push(newStep);
@@ -246,7 +243,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                 }
             } else {
                 const landing: Coord = coord.getNext(direction, 1);
-                if (state.isOnBoard(landing) && state.getPieceAt(landing).isEmpty()) {
+                if (state.coordIsEmpty(landing)) {
                     const newStep: CheckersMove = CheckersMove.fromStep(coord, landing);
                     pieceMoves.push(newStep);
                 }

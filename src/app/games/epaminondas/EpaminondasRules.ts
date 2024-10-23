@@ -128,9 +128,7 @@ export class EpaminondasRules extends ConfigurableRules<EpaminondasMove,
     {
         let capturedSoldier: Coord = move.coord.getNext(move.direction, move.phalanxSize + move.stepSize - 1);
         let captured: number = 0;
-        while (oldState.isOnBoard(capturedSoldier) &&
-               oldState.getPieceAt(capturedSoldier) === opponent)
-        {
+        while (oldState.hasPieceAt(capturedSoldier, opponent)) {
             // Capture
             if (captured > 0) {
                 board[capturedSoldier.y][capturedSoldier.x] = PlayerOrNone.NONE;

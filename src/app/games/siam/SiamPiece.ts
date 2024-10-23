@@ -95,6 +95,10 @@ export class SiamPiece {
         return this.getOptionalDirection().get();
     }
 
+    public equals(other: SiamPiece): boolean {
+        return this === other;
+    }
+
     public toString(): string {
         switch (this) {
             case SiamPiece.EMPTY: return 'EMPTY';

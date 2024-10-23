@@ -2,7 +2,7 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { GameStateWithTable } from 'src/app/jscaip/state/GameStateWithTable';
 import { Player } from 'src/app/jscaip/Player';
 import { Table } from 'src/app/jscaip/TableUtils';
-import { Utils } from '@everyboard/lib';
+import { MGPOptional, Utils } from '@everyboard/lib';
 
 export class CheckersPiece {
 
@@ -153,6 +153,24 @@ export class CheckersState extends GameStateWithTable<CheckersStack> {
             return 0;
         } else {
             return this.getHeight() - 1;
+        }
+    }
+
+    public coordIsCommandedBy(coord: Coord, player: Player): boolean {
+        const optional: MGPOptional<CheckersStack> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().isCommandedBy(player);
+        } else {
+            return false;
+        }
+    }
+
+    public coordIsEmpty(coord: Coord): boolean {
+        const optional: MGPOptional<CheckersStack> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().isEmpty();
+        } else {
+            return false;
         }
     }
 

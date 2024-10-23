@@ -187,8 +187,7 @@ export class SiamRules extends ConfigurableRules<SiamMove, SiamState, SiamConfig
         let movingPiece: SiamPiece = SiamPiece.of(move.landingOrientation, state.getCurrentPlayer());
         const pushingDir: Orthogonal = move.direction.get();
         let landingCoord: Coord = move.coord.getNext(pushingDir);
-        if (state.isOnBoard(landingCoord) &&
-            state.getPieceAt(landingCoord) !== SiamPiece.EMPTY &&
+        if (state.hasInequalPieceAt(landingCoord, SiamPiece.EMPTY) &&
             this.isStraight(firstPiece, move) === false)
         {
             return MGPFallible.failure(SiamFailure.ILLEGAL_PUSH());

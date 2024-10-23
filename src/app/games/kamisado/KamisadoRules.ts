@@ -61,7 +61,7 @@ export class KamisadoRules extends Rules<KamisadoMove, KamisadoState> {
                 // For each direction, create a move of 1 in that direction
                 for (const dir of this.playerDirections(state.getCurrentPlayer())) {
                     const endCoord: Coord = startCoord.getNext(dir);
-                    if (state.isOnBoard(endCoord) && KamisadoBoard.isEmptyAt(state.board, endCoord)) {
+                    if (state.isEmptyAt(endCoord)) {
                         // Move is legal
                         return true;
                     }

@@ -70,14 +70,14 @@ export class DvonnRules extends Rules<DvonnMove, DvonnState> {
         const stackSize: number = state.getPieceAt(coord).getSize();
         const possibleTargets: Coord[] = HexagonalUtils.getNeighbors(coord, stackSize);
         return possibleTargets.find((c: Coord): boolean =>
-            state.isOnBoard(c) && state.getPieceAt(c).hasPieces()) !== undefined;
+            state.coordHasPieces(c)) !== undefined;
     }
 
     public static pieceTargets(state: DvonnState, coord: Coord): Coord[] {
         const stackSize: number = state.getPieceAt(coord).getSize();
         const possibleTargets: Coord[] = HexagonalUtils.getNeighbors(coord, stackSize);
         return possibleTargets.filter((c: Coord): boolean =>
-            state.isOnBoard(c) && state.getPieceAt(c).hasPieces());
+            state.coordHasPieces(c));
     }
 
     public static getScores(state: DvonnState): PlayerNumberMap {
@@ -127,7 +127,7 @@ export class DvonnRules extends Rules<DvonnMove, DvonnState> {
         // For each neighbor, mark it as connected (if it contains something),
         // and recurse from there (only if it was not already marked)
         HexagonalUtils.getNeighbors(coord, 1).forEach((c: Coord) => {
-            if (state.isOnBoard(c) && markBoard[c.y][c.x] === false && state.getPieceAt(c).hasPieces()) {
+            if (state.coordHasPieces(c) && markBoard[c.y][c.x] === false) {
                 // This piece has not been marked as connected, but it is connected, and not empty
                 markBoard[c.y][c.x] = true; // mark it as connected
                 this.markPiecesConnectedTo(state, c, markBoard); // find all pieces connected to this one

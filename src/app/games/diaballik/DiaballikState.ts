@@ -1,7 +1,9 @@
+import { ComparableObject, MGPOptional, Utils } from '@everyboard/lib';
+
 import { GameStateWithTable } from 'src/app/jscaip/state/GameStateWithTable';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
-import { ComparableObject, Utils } from '@everyboard/lib';
 import { TableUtils } from 'src/app/jscaip/TableUtils';
+import { Coord } from 'src/app/jscaip/Coord';
 
 export class DiaballikPiece implements ComparableObject {
 
@@ -37,4 +39,41 @@ export class DiaballikState extends GameStateWithTable<DiaballikPiece> {
     public equals(other: DiaballikState): boolean {
         return TableUtils.equals(this.board, other.board);
     }
+
+    public coordIsOwnerByNone(coord: Coord): boolean {
+        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().owner.isNone();
+        } else {
+            return false;
+        }
+    }
+
+    public coordIsOwnedBy(coord: Coord, player: Player): boolean {
+        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().owner.equals(player);
+        } else {
+            return false;
+        }
+    }
+
+    public coordIsNotOwnedBy(coord: Coord, player: Player): boolean {
+        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().owner.equals(player) === false;
+        } else {
+            return false;
+        }
+    }
+
+    public coordIsOwnerByPlayer(coord: Coord): boolean {
+        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().owner.isPlayer();
+        } else {
+            return false;
+        }
+    }
+
 }

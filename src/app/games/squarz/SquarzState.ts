@@ -4,6 +4,7 @@ import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Table } from 'src/app/jscaip/TableUtils';
 
+// TODO: GameStateWithTable<PlayerOrNone> sub class with its own method isNoneAt(coord)
 export class SquarzState extends GameStateWithTable<PlayerOrNone> {
 
     public static of(oldState: SquarzState, newBoard: Table<PlayerOrNone>): SquarzState {
@@ -45,7 +46,7 @@ export class SquarzState extends GameStateWithTable<PlayerOrNone> {
         for (let y: number = -jumpSize; y <= jumpSize; y++) {
             for (let x: number = -jumpSize; x <= jumpSize; x++) {
                 const landingCoord: Coord = new Coord(coord.x + x, coord.y + y);
-                if (this.isOnBoard(landingCoord) && this.getPieceAt(landingCoord).isNone()) {
+                if (this.isOnBoard(landingCoord) && this.getPieceAt(landingCoord).isNone()) { // TODO isNoneAt
                     return true;
                 }
             }

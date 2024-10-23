@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { ActivatedRoute, NavigationEnd, Router, Event } from '@angular/router';
 import { Mutex } from 'async-mutex';
 import { Subscription } from 'rxjs';
-
 import { JSONValue, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { ConnectedUserService, AuthUser } from 'src/app/services/ConnectedUserService';
 import { GameService } from 'src/app/services/GameService';
 import { Move } from '../../../jscaip/Move';

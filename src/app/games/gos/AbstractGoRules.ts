@@ -264,7 +264,8 @@ export abstract class AbstractGoRules<C extends RulesConfig>
     }
 
     private isInBoard(coord: Coord, state: GoState): boolean {
-        return state.isOnBoard(coord) && state.getPieceAt(coord) !== GoPiece.UNREACHABLE;
+        return state.hasInequalPieceAt(coord, GoPiece.UNREACHABLE);
+        // TODO: Put unreachable search in common
     }
 
     private isCapturableGroup(groupData: GoGroupData, koCoord: MGPOptional<Coord>): boolean {

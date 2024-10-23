@@ -59,20 +59,17 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         const opponent: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentOpponent());
         const player: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
         while (opponentPieces < pushingPieces &&
-               state.isOnBoard(firstOpponent) &&
-               state.getPieceAt(firstOpponent) === opponent) {
+               state.tryToGetPieceAt(firstOpponent).equalsValue(opponent))
+        {
             opponentPieces++;
             firstOpponent = firstOpponent.getNext(move.dir);
         }
         if (pushingPieces <= opponentPieces) {
             return MGPFallible.failure(AbaloneFailure.NOT_ENOUGH_PIECE_TO_PUSH());
-        } else if (state.isOnBoard(firstOpponent)) {
-            if (state.getPieceAt(firstOpponent) === FourStatePiece.EMPTY) {
-                newBoard[firstOpponent.y][firstOpponent.x] = opponent;
-            }
-            if (state.getPieceAt(firstOpponent) === player) {
-                return MGPFallible.failure(AbaloneFailure.CANNOT_PUSH_YOUR_OWN_PIECES());
-            }
+        } else if (state.hasPieceAt(firstOpponent, FourStatePiece.EMPTY)) {
+            newBoard[firstOpponent.y][firstOpponent.x] = opponent;
+        } else if (state.hasPieceAt(firstOpponent, player)) {
+            return MGPFallible.failure(AbaloneFailure.CANNOT_PUSH_YOUR_OWN_PIECES());
         }
         return MGPFallible.success(newBoard);
     }
@@ -114,7 +111,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         const empty: FourStatePiece = FourStatePiece.EMPTY;
         const newBoard: FourStatePiece[][] = state.getCopiedBoard();
         newBoard[move.coord.y][move.coord.x] = empty;
-        while (pieces <= 3 && state.isOnBoard(tested) && state.getPieceAt(tested) === player) {
+        while (pieces <= 3 && state.tryToGetPieceAt(tested).equalsValue(player)) {
             pieces++;
             tested = tested.getNext(move.dir);
         }

@@ -2,6 +2,9 @@ import { Coord } from '../Coord';
 import { GameStateWithTable } from './GameStateWithTable';
 import { Table } from '../TableUtils';
 import { TriangularCheckerBoard } from './TriangularCheckerBoard';
+import { FourStatePiece } from '../FourStatePiece';
+import { MGPOptional } from 'lib/dist';
+import { Player } from '../Player';
 
 export abstract class TriangularGameState<T extends NonNullable<unknown>> extends GameStateWithTable<T> {
 
@@ -18,6 +21,19 @@ export abstract class TriangularGameState<T extends NonNullable<unknown>> extend
 
     public getEmptyNeighbors(coord: Coord, empty: T): Coord[] {
         return TriangularGameState.getEmptyNeighbors(this.board, coord, empty);
+    }
+
+}
+
+export abstract class FourStatePieceTriangularGameState extends TriangularGameState<FourStatePiece> {
+
+    public coordIs(coord: Coord, player: Player): boolean {
+        const optional: MGPOptional<FourStatePiece> = this.tryToGetPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().is(player);
+        } else {
+            return false;
+        }
     }
 
 }

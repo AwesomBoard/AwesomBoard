@@ -26,7 +26,7 @@ export class InternationalCheckersTutorial extends Tutorial {
             $localize`Steps`,
             $localize`A simple step is made by one diagonal move forward, left or right. Click on the chosen piece, then on its landing square.<br/><br/>You are playing Dark, do the first move.`,
             InternationalCheckersRules.get().getInitialState(defaultConfig),
-            CheckersMove.fromStep(new Coord(4, 4), new Coord(3, 3)),
+            CheckersMove.fromStep(new Coord(6, 6), new Coord(5, 5)),
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.anyMove(
@@ -98,7 +98,7 @@ export class InternationalCheckersTutorial extends Tutorial {
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
             ], 2),
-            CheckersMove.fromCapture([new Coord(2, 6), new Coord(0, 4), new Coord(2, 2)]).get(),
+            CheckersMove.fromCapture([new Coord(5, 5), new Coord(7, 3), new Coord(5, 1)]).get(),
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.fromMove(

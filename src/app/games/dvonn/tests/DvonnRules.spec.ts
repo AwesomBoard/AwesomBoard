@@ -38,15 +38,9 @@ describe('DvonnRules', () => {
 
     it('initial stacks should be of size 1', () => {
         const state: DvonnState = DvonnRules.get().getInitialState();
-        for (let y: number = 0; y < DvonnState.HEIGHT; y++) {
-            for (let x: number = 0; x < DvonnState.WIDTH; x++) {
-                const coord: Coord = new Coord(x, y);
-                if (state.isOnBoard(coord)) {
-                    const stack: DvonnPieceStack = state.getPieceAt(coord);
-                    expect(stack.getSize()).toEqual(1);
-                    expect(stack.isEmpty()).toBeFalse();
-                }
-            }
+        for (const coordAndContent of state.getCoordsAndContents()) {
+            expect(coordAndContent.content.getSize()).toEqual(1);
+            expect(coordAndContent.content.isEmpty()).toBeFalse();
         }
     });
 

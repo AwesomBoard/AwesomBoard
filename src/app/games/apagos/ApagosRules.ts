@@ -149,3 +149,6 @@ export class ApagosRules extends ConfigurableRules<ApagosMove, ApagosState, Apag
         return GameStatus.DRAW;
     }
 }
+// TODO: checkers and lasca's "score"
+// TODO: green indicator is dead
+// TODO: green indicator is not for capture only
