@@ -398,25 +398,19 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
         for (const dir of Orthogonal.ORTHOGONALS) {
             // we look for empty existing destinations in each direction as far as we can
             foundDestination = start.getNext(dir, 1);
-            let obstacleFound: boolean = false;
-            while (state.isOnBoard(foundDestination) && obstacleFound === false) { // TODO ?
-                const destinationEmpty: boolean = state.getAbsoluteOwner(foundDestination).isNone();
-                if (destinationEmpty) {
-                    if (this.isExternalThrone(state, foundDestination)) {
-                        if (state.getPieceAt(start).isKing()) {
-                            destinations.push(foundDestination);
-                        }
-                    } else if (state.isCentralThrone(foundDestination)) {
-                        if (state.getPieceAt(start).isKing() &&
-                            config.castleIsLeftForGood === false)
-                        {
-                            destinations.push(foundDestination);
-                        }
-                    } else {
+            while (state.hasPieceAt(foundDestination, TaflPawn.UNOCCUPIED)) {
+                if (this.isExternalThrone(state, foundDestination)) {
+                    if (state.getPieceAt(start).isKing()) {
+                        destinations.push(foundDestination);
+                    }
+                } else if (state.isCentralThrone(foundDestination)) {
+                    if (state.getPieceAt(start).isKing() &&
+                        config.castleIsLeftForGood === false)
+                    {
                         destinations.push(foundDestination);
                     }
                 } else {
-                    obstacleFound = true;
+                    destinations.push(foundDestination);
                 }
                 foundDestination = foundDestination.getNext(dir, 1);
             }

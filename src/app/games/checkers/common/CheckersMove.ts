@@ -62,11 +62,15 @@ export class CheckersMove extends Move {
     }
 
     private getRelation(other: CheckersMove): 'EQUALITY' | 'PREFIX' | 'INEQUALITY' {
-        const thisLength: number = this.coords.size();
-        const otherLength: number = other.coords.size();
+        return CheckersMove.getRelation(this.coords.toList(), other.coords.toList());
+    }
+
+    public static getRelation(a: Coord[], b: Coord[]): 'EQUALITY' | 'PREFIX' | 'INEQUALITY' {
+        const thisLength: number = a.length;
+        const otherLength: number = b.length;
         const minimalLength: number = Math.min(thisLength, otherLength);
         for (let i: number = 0; i < minimalLength; i++) {
-            if (this.coords.toList()[i].equals(other.coords.toList()[i]) === false) return 'INEQUALITY';
+            if (a[i].equals(b[i]) === false) return 'INEQUALITY';
         }
         if (thisLength === otherLength) return 'EQUALITY';
         else return 'PREFIX';

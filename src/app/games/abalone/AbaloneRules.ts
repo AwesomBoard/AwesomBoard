@@ -1,10 +1,11 @@
+import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { Coord } from 'src/app/jscaip/Coord';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { Rules } from 'src/app/jscaip/Rules';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { AbaloneFailure } from './AbaloneFailure';
 import { AbaloneState } from './AbaloneState';
 import { AbaloneMove } from './AbaloneMove';
@@ -59,7 +60,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         const opponent: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentOpponent());
         const player: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
         while (opponentPieces < pushingPieces &&
-               state.tryToGetPieceAt(firstOpponent).equalsValue(opponent))
+               state.getOptionalPieceAt(firstOpponent).equalsValue(opponent))
         {
             opponentPieces++;
             firstOpponent = firstOpponent.getNext(move.dir);
@@ -111,7 +112,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         const empty: FourStatePiece = FourStatePiece.EMPTY;
         const newBoard: FourStatePiece[][] = state.getCopiedBoard();
         newBoard[move.coord.y][move.coord.x] = empty;
-        while (pieces <= 3 && state.tryToGetPieceAt(tested).equalsValue(player)) {
+        while (pieces <= 3 && state.getOptionalPieceAt(tested).equalsValue(player)) {
             pieces++;
             tested = tested.getNext(move.dir);
         }

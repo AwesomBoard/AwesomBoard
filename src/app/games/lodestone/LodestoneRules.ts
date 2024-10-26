@@ -234,7 +234,7 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
                 const next: Coord = coord.getNext(direction);
                 if (state.coordIsOwnedBy(next, currentPlayer)) {
                     const pieceToMove: LodestonePiece = board[next.y][next.x];
-                    if (pieceToMove.isPlayerPiece() && pieceToMove.owner === currentPlayer) { // TODO KILL USELESS CHECK
+                    if (pieceToMove.isPlayerPiece()) {
                         // We move player piece of the next coord to the current coord
                         // hence in the opposite of direction
                         if (pieceOnTarget.isEmpty()) {
@@ -250,8 +250,6 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
                             moved.push(next);
                             board[next.y][next.x] = LodestonePieceNone.EMPTY;
                         }
-                    } else {
-                        console.log('lel de kek');
                     }
                 }
             }

@@ -235,7 +235,7 @@ export class LodestoneState extends GameStateWithTable<LodestonePiece> {
     }
 
     public coordIsOwnedBy(coord: Coord, player: Player): boolean {
-        const optional: MGPOptional<LodestonePiece> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<LodestonePiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().owner.equals(player);
         } else {

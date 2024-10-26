@@ -19,6 +19,7 @@ export class TutorialGameWrapperMessages {
     public static readonly COMPLETED_TUTORIAL_MESSAGE: Localized = () => $localize`Congratulations, you completed the tutorial.`;
 
     public static readonly THIS_IS_A_DEMO: Localized = () => $localize`You cannot click, this is a demo.`;
+
 }
 
 type TutorialPlayer = 'tutorial-player';
@@ -116,6 +117,7 @@ export class TutorialGameWrapperComponent extends GameWrapper<TutorialPlayer> im
             Utils.assert(currentStep.isClick(), 'Here, we should have a click');
         }
         // We don't cover the click case here, it is covered in canUserPlay
+        await this.setInteractive(false);
         this.cdr.detectChanges();
     }
 

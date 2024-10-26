@@ -22,7 +22,7 @@ export class TeekoMoveGenerator extends MoveGenerator<TeekoMove, TeekoState, Tee
         for (const coordAndContent of state.getCoordsAndContents()) {
             const coord: Coord = coordAndContent.coord;
             if (coordAndContent.content.isNone()) {
-                const newMove: TeekoDropMove = TeekoDropMove.from(coord).get();
+                const newMove: TeekoDropMove = TeekoDropMove.from(coord);
                 moves.push(newMove);
             }
         }
@@ -49,7 +49,7 @@ export class TeekoMoveGenerator extends MoveGenerator<TeekoMove, TeekoState, Tee
             const possibleTargets: Coord[] = [];
             for (const direction of Ordinal.factory.all) {
                 const target: Coord = start.getNext(direction);
-                if (TeekoState.isOnBoard(target) && state.getPieceAt(target).isNone()) { // TODO isNoneAt
+                if (state.isNoneAt(target)) {
                     possibleTargets.push(target);
                 }
             }

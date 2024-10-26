@@ -97,7 +97,7 @@ export class KamisadoRules extends Rules<KamisadoMove, KamisadoState> {
         let furthest0: number = 7; // player 0 goes from bottom (7) to top (0)
         let furthest1: number = 0; // player 1 goes from top (0) to bottom (7)
 
-        KamisadoBoard.allPieceCoords(state.board).forEach((c: Coord) => {
+        state.allPieceCoords().forEach((c: Coord) => {
             const piece: KamisadoPiece = state.getPieceAt(c);
             Utils.assert(piece !== KamisadoPiece.EMPTY, 'allPieceCoords failed to filter KamisadoPiece.EMPTY');
             if (piece.player === Player.ONE) { // player 1, top (0) to bottom (7) so we want the max
@@ -168,7 +168,7 @@ export class KamisadoRules extends Rules<KamisadoMove, KamisadoState> {
 
     // Returns the next coord that plays
     public nextCoordToPlay(state: KamisadoState, colorToPlay: KamisadoColor): MGPOptional<Coord> {
-        return MGPOptional.ofNullable(KamisadoBoard.allPieceCoords(state.board).find((c: Coord): boolean => {
+        return MGPOptional.ofNullable(state.allPieceCoords().find((c: Coord): boolean => {
             const piece: KamisadoPiece = state.getPieceAt(c);
             return piece.player === state.getCurrentOpponent() && piece.color === colorToPlay;
         }));

@@ -101,13 +101,13 @@ export class MartianChessMoveGenerator extends MoveGenerator<MartianChessMove, M
         for (const dir of Ordinal.ORDINALS) {
             let dist: number = 1;
             let landingCoord: Coord = startingCoord.getNext(dir, dist);
-            let landingContent: MGPOptional<MartianChessPiece> = state.tryToGetPieceAt(landingCoord);
+            let landingContent: MGPOptional<MartianChessPiece> = state.getOptionalPieceAt(landingCoord);
             let possible: boolean = landingContent.equalsValue(MartianChessPiece.EMPTY);
             while (possible) {
                 landingCoords.push(landingCoord);
                 dist++;
                 landingCoord = startingCoord.getNext(dir, dist);
-                landingContent = state.tryToGetPieceAt(landingCoord);
+                landingContent = state.getOptionalPieceAt(landingCoord);
                 possible = landingContent.equalsValue(MartianChessPiece.EMPTY) && (dist < maxDist);
             }
             if (landingContent.isPresent()) {

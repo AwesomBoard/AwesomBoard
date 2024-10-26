@@ -11,6 +11,7 @@ import { CheckersMove } from '../../common/CheckersMove';
 import { CheckersPiece, CheckersStack, CheckersState } from '../../common/CheckersState';
 import { CheckersConfig } from '../../common/AbstractCheckersRules';
 import { LascaRules } from '../LascaRules';
+import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 
 describe('LascaComponent', () => {
 
@@ -43,6 +44,8 @@ describe('LascaComponent', () => {
             // Then its landing coord should be landable
             testUtils.expectElementToHaveClass('#clickable-highlight-3-3', 'clickable-stroke');
             testUtils.expectElementToHaveClass('#clickable-highlight-5-3', 'clickable-stroke');
+            // But the other second step should not be
+            testUtils.expectElementNotToExist('#clickable-highlight-1-3');
         }));
 
         it('should highlight piece that can move this turn (when forced capture)', fakeAsync(async() => {
@@ -440,6 +443,31 @@ describe('LascaComponent', () => {
 
             // Then it should not show possible selections
             testUtils.expectElementNotToExist('.clickable-stroke');
+        }));
+
+    });
+
+    describe('design', () => {
+
+        it('should show score as the number of remaining piece', fakeAsync(async() => {
+            // Given a board where there is a different number of remaining piece
+            const state: CheckersState = CheckersState.of([
+                [_V, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, _V, __, __, __, _V],
+                [__, __, __, _U, __, _U, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+            ], 0);
+
+            // When rendering state
+            await testUtils.setupState(state);
+
+            // Then the score should be displayed
+            const score: PlayerMap<number> = PlayerNumberMap.ofValues(2, 3);
+            const scoreOptional: MGPOptional<PlayerMap<number>> = MGPOptional.of(score);
+            expect(testUtils.getGameComponent().scores).toEqual(scoreOptional);
         }));
 
     });

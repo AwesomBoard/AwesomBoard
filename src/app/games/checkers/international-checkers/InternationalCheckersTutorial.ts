@@ -6,14 +6,13 @@ import { CheckersPiece, CheckersStack, CheckersState } from '../common/CheckersS
 import { CheckersConfig } from '../common/AbstractCheckersRules';
 import { TutorialStepMessage } from 'src/app/components/wrapper-components/tutorial-game-wrapper/TutorialStepMessage';
 import { InternationalCheckersRules } from './InternationalCheckersRules';
+import { CheckersTutorialStep } from '../common/CheckersTutorialStep';
 
 const U: CheckersStack = new CheckersStack([CheckersPiece.ZERO]);
 const O: CheckersStack = new CheckersStack([CheckersPiece.ZERO_PROMOTED]);
 const V: CheckersStack = new CheckersStack([CheckersPiece.ONE]);
 const _: CheckersStack = CheckersStack.EMPTY;
 const defaultConfig: MGPOptional<CheckersConfig> = InternationalCheckersRules.get().getDefaultRulesConfig();
-
-// TODO: check: why some tutorial (Checkers by example) are "hard to click"
 
 export class InternationalCheckersTutorial extends Tutorial {
     public tutorial: TutorialStep[] = [
@@ -26,12 +25,12 @@ export class InternationalCheckersTutorial extends Tutorial {
             $localize`Steps`,
             $localize`A simple step is made by one diagonal move forward, left or right. Click on the chosen piece, then on its landing square.<br/><br/>You are playing Dark, do the first move.`,
             InternationalCheckersRules.get().getInitialState(defaultConfig),
-            CheckersMove.fromStep(new Coord(6, 6), new Coord(5, 5)),
+            CheckersMove.fromStep(new Coord(5, 6), new Coord(4, 5)),
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.anyMove(
             $localize`Captures`,
-            $localize`A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.<br/><br/>You're playing Dark, go ahead.`,
+            CheckersTutorialStep.CAPTURES(),
             CheckersState.of([
                 [V, _, V, _, V, _, V, _, V, _],
                 [_, V, _, V, _, V, _, V, _, V],
@@ -48,8 +47,8 @@ export class InternationalCheckersTutorial extends Tutorial {
             TutorialStepMessage.CONGRATULATIONS(),
         ).withPreviousMove(CheckersMove.fromStep(new Coord(7, 3), new Coord(8, 4))),
         TutorialStep.anyMove(
-            $localize`Backward captures`,
-            $localize`A capture can also be done backward<br/><br/>You're playing Dark, you have to do one capture backward, go ahead.`,
+            CheckersTutorialStep.BACKWARD_CAPTURES_TITLE(),
+            CheckersTutorialStep.BACKWARD_CAPTURES(),
             CheckersState.of([
                 [V, _, V, _, V, _, V, _, V, _],
                 [_, V, _, V, _, V, _, V, _, V],
@@ -66,10 +65,12 @@ export class InternationalCheckersTutorial extends Tutorial {
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.anyMove(
-            $localize`Multiple captures`,
-            $localize`If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same coord.<br/><br/>You are playing Dark, a double capture is possible, go ahead.`,
+            CheckersTutorialStep.MULTIPLE_CAPTURES_TITLE(),
+            CheckersTutorialStep.MULTIPLE_CAPTURES(),
             CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, V, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, V, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
@@ -77,15 +78,13 @@ export class InternationalCheckersTutorial extends Tutorial {
                 [_, _, _, _, _, U, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
             ], 2),
-            CheckersMove.fromCapture([new Coord(5, 5), new Coord(7, 3), new Coord(5, 1)]).get(),
+            CheckersMove.fromCapture([new Coord(5, 7), new Coord(7, 5), new Coord(5, 3), new Coord(3, 1)]).get(),
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.anyMove(
             $localize`Maximal captures`,
-            $localize`If at some turn you have several capture choice, you have to capture the maximal number of pieces.<br/><br/>You are playing Dark, two captures are possible, go ahead.`,
+            $localize`If at some turn you have several capture choice, you have to capture the maximal number of pieces.<br/><br/>You are playing Dark, do the maximal capture.`,
             CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
@@ -102,7 +101,7 @@ export class InternationalCheckersTutorial extends Tutorial {
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.fromMove(
-            $localize`Promotion`,
+            CheckersTutorialStep.PROMOTION_TITLE(),
             $localize`When a piece reaches the last line, it is promoted and becomes a queen, and gains abilities that will be explained in next step! One of your piece could be promoted now.<br/><br/>You're playing Dark. Do it.`,
             CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, V],
@@ -150,7 +149,7 @@ export class InternationalCheckersTutorial extends Tutorial {
         ),
         TutorialStep.anyMove(
             $localize`Jump rule`,
-            $localize`When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.<br/>Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same coord.<br/><br/>You are playing Dark, go ahead.`,
+            $localize`When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.<br/>Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.<br/><br/>You are playing Dark, go ahead.`,
             new CheckersState([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],

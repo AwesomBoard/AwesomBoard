@@ -43,9 +43,9 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     private lastCaptures: Coord[] = [];
     private lastMoveds: Coord[] = [];
     public possibleClicks: Set<Coord> = new Set();
-    private capturableCoords: Coord[] = [];
     private selectedStack: MGPOptional<Coord> = MGPOptional.empty();
     private capturedCoords: Coord[] = []; // Only the coords capture by active player during this turn
+    private flyiedOverCoords: Coord[] = []; // Coord that where flewed over during ongoing turn
     private legalMoves: CheckersMove[] = [];
     protected moveGenerator: CheckersMoveGenerator;
 
@@ -66,6 +66,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         this.mode.abstractBoardHeight = this.constructedState.getHeight();
         this.mode.abstractBoardWidth = this.constructedState.getWidth();
         this.legalMoves = this.moveGenerator.getListMoves(this.node, this.config);
+        this.scores = this.constructedState.getScores();
         this.showPossibleClicks();
     }
 
@@ -75,12 +76,10 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         if (this.capturedCoords.concat(this.lastCaptures).some((c: Coord) => c.equals(coord))) {
             classes.push('captured-fill');
         }
-        if (this.currentMoveClicks.concat(this.lastMoveds).some((c: Coord) => c.equals(coord))) {
+        const flyiedOverCoords: Coord[] = this.currentMoveClicks.concat(this.lastMoveds.concat(this.flyiedOverCoords));
+        if (flyiedOverCoords.some((c: Coord) => c.equals(coord))) {
             classes.push('moved-fill');
         }
-        // if (this.capturableCoords.some((c: Coord) => c.equals(coord))) {
-        //     classes.push('capturable-stroke');
-        // }
         return classes;
     }
 
@@ -129,12 +128,16 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
                 const numberOfClicks: number = this.currentMoveClicks.length;
                 if (numberOfClicks < validMove.coords.size()) {
                     const possibleCoord: Coord = validMove.coords.get(numberOfClicks);
-                    this.possibleClicks = this.possibleClicks.addElement(possibleCoord);
+                    if (CheckersMove.getRelation(this.currentMoveClicks, validMove.coords.toList()) === 'PREFIX') {
+                        this.possibleClicks = this.possibleClicks.addElement(possibleCoord);
+                    } else {
+                        console.log("t pa 1 prefix feu de pet")
+                    }
                 }
             }
         }
     }
-// TODO: when step finish: no interactivity !!!
+
     public override hideLastMove(): void {
         this.lastCaptures = [];
         this.lastMoveds = [];
@@ -162,8 +165,8 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         this.constructedState = this.getState();
         this.currentMoveClicks = [];
         this.capturedCoords = [];
+        this.flyiedOverCoords = [];
         this.selectedStack = MGPOptional.empty();
-        this.capturableCoords = [];
         this.showPossibleClicks();
     }
 
@@ -200,6 +203,8 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
             for (const flyiedOver of lastCoord.getCoordsToward(clicked)) {
                 if (this.constructedState.getPieceAt(flyiedOver).isOccupied()) {
                     this.capturedCoords.push(flyiedOver);
+                } else {
+                    this.flyiedOverCoords.push(flyiedOver);
                 }
             }
             this.currentMoveClicks.push(clicked);
@@ -245,7 +250,6 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         if (this.legalMoves.some((move: CheckersMove) => move.getStartingCoord().equals(coord))) {
             this.currentMoveClicks = [coord];
             this.showPossibleClicks();
-            // this.showPossibleLandings(coord, this.constructedState);
             return MGPValidation.SUCCESS;
         } else {
             return this.cancelMove(CheckersFailure.THIS_PIECE_CANNOT_MOVE());

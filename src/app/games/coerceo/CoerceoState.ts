@@ -204,12 +204,12 @@ export class CoerceoState extends FourStatePieceTriangularGameState {
         return legalLandings;
     }
 
-    public getPiecesByFreedom(state: CoerceoState): PlayerNumberTable { // TODO: QUOI LA BAISE
+    public getPiecesByFreedom(): PlayerNumberTable {
         const playersScores: PlayerNumberTable = PlayerNumberTable.of(
             [0, 0, 0, 0],
             [0, 0, 0, 0],
         );
-        for (const coordAndContent of state.getCoordsAndContents()) {
+        for (const coordAndContent of this.getCoordsAndContents()) {
             const owner: PlayerOrNone = coordAndContent.content.getPlayer();
             if (owner.isPlayer()) {
                 const nbFreedom: number =

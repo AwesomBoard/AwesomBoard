@@ -41,6 +41,7 @@ import { GipfCapture } from 'src/app/jscaip/GipfProjectHelper';
 import { HiveTutorial } from 'src/app/games/hive/HiveTutorial';
 import { HiveRules } from 'src/app/games/hive/HiveRules';
 import { HiveMove } from 'src/app/games/hive/HiveMove';
+import { InternationalCheckersTutorial } from 'src/app/games/checkers/international-checkers/InternationalCheckersTutorial';
 
 import { KalahRules } from 'src/app/games/mancala/kalah/KalahRules';
 import { KalahTutorial } from 'src/app/games/mancala/kalah/KalahTutorial';
@@ -83,6 +84,8 @@ import { YinshCapture, YinshMove } from 'src/app/games/yinsh/YinshMove';
 import { QuartoRules } from 'src/app/games/quarto/QuartoRules';
 import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
 import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
+import { InternationalCheckersRules } from 'src/app/games/checkers/international-checkers/InternationalCheckersRules';
+import { CheckersMove } from 'src/app/games/checkers/common/CheckersMove';
 
 describe('TutorialGameWrapperComponent (games)', () => {
 
@@ -111,6 +114,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
             const epaminondasTutorial: TutorialStep[] = new EpaminondasTutorial().tutorial;
             const gipfTutorial: TutorialStep[] = new GipfTutorial().tutorial;
             const hiveTutorial: TutorialStep[] = new HiveTutorial().tutorial;
+            const internationalCheckerTutorial: TutorialStep[] = new InternationalCheckersTutorial().tutorial;
             const kalahTutorial: TutorialStep[] = new KalahTutorial().tutorial;
             const linesOfActionTutorial: TutorialStep[] = new LinesOfActionTutorial().tutorial;
             const lodestoneTutorial: TutorialStep[] = new LodestoneTutorial().tutorial;
@@ -199,6 +203,11 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     hiveTutorial[8],
                     HiveMove.move(new Coord(1, 0), new Coord(0, 1)).get(),
                     MGPValidation.failure('You have not freed your queen, try again!'),
+                ], [
+                    InternationalCheckersRules.get(),
+                    internationalCheckerTutorial[7],
+                    CheckersMove.fromStep(new Coord(2, 9), new Coord(3, 8)),
+                    MGPValidation.failure(`You did not move your queen.`),
                 ], [
                     KalahRules.get(),
                     kalahTutorial[4],

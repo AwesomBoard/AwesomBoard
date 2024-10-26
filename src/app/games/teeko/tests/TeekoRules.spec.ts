@@ -1,13 +1,14 @@
 /* eslint-disable max-lines-per-function */
+import { MGPOptional, TestUtils } from '@everyboard/lib';
+
 import { TeekoDropMove, TeekoMove, TeekoTranslationMove } from '../TeekoMove';
 import { TeekoConfig, TeekoNode, TeekoRules } from '../TeekoRules';
 import { TeekoState } from '../TeekoState';
-import { Coord } from 'src/app/jscaip/Coord';
+import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
 import { RulesUtils } from 'src/app/jscaip/tests/RulesUtils.spec';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { MGPOptional, TestUtils } from '@everyboard/lib';
 
 describe('TeekoRules', () => {
 
@@ -23,7 +24,7 @@ describe('TeekoRules', () => {
     }
 
     function drop(coord: Coord): TeekoMove {
-        return TeekoDropMove.from(coord).get();
+        return TeekoDropMove.from(coord);
     }
 
     beforeEach(() => {
@@ -32,6 +33,19 @@ describe('TeekoRules', () => {
     });
 
     describe('dropping phase', () => {
+
+        it('should fail when not in range', () => {
+            // Given any state
+            const state: TeekoState = rules.getInitialState();
+
+            // When attempting that move
+            const coord: Coord = new Coord(6, 6);
+            const move: TeekoMove = drop(coord);
+
+            // Then the move should be illegal
+            const reason: string = CoordFailure.OUT_OF_RANGE(coord);
+            RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
+        });
 
         it('should fail if receiving translation in the 8 first turns', () => {
             // Given a board on the first phase

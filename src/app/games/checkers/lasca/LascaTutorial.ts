@@ -6,6 +6,7 @@ import { CheckersPiece, CheckersStack, CheckersState } from '../common/CheckersS
 import { TutorialStepMessage } from 'src/app/components/wrapper-components/tutorial-game-wrapper/TutorialStepMessage';
 import { LascaRules } from './LascaRules';
 import { CheckersConfig } from '../common/AbstractCheckersRules';
+import { CheckersTutorialStep } from '../common/CheckersTutorialStep';
 
 const zero: CheckersPiece = CheckersPiece.ZERO;
 const one: CheckersPiece = CheckersPiece.ONE;
@@ -37,7 +38,7 @@ export class LascaTutorial extends Tutorial {
         ),
         TutorialStep.anyMove(
             $localize`Captures`,
-            $localize`A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.<br/><br/>You're playing Dark, go ahead.`,
+            CheckersTutorialStep.CAPTURES(),
             CheckersState.of([
                 [_v, __, __, __, _v, __, _v],
                 [__, __, __, _v, __, _v, __],
@@ -51,8 +52,8 @@ export class LascaTutorial extends Tutorial {
             $localize`Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.`,
         ),
         TutorialStep.anyMove(
-            $localize`Multiple captures`,
-            $localize`If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same stack.<br/><br/>You are playing Dark, a double capture is possible, go ahead.`,
+            CheckersTutorialStep.MULTIPLE_CAPTURES_TITLE(),
+            CheckersTutorialStep.MULTIPLE_CAPTURES(),
             CheckersState.of([
                 [__, __, __, __, __, __, __],
                 [__, __, __, __, __, __, __],
@@ -65,7 +66,7 @@ export class LascaTutorial extends Tutorial {
             CheckersMove.fromCapture([new Coord(2, 6), new Coord(0, 4), new Coord(2, 2)]).get(),
             TutorialStepMessage.CONGRATULATIONS(),
         ),
-        TutorialStep.informational(
+        TutorialStep.anyMove(
             $localize`Minority capture is allowed`,
             $localize`If you have several capture choices, you are allowed to choose any of them. For example if one choice is to capture one piece, and the other choice is to capture two pieces, you can choose either.`,
             CheckersState.of([
@@ -77,9 +78,11 @@ export class LascaTutorial extends Tutorial {
                 [__, __, __, __, __, __, __],
                 [__, __, __, __, __, __, __],
             ], 2),
+            CheckersMove.fromCapture([new Coord(2, 4), new Coord(0, 2)]).get(),
+            TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.fromMove(
-            $localize`Promotion`,
+            CheckersTutorialStep.PROMOTION_TITLE(),
             $localize`When a stack reaches the last line, its commander becomes an officer, and gains the ability to go backward, which is illegal for the other pieces! One of your piece could be promoted now.<br/><br/>You're playing Dark. Do it.`,
             CheckersState.of([
                 [__, __, __, __, __, __, _v],

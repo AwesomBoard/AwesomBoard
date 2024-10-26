@@ -979,8 +979,8 @@
       <trans-unit id="6689969573280113485" datatype="html">
         <source>This piece cannot move!</source>
       </trans-unit>
-      <trans-unit id="248546743321704928" datatype="html">
-        <source>A capture should be diagonal. Look at the green indicators to help you!</source>
+      <trans-unit id="8924385103118910226" datatype="html">
+        <source>A capture should be diagonal. Look at the indicators to help you!</source>
       </trans-unit>
       <trans-unit id="964675748683334375" datatype="html">
         <source>Normal pieces cannot move like this!</source>
@@ -1003,6 +1003,24 @@
       <trans-unit id="6151712512701871680" datatype="html">
         <source>Cannot jump over several pieces!</source>
       </trans-unit>
+      <trans-unit id="7318689477424356735" datatype="html">
+        <source>Backward captures</source>
+      </trans-unit>
+      <trans-unit id="3186677422672219927" datatype="html">
+        <source>A capture can also be done backward&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture backward.</source>
+      </trans-unit>
+      <trans-unit id="5943278728548812168" datatype="html">
+        <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture.</source>
+      </trans-unit>
+      <trans-unit id="3104604410220998192" datatype="html">
+        <source>Multiple captures</source>
+      </trans-unit>
+      <trans-unit id="7023776270158690543" datatype="html">
+        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do a double capture.</source>
+      </trans-unit>
+      <trans-unit id="2693455583384082674" datatype="html">
+        <source>Promotion</source>
+      </trans-unit>
       <trans-unit id="596239006245525122" datatype="html">
         <source>The goal of checkers is to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
       </trans-unit>
@@ -1015,29 +1033,11 @@
       <trans-unit id="5216257512116603462" datatype="html">
         <source>Captures</source>
       </trans-unit>
-      <trans-unit id="7013110290486741787" datatype="html">
-        <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, go ahead.</source>
-      </trans-unit>
-      <trans-unit id="7318689477424356735" datatype="html">
-        <source>Backward captures</source>
-      </trans-unit>
-      <trans-unit id="553047259468217661" datatype="html">
-        <source>A capture can also be done backward&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, you have to do one capture backward, go ahead.</source>
-      </trans-unit>
-      <trans-unit id="3104604410220998192" datatype="html">
-        <source>Multiple captures</source>
-      </trans-unit>
-      <trans-unit id="4420963395072765293" datatype="html">
-        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same coord.&lt;br/&gt;&lt;br/&gt;You are playing Dark, a double capture is possible, go ahead.</source>
-      </trans-unit>
       <trans-unit id="248134916259829943" datatype="html">
         <source>Maximal captures</source>
       </trans-unit>
-      <trans-unit id="9192360642045120418" datatype="html">
-        <source>If at some turn you have several capture choice, you have to capture the maximal number of pieces.&lt;br/&gt;&lt;br/&gt;You are playing Dark, two captures are possible, go ahead.</source>
-      </trans-unit>
-      <trans-unit id="2693455583384082674" datatype="html">
-        <source>Promotion</source>
+      <trans-unit id="4813997891576786254" datatype="html">
+        <source>If at some turn you have several capture choice, you have to capture the maximal number of pieces.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the maximal capture.</source>
       </trans-unit>
       <trans-unit id="5155854598987833227" datatype="html">
         <source>When a piece reaches the last line, it is promoted and becomes a queen, and gains abilities that will be explained in next step! One of your piece could be promoted now.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark. Do it.</source>
@@ -1057,8 +1057,8 @@
       <trans-unit id="7062389198958064827" datatype="html">
         <source>Jump rule</source>
       </trans-unit>
-      <trans-unit id="4980307632807526674" datatype="html">
-        <source>When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.&lt;br/&gt;Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same coord.&lt;br/&gt;&lt;br/&gt;You are playing Dark, go ahead.</source>
+      <trans-unit id="6244103507506422969" datatype="html">
+        <source>When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.&lt;br/&gt;Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, go ahead.</source>
       </trans-unit>
       <trans-unit id="8274439231274366704" datatype="html">
         <source>Lasca: origins</source>
@@ -1071,9 +1071,6 @@
       </trans-unit>
       <trans-unit id="3662184238859847370" datatype="html">
         <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>
-      </trans-unit>
-      <trans-unit id="8288645478824152244" datatype="html">
-        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same stack.&lt;br/&gt;&lt;br/&gt;You are playing Dark, a double capture is possible, go ahead.</source>
       </trans-unit>
       <trans-unit id="6522624192206928831" datatype="html">
         <source>Minority capture is allowed</source>

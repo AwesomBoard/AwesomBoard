@@ -28,4 +28,17 @@ export class KamisadoState extends GameStateWithTable<KamisadoPiece> {
         return this.hasPieceAt(coord, KamisadoPiece.EMPTY);
     }
 
+    public allPieceCoords(): Coord[] {
+        const l: Coord[] = [];
+        for (let y: number = 0; y < this.getHeight(); y++) {
+            for (let x: number = 0; x < this.getWidth(); x++) {
+                const coord: Coord = new Coord(x, y);
+                if (this.isEmptyAt(coord) === false) {
+                    l.push(coord);
+                }
+            }
+        }
+        return l;
+    }
+
 }

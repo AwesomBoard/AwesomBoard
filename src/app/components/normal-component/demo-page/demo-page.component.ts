@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MGPFallible, MGPOptional } from '@everyboard/lib';
+
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { Move } from 'src/app/jscaip/Move';
 import { TutorialStep } from '../../wrapper-components/tutorial-game-wrapper/TutorialStep';

@@ -3,6 +3,7 @@ import { GameStateWithTable } from 'src/app/jscaip/state/GameStateWithTable';
 import { Player } from 'src/app/jscaip/Player';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { MGPOptional, Utils } from '@everyboard/lib';
+import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 
 export class CheckersPiece {
 
@@ -157,7 +158,7 @@ export class CheckersState extends GameStateWithTable<CheckersStack> {
     }
 
     public coordIsCommandedBy(coord: Coord, player: Player): boolean {
-        const optional: MGPOptional<CheckersStack> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<CheckersStack> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().isCommandedBy(player);
         } else {
@@ -166,12 +167,19 @@ export class CheckersState extends GameStateWithTable<CheckersStack> {
     }
 
     public coordIsEmpty(coord: Coord): boolean {
-        const optional: MGPOptional<CheckersStack> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<CheckersStack> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().isEmpty();
         } else {
             return false;
         }
+    }
+
+    public getScores(): MGPOptional<PlayerNumberMap> {
+        const zeroScore: number = this.getStacksOf(Player.ZERO).length;
+        const oneScore: number = this.getStacksOf(Player.ONE).length;
+        const scores: PlayerNumberMap = PlayerNumberMap.ofValues(zeroScore, oneScore) as PlayerNumberMap;
+        return MGPOptional.of(scores);
     }
 
     public override toString(): string {

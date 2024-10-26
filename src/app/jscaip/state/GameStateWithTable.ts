@@ -42,12 +42,18 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
                comparableEquals(this.getUnsafe(coord), value) === false;
     }
 
-    public tryToGetPieceAt(coord: Coord): MGPOptional<P> {
+    public getOptionalPieceAt(coord: Coord): MGPOptional<P> {
         if (this.isOnBoard(coord)) {
-            return MGPOptional.of(this.board[coord.y][coord.x]);
+            const value: P = this.getUnsafe(coord);
+            return MGPOptional.of(value);
         } else {
             return MGPOptional.empty();
         }
+    }
+
+    public getOptionalPieceAtXY(x: number, y: number): MGPOptional<P> {
+        const coord: Coord = new Coord(x, y);
+        return this.getOptionalPieceAt(coord);
     }
 
     public isOnBoard(coord: Coord): boolean {
@@ -64,26 +70,13 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
         return this.getPieceAt(new Coord(x, y));
     }
 
-    public getOptionalPieceAtXY(x: number, y: number): MGPOptional<P> { // TODO: deduplicate with tryToGetPieceAt
-        const coord: Coord = new Coord(x, y);
-        if (this.isOnBoard(coord)) {
-            return MGPOptional.of(this.getPieceAt(coord));
-        } else {
-            return MGPOptional.empty();
-        }
-    }
-
-    public getOptionalPieceAt(coord: Coord): MGPOptional<P> {
-        return this.getOptionalPieceAtXY(coord.x, coord.y);
-    }
-
     public forEachCoord(callback: (coord: Coord, content: P) => void): void {
         for (const { coord, content } of this.getCoordsAndContents()) {
             callback(coord, content);
         }
     }
 
-    public getCoordsAndContents(): {coord: Coord, content: P}[] { // TODO: check that this is not overriden for no reason
+    public getCoordsAndContents(): {coord: Coord, content: P}[] {
         const coordsAndContents: {coord: Coord, content: P}[] = [];
         for (let y: number = 0; y < this.getHeight(); y++) {
             for (let x: number = 0; x < this.getWidth(); x++) {

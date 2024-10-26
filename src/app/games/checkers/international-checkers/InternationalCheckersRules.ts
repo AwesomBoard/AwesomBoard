@@ -27,6 +27,8 @@ export class InternationalCheckersRules extends AbstractCheckersRules {
                     new BooleanConfig(true, CheckersLocalizable.SIMPLE_PIECE_CAN_CAPTURE_BACKWARDS),
                 promotedPiecesCanFly:
                     new BooleanConfig(true, CheckersLocalizable.PROMOTED_PIECES_CAN_TRAVEL_LONG_DISTANCES),
+                occupyEvenSquare:
+                    new BooleanConfig(false, CheckersLocalizable.OCCUPY_EVEN_SQUARE),
             },
         });
 

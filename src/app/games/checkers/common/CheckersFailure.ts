@@ -10,7 +10,7 @@ export class CheckersFailure {
 
     public static readonly THIS_PIECE_CANNOT_MOVE: Localized = () => $localize`This piece cannot move!`;
 
-    public static readonly CAPTURE_STEPS_MUST_BE_DIAGONAL: Localized = () => $localize`A capture should be diagonal. Look at the green indicators to help you!`;
+    public static readonly CAPTURE_STEPS_MUST_BE_DIAGONAL: Localized = () => $localize`A capture should be diagonal. Look at the indicators to help you!`;
 
     public static readonly NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS: Localized = () => $localize`Normal pieces cannot move like this!`;
 

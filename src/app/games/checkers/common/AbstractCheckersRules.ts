@@ -21,6 +21,7 @@ export type CheckersConfig = {
     maximalCapture: boolean;
     simplePieceCanCaptureBackwards: boolean;
     promotedPiecesCanFly: boolean;
+    occupyEvenSquare: boolean;
 }
 
 export class CheckersLocalizable {
@@ -32,6 +33,8 @@ export class CheckersLocalizable {
     public static readonly SIMPLE_PIECE_CAN_CAPTURE_BACKWARDS: Localized = () => $localize`Simple piece can back-capture`;
 
     public static readonly PROMOTED_PIECES_CAN_TRAVEL_LONG_DISTANCES: Localized = () => $localize`Promoted pieces can travel long distance`;
+
+    public static readonly OCCUPY_EVEN_SQUARE: Localized = () => $localize`Occupy even square`;
 
 }
 
@@ -46,9 +49,10 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         const config: CheckersConfig = optionalConfig.get();
         const height: number = config.emptyRows + (2 * config.playerRows);
         const board: CheckersStack[][] = TableUtils.create(config.width, height, _);
+        const occupiedSquare: number = config.occupyEvenSquare ? 0 : 1;
         for (let y: number = 0; y < config.playerRows; y++) {
             for (let x: number = 0; x < config.width; x++) {
-                if ((x + y) % 2 === 0) { // TODO 1 for checkers 0 for lasca
+                if ((x + y) % 2 === occupiedSquare) {
                     board[y][x] = V;
                     board[height - 1 - y][config.width - 1 - x] = U;
                 }
@@ -335,9 +339,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                 return MGPValidation.failure(RulesFailure.MUST_LAND_ON_EMPTY_SPACE());
             }
             const direction: MGPFallible<Ordinal> = previousCoord.getDirectionToward(landingCoord);
-            if (direction.isFailure()) {
-                return direction.toOtherFallible();
-            } else if (direction.get().isOrthogonal()) {
+            if (direction.get().isOrthogonal()) {
                 return MGPValidation.failure(CheckersFailure.CANNOT_DO_ORTHOGONAL_CAPTURE());
             }
             const flyiedOverPlayer: Player[] = this.getFlyiedOverPlayers(previousCoord, landingCoord, state);

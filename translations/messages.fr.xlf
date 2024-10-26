@@ -1325,6 +1325,26 @@
         <source>Multiple captures</source>
         <target>Capture composée</target>
       </trans-unit>
+      <trans-unit id="7023776270158690543" datatype="html">
+        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do a double capture.</source>
+        <target>Si, après le commencement de votre capture, la pièce que vous avez bougé peux encore capturer une autre pièce, vous devez le faire jusqu'à ce que la pièe ne puisse plus capturer. Pour ce faire, vous devez à nouveau cliquer sur la prochaine case d'atterissage. Notez que, vous ne pouvez pas sauter au dessus de la même case deux fois.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites une double capture !</target>
+      </trans-unit>
+      <trans-unit id="248134916259829943" datatype="html">
+        <source>Maximal captures</source>
+        <target>Capture maximale</target>
+      </trans-unit>
+      <trans-unit id="4813997891576786254" datatype="html">
+        <source>If at some turn you have several capture choice, you have to capture the maximal number of pieces.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the maximal capture.</source>
+        <target>Si à un tour donné, vous avez plusieur choix de captures, vous devez choisir le nombre maximal de pièces capturée possible.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites la capture maximum !</target>
+      </trans-unit>
+      <trans-unit id="5155854598987833227" datatype="html">
+        <source>When a piece reaches the last line, it is promoted and becomes a queen, and gains abilities that will be explained in next step! One of your piece could be promoted now.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark. Do it.</source>
+        <target>Quand une pièce atteint la dernière ligne, elle est promue et devient une dame, et gagne des abilités qui seront expliquées à l'étape suivante ! Une de vos pièces pourrait être promue maintenant.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé. Faites-le.</target>
+      </trans-unit>
+      <trans-unit id="2350466795039227682" datatype="html">
+        <source>You did not choose the correct piece, and got no promotion.</source>
+        <target>Vous n'avez pas choisi la bonne pièce, et n'avez pas eu de promotion.</target>
+      </trans-unit>
       <trans-unit id="4514452777310919130" datatype="html">
         <source>By sowing from your leftmost house, you will end in the opponent&apos;s second leftmost house, which now contains 2 seeds, so this will be a capture. But now, the house right before it contains 3 seeds, which is also capturable, so, that house will get captured as well!&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture!</source>
         <target>En distribuant la maison la plus à gauche, vous terminerez dans la deuxième maison la plus à gauche, qui en contient maintenant 2, donc ce sera une capture. Mais maintenant, la maison juste à gauche en contient 3, ce qui est également capturable, donc cette maison sera capturée aussi !&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites une capture !</target>
@@ -2783,9 +2803,9 @@
          Dans ce cas, le dernier joueur à avoir déplacé une pièce perd la partie.
          Ici, votre adversaire a déplacé sa pièce verte en dernier, vous êtes donc vainqueur !</target>
       </trans-unit>
-      <trans-unit id="248546743321704928" datatype="html">
-        <source>A capture should be diagonal. Look at the green indicators to help you!</source>
-        <target>Les captures doivent être des sauts de deux pas en diagonale ! Regardez les indications en vert pour vous aider !</target>
+      <trans-unit id="8924385103118910226" datatype="html">
+        <source>A capture should be diagonal. Look at the indicators to help you!</source>
+        <target>Les captures doivent être des sauts de deux pas en diagonale ! Regardez les indications pour vous aider !</target>
       </trans-unit>
       <trans-unit id="964675748683334375" datatype="html">
         <source>Normal pieces cannot move like this!</source>
@@ -2851,25 +2871,21 @@
         <source>A simple step is made by one diagonal move forward, left or right. Click on the chosen piece, then on its landing square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the first move.</source>
         <target>Un simple pas est un déplacement d'une case en diagonale, en avant, vers la gauche ou la droite. Pour faire un déplacement cliquez sur une pièce au choix, puis sur sa case d&apos;arrivée.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites le premier mouvement.</target>
       </trans-unit>
-      <trans-unit id="7013110290486741787" datatype="html">
-        <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, go ahead.</source>
+      <trans-unit id="5943278728548812168" datatype="html">
+        <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture.</source>
         <target>Une capture arrive quand vous sautez diagonalement par dessus une pièce adverse et atterrissez immédiatement derrière. Vous devez capturer quand vous le pouvez. C'est le cas ici : cliquez sur la pièce qui doit capturer, et ensuite sur sa destination&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites une capture !</target>
       </trans-unit>
       <trans-unit id="7318689477424356735" datatype="html">
         <source>Backward captures</source>
         <target>Captures en arrière</target>
       </trans-unit>
-      <trans-unit id="553047259468217661" datatype="html">
-        <source>A capture can also be done backward&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, you have to do one capture backward, go ahead.</source>
+      <trans-unit id="3186677422672219927" datatype="html">
+        <source>A capture can also be done backward&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture backward.</source>
         <target>Un capture peut aussi être faite en arrière.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, vous devez faire une capture en arrière, Allez-y !</target>
       </trans-unit>
       <trans-unit id="3662184238859847370" datatype="html">
         <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>
         <target>Félicitations, constatez que la pièce capturée n'as pas été enlevée du plateau, mais placée en dessous de la pièce qui l'a capturé.</target>
-      </trans-unit>
-      <trans-unit id="8288645478824152244" datatype="html">
-        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same stack.&lt;br/&gt;&lt;br/&gt;You are playing Dark, a double capture is possible, go ahead.</source>
-        <target>Si, après le début de la capture, la pièce que vous venez de bouger peut encore capturer une autre pièce, elle doit le faire tant qu'elle le peut. Pour ce faire, vous devez juste cliquer sur sa destination suivante. Notez que vous ne pouvez pas sauter deux fois au dessus de la même pile.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, une double capture est possible, faites-la.</target>
       </trans-unit>
       <trans-unit id="2693455583384082674" datatype="html">
         <source>Promotion</source>
@@ -2890,6 +2906,14 @@
       <trans-unit id="3154252720872976153" datatype="html">
         <source>You did not move your queen.</source>
         <target>Vous n'avez pas déplacé votre reine.</target>
+      </trans-unit>
+      <trans-unit id="7062389198958064827" datatype="html">
+        <source>Jump rule</source>
+        <target>Règles de saut</target>
+      </trans-unit>
+      <trans-unit id="6244103507506422969" datatype="html">
+        <source>When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.&lt;br/&gt;Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, go ahead.</source>
+        <target>Quand vous faites plusieurs sauts, vous ne pouvez pas sauter deux fois au dessus de la même pièce ni du même espace vide.&lt;br/&gt;Ici vous devez appliquer toutes les règles différentes de captures: en arrière, maximale, volante, et bien sur ne pas sauter deux fois au dessus de la même cases.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, allez-y.</target>
       </trans-unit>
       <trans-unit id="4252782057421264089" datatype="html">
         <source>Officer move</source>

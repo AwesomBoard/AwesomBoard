@@ -80,13 +80,13 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
     public override isOnBoard(coord: Coord): boolean {
         if (coord.isNotInRange(this.width, this.height)) {
             return false;
+        } else {
+            return this.getUnsafe(coord) !== DvonnPieceStack.UNREACHABLE;
         }
-        return this.board[coord.y][coord.x] !== DvonnPieceStack.UNREACHABLE;
-        // TODO: put in common with others ? And with static
     }
 
     public coordHasPieces(coord: Coord): boolean {
-        const optional: MGPOptional<DvonnPieceStack> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<DvonnPieceStack> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().hasPieces();
         } else {

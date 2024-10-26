@@ -41,7 +41,7 @@ export class DiaballikState extends GameStateWithTable<DiaballikPiece> {
     }
 
     public coordIsOwnerByNone(coord: Coord): boolean {
-        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<DiaballikPiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().owner.isNone();
         } else {
@@ -50,7 +50,7 @@ export class DiaballikState extends GameStateWithTable<DiaballikPiece> {
     }
 
     public coordIsOwnedBy(coord: Coord, player: Player): boolean {
-        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<DiaballikPiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().owner.equals(player);
         } else {
@@ -59,18 +59,9 @@ export class DiaballikState extends GameStateWithTable<DiaballikPiece> {
     }
 
     public coordIsNotOwnedBy(coord: Coord, player: Player): boolean {
-        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<DiaballikPiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().owner.equals(player) === false;
-        } else {
-            return false;
-        }
-    }
-
-    public coordIsOwnerByPlayer(coord: Coord): boolean {
-        const optional: MGPOptional<DiaballikPiece> = this.tryToGetPieceAt(coord);
-        if (optional.isPresent()) {
-            return optional.get().owner.isPlayer();
         } else {
             return false;
         }

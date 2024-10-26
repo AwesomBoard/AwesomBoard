@@ -27,7 +27,7 @@ export class FourStatePieceGameStateWithTable extends GameStateWithTable<FourSta
     }
 
     public optionalIs(coord: Coord, player: Player): boolean {
-        const optional: MGPOptional<FourStatePiece> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<FourStatePiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().is(player);
         } else {
@@ -36,7 +36,7 @@ export class FourStatePieceGameStateWithTable extends GameStateWithTable<FourSta
     }
 
     public optionalIsPiece(coord: Coord): boolean {
-        const optional: MGPOptional<FourStatePiece> = this.tryToGetPieceAt(coord);
+        const optional: MGPOptional<FourStatePiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().isPlayer();
         } else {
@@ -44,13 +44,13 @@ export class FourStatePieceGameStateWithTable extends GameStateWithTable<FourSta
         }
     }
 
-    public override isOnBoard(coord: Coord): boolean { // TODO: isReachable, in parent ?
+    public override isOnBoard(coord: Coord): boolean {
         const width: number = this.board[0].length;
         const height: number = this.board.length;
-        if (coord.isInRange(width, height)) {
-            return this.getUnsafe(coord) !== FourStatePiece.UNREACHABLE;
-        } else {
+        if (coord.isNotInRange(width, height)) {
             return false;
+        } else {
+            return this.getUnsafe(coord) !== FourStatePiece.UNREACHABLE;
         }
     }
 
