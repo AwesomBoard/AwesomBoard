@@ -106,7 +106,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         let moved: Coord = move.coord;
         this.moveds = [moved];
         moved = moved.getNext(move.dir);
-        while (previousState.optionalIsPiece(moved)) {
+        while (previousState.coordIsOccupiedSquare(moved)) {
             this.moveds.push(moved);
             moved = moved.getNext(move.dir);
         }
@@ -229,7 +229,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
             const state: AbaloneState = this.getState();
             const currentPlayer: Player = state.getCurrentPlayer();
             let pointed: Coord = end;
-            while (state.optionalIs(pointed, currentPlayer)) {
+            while (state.hasPieceBelongingTo(pointed, currentPlayer)) {
                 pointed = pointed.getNext(direction, 1);
             }
             return pointed;

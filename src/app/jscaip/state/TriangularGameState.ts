@@ -27,7 +27,7 @@ export abstract class TriangularGameState<T extends NonNullable<unknown>> extend
 
 export abstract class FourStatePieceTriangularGameState extends TriangularGameState<FourStatePiece> {
 
-    public coordIs(coord: Coord, player: Player): boolean {
+    public hasPieceBelongingTo(coord: Coord, player: Player): boolean {
         const optional: MGPOptional<FourStatePiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().is(player);

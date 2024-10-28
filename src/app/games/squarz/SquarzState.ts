@@ -46,7 +46,7 @@ export class SquarzState extends PlayerOrNoneGameStateWithTable {
         for (let y: number = -jumpSize; y <= jumpSize; y++) {
             for (let x: number = -jumpSize; x <= jumpSize; x++) {
                 const landingCoord: Coord = new Coord(coord.x + x, coord.y + y);
-                if (this.isNoneAt(landingCoord)) {
+                if (this.isEmpty(landingCoord)) {
                     return true;
                 }
             }

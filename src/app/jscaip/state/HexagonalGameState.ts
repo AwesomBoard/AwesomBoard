@@ -57,14 +57,6 @@ export abstract class HexagonalGameState<P extends NonNullable<Comparable>> exte
         return true;
     }
 
-    public allCoords(): Coord[] {
-        const coords: Coord[] = [];
-        this.forEachCoord((coord: Coord) => {
-            coords.push(coord);
-        });
-        return coords;
-    }
-
     public allLines(): ReadonlyArray<HexaLine> {
         const lines: HexaLine[] = [];
         for (let i: number = 0; i < this.width; i++) {

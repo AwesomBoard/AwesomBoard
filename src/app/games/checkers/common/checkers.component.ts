@@ -50,11 +50,14 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     protected moveGenerator: CheckersMoveGenerator;
 
     public override getViewBox(): ViewBox {
+        const abstractWidth: number = this.mode.abstractBoardWidth;
+        const abstractHeight: number = this.mode.abstractBoardHeight;
         this.LEFT = 0;
         this.UP = - this.SPACE_SIZE;
-        this.basicWidth = this.mode.abstractBoardWidth * this.mode.parallelogramHeight;
-        this.basicHeight = this.mode.abstractBoardHeight * this.mode.parallelogramHeight;
-        this.WIDTH = this.basicWidth * (this.mode.horizontalWidthRatio + this.mode.offsetRatio);
+        this.basicWidth = abstractWidth * this.mode.parallelogramHeight;
+        this.basicHeight = abstractHeight * this.mode.parallelogramHeight;
+        const boardOffset: number = abstractHeight * this.mode.offsetRatio * this.mode.parallelogramHeight;
+        this.WIDTH = (this.basicWidth * this.mode.horizontalWidthRatio) + boardOffset;
         this.HEIGHT = this.basicHeight + this.THICKNESS + this.STROKE_WIDTH - this.UP;
         this.CX = this.WIDTH / 2;
         this.CY = (this.HEIGHT + this.UP) / 2;
@@ -63,8 +66,8 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.constructedState = this.getState(); // AND SWITCH IT
-        this.mode.abstractBoardHeight = this.constructedState.getHeight();
         this.mode.abstractBoardWidth = this.constructedState.getWidth();
+        this.mode.abstractBoardHeight = this.constructedState.getHeight();
         this.legalMoves = this.moveGenerator.getListMoves(this.node, this.config);
         this.scores = this.constructedState.getScores();
         this.showPossibleClicks();
@@ -130,8 +133,6 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
                     const possibleCoord: Coord = validMove.coords.get(numberOfClicks);
                     if (CheckersMove.getRelation(this.currentMoveClicks, validMove.coords.toList()) === 'PREFIX') {
                         this.possibleClicks = this.possibleClicks.addElement(possibleCoord);
-                    } else {
-                        console.log("t pa 1 prefix feu de pet")
                     }
                 }
             }

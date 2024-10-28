@@ -60,7 +60,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         const opponent: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentOpponent());
         const player: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
         while (opponentPieces < pushingPieces &&
-               state.getOptionalPieceAt(firstOpponent).equalsValue(opponent))
+               state.hasPieceAt(firstOpponent, opponent))
         {
             opponentPieces++;
             firstOpponent = firstOpponent.getNext(move.dir);
@@ -112,7 +112,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         const empty: FourStatePiece = FourStatePiece.EMPTY;
         const newBoard: FourStatePiece[][] = state.getCopiedBoard();
         newBoard[move.coord.y][move.coord.x] = empty;
-        while (pieces <= 3 && state.getOptionalPieceAt(tested).equalsValue(player)) {
+        while (pieces <= 3 && state.hasPieceAt(tested, player)) {
             pieces++;
             tested = tested.getNext(move.dir);
         }

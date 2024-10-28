@@ -49,7 +49,7 @@ export class TeekoMoveGenerator extends MoveGenerator<TeekoMove, TeekoState, Tee
             const possibleTargets: Coord[] = [];
             for (const direction of Ordinal.factory.all) {
                 const target: Coord = start.getNext(direction);
-                if (state.isNoneAt(target)) {
+                if (state.isEmpty(target)) {
                     possibleTargets.push(target);
                 }
             }

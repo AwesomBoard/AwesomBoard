@@ -118,7 +118,7 @@ export class TaflPieceAndInfluenceHeuristic<M extends TaflMove> extends TaflPiec
                     while (state.hasPieceAt(futureCapturer, TaflPawn.UNOCCUPIED)) {
                         futureCapturer = futureCapturer.getNext(captureDirection);
                     }
-                    if (state.hasAbsoluteOwnerAt(futureCapturer, threatenerPlayer) &&
+                    if (state.hasOwnerAt(futureCapturer, threatenerPlayer) &&
                         coord.getNext(dir, 1).equals(futureCapturer) === false)
                     {
                         movingThreats.push(futureCapturer);

@@ -38,7 +38,7 @@ export class TaflState extends GameStateWithTable<TaflPawn> {
         return this.getHeight();
     }
 
-    public hasAbsoluteOwnerAt(coord: Coord, owner: PlayerOrNone): boolean {
+    public hasOwnerAt(coord: Coord, owner: PlayerOrNone): boolean {
         const optional: MGPOptional<TaflPawn> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().getOwner().equals(owner);

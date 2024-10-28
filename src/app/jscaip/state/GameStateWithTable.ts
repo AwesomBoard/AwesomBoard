@@ -92,6 +92,14 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
         return coordsAndContents;
     }
 
+    public allCoords(): Coord[] {
+        const coords: Coord[] = [];
+        this.forEachCoord((coord: Coord) => {
+            coords.push(coord);
+        });
+        return coords;
+    }
+
     public getCopiedBoard(): P[][] {
         return TableUtils.copy(this.board);
     }
