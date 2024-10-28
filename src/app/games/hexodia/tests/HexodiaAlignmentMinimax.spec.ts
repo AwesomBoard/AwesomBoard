@@ -58,7 +58,7 @@ describe('HexodiaAlignmentMinimax', () => {
         expect(bestMove).toEqual(HexodiaMove.of([new Coord(4, 0), new Coord(5, 0)]));
     });
 
-    SlowTest.it('should block double-open five at level two', () => {
+    SlowTest.it('should block double-open fives at level two', () => {
         // Given a minimax at level two
         // And a board where current opponent could win if current player does not block them (..XXXXX..)
         const board: Table<FourStatePiece> = [

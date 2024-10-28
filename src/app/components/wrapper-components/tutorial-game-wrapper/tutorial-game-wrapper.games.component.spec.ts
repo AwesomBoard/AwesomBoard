@@ -143,7 +143,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     AbaloneRules.get(),
                     abaloneTutorial[3],
                     AbaloneMove.ofSingleCoord(new Coord(2, 6), HexaDirection.UP),
-                    MGPValidation.failure(`This is no translation, this is a "pushing move", try a translation.`),
+                    MGPValidation.failure(`This is not a translation, this is a "pushing move", try a translation.`),
                 ], [
                     ApagosRules.get(),
                     apagosTutorial[2],

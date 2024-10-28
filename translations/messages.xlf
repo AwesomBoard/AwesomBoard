@@ -881,14 +881,14 @@
       <trans-unit id="7284662867581059823" datatype="html">
         <source>To translate a group of piece, you must select the first piece, then select the last piece, then click on one of the 4 lateral direction the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
       </trans-unit>
-      <trans-unit id="3231295799142894234" datatype="html">
-        <source>This is no translation, this is a &quot;pushing move&quot;, try a translation.</source>
+      <trans-unit id="3110387991397245428" datatype="html">
+        <source>This is not a translation, this is a &quot;pushing move&quot;, try a translation.</source>
       </trans-unit>
       <trans-unit id="4948237861189298097" datatype="html">
         <source>Congratulations! You know everything you need to start a game!</source>
       </trans-unit>
-      <trans-unit id="5694482682817030583" datatype="html">
-        <source>You will see when creating a game that you can configure two things.&lt;br/&gt;&lt;br/&gt;First, the number of capture needed to win, this help create shorter game if wanted.&lt;br/&gt;&lt;br/&gt;Last, the maximum size of a moved group. The default is 3 but if you want more chaotic and fun game, you could bump that limit up and play a &quot;powerfull&quot; alternative version of the game!</source>
+      <trans-unit id="4997655560871347865" datatype="html">
+        <source>You will see when creating a game that you can configure two things.&lt;br/&gt;&lt;br/&gt;First, the number of captures needed to win. The default is 6, changing it will help changing the game&apos;s duration if wanted.&lt;br/&gt;&lt;br/&gt;Last, the maximum size of a moved group. The default is 3 but if you want a more chaotic and fun game, you could increase that limit and play a more powerful alternative version of the game!</source>
       </trans-unit>
       <trans-unit id="7183112140529419891" datatype="html">
         <source>MCTS</source>

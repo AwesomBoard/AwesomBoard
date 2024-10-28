@@ -55,14 +55,14 @@ export class AbaloneTutorial extends Tutorial {
                 if (move.isTranslation()) {
                     return MGPValidation.SUCCESS;
                 } else {
-                    return MGPValidation.failure($localize`This is no translation, this is a "pushing move", try a translation.`);
+                    return MGPValidation.failure($localize`This is not a translation, this is a "pushing move", try a translation.`);
                 }
             },
             $localize`Congratulations! You know everything you need to start a game!`,
         ),
         TutorialStep.informational(
             TutorialStepMessage.RULES_CONFIGURATION(),
-            $localize`You will see when creating a game that you can configure two things.<br/><br/>First, the number of capture needed to win, this help create shorter game if wanted.<br/><br/>Last, the maximum size of a moved group. The default is 3 but if you want more chaotic and fun game, you could bump that limit up and play a "powerfull" alternative version of the game!`,
+            $localize`You will see when creating a game that you can configure two things.<br/><br/>First, the number of captures needed to win. The default is 6, changing it will help changing the game's duration if wanted.<br/><br/>Last, the maximum size of a moved group. The default is 3 but if you want a more chaotic and fun game, you could increase that limit and play a more powerful alternative version of the game!`,
             AbaloneRules.get().getInitialState(),
         ),
     ];
