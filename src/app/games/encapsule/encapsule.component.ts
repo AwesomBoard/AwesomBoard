@@ -181,10 +181,9 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
 
     public getPieceRadius(piece: EncapsulePiece): number {
         const size: number = piece.getSize();
-        // The aim is that the inter-piece space is half a piece stroke
-        // and the radius is used like this (from center to outside):
-        // empty - stroke - stroke - empty - stroke - stroke
-        // and stick to the square's inner-edge
+        // We want a stroke such that:
+        //     - the stroke of the biggest piece still fits within a space of (SPACE_SIZE - HALF_STROKE)
+        //     - the spacing between concentric circles is half as big as their stroke
         return ((3 * size) - 1) * this.pieceStrokeWidth * 0.5;
     }
 
