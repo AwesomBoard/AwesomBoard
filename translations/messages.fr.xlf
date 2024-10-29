@@ -1157,8 +1157,8 @@
         <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
         <target>Pour pousser une pièce de l'adversaire, vous devez déplacer au moins deux de vos pièces. Pour pousser deux pièces, vous devez déplacer trois de vos pièces. Si une de vos pièces est placée juste après une pièce adverse que vous poussez, pousser sera alors interdit. Vous ne pouvez pas déplacer plus de trois pièces.&lt;br/&gt;&lt;br/&gt; Une seule &quot;poussée&quot; vers la droite est possible ici, trouvez la (vous jouez Foncé).</target>
       </trans-unit>
-      <trans-unit id="7284662867581059823" datatype="html">
-        <source>To translate a group of piece, you must select the first piece, then select the last piece, then click on one of the 4 lateral direction the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
+      <trans-unit id="1578933364998292635" datatype="html">
+        <source>To translate a group of pieces, first select the first piece, then the last piece, and finally click on one of the four lateral directions in which the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
         <target>Pour faire une translation d'un groupe de pièces, vous devez sélectionner la première pièce, puis sélectionner la dernière, puis cliquer sur une des 4 directions latérales dans laquelle le groupe peut bouger sans toucher de pièces adverses.&lt;br/&gt;&lt;br/&gt;Allez-y, faites une translation.</target>
       </trans-unit>
       <trans-unit id="3110387991397245428" datatype="html">

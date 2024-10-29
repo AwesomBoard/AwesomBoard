@@ -878,8 +878,8 @@
       <trans-unit id="2330775081318125963" datatype="html">
         <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
       </trans-unit>
-      <trans-unit id="7284662867581059823" datatype="html">
-        <source>To translate a group of piece, you must select the first piece, then select the last piece, then click on one of the 4 lateral direction the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
+      <trans-unit id="1578933364998292635" datatype="html">
+        <source>To translate a group of pieces, first select the first piece, then the last piece, and finally click on one of the four lateral directions in which the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
       </trans-unit>
       <trans-unit id="3110387991397245428" datatype="html">
         <source>This is not a translation, this is a &quot;pushing move&quot;, try a translation.</source>

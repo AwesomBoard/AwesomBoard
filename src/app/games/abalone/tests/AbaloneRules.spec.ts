@@ -78,7 +78,7 @@ describe('AbaloneRules', () => {
         RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
     });
 
-    it('should move group of piece in provided direction', () => {
+    it('should move group of pieces in provided direction', () => {
         // Given an initial board (for simplicity)
         const state: AbaloneState = AbaloneRules.get().getInitialState();
 
@@ -101,7 +101,7 @@ describe('AbaloneRules', () => {
         RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
     });
 
-    it('should refuse moving group of piece greater than 3', () => {
+    it('should refuse moving group of pieces greater than 3', () => {
         // Given a board with 4 pieces aligned
         const board: FourStatePiece[][] = [
             [N, N, N, N, _, _, _, _, _],
@@ -124,7 +124,7 @@ describe('AbaloneRules', () => {
         RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
     });
 
-    it(`should refuse moving group of piece smaller than the opponent's group`, () => {
+    it(`should refuse moving group of pieces smaller than the opponent's group`, () => {
         // Given a board with 4 pieces aligned
         const board: FourStatePiece[][] = [
             [N, N, N, N, _, _, _, _, _],
@@ -147,7 +147,7 @@ describe('AbaloneRules', () => {
         RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
     });
 
-    it('should refuse moving a group of piece of equal size to the opponent', () => {
+    it('should refuse moving a group of pieces of equal size to the opponent', () => {
         // Given a board with 4 pieces aligned
         const board: FourStatePiece[][] = [
             [N, N, N, N, _, _, _, _, _],
@@ -170,7 +170,7 @@ describe('AbaloneRules', () => {
         RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
     });
 
-    it('should refuse moving a group of piece when first piece after the opponent group is not empty', () => {
+    it('should refuse moving a group of pieces when first piece after the opponent group is not empty', () => {
         // Given a board with possible push that is self-blocked
         const board: FourStatePiece[][] = [
             [N, N, N, N, _, _, _, _, _],

@@ -48,7 +48,7 @@ export class AbaloneTutorial extends Tutorial {
         ),
         TutorialStep.fromPredicate(
             TutorialStepMessage.TRANSLATIONS(),
-            $localize`To translate a group of piece, you must select the first piece, then select the last piece, then click on one of the 4 lateral direction the group can move without touching opponent pieces.<br/><br/>Go ahead, translate some pieces.`,
+            $localize`To translate a group of pieces, first select the first piece, then the last piece, and finally click on one of the four lateral directions in which the group can move without touching opponent pieces.<br/><br/>Go ahead, translate some pieces.`,
             AbaloneRules.get().getInitialState(),
             AbaloneMove.ofDoubleCoord(new Coord(2, 6), new Coord(4, 6), HexaDirection.UP),
             (move: AbaloneMove, _ps: AbaloneState, _rs: AbaloneState) => {
