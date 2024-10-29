@@ -200,6 +200,12 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
         }
     }
 
+    /*
+     * Evaluate the config
+     * Sees if it match a default config
+     * Give the name of that config if so
+     * Give "CUSTOM" otherwise
+     */
     private getDefactoConfigName(): string {
         const currentConfig: RulesConfig = this.rulesConfigToDisplay as RulesConfig;
         const defaultConfigs: NamedRulesConfig<RulesConfig>[] = this.rulesConfigDescription.getStandardConfigs();
