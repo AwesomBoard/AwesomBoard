@@ -176,9 +176,10 @@ export class CoerceoComponent extends TriangularGameComponent<CoerceoRules,
         const spaceContent: FourStatePiece = this.state.getPieceAt(coord);
         const parent: MGPOptional<CoerceoNode> = this.node.parent;
         if (spaceContent === FourStatePiece.UNREACHABLE && parent.isPresent()) {
-            const previousContent: FourStatePiece = parent.get().gameState.getPieceAt(coord);
+            const previousState: CoerceoState = parent.get().gameState;
+            const previousContent: FourStatePiece = previousState.getPieceAt(coord);
             return previousContent === FourStatePiece.EMPTY ||
-                   previousContent.is(parent.get().gameState.getCurrentPlayer());
+                   previousContent.is(previousState.getCurrentPlayer());
         } else {
             return false;
         }

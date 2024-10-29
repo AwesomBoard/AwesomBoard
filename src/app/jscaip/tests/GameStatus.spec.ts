@@ -10,4 +10,11 @@ describe('GameStatus', () => {
         expect(GameStatus.ONGOING.toBoardValue().metrics).toEqual([0]);
     });
 
+    it('should map victory correctly', () => {
+        expect(GameStatus.getVictory(Player.ZERO)).toBe(GameStatus.ZERO_WON);
+        expect(GameStatus.getVictory(Player.ONE)).toBe(GameStatus.ONE_WON);
+        expect(GameStatus.getDefeat(Player.ZERO)).toBe(GameStatus.ONE_WON);
+        expect(GameStatus.getDefeat(Player.ONE)).toBe(GameStatus.ZERO_WON);
+    });
+
 });

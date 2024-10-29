@@ -151,13 +151,13 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
     }
     public override getGameStatus(node: SixNode): GameStatus {
         const state: SixState = node.gameState;
-        const lastPlayer: Player = state.getCurrentOpponent();
+        const previousPlayer: Player = state.getPreviousPlayer();
         let shapeVictory: Coord[] = [];
         if (node.previousMove.isPresent()) {
             shapeVictory = this.getShapeVictory(node.previousMove.get(), state);
         }
         if (shapeVictory.length === 6) {
-            return GameStatus.getVictory(lastPlayer);
+            return GameStatus.getVictory(previousPlayer);
         }
         if (state.turn > 39) {
             const pieces: PlayerNumberMap = state.countPieces();
@@ -247,13 +247,13 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
     }
     private searchVictoryOnlyForCircle(index: number, lastDrop: Coord, state: SixState): Coord[] {
-        const lastPlayer: Player = state.getCurrentOpponent();
+        const previousPlayer: Player = state.getPreviousPlayer();
         const initialDirection: HexaDirection = HexaDirection.factory.all[index];
         const victory: Coord[] = [lastDrop];
         let testCoord: Coord = lastDrop.getNext(initialDirection, 1);
         while (victory.length < 6) {
             const testedPiece: PlayerOrNone = state.getPieceAt(testCoord);
-            if (testedPiece !== lastPlayer) {
+            if (testedPiece !== previousPlayer) {
                 return [];
             }
             const dirIndex: number = (index + victory.length) % 6;
@@ -264,14 +264,14 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         return victory;
     }
     private searchVictoryOnlyForLine(index: number, lastDrop: Coord, state: SixState): Coord[] {
-        const lastPlayer: Player = state.getCurrentOpponent();
+        const previousPlayer: Player = state.getPreviousPlayer();
         let dir: HexaDirection = HexaDirection.factory.all[index];
         let testCoord: Coord = lastDrop.getNext(dir, 1);
         const victory: Coord[] = [lastDrop];
         let twoDirectionCovered: boolean = false;
         while (victory.length < 6) {
             const testedPiece: PlayerOrNone = state.getPieceAt(testCoord);
-            if (testedPiece === lastPlayer) {
+            if (testedPiece === previousPlayer) {
                 victory.push(testCoord);
             } else {
                 if (twoDirectionCovered) {
@@ -287,14 +287,14 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         return victory;
     }
     private searchVictoryOnlyForTriangleCorner(index: number, lastDrop: Coord, state: SixState): Coord[] {
-        const lastPlayer: Player = state.getCurrentOpponent();
+        const previousPlayer: Player = state.getPreviousPlayer();
         let edgeDirection: HexaDirection = HexaDirection.factory.all[index];
         const victory: Coord[] = [lastDrop];
         let testCoord: Coord = lastDrop.getNext(edgeDirection, 1);
         while (victory.length < 6) {
             // Testing the corner
             const testedPiece: PlayerOrNone = state.getPieceAt(testCoord);
-            if (testedPiece !== lastPlayer) {
+            if (testedPiece !== previousPlayer) {
                 return [];
             }
             if (victory.length % 2 === 0) {
@@ -308,14 +308,14 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         return victory;
     }
     private searchVictoryOnlyForTriangleEdge(index: number, lastDrop: Coord, state: SixState): Coord[] {
-        const lastPlayer: Player = state.getCurrentOpponent();
+        const previousPlayer: Player = state.getPreviousPlayer();
         let edgeDirection: HexaDirection = HexaDirection.factory.all[index];
         const victory: Coord[] = [lastDrop];
         let testCoord: Coord = lastDrop.getNext(edgeDirection, 1);
         while (victory.length < 6) {
             // Testing the corner
             const testedPiece: PlayerOrNone = state.getPieceAt(testCoord);
-            if (testedPiece !== lastPlayer) {
+            if (testedPiece !== previousPlayer) {
                 return [];
             }
             victory.push(testCoord);

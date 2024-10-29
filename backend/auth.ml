@@ -65,14 +65,14 @@ module Make
                 | _ -> raise (AuthError "Authorization header is invalid") in
             let parsed_token : Jwt.t =
                 match Jwt.parse user_token with
-                | None -> raise (AuthError "Authorization token is invalid")
+                | None -> raise (AuthError "Authorization token cannot be parsed")
                 | Some token -> token in
             (* Check the token validity and extract its uid *)
             let* certificates : GoogleCertificates.certificates =
                 GoogleCertificates.get () in
             let uid : string =
                 match Jwt.verify_and_get_uid parsed_token (!Options.project_id) certificates with
-                | None -> raise (AuthError "Authorization token is invalid")
+                | None -> raise (AuthError "Authorization token cannot be verified")
                 | Some uid -> uid in
             (* Get the user and check its verification status *)
             let* user : Domain.User.t = Firestore.User.get ~request ~id:uid in

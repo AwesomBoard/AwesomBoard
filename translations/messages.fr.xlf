@@ -1121,6 +1121,10 @@
         <source>Initial board and object of the game</source>
         <target>Plateau initial et but du jeu</target>
       </trans-unit>
+      <trans-unit id="4780631467843839550" datatype="html">
+        <source>Rules configuration</source>
+        <target>Configuration des règles</target>
+      </trans-unit>
       <trans-unit id="5878048397926852057" datatype="html">
         <source>At Abalone, the object of the game is to be the first player to push 6 opponent&apos;s pieces out of the board. Let us see how!</source>
         <target>À l&apos;Abalone, le but du jeu est d&apos;être le premier joueur à pousser 6 pièces adverses en dehors du plateau. Voyons voir comment !</target>
@@ -2040,7 +2044,7 @@
       </trans-unit>
       <trans-unit id="6204412729347708092" datatype="html">
         <source>You won, but the exercise is to win while moving a piece!</source>
-        <target>Vous avez gagné, mais le but de l'exercice est de gagner en faisant un déplacmement !</target>
+        <target>Vous avez gagné, mais le but de l'exercice est de gagner en faisant un déplacement !</target>
       </trans-unit>
       <trans-unit id="360730166369316579" datatype="html">
         <source>Attack</source>
@@ -3568,43 +3572,25 @@
         <source>You cannot give the piece that was in your hands.</source>
         <target>Vous ne pouvez pas donner la pièce qui était dans vos mains.</target>
       </trans-unit>
-      <trans-unit id="5993757870187587252" datatype="html">
-        <source>Quarto is an alignment game.
-        The goal is to align four pieces that have at least one common aspect:
-        &lt;ul&gt;
-          &lt;li&gt;their color (light or dark),&lt;/li&gt;
-          &lt;li&gt;their size (big or small),&lt;/li&gt;
-          &lt;li&gt;their pattern (empty or dotted),&lt;/li&gt;
-          &lt;li&gt;their shape (round or square).&lt;/li&gt;
-        &lt;/ul&gt;
-        Here, we have a board with a victory by an alignment of dark pieces.
-        Note that the pieces are not owned by any player.</source>
-        <target>Quarto est un jeu d&apos;alignement.
-        Le but est d&apos;aligner quatre pièces qui possèdent au moins un point commun :
-        &lt;ul&gt;
-          &lt;li&gt;leur couleur (claire ou foncée),&lt;/li&gt;
-          &lt;li&gt;leur taille (grande ou petite),&lt;/li&gt;
-          &lt;li&gt;leur motif (vide ou à point),&lt;/li&gt;
-          &lt;li&gt;leur forme (ronde ou carrée).&lt;/li&gt;
-        &lt;/ul&gt;
-        Ici, nous avons un plateau avec une victoire par alignement de pièces foncées.
-        Notez que le spièces n'appartiennent à aucun joueur.</target>
+      <trans-unit id="2864332255120486791" datatype="html">
+        <source>Player One Level</source>
+        <target>Niveau du joueur Un</target>
+      </trans-unit>
+      <trans-unit id="6804516002090214742" datatype="html">
+        <source>Player Two Level</source>
+        <target>Niveau du joueur Deux</target>
+      </trans-unit>
+      <trans-unit id="760255515343953338" datatype="html">
+        <source>Quarto is an alignment game. The goal is to align four pieces that have at least one common aspect:&lt;ul&gt;&lt;li&gt;their color (light or dark),&lt;/li&gt;&lt;li&gt;their size (big or small),&lt;/li&gt;&lt;li&gt;their pattern (empty or dotted),&lt;/li&gt;&lt;li&gt;their shape (round or square).&lt;/li&gt;&lt;/ul&gt;Here, we have a board with a victory by an alignment of dark pieces. Note that the pieces are not owned by any player.</source>
+        <target>Quarto est un jeu d&apos;alignement. Le but est d&apos;aligner quatre pièces qui possèdent au moins un point commun :&lt;ul&gt;&lt;li&gt;leur couleur (claire ou foncée),&lt;/li&gt;&lt;li&gt;leur taille (grande ou petite),&lt;/li&gt;&lt;li&gt;leur motif (vide ou à point),&lt;/li&gt;&lt;li&gt;leur forme (ronde ou carrée).&lt;/li&gt;&lt;/ul&gt;Ici, nous avons un plateau avec une victoire par alignement de pièces foncées. Notez que le spièces n'appartiennent à aucun joueur.</target>
       </trans-unit>
       <trans-unit id="5869780110608474933" datatype="html">
         <source>Placement</source>
         <target>Placement</target>
       </trans-unit>
-      <trans-unit id="6434452961453198943" datatype="html">
-        <source>Every placement occurs in two steps: placing the piece you have in hand (in the small square) on a square of the board,
-        and picking a piece that the opponent will have to place, by clicking on one of the pieces inside the dotted square.
-        If you prefer, the order of these two steps can be reversed.
-        Keep in mind that the second click confirms the move.&lt;br/&gt;&lt;br/&gt;
-        Make a move.</source>
-        <target>Chaque placement se fait en deux étapes : placer la pièce que vous avez en main (dans le petit carré) en cliquant sur une case du plateau,
-        et choisir une pièce que l&apos;adversaire devra placer, en cliquant sur une des pièces dans le carré pointillé.
-        Si vous préférez, l&apos;ordre inverse est également possible.
-        Gardez juste à l&apos;esprit que le deuxième clic valide le mouvement.&lt;br/&gt;&lt;br/&gt;
-        Effectuez un mouvement.</target>
+      <trans-unit id="3421981370095781630" datatype="html">
+        <source>Every placement occurs in two steps: placing the piece you have in hand (in the small square) on a square of the board, and picking a piece that the opponent will have to place, by clicking on one of the pieces inside the dotted square. If you prefer, the order of these two steps can be reversed. Keep in mind that the second click confirms the move.&lt;br/&gt;&lt;br/&gt; Make a move.</source>
+        <target>Chaque placement se fait en deux étapes : placer la pièce que vous avez en main (dans le petit carré) en cliquant sur une case du plateau, et choisir une pièce que l&apos;adversaire devra placer, en cliquant sur une des pièces dans le carré pointillé. Si vous préférez, l&apos;ordre inverse est également possible. Gardez juste à l&apos;esprit que le deuxième clic valide le mouvement.&lt;br/&gt;&lt;br/&gt; Effectuez un mouvement.</target>
       </trans-unit>
       <trans-unit id="2296943727359810458" datatype="html">
         <source>Perfect!</source>
@@ -3614,11 +3600,9 @@
         <source>Situation</source>
         <target>Situation</target>
       </trans-unit>
-      <trans-unit id="8833867623403187066" datatype="html">
-        <source>We have here a tricky situation.&lt;br/&gt;&lt;br/&gt;
-        Analyze the board and play your move, carefully paying attention not to let the opponent win on the next move.</source>
-        <target>Nous avons ici une situation délicate.&lt;br/&gt;&lt;br/&gt;
-        Analysez bien le plateau et jouez votre coup, en faisant particulièrement attention de ne pas permettre à l&apos;adversaire de l&apos;emporter au prochain coup.</target>
+      <trans-unit id="4119107654622098665" datatype="html">
+        <source>We have here a tricky situation.&lt;br/&gt;&lt;br/&gt;Analyze the board and play your move, carefully paying attention not to let the opponent win on the next move.</source>
+        <target>Nous avons ici une situation délicate.&lt;br/&gt;&lt;br/&gt; Analysez bien le plateau et jouez votre coup, en faisant particulièrement attention de ne pas permettre à l&apos;adversaire de l&apos;emporter au prochain coup.</target>
       </trans-unit>
       <trans-unit id="4715207105849605918" datatype="html">
         <source>Well done!</source>
@@ -3627,6 +3611,14 @@
       <trans-unit id="8424758512320418629" datatype="html">
         <source>Failed! Your opponent can either align:&lt;ul&gt;&lt;li&gt;the squares horizontally on the third line or vertically on the third column,&lt;/li&gt;&lt;li&gt;small pieces horizontally on the first line or vertically on the second or third column,&lt;/li&gt;&lt;li&gt;empty pieces horizontally on the first line or vertically on the first column,&lt;/li&gt;&lt;li&gt;clear pieces diagonally.&lt;/li&gt;&lt;/ul&gt;</source>
         <target>Raté ! Votre adversaire peut soit aligner:&lt;ul&gt;&lt;li&gt;les carrés horizontalement sur la troisième ligne ou verticalement sur la troisième colonne ;&lt;/li&gt;&lt;li&gt;les petites pièces horizontalement sur la première ligne ou verticalement sur la deuxième ou troisième colonne ;&lt;/li&gt;&lt;li&gt;les pièces vides horizontalement sur la première ligne ou verticalement sur la première colonne ;&lt;/li&gt;&lt;li&gt;les pièces claires diagonalement.&lt;/li&gt;&lt;/ul&gt;</target>
+      </trans-unit>
+      <trans-unit id="5648428630068792235" datatype="html">
+        <source>A game of Quarto can be configured to make it more complicated for one or both players.&lt;br/&gt;When you create a game and you want to change the original configuration, you can add a level to one or both players. When your level increases, it becomes easier for you to win. So, if the first player is weaker at this game, make the first player play at level two and the game will be more even and interesting.&lt;br/&gt;At level two, a player can win by grouping pieces with a common criterion on a 2x2 square.&lt;br/&gt;In this board, Light can win by making a square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Light, win.</source>
+        <target>Une partie de Quarto peut être configurée pour la rendre plus compliquée pour un ou deux des joueurs.&lt;br/&gt;Quand vous créez une partie et que vous voulez changer la configuration originale, vous pouvez ajouter un niveau à un ou plusieurs joueurs. Quand votre niveau augmente, cela devient plus facile pour vous de gagner. Donc, si le premier joueur est plus faible à ce jeu, faites le jouer au niveau deux et la partie sera plus intéréssante.&lt;br/&gt;Au niveau deux, un joueur peut gagner en groupant des pièces avec un critère commun sur un carré de 2x2.&lt;br/&gt;Sur ce plateau, Clair peu gagner en formant un carré.&lt;br/&gt;&lt;br/&gt;Vous jouez Clair, gagnez.</target>
+      </trans-unit>
+      <trans-unit id="2467449610168621115" datatype="html">
+        <source>Wrong, you could have won by making a square.</source>
+        <target>Raté, vous auriez pu gagner en formant un carré.</target>
       </trans-unit>
       <trans-unit id="8819839276456625538" datatype="html">
         <source>You must pick a space from the edge of the board.</source>

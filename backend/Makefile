@@ -32,6 +32,7 @@ generate-coverage:
 check-coverage:
 	opam exec -- bisect-ppx-report summary
 	opam exec -- bisect-ppx-report summary | grep '100.00%' || ( echo 'Coverage too low!' && exit 1 )
+	find . -name '*.coverage' | xargs rm -f
 
 docker: gamelist
 	sed -i 's/;; //' dune

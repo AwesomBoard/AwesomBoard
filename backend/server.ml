@@ -32,7 +32,7 @@ let start = fun () : unit ->
     ] in
     Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna); (* Required for token refresher and JWT *)
     Dream.initialize_log ~level:`Info ();
-    Dream.run ~interface:!Options.address ~error_handler:ServerUtils.error_handler ~port:!Options.port ~adjust_terminal:false
+    Dream.run ~interface:!Options.address ~error_handler:ServerUtils.error_handler ~port:!Options.port
     @@ Dream.logger
     @@ Cors.middleware
     @@ Dream.router (List.concat [

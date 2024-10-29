@@ -1,4 +1,4 @@
-FROM ocaml/opam:debian-12-ocaml-5.1
+FROM ocaml/opam:debian-12-ocaml-5.3
 RUN sudo apt-get update && sudo apt-get install -y libev-dev libgmp-dev pkg-config libssl-dev
 WORKDIR /home/opam
 COPY --chown=opam:opam . .

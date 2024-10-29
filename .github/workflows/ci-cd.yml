@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-front:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
         run: npm run build
 
   tests-front:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build-front
     steps:
       - name: Checkout the repository
@@ -70,7 +70,11 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install python dependencies
-        run: pip install lxml pandas
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install lxml pandas
       - name: Archive code coverage results
         if: always()
         uses: actions/upload-artifact@v3
@@ -78,10 +82,12 @@ jobs:
           name: code-coverage-report
           path: coverage/
       - name: Check coverage
-        run: python ./scripts/coverage.py check
+        run: |
+          source venv/bin/activate
+          python ./scripts/coverage.py check
 
   tests-back:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout the repository
       uses: actions/checkout@v4
@@ -107,7 +113,7 @@ jobs:
       run: cd backend && make check-coverage
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [ build-front, tests-front, tests-back ]
     steps:
       - name: Checkout the repository
@@ -138,7 +144,11 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install python dependencies
-        run: pip install --upgrade selenium requests killport
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install selenium requests killport
       - name: Install OS dependencies
         run: sudo apt-get install -y libev-dev
       - name: Setup OCaml
@@ -150,10 +160,12 @@ jobs:
       - name: Build
         run: cd backend && make
       - name: Run e2e tests
-        run: npm run e2e
+        run: |
+          source venv/bin/activate
+          npm run e2e
 
   linter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build-front
     steps:
       - name: Checkout the repository
@@ -183,7 +195,7 @@ jobs:
         run: npm run lint
 
   images:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build-front
     steps:
       - name: Checkout the repository
@@ -192,7 +204,7 @@ jobs:
         run: ./scripts/check-images.sh
 
   translations:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build-front
     steps:
       - name: Checkout the repository
@@ -219,16 +231,22 @@ jobs:
       - name: Setup dependencies (setup dummy Firebase secret)
         run: cp ./src/app/firebaseConfig.ts.dummy ./src/app/firebaseConfig.ts
       - name: Install python dependencies
-        uses: BSFishy/pip-action@v1
-        with:
-          packages: lxml
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install lxml selenium requests killport
       - name: Update translations
-        run: ./scripts/update-translations.sh
+        run: |
+          source venv/bin/activate
+          ./scripts/update-translations.sh
       - name: Check completeness of translations
-        run: ./scripts/check-translations.sh
+        run: |
+          source venv/bin/activate
+          ./scripts/check-translations.sh
 
   deployment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [ build-front, tests-front, tests-back, linter, images, translations ]
     environment: netlify
     if: github.event_name == 'push' &&
@@ -298,7 +316,7 @@ jobs:
                 cat > ~/.ssh/id_rsa <<< "$SSH_KEY"
                 chmod u+rw,go-rw,a-x ~/.ssh/id_rsa
                 cat > backend/service-account.json <<< "$SERVICE_ACCOUNT"
-                cd backend && make deploy target=master user=$SSH_USER server=$SSH_SERVER port=$SSH_PORT listen-port=8003 args="-no-emulator -project everyboard -origin 'https://everyboard.org' -endpoint 'https://firestore.googleapis.com'"
+                cd backend && make deploy target=master user=$SSH_USER server=$SSH_SERVER port=$SSH_PORT listen-port=8003 args="-no-emulator -project firestore-c9d47 -origin 'https://everyboard.org' -endpoint 'https://firestore.googleapis.com'"
               fi
           fi
         env:
@@ -337,7 +355,7 @@ jobs:
           SERVICE_ACCOUNT: ${{ secrets.EVERYBOARD_DEPLOY_SERVICE_ACCOUNT_DEV }}
 
   deployment-netlify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [ build-front ]
     environment: netlify
     steps:

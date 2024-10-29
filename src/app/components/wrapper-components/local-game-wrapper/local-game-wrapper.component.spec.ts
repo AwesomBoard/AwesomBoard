@@ -29,6 +29,7 @@ import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { AIDepthLimitOptions } from 'src/app/jscaip/AI/AI';
 import { Minimax } from 'src/app/jscaip/AI/Minimax';
 import { P4Minimax } from 'src/app/games/p4/P4Minimax';
+import { GipfComponent } from 'src/app/games/gipf/gipf.component';
 
 const _: PlayerOrNone = PlayerOrNone.NONE;
 const O: PlayerOrNone = PlayerOrNone.ZERO;
@@ -57,16 +58,16 @@ describe('LocalGameWrapperComponent for non-existing game', () => {
 
 describe('LocalGameWrapperComponent (game without config)', () => {
 
-    let testUtils: ComponentTestUtils<P4Component>;
+    let testUtils: ComponentTestUtils<GipfComponent>;
 
     beforeEach(fakeAsync(async() => {
-        testUtils = await ComponentTestUtils.forGame<P4Component>('Quarto', true, false);
+        testUtils = await ComponentTestUtils.forGame<GipfComponent>('Gipf', true, false);
         ConnectedUserServiceMock.setUser(UserMocks.CONNECTED_AUTH_USER);
         TestBed.inject(ErrorLoggerService);
     }));
 
     it('should start game immediately when no configuration is needed', fakeAsync(async() => {
-        // Given any game needing no config, like Quarto
+        // Given any game needing no config, like Gipf
         // When displaying them
         // Then game component should be created
         testUtils.expectElementToExist('#board');

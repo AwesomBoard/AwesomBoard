@@ -303,7 +303,7 @@ describe('AbaloneComponent', () => {
             testUtils.expectElementNotToHaveClass('#piece-3-6', 'selected-stroke');
         }));
 
-        it('should cancel move when clicking middle piece of a 3 piece column and selecting middle', fakeAsync(async() => {
+        it('should cancel move when clicking middle piece of a 3-piece column and selecting middle', fakeAsync(async() => {
             // Given the initial board with three piece selected
             await testUtils.expectClickSuccess('#piece-2-7');
             await testUtils.expectClickSuccess('#piece-4-7');

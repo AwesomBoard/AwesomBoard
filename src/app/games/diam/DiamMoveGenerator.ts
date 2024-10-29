@@ -51,7 +51,7 @@ export class DiamMoveGenerator extends MoveGenerator<DiamMove, DiamState> {
     }
     private currentPlayerCanDropPiece(state: DiamState, piece: DiamPiece): boolean {
         return state.getCurrentPlayer() === piece.owner &&
-            state.getRemainingPiecesOf(piece) > 0;
+               state.getRemainingPiecesOf(piece) > 0;
     }
     private getShiftSources(state: DiamState): Coord[] {
         const sources: Coord[] = [];

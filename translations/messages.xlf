@@ -803,6 +803,9 @@
       <trans-unit id="8893431763975992974" datatype="html">
         <source>Initial board and object of the game</source>
       </trans-unit>
+      <trans-unit id="4780631467843839550" datatype="html">
+        <source>Rules configuration</source>
+      </trans-unit>
       <trans-unit id="6439401135646542284" datatype="html">
         <source>Failure</source>
       </trans-unit>
@@ -2589,27 +2592,20 @@
       <trans-unit id="6246016939611902421" datatype="html">
         <source>You cannot give the piece that was in your hands.</source>
       </trans-unit>
-      <trans-unit id="5993757870187587252" datatype="html">
-        <source>Quarto is an alignment game.
-        The goal is to align four pieces that have at least one common aspect:
-        &lt;ul&gt;
-          &lt;li&gt;their color (light or dark),&lt;/li&gt;
-          &lt;li&gt;their size (big or small),&lt;/li&gt;
-          &lt;li&gt;their pattern (empty or dotted),&lt;/li&gt;
-          &lt;li&gt;their shape (round or square).&lt;/li&gt;
-        &lt;/ul&gt;
-        Here, we have a board with a victory by an alignment of dark pieces.
-        Note that the pieces are not owned by any player.</source>
+      <trans-unit id="2864332255120486791" datatype="html">
+        <source>Player One Level</source>
+      </trans-unit>
+      <trans-unit id="6804516002090214742" datatype="html">
+        <source>Player Two Level</source>
+      </trans-unit>
+      <trans-unit id="760255515343953338" datatype="html">
+        <source>Quarto is an alignment game. The goal is to align four pieces that have at least one common aspect:&lt;ul&gt;&lt;li&gt;their color (light or dark),&lt;/li&gt;&lt;li&gt;their size (big or small),&lt;/li&gt;&lt;li&gt;their pattern (empty or dotted),&lt;/li&gt;&lt;li&gt;their shape (round or square).&lt;/li&gt;&lt;/ul&gt;Here, we have a board with a victory by an alignment of dark pieces. Note that the pieces are not owned by any player.</source>
       </trans-unit>
       <trans-unit id="5869780110608474933" datatype="html">
         <source>Placement</source>
       </trans-unit>
-      <trans-unit id="6434452961453198943" datatype="html">
-        <source>Every placement occurs in two steps: placing the piece you have in hand (in the small square) on a square of the board,
-        and picking a piece that the opponent will have to place, by clicking on one of the pieces inside the dotted square.
-        If you prefer, the order of these two steps can be reversed.
-        Keep in mind that the second click confirms the move.&lt;br/&gt;&lt;br/&gt;
-        Make a move.</source>
+      <trans-unit id="3421981370095781630" datatype="html">
+        <source>Every placement occurs in two steps: placing the piece you have in hand (in the small square) on a square of the board, and picking a piece that the opponent will have to place, by clicking on one of the pieces inside the dotted square. If you prefer, the order of these two steps can be reversed. Keep in mind that the second click confirms the move.&lt;br/&gt;&lt;br/&gt; Make a move.</source>
       </trans-unit>
       <trans-unit id="2296943727359810458" datatype="html">
         <source>Perfect!</source>
@@ -2617,15 +2613,20 @@
       <trans-unit id="7849803408372436927" datatype="html">
         <source>Situation</source>
       </trans-unit>
-      <trans-unit id="8833867623403187066" datatype="html">
-        <source>We have here a tricky situation.&lt;br/&gt;&lt;br/&gt;
-        Analyze the board and play your move, carefully paying attention not to let the opponent win on the next move.</source>
+      <trans-unit id="4119107654622098665" datatype="html">
+        <source>We have here a tricky situation.&lt;br/&gt;&lt;br/&gt;Analyze the board and play your move, carefully paying attention not to let the opponent win on the next move.</source>
       </trans-unit>
       <trans-unit id="4715207105849605918" datatype="html">
         <source>Well done!</source>
       </trans-unit>
       <trans-unit id="8424758512320418629" datatype="html">
         <source>Failed! Your opponent can either align:&lt;ul&gt;&lt;li&gt;the squares horizontally on the third line or vertically on the third column,&lt;/li&gt;&lt;li&gt;small pieces horizontally on the first line or vertically on the second or third column,&lt;/li&gt;&lt;li&gt;empty pieces horizontally on the first line or vertically on the first column,&lt;/li&gt;&lt;li&gt;clear pieces diagonally.&lt;/li&gt;&lt;/ul&gt;</source>
+      </trans-unit>
+      <trans-unit id="5648428630068792235" datatype="html">
+        <source>A game of Quarto can be configured to make it more complicated for one or both players.&lt;br/&gt;When you create a game and you want to change the original configuration, you can add a level to one or both players. When your level increases, it becomes easier for you to win. So, if the first player is weaker at this game, make the first player play at level two and the game will be more even and interesting.&lt;br/&gt;At level two, a player can win by grouping pieces with a common criterion on a 2x2 square.&lt;br/&gt;In this board, Light can win by making a square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Light, win.</source>
+      </trans-unit>
+      <trans-unit id="2467449610168621115" datatype="html">
+        <source>Wrong, you could have won by making a square.</source>
       </trans-unit>
       <trans-unit id="8819839276456625538" datatype="html">
         <source>You must pick a space from the edge of the board.</source>

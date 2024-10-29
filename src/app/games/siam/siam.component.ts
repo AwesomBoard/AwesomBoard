@@ -163,11 +163,11 @@ export class SiamComponent extends RectangularGameComponent<SiamRules,
                 const clickedPiece: SiamPiece = this.board[y][x];
                 if (clickedPiece.getOwner().isNone()) {
                     return this.cancelMove(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_EMPTY());
-                } else if (clickedPiece.getOwner() !== this.getCurrentPlayer()) {
-                    return this.cancelMove(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
-                } else {
+                } else if (clickedPiece.getOwner() === this.getCurrentPlayer()) {
                     // Select the piece
                     return this.selectPiece(clickedCoord, clickedPiece);
+                } else {
+                    return this.cancelMove(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
                 }
             }
         }

@@ -1,13 +1,13 @@
+import { MGPOptional } from '@everyboard/lib';
 import { QuartoState } from './QuartoState';
 import { QuartoMove } from './QuartoMove';
 import { QuartoPiece } from './QuartoPiece';
-import { QuartoNode } from './QuartoRules';
+import { QuartoConfig, QuartoNode } from './QuartoRules';
 import { MoveGenerator } from 'src/app/jscaip/AI/AI';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 
-export class QuartoMoveGenerator extends MoveGenerator<QuartoMove, QuartoState> {
+export class QuartoMoveGenerator extends MoveGenerator<QuartoMove, QuartoState, QuartoConfig> {
 
-    public override getListMoves(node: QuartoNode, _config: NoConfig): QuartoMove[] {
+    public override getListMoves(node: QuartoNode, _config: MGPOptional<QuartoConfig>): QuartoMove[] {
         const listMoves: QuartoMove[] = [];
 
         const state: QuartoState = node.gameState;

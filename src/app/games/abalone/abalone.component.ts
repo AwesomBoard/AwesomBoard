@@ -133,7 +133,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
                 this.moveds.push(landing);
             } else {
                 // Since only current player could have translated out their pieces
-                const previousPlayer: Player = this.getPreviousState().getCurrentPlayer();
+                const previousPlayer: Player = this.getState().getPreviousPlayer();
                 this.captureds.push({
                     coord: landing,
                     pieceClasses: [this.getPlayerClass(previousPlayer)],

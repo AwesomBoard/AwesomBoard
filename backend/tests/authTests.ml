@@ -70,7 +70,7 @@ let tests = [
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
             (* Then it should fail *)
-            let json_response = `Assoc [("reason", `String "Authorization token is invalid")] in
+            let json_response = `Assoc [("reason", `String "Authorization token cannot be parsed")] in
             let expected = Dream.response ~status:`Unauthorized (JSON.to_string json_response) in
             lwt_check_response "failure" expected actual
         );
@@ -82,7 +82,7 @@ let tests = [
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
             (* Then it should fail *)
-            let json_response = `Assoc [("reason", `String "Authorization token is invalid")] in
+            let json_response = `Assoc [("reason", `String "Authorization token cannot be parsed")] in
             let expected = Dream.response ~status:`Unauthorized (JSON.to_string json_response) in
             lwt_check_response "failure" expected actual
         );
@@ -94,7 +94,7 @@ let tests = [
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
             (* Then it should fail *)
-            let json_response = `Assoc [("reason", `String "Authorization token is invalid")] in
+            let json_response = `Assoc [("reason", `String "Authorization token cannot be verified")] in
             let expected = Dream.response ~status:`Unauthorized (JSON.to_string json_response) in
             lwt_check_response "failure" expected actual
         );

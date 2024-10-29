@@ -37,7 +37,7 @@ export class TrexoRules extends Rules<TrexoMove, TrexoState> {
     public static getVictoriousCoords(state: TrexoState): Coord[] {
         const victoryOfLastPlayer: Coord[] = [];
         const victoryOfNextPlayer: Coord[] = [];
-        const lastPlayer: Player = state.getCurrentOpponent();
+        const previousPlayer: Player = state.getPreviousPlayer();
         for (const coordAndContent of state.getCoordsAndContents()) {
             // for every column, starting from the bottom of each column
             // while we haven't reached the top or an empty space
@@ -46,7 +46,7 @@ export class TrexoRules extends Rules<TrexoMove, TrexoState> {
             if (pieceOwner.isPlayer()) {
                 const squareScore: number = TrexoRules.getSquareScore(state, coord);
                 if (BoardValue.isVictory(squareScore)) {
-                    if (pieceOwner === lastPlayer) {
+                    if (pieceOwner === previousPlayer) {
                         victoryOfLastPlayer.push(coord);
                     } else {
                         victoryOfNextPlayer.push(coord);
@@ -100,7 +100,7 @@ export class TrexoRules extends Rules<TrexoMove, TrexoState> {
 
     public override getGameStatus(node: TrexoNode): GameStatus {
         const state: TrexoState = node.gameState;
-        const lastPlayer: Player = state.getCurrentOpponent();
+        const previousPlayer: Player = state.getPreviousPlayer();
         let lastPlayerAligned5: boolean = false;
         for (const coordAndContent of state.getCoordsAndContents()) {
             // for every column, starting from the bottom of each column
@@ -110,18 +110,18 @@ export class TrexoRules extends Rules<TrexoMove, TrexoState> {
             if (pieceOwner.isPlayer()) {
                 const squareScore: number = TrexoRules.getSquareScore(state, coord);
                 if (BoardValue.isVictory(squareScore)) {
-                    if (pieceOwner === lastPlayer) {
+                    if (pieceOwner === previousPlayer) {
                         // Cannot return right away
                         // because the last player only wins if the other does not get an alignment
                         lastPlayerAligned5 = true;
                     } else {
-                        return GameStatus.getDefeat(lastPlayer);
+                        return GameStatus.getDefeat(previousPlayer);
                     }
                 }
             }
         }
         if (lastPlayerAligned5) {
-            return GameStatus.getVictory(lastPlayer);
+            return GameStatus.getVictory(previousPlayer);
         }
         return GameStatus.ONGOING;
     }

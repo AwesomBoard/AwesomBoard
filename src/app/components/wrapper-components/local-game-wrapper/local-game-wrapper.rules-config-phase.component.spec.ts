@@ -20,7 +20,7 @@ describe('LocalGameWrapperComponent (rules config phase)', () => {
     it('should show partCreation config and button to accept default config, at start', () => {
         // Given any game needing a config, like P4
         // When rendering component
-        // Then a rules Configuration component should be present
+        // Then a RulesConfiguration component should be present
         testUtils.expectElementToExist('#rules-config-component');
         // And a button to accept default rules config should be present
         testUtils.expectElementToExist('#start-game-with-config');

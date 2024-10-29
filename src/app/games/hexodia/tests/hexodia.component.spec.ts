@@ -7,7 +7,7 @@ import { HexodiaState } from '../HexodiaState';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { Coord } from 'src/app/jscaip/Coord';
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
-import { MGPOptional } from 'lib/dist';
+import { MGPOptional } from '@everyboard/lib';
 import { HexodiaConfig, HexodiaRules } from '../HexodiaRules';
 import { Table } from 'src/app/jscaip/TableUtils';
 

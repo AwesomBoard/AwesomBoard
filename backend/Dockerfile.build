@@ -1,7 +1,8 @@
-FROM ocamlpro/ocaml
+FROM ocamlpro/ocaml:5.2
 RUN sudo apk add bash openssl-libs-static
 RUN opam switch create . --deps ocaml-system
 COPY . .
+RUN opam update
 RUN opam install . --deps-only --working-dir --yes
 RUN rm -rf opam-repository # Strangely enough, this is required and it works
 RUN make
