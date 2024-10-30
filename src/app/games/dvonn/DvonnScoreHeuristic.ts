@@ -1,4 +1,4 @@
-import { PlayerMetricHeuristic } from 'src/app/jscaip/AI/Minimax';
+import { HeuristicBounds, PlayerMetricHeuristic } from 'src/app/jscaip/AI/Minimax';
 import { PlayerNumberTable } from 'src/app/jscaip/PlayerNumberTable';
 import { DvonnMove } from './DvonnMove';
 import { DvonnNode, DvonnRules } from './DvonnRules';
@@ -15,11 +15,11 @@ export class DvonnScoreHeuristic extends PlayerMetricHeuristic<DvonnMove, DvonnS
     }
 
     // Min/max value: all pieces are controlled by one. There are 49 pieces
-    public override getBounds(_config: NoConfig): MGPOptional<{min: BoardValue, max: BoardValue}> {
+    public override getBounds(_config: NoConfig): MGPOptional<HeuristicBounds<BoardValue>> {
         const numberOfPieces: number = 49;
         return MGPOptional.of({
-            min: BoardValue.ofSingle(numberOfPieces, 0),
-            max: BoardValue.ofSingle(0, numberOfPieces),
+            player0Max: BoardValue.ofSingle(numberOfPieces, 0),
+            player1Max: BoardValue.ofSingle(0, numberOfPieces),
         });
     }
 }

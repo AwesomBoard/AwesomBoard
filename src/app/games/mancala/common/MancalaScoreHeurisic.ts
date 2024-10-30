@@ -1,5 +1,5 @@
 import { MancalaState } from '../common/MancalaState';
-import { PlayerMetricHeuristic } from 'src/app/jscaip/AI/Minimax';
+import { HeuristicBounds, PlayerMetricHeuristic } from 'src/app/jscaip/AI/Minimax';
 import { PlayerNumberTable } from 'src/app/jscaip/PlayerNumberTable';
 import { MancalaMove } from './MancalaMove';
 import { MancalaConfig } from './MancalaConfig';
@@ -14,12 +14,11 @@ export class MancalaScoreHeuristic extends PlayerMetricHeuristic<MancalaMove, Ma
         return node.gameState.getScoresCopy().toTable();
     }
 
-    public override getBounds(config: MGPOptional<MancalaConfig>): MGPOptional<{min: BoardValue, max: BoardValue}> {
+    public override getBounds(config: MGPOptional<MancalaConfig>): MGPOptional<HeuristicBounds<BoardValue>> {
         const maxScore: number = config.get().width * config.get().seedsByHouse;
         return MGPOptional.of({
-            // TODO: maybe rename player0 max and player1 max
-            min: BoardValue.ofSingle(maxScore, 0),
-            max: BoardValue.ofSingle(0, maxScore),
+            player0Max: BoardValue.ofSingle(maxScore, 0),
+            player1Max: BoardValue.ofSingle(0, maxScore),
         });
     }
 
