@@ -18,6 +18,7 @@ import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
 import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
+import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -45,6 +46,17 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     private readonly configBS: BehaviorSubject<MGPOptional<RulesConfig>> = new BehaviorSubject(MGPOptional.empty());
     private readonly configObs: Observable<MGPOptional<RulesConfig>> = this.configBS.asObservable();
+
+    public faCog: IconDefinition = faCog;
+    public viewConfig: boolean = false;
+
+    public openConfig() {
+        this.viewConfig = true;
+    }
+
+    public closeConfig() {
+        this.viewConfig = false;
+    }
 
     public constructor(activatedRoute: ActivatedRoute,
                        connectedUserService: ConnectedUserService,
