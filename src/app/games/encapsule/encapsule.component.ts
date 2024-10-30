@@ -32,7 +32,7 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
     public pieceStrokeWidth: number = this.STROKE_WIDTH;
     public chosenCoord: MGPOptional<Coord> = MGPOptional.empty();
     private chosenPiece: MGPOptional<EncapsulePiece> = MGPOptional.empty();
-    public remainingPieceCenterCoords: MGPMap<Player, Coord[]> = new MGPMap();
+    private remainingPieceCenterCoords: MGPMap<Player, Coord[]> = new MGPMap();
     public victoryCoords: Coord[] = [];
 
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
@@ -47,7 +47,8 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
 
     public override getViewBox(): ViewBox {
         const boardViewBox: ViewBox = super.getViewBox();
-        return boardViewBox.expandAll(this.SPACE_SIZE);
+        return boardViewBox
+            .expandAll(2 * this.SPACE_SIZE);
     }
 
     public override async showLastMove(move: EncapsuleMove): Promise<void> {
@@ -207,7 +208,7 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
          * 1 . . .
          * 2 . . .
          * 3 . . .
-         * 4 5 6 7
+         *   4 5 6
          */
         this.remainingPieceCenterCoords = new MGPMap();
         const height: number = this.state.getHeight();
@@ -260,10 +261,18 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
         return 2.4 * this.getPieceRadius(piece);
     }
 
-    public getRemainingPieceQuantityTransform(piece: EncapsulePiece): string {
+    public getRemainingPieceQuantityTransform(piece: EncapsulePiece, pieceIdx: number): string {
         const pieceRadius: number = this.getRemainingPieceQuantityStrokeWidth(piece);
-        const cx: number = - pieceRadius * 0.25;
-        const cy: number = pieceRadius * 0.33;
+        let cx: number = - this.SPACE_SIZE;
+        let cy: number = pieceRadius * 0.33;
+        if (pieceIdx > this.getConfig().get().height) {
+            cx = 0;
+            cy = this.SPACE_SIZE;
+        }
+        if (piece.owner === PlayerOrNone.ONE) {
+            cx = -cx;
+            cy = -cy;
+        }
         return 'translate(' + cx + ', ' + cy + ')';
     }
 

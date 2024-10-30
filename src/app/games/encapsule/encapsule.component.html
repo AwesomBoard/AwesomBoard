@@ -17,9 +17,8 @@
                     pointer-events="fill"
             />
             <text id="player-zero-tiles-count"
-                  class="backgrounded-text"
-                  [attr.transform]="getRemainingPieceQuantityTransform(piece)"
-                  [attr.font-size]="getRemainingPieceQuantityStrokeWidth(piece) + 'px'"
+                  class="backgrounded-text text-big"
+                  [attr.transform]="getRemainingPieceQuantityTransform(piece, pieceIdX)"
             >{{ getRemainingPieceQuantity(piece) }}</text>
         </g>
     </g>
