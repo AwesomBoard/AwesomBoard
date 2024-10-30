@@ -7,23 +7,26 @@
 </app-part-creation>
 
 <div id="game"
-     class="tile is-ancestor"
+     class="columns is-vcentered is-align-items-stretch"
      *ngIf="gameStarted">
-    <div class="tile is-parent">
-        <div class="tile is-child box has-text-centered">
-            <div class="block" id="turnIndicator" *ngIf="currentPart !== null">
-                <p class="subtitle" id="turn-number" i18n>Turn n°{{ currentPart.getTurn() + 1 }}</p>
-                <p class="subtitle" id="currentPlayerIndicator" *ngIf="endGame === false">
+    <div class="column is-one-quarter has-text-centered">
+        <div class="box is-fullheight">
+            <div class="block" *ngIf="currentPart !== null">
+                <p class="title">{{ getGameName().getOrElse('') }}</p>
+                <p class="subtitle mb-2" id="turn-number" i18n>Turn n°{{ currentPart.getTurn() + 1 }}</p>
+                <p class="subtitle mb-2" id="currentPlayerIndicator" *ngIf="endGame === false">
                     <ng-container *ngIf="currentUser?.name === getPlayer().name else opponentsTurn"><span id="playerTurn" i18n>It is your turn.</span></ng-container>
                     <ng-template #opponentsTurn><span id="opponentTurn" i18n>It is {{ currentUser?.name }}'s turn.</span></ng-template>
                 </p>
             </div>
-            <div class="block">
+            <div class="block player0-bg">
                 <p id="playerZeroIndicator"
-                   [ngClass]="getPlayerNameClass(Player.ZERO)"
-                   class="player0-bg"
+                   class="has-text-black player0-bg-darker is-size-5"
                    *ngIf="players[0].isPresent()">{{ players[0].get().name }}</p>
-                <p id="scoreZeroIndicator" *ngIf="currentPart !== null && gameComponent && gameComponent.scores.isPresent()" i18n>{{ gameComponent.scores.get().get(Player.ZERO) }} points</p>
+                <p id="scoreZeroIndicator"
+                   *ngIf="currentPart !== null && gameComponent && gameComponent.scores.isPresent()"
+                   class="has-text-black"
+                   i18n>{{ gameComponent.scores.get().get(Player.ZERO) }} points</p>
                 <app-count-down #chronoZeroGlobal
                                 id="chrono-zero-global"
                                 [dangerTimeLimit]="60*1000"
@@ -31,6 +34,7 @@
                                 [canAddTime]='role === Player.ONE && endGame === false'
                                 [timeToAdd]="globalTimeMessage"
                                 [debugName]="'ZERO Global'"
+                                [player]="Player.ZERO"
                                 (outOfTimeAction)="reachedOutOfTime(Player.ZERO)"
                                 (addTimeToOpponent)="addGlobalTime()"
                                 class="data-global-time"
@@ -43,19 +47,20 @@
                                 [canAddTime]='role === Player.ONE && endGame === false'
                                 [timeToAdd]="turnTimeMessage"
                                 [debugName]="'ZERO Turn'"
+                                [player]="Player.ZERO"
                                 (outOfTimeAction)="reachedOutOfTime(Player.ZERO)"
                                 (addTimeToOpponent)="addTurnTime()"
                                 class="data-turn-time"
                 >
                 </app-count-down>
             </div>
-            <p class="is-size-3" i18n>vs.</p>
-            <div class="block">
+            <div class="block player1-bg">
                 <p id="playerOneIndicator"
-                   [ngClass]="getPlayerNameClass(Player.ONE)"
-                   class="player1-bg"
+                   class="has-text-black player1-bg-darker is-size-5"
                    *ngIf="players[1].isPresent()">{{ players[1].get().name }}</p>
-                <p id="scoreOneIndicator" *ngIf="currentPart !== null && gameComponent && gameComponent.scores.isPresent()" i18n>{{ gameComponent.scores.get().get(Player.ONE) }} points</p>
+                <p id="scoreOneIndicator"
+                   *ngIf="currentPart !== null && gameComponent && gameComponent.scores.isPresent()"
+                   class="has-text-black" i18n>{{ gameComponent.scores.get().get(Player.ONE) }} points</p>
                 <app-count-down #chronoOneGlobal
                                 id="chrono-one-global"
                                 [dangerTimeLimit]="60*1000"
@@ -63,6 +68,7 @@
                                 [canAddTime]='role === Player.ZERO && endGame === false'
                                 [timeToAdd]="globalTimeMessage"
                                 [debugName]="'ONE Global'"
+                                [player]="Player.ONE"
                                 (outOfTimeAction)="reachedOutOfTime(Player.ONE)"
                                 (addTimeToOpponent)="addGlobalTime()"
                                 class="data-global-time"
@@ -75,15 +81,14 @@
                                 [canAddTime]='role === Player.ZERO && endGame === false'
                                 [timeToAdd]="turnTimeMessage"
                                 [debugName]="'ONE Turn'"
+                                [player]="Player.ONE"
                                 (outOfTimeAction)="reachedOutOfTime(Player.ONE)"
                                 (addTimeToOpponent)="addTurnTime()"
                                 class="data-turn-time"
                 >
                 </app-count-down>
             </div>
-            <hr/>
             <div class="block" id="winnerIndicator" *ngIf="endGame && currentPart !== null">
-                <hr/>
                 <div *ngIf="currentPart.isHardDraw()">
                     <p class="title" id="hardDrawIndicator" i18n>Draw</p>
                 </div>
@@ -150,13 +155,13 @@
                     </div>
                 </ng-template>
                 <div *ngIf="deniedRequest().isPresent()"
-                        id="requestRejected"
-                        class="notification is-danger">
+                     id="requestRejected"
+                     class="notification is-danger">
                     <p><span i18n>Your {{ requestInfos[deniedRequest().get()].name() }} request has been rejected.&nbsp;&nbsp;<fa-icon [icon]="requestInfos[deniedRequest().get()].icon"></fa-icon></span></p>
                 </div>
                 <div *ngIf="getRequestAwaitingReplyFromOpponent().isPresent()"
-                        id="getRequestAwaitingReply"
-                        class="notification">
+                     id="getRequestAwaitingReply"
+                     class="notification">
                     <p><span i18n>Your request for a {{ requestInfos[getRequestAwaitingReplyFromOpponent().get()].name() }} has been sent.&nbsp;&nbsp;<fa-icon [icon]="requestInfos[getRequestAwaitingReplyFromOpponent().get()].icon"></fa-icon></span></p>
                 </div>
             </ng-container>
@@ -168,12 +173,13 @@
             >Go back to the game list</button>
         </div>
     </div>
-    <div id="board-tile"
-         class="tile is-9 is-parent rounded-div"
-         [ngClass]="getBoardHighlight()">
-        <div id="board"
-             class="tile is-child box">
-            <div #board></div>
+    <div class="column">
+        <div class="box p-5 is-fullheight"
+             id="board-highlight"
+             [ngClass]="getBoardHighlight()">
+            <div id="board" class="box is-fullheight">
+                <div #board></div>
+            </div>
         </div>
     </div>
 </div>

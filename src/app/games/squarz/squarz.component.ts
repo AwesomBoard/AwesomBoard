@@ -55,7 +55,7 @@ export class SquarzComponent extends RectangularGameComponent<SquarzRules,
 
     public override async showLastMove(move: SquarzMove): Promise<void> {
         const previousState: SquarzState = this.getPreviousState();
-        const opponent: Player = previousState.getCurrentOpponent();
+        const previousOpponent: Player = previousState.getCurrentOpponent();
         if (move.isJump()) {
             this.movedSpaces.push(move.getStart());
         } else {
@@ -66,7 +66,7 @@ export class SquarzComponent extends RectangularGameComponent<SquarzRules,
         this.movedSpaces.push(moveEnd);
         for (const direction of Ordinal.ORDINALS) {
             const neighbor: Coord = moveEnd.getNext(direction);
-            if (previousState.isOnBoard(neighbor) && previousState.getPieceAt(neighbor) === opponent) {
+            if (previousState.isOnBoard(neighbor) && previousState.getPieceAt(neighbor) === previousOpponent) {
                 this.captured.push(neighbor);
             }
         }

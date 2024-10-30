@@ -39,7 +39,7 @@ export class HivePieceComponent extends BaseGameComponent implements AfterConten
         this.isoPointsLight = isoPointsSVG[0];
         this.isoPointsDark = isoPointsSVG[1];
         this.isoPointsStroke = isoPointsSVG[2];
-        this.layerTransform = `translate(0 -${(this.layer+1) * this.pieceHeight})`;
+        this.layerTransform = this.getSVGTranslation(0, -(this.layer + 1) * this.pieceHeight);
     }
 
 }

@@ -210,8 +210,8 @@ export class HiveComponent extends HexagonalGameComponent<HiveRules, HiveMove, H
                           boardAndRemainingViewBox.center().y);
             const stackSize: number = this.inspectedStack.get().size();
             // y to get it centered vertically
-            const y: number = inspectedStackPosition.y + (stackSize-1)*3*this.PIECE_HEIGHT;
-            this.inspectedStackTransform = `translate(${inspectedStackPosition.x} ${y})`;
+            const y: number = inspectedStackPosition.y + (stackSize - 1) * 3 * this.PIECE_HEIGHT;
+            this.inspectedStackTransform = this.getSVGTranslation(inspectedStackPosition.x, y);
 
             const spaceForInspectedStack: number = this.SPACE_SIZE*5;
             this.viewBox = boardAndRemainingViewBox.expand(0, spaceForInspectedStack, 0, 0).toSVGString();
@@ -303,13 +303,13 @@ export class HiveComponent extends HexagonalGameComponent<HiveRules, HiveMove, H
 
     public getRemainingPieceTransform(piece: HivePiece): string {
         const transform: Coord = this.getRemainingPieceTransformAsCoord(piece);
-        return `translate(${transform.x} ${transform.y})`;
+        return this.getSVGTranslationAt(transform);
     }
 
     public getRemainingPieceHighlightTransform(piece: HivePiece): string {
         const transform: Coord = this.getRemainingPieceTransformAsCoord(piece);
         const size: number = this.getState().remainingPieces.getQuantity(piece);
-        return `translate(${transform.x} ${transform.y - (this.PIECE_HEIGHT * size)})`;
+        return this.getSVGTranslation(transform.x, transform.y - (this.PIECE_HEIGHT * size));
     }
 
     private getRemainingPieceShift(piece: HivePiece): number {

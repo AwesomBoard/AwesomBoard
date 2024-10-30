@@ -21,7 +21,7 @@ let tests = [
     "Stats.routes", [
         lwt_test "should provide summary when getting /stats (read)" (fun () ->
             (* Given a stats status where a read was performed in a game, by a user, for an action *)
-            let request = Dream.request "/" in (* need a request for context *)
+            let request : Dream.request = Dream.request "/" in (* need a request for context *)
             Stats.set_action request "some-action";
             Stats.set_user request { id = "user-id"; name = "foo" };
             Stats.set_game_id request "game-id";
@@ -45,7 +45,7 @@ let tests = [
         );
         lwt_test "should provide a summary when getting /stats (writes)" (fun () ->
             (* Given a stats status where a read was performed in a game, by a user, for an action *)
-            let request = Dream.request "/" in (* need a request for context *)
+            let request : Dream.request = Dream.request "/" in (* need a request for context *)
             Stats.set_action request "some-action";
             Stats.set_user request { id = "user-id"; name = "foo" };
             Stats.set_game_id request "game-id";

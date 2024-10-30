@@ -33,7 +33,7 @@ export class NewGameComponent extends GameComponent<NewGameRules,
 {
     /**
      * The component constructor always takes the same parameters.
-     * It must set up the `rules`, `node`, `encoder`, `encoder`, and `availableMinimaxes` fields.
+     * It must set up the `rules`, `encoder`, `node`, and `availableMinimaxes` fields.
      * The minimax list can remain empty.
      */
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {

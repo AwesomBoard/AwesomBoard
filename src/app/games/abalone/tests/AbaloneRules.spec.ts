@@ -265,7 +265,7 @@ describe('AbaloneRules', () => {
         // Given an initial board (for simplicity)
         const state: AbaloneState = AbaloneRules.get().getInitialState();
 
-        // When moving a 3 pieces column sideways
+        // When moving a 3-piece column sideways
         const move: AbaloneMove = AbaloneMove.ofDoubleCoord(new Coord(2, 6), new Coord(4, 6), HexaDirection.UP);
 
         // Then the piece should be moved

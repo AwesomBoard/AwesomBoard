@@ -13,6 +13,7 @@ import { ConnectedUserService } from './ConnectedUserService';
 
 export interface StartingPartConfig extends Partial<Part> {
     playerZero: MinimalUser,
+    playerZeroElo: number,
     playerOne: MinimalUser,
     turn: number,
     beginning?: FirestoreTime,

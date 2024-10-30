@@ -50,7 +50,7 @@ export abstract class TriangularGameComponent<R extends SuperRules<M, S, C, L>,
     public getTriangleTranslationAtXY(x: number, y: number): string {
         const coord: Coord = new Coord(x, y);
         const translation: Coord = this.getTriangleTranslationCoord(coord);
-        return 'translate(' + translation.x + ', ' + translation.y + ')';
+        return this.getSVGTranslationAt(translation);
     }
 
     private getDownwardCoordinate(): Coord[] {

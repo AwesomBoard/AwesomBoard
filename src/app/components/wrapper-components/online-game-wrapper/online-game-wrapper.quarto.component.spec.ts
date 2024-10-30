@@ -1354,7 +1354,6 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             await doMoveByClicks(FIRST_MOVE);
             spyOn(wrapper, 'reachedOutOfTime').and.callThrough();
             spyOn(wrapper.chronoOneGlobal, 'stop').and.callThrough();
-            spyOn(wrapper, 'opponentIsOffline').and.returnValue(true);
             spyOn(partDAO, 'update').and.callThrough();
 
             // When opponent reach time out locally
@@ -1877,8 +1876,8 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             testUtils.detectChanges();
 
             // Then it should highlight the player's names
-            testUtils.expectElementToHaveClass('#playerZeroIndicator', 'player0-bg');
-            testUtils.expectElementToHaveClass('#playerOneIndicator', 'player1-bg');
+            testUtils.expectElementToHaveClass('#playerZeroIndicator', 'player0-bg-darker');
+            testUtils.expectElementToHaveClass('#playerOneIndicator', 'player1-bg-darker');
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
 
@@ -1891,7 +1890,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             testUtils.detectChanges();
 
             // Then it should highlight the board with its color
-            testUtils.expectElementToHaveClass('#board-tile', 'player0-bg');
+            testUtils.expectElementToHaveClass('#board-highlight', 'player0-bg');
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
 
@@ -1905,7 +1904,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             testUtils.detectChanges();
 
             // Then it should highlight the board with its color
-            testUtils.expectElementToHaveClass('#board-tile', 'endgame-bg');
+            testUtils.expectElementToHaveClass('#board-highlight', 'endgame-bg');
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
 
@@ -1918,7 +1917,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             testUtils.detectChanges();
 
             // Then it should not highlight the board
-            testUtils.expectElementNotToHaveClass('#board-tile', 'player1-bg');
+            testUtils.expectElementNotToHaveClass('#board-highlight', 'player1-bg');
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
     });
@@ -1997,4 +1996,3 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
     });
 
 });
-

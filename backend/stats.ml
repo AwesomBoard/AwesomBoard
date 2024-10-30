@@ -116,7 +116,7 @@ module Impl : STATS = struct
     let update = fun (update : rw_info -> rw_info) (request : Dream.request) : unit ->
         let action = get_field request action_field "none" in
         let user = get_field request user_field no_user in
-        let game_id = get_field request game_id_field "none" in
+        let game_id : string = get_field request game_id_field "none" in
         state.total := update !(state.total);
         update_hashtbl state.per_action action update;
         update_hashtbl state.per_user user.id update;

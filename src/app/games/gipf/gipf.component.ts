@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPFallible, MGPOptional, MGPValidation, Utils, MGPMap } from '@everyboard/lib';
 
 import { Coord } from 'src/app/jscaip/Coord';
 import { HexaLayout } from 'src/app/jscaip/HexaLayout';
@@ -9,7 +10,6 @@ import { HexagonalGameComponent } from '../../components/game-components/game-co
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
 import { Arrow } from 'src/app/components/game-components/arrow-component/Arrow';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { EmptyRulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
@@ -21,6 +21,7 @@ import { GipfState } from 'src/app/games/gipf/GipfState';
 import { GipfMoveGenerator } from './GipfMoveGenerator';
 import { GipfCapture } from 'src/app/jscaip/GipfProjectHelper';
 import { GipfScoreMinimax } from './GipfScoreMinimax';
+import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 
 @Component({
     selector: 'app-gipf',
@@ -41,7 +42,7 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
 
     public inserted: MGPOptional<Arrow<HexaDirection>> = MGPOptional.empty();
     public arrows: Arrow<HexaDirection>[] = [];
-    public captured: Coord[] = [];
+    public captured: MGPMap<Coord, Player> = new MGPMap();
     public moved: Coord[] = [];
 
     public readonly hexagonWidth: number = this.SPACE_SIZE;
@@ -82,19 +83,31 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
 
     public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.constructedState = this.getState();
+        this.scores = MGPOptional.of(this.constructedState.getScores());
         this.moveToInitialCaptureOrPlacementPhase();
     }
 
     public override async showLastMove(move: GipfMove): Promise<void> {
         const previousState: GipfState = this.getPreviousState();
-        move.initialCaptures.forEach((c: GipfCapture) => this.markCapture(c));
-        move.finalCaptures.forEach((c: GipfCapture) => this.markCapture(c));
+        move.initialCaptures.forEach((c: GipfCapture) => this.markCapture(c, previousState));
+        const stateAfterInitialCaptures: GipfState = GipfRules.applyCaptures(move.initialCaptures, previousState);
+        const stateAfterPlacement: GipfState = GipfRules.applyPlacement(move.placement, stateAfterInitialCaptures);
+        move.finalCaptures.forEach((c: GipfCapture) => this.markCapture(c, stateAfterPlacement));
         this.moved = this.rules.getPiecesMoved(previousState, move.initialCaptures, move.placement);
         this.inserted = MGPOptional.empty();
         if (move.placement.direction.isPresent()) {
             const lastPlacement: GipfPlacement = move.placement;
             this.inserted = MGPOptional.of(this.arrowTowards(lastPlacement.coord, lastPlacement.direction.get()));
         }
+    }
+
+    public getViewBox(): ViewBox {
+        return new ViewBox(
+            -this.STROKE_WIDTH,
+            0,
+            this.boardWidth,
+            this.boardHeight,
+        );
     }
 
     private arrowTowards(placement: Coord, direction: HexaDirection): Arrow<HexaDirection> {
@@ -105,9 +118,10 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
                                         (c: Coord) => this.getCenterAt(c));
     }
 
-    private markCapture(capture: GipfCapture): void {
-        capture.forEach((c: Coord) => {
-            this.captured.push(c);
+    private markCapture(capture: GipfCapture, constructedState: GipfState): void {
+        capture.forEach((coord: Coord) => {
+            const capturedPiece: Player = constructedState.getPieceAt(coord).getPlayer() as Player;
+            this.captured.put(coord, capturedPiece);
         });
     }
 
@@ -135,7 +149,7 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
     }
 
     public async onClick(coord: Coord): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#click_' + coord.x + '_' + coord.y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#click-' + coord.x + '-' + coord.y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
@@ -168,8 +182,8 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
         const capture: GipfCapture = captures[0];
 
         // Capture validity is not checked because by construction the user can only select valid captures
+        this.markCapture(capture, this.constructedState);
         this.constructedState = GipfRules.applyCapture(capture, this.constructedState);
-        this.markCapture(capture);
         this.possibleCaptures = GipfRules.getPossibleCaptures(this.constructedState);
         switch (this.movePhase) {
             case GipfComponent.PHASE_INITIAL_CAPTURE:
@@ -281,7 +295,7 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
 
     public override cancelMoveAttempt(): void {
         this.constructedState = this.getState();
-        this.captured = [];
+        this.captured = new MGPMap();
         this.moved = [];
         this.initialCaptures = [];
         this.finalCaptures = [];
@@ -297,7 +311,7 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
     }
 
     public getSpaceClass(coord: Coord): string {
-        if (this.captured.some((c: Coord) => c.equals(coord))) {
+        if (this.isCapturedPiece(coord)) {
             return 'captured-fill';
         } else if (this.moved.some((c: Coord) => c.equals(coord))) {
             return 'moved-fill';
@@ -327,6 +341,15 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
         } else {
             return this.boardWidth - (15 + absoluteX);
         }
+    }
+
+    public isCapturedPiece(coord: Coord): boolean {
+        return this.captured.getKeyList().some((c: Coord) => c.equals(coord));
+    }
+
+    public getCapturedPieceClass(coord: Coord): string {
+        const previousPiece: Player = this.captured.get(coord).get();
+        return this.getPlayerClass(previousPiece, 'fill');
     }
 
 }

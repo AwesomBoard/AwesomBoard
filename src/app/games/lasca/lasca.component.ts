@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPFallible, MGPOptional, MGPValidation, Utils, Set } from '@everyboard/lib';
 import { ModeConfig, ParallelogramGameComponent } from 'src/app/components/game-components/parallelogram-game-component/ParallelogramGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Vector } from 'src/app/jscaip/Vector';
 import { Player } from 'src/app/jscaip/Player';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { LascaFailure } from './LascaFailure';
 import { LascaMove } from './LascaMove';
 import { LascaRules } from './LascaRules';
@@ -47,7 +47,7 @@ export class LascaComponent extends ParallelogramGameComponent<LascaRules,
     private currentMoveClicks: Coord[] = [];
     private lastCaptures: Coord[] = [];
     private lastMoveds: Coord[] = [];
-    private possibleClicks: Coord[] = [];
+    public possibleClicks: Set<Coord> = new Set();
     private capturableCoords: Coord[] = [];
     private selectedStack: MGPOptional<Coord> = MGPOptional.empty();
     private capturedCoords: Coord[] = []; // Only the coords capture by active player during this turn
@@ -80,9 +80,6 @@ export class LascaComponent extends ParallelogramGameComponent<LascaRules,
         }
         if (this.currentMoveClicks.concat(this.lastMoveds).some((c: Coord) => c.equals(coord))) {
             classes.push('moved-fill');
-        }
-        if (this.possibleClicks.some((c: Coord) => c.equals(coord))) {
-            classes.push('selectable-fill');
         }
         if (this.capturableCoords.some((c: Coord) => c.equals(coord))) {
             classes.push('capturable-fill');
@@ -134,11 +131,11 @@ export class LascaComponent extends ParallelogramGameComponent<LascaRules,
     }
 
     private showPossibleMoves(): void {
-        this.possibleClicks = [];
+        this.possibleClicks = new Set();
         if (this.interactive) {
             for (const validMove of this.legalMoves) {
                 const startingCoord: Coord = validMove.getStartingCoord();
-                this.possibleClicks.push(startingCoord);
+                this.possibleClicks = this.possibleClicks.addElement(startingCoord);
             }
         }
     }
@@ -255,12 +252,12 @@ export class LascaComponent extends ParallelogramGameComponent<LascaRules,
     }
 
     private showPossibleLandings(coord: Coord, state: LascaState): void {
-        this.possibleClicks = [];
+        this.possibleClicks = new Set();
         const possibleCaptures: LascaMove[] = this.rules.getPieceCaptures(state, coord);
         if (possibleCaptures.length === 0) {
             const possibleSteps: LascaMove[] = this.rules.getPieceSteps(state, coord);
             for (const possibleStep of possibleSteps) {
-                this.possibleClicks.push(possibleStep.getEndingCoord());
+                this.possibleClicks = this.possibleClicks.addElement(possibleStep.getEndingCoord());
             }
         } else {
             const nextLegalLandings: Coord[] = possibleCaptures
@@ -272,8 +269,7 @@ export class LascaComponent extends ParallelogramGameComponent<LascaRules,
     public getTranslationAtXYZ(x: number, y: number, z: number): string {
         const adaptedCoord: Coord = this.adaptXY(x, y);
         const coordTransform: Coord = this.getCoordTranslation(adaptedCoord.x, adaptedCoord.y, z, this.mode);
-        const translation: string = 'translate(' + coordTransform.x + ' ' + coordTransform.y + ')';
-        return translation;
+        return this.getSVGTranslationAt(coordTransform);
     }
 
     private adaptXY(x: number, y: number): Coord {
@@ -350,7 +346,7 @@ export class LascaComponent extends ParallelogramGameComponent<LascaRules,
         const offsetY: number = cy - pieceCy;
         // Each piece on the Z axis will be higher, here is how much (see the define to confirm)
         const pieceHeight: number = this.SPACE_SIZE * 0.15;
-        return 'translate(' + 0 + ' ' + (offsetY - (z * pieceHeight)) + ')';
+        return this.getSVGTranslation(0, offsetY - (z * pieceHeight));
     }
 
 }

@@ -32,6 +32,7 @@ import { FirestoreTime } from 'src/app/domain/Time';
 import { UserService } from 'src/app/services/UserService';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { addCandidate } from '../online-game-wrapper/online-game-wrapper.quarto.component.spec';
+import { LocalGameWrapperComponent } from '../local-game-wrapper/local-game-wrapper.component';
 
 describe('PartCreationComponent', () => {
 
@@ -76,7 +77,7 @@ describe('PartCreationComponent', () => {
     async function clickElement(elementName: string): Promise<void> {
         // [W] [medium] PartCreationComponent & TestUtils refactor
         testUtils.detectChanges();
-        await testUtils.clickElement(elementName, false);
+        await testUtils.clickElement(elementName);
     }
     function expectElementToExist(elementName: string): void {
         // [W] [medium] PartCreationComponent & TestUtils refactor
@@ -140,6 +141,7 @@ describe('PartCreationComponent', () => {
                 expect(component).withContext('PartCreationComponent should have been created').toBeTruthy();
                 component.stopSendingPresenceTokensAndObservingUsersIfNeeded();
             }));
+
             it('should add currentGame to user doc', fakeAsync(() => {
                 // Given a partCreation
                 spyOn(currentGameService, 'updateCurrentGame').and.callFake(async() => {});
@@ -152,6 +154,7 @@ describe('PartCreationComponent', () => {
                 expect(currentGameService.updateCurrentGame).toHaveBeenCalledOnceWith(expectedCurrentGame);
                 component.stopSendingPresenceTokensAndObservingUsersIfNeeded();
             }));
+
             it('should not start observing configRoom if part does not exist', fakeAsync(async() => {
                 // Given a part that does not exist
                 component.partId = 'does not exist';
@@ -167,7 +170,42 @@ describe('PartCreationComponent', () => {
                     });
                 expect(configRoomService.subscribeToChanges).not.toHaveBeenCalled();
             }));
+
+            it('should have button to go to lobby and cancel game', fakeAsync(async() => {
+                // Given a part creation component with no opponent
+                spyOn(gameService, 'deleteGame').and.callThrough();
+                const router: Router = TestBed.inject(Router);
+                spyOn(router, 'navigate').and.resolveTo(true);
+                awaitComponentInitialization();
+
+                // When clicking on the "go to lobby" button
+                const infoMessage: string = 'The game has been canceled!';
+                await testUtils.expectToDisplayInfoMessage(infoMessage, async() => {
+                    await clickElement('#go-to-lobby');
+                });
+                // Then it should cancel game and navigate to lobby
+                expect(gameService.deleteGame).toHaveBeenCalledOnceWith('configRoomId');
+                expectValidRouting(router, ['/lobby'], LobbyComponent);
+            }));
+
+            it('should have button to play against AI and cancel game', fakeAsync(async() => {
+                // Given a part creation component with no opponent
+                spyOn(gameService, 'deleteGame').and.callThrough();
+                const router: Router = TestBed.inject(Router);
+                spyOn(router, 'navigate').and.resolveTo(true);
+                awaitComponentInitialization();
+
+                // When clicking on the "play against AI" button
+                const infoMessage: string = 'The game has been canceled!';
+                await testUtils.expectToDisplayInfoMessage(infoMessage, async() => {
+                    await clickElement('#play-against-ai');
+                });
+                // Then it should cancel game and navigate to local game
+                expect(gameService.deleteGame).toHaveBeenCalledOnceWith('configRoomId');
+                expectValidRouting(router, ['/local', 'P4'], LocalGameWrapperComponent);
+            }));
         });
+
         describe('Candidate arrival', () => {
             it('should make candidate choice possible for creator when candidate arrives', fakeAsync(async() => {
                 // Given a component that is loaded and there is no candidate
@@ -322,6 +360,7 @@ describe('PartCreationComponent', () => {
 
                 // When choosing the opponent
                 await chooseOpponent();
+                testUtils.detectChanges();
 
                 // Then current config room doc should be updated
                 expect(component.currentConfigRoom).toEqual(ConfigRoomMocks.withChosenOpponent(MGPOptional.empty()));
@@ -480,30 +519,6 @@ describe('PartCreationComponent', () => {
 
         });
         describe('Form interaction', () => {
-            it('should modify configRoom, make proposal possible, and select opponent when choosing opponent', fakeAsync(async() => {
-                // Given a component with candidate present but not selected
-                awaitComponentInitialization();
-                await mockCandidateArrival();
-                expectElementToExist('#presenceOf_firstCandidate');
-
-                const contextBefore: string = 'Proposing config should be impossible before there is a ChosenOpponent';
-                expect(findElement('#proposeConfig').nativeElement.disabled).withContext(contextBefore).toBeTruthy();
-
-                // When choosing the opponent
-                await chooseOpponent();
-
-                // Then configRoom doc should be updated
-                expect(component.currentConfigRoom).toEqual(ConfigRoomMocks.withChosenOpponent(MGPOptional.empty()));
-
-                // and proposal should now be possible
-                const proposeConfigDisabled: boolean = findElement('#proposeConfig').nativeElement.disabled;
-                const contextAfter: string = 'Proposing config should become possible after ChosenOpponent is set';
-                expect(proposeConfigDisabled).withContext(contextAfter).toBeFalse();
-
-                // and opponent should be selected
-                expectElementToExist('#selected_' + UserMocks.OPPONENT.username);
-                component.stopSendingPresenceTokensAndObservingUsersIfNeeded();
-            }));
             it('should update the form data when changing first player', fakeAsync(async() => {
                 // Given a part being created
                 awaitComponentInitialization();
@@ -623,7 +638,7 @@ describe('PartCreationComponent', () => {
                 // When the component is destroyed
                 spyOn(component, 'cancelGameCreation').and.callThrough();
                 testUtils.destroy();
-                await testUtils.whenStable();
+                tick(1);
                 destroyed = true;
 
                 // Then it should not delete anything
@@ -764,7 +779,7 @@ describe('PartCreationComponent', () => {
             }));
         });
         describe('Chosen opponent', () => {
-            it('each 5 second a presence token should be sent', fakeAsync(async() => {
+            it('should send a presence token every 5 second', fakeAsync(async() => {
                 // Given a partCreation were you are already chosen as candidate
                 awaitComponentInitialization();
                 await receiveConfigRoomUpdate(ConfigRoomMocks.withChosenOpponent(MGPOptional.empty()));
@@ -869,7 +884,7 @@ describe('PartCreationComponent', () => {
                 spyOn(currentGameService, 'removeCurrentGame').and.callThrough();
                 spyOn(configRoomService, 'removeCandidate').and.callThrough();
                 testUtils.destroy();
-                await testUtils.whenStable();
+                tick(1);
                 destroyed = true;
 
                 // Then configRoomService.cancelJoining should have been called
@@ -887,7 +902,7 @@ describe('PartCreationComponent', () => {
 
                 ConnectedUserServiceMock.setUser(AuthUser.NOT_CONNECTED);
                 testUtils.destroy();
-                await testUtils.whenStable();
+                tick(1);
                 destroyed = true;
 
                 // Then it should not call cancelJoining nor removeCurrentGame
@@ -899,7 +914,6 @@ describe('PartCreationComponent', () => {
     afterEach(fakeAsync(async() => {
         if (destroyed === false) {
             testUtils.destroy();
-            await testUtils.whenStable();
         }
     }));
 });

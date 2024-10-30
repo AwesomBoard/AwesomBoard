@@ -26,6 +26,7 @@ export class GameServiceMock extends GameService {
         const game: Part = {
             typeGame: gameName,
             playerZero: creator,
+            playerZeroElo: 12.58,
             turn: -1,
             result: MGPResult.UNACHIEVED.value,
             beginning: null,

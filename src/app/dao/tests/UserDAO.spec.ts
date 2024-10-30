@@ -18,10 +18,13 @@ describe('UserDAO', () => {
         userDAO = TestBed.inject(UserDAO);
         userService = TestBed.inject(UserService);
     });
+
     it('should be created', () => {
         expect(userDAO).toBeTruthy();
     });
+
     describe('security', () => {
+
         it('should authorize connected user to read any other user', async() => {
             // Given an existing user and a logged in user
             const other: FireAuth.User = await createDisconnectedGoogleUser('bar@bar.com', 'other-user');
@@ -33,6 +36,7 @@ describe('UserDAO', () => {
             expect(otherUserRead.isPresent()).toBeTrue();
             expect(otherUserRead.get().username).toBe('other-user');
         });
+
         it('should allow disconnected user to read any user', async() => {
             // Given an existing user and a disconnected visitor
             const other: FireAuth.User = await createDisconnectedGoogleUser('foo@bar.com', 'other-user');
@@ -43,6 +47,7 @@ describe('UserDAO', () => {
             expect(userRead.isPresent()).toBeTrue();
             expect(userRead.get().username).toBe('other-user');
         });
+
         it('should authorize to create its own user when it does not exist', async() => {
             // Given an authenticated visitor without the corresponding user in DB
             const token: string = '{"sub": "foo@bar.com", "email": "foo@bar.com", "email_verified": true}';
@@ -54,6 +59,7 @@ describe('UserDAO', () => {
             // Then it should succeed
             await expectAsync(result).toBeResolvedTo();
         });
+
         it('should forbid to create a user with a different id than our own', async() => {
             // Given an existing, logged in user
             await createConnectedGoogleUser('foo@bar.com', 'user');
@@ -62,6 +68,7 @@ describe('UserDAO', () => {
             // Then it should fail
             await expectPermissionToBeDenied(result);
         });
+
         it('should authorize updating its username when not set', async() => {
             // Given an existing, logged in user, without username
             const user: FireAuth.User = await createConnectedGoogleUser('foo@bar.com');
@@ -70,6 +77,7 @@ describe('UserDAO', () => {
             // Then it should succeed
             await expectAsync(result).toBeResolvedTo();
         });
+
         it('should forbid updating its username if it is already set', async() => {
             // Given an existing, logged in user, with a username
             const user: FireAuth.User = await createConnectedGoogleUser('foo@bar.com', 'user');
@@ -78,6 +86,7 @@ describe('UserDAO', () => {
             // Then it should fail
             await expectPermissionToBeDenied(result);
         });
+
         it('should authorize setting the user to verified when it is', async() => {
             // Given a non-verified user, with a username
             const token: string = '{"sub": "foo@bar.com", "email": "foo@bar.com", "email_verified": true}';
@@ -91,6 +100,7 @@ describe('UserDAO', () => {
             // Then it should succeed
             await expectAsync(result).toBeResolvedTo();
         });
+
         it('should forbid setting the user to verified if it has no username', async() => {
             // Given a non-verified user, without a username
             const token: string = '{"sub": "foo@bar.com", "email": "foo@bar.com", "email_verified": true}';
@@ -104,6 +114,7 @@ describe('UserDAO', () => {
             // Then it should fail
             await expectPermissionToBeDenied(result);
         });
+
         it('should forbid setting the user to verified if it has no verified email', async() => {
             // Given a email user that has not verified its email
             const credential: FireAuth.UserCredential =
@@ -117,6 +128,7 @@ describe('UserDAO', () => {
             // Then it should fail
             await expectPermissionToBeDenied(result);
         });
+
         it('should forbid to update the fields another user', async() => {
             // Given an existing user and a logged in user
             const other: FireAuth.User = await createDisconnectedGoogleUser('bar@bar.com', 'other-user');
@@ -126,6 +138,7 @@ describe('UserDAO', () => {
             // Then it should fail
             await expectPermissionToBeDenied(result);
         });
+
         it('should forbid to delete its own user', async() => {
             // Given a logged in user
             const user: FireAuth.User = await createConnectedGoogleUser('foo@bar.com', 'user');
@@ -134,6 +147,7 @@ describe('UserDAO', () => {
             // Then it should fail
             await expectPermissionToBeDenied(result);
         });
+
         it('should forbid to delete another user', async() => {
             // Given an existing user and a logged in user
             const other: FireAuth.User = await createDisconnectedGoogleUser('bar@bar.com', 'other-user');
@@ -143,5 +157,7 @@ describe('UserDAO', () => {
             // Then it should fail
             await expectPermissionToBeDenied(result);
         });
+
     });
+
 });

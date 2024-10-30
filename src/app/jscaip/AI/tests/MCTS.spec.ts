@@ -1,8 +1,9 @@
 /* eslint-disable max-lines-per-function */
+import { MGPOptional } from '@everyboard/lib';
 import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
 import { QuartoMoveGenerator } from 'src/app/games/quarto/QuartoMoveGenerator';
 import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
-import { QuartoNode, QuartoRules } from 'src/app/games/quarto/QuartoRules';
+import { QuartoConfig, QuartoNode, QuartoRules } from 'src/app/games/quarto/QuartoRules';
 import { QuartoState } from 'src/app/games/quarto/QuartoState';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { AITimeLimitOptions } from '../AI';
@@ -14,14 +15,12 @@ import { AwaleRules } from 'src/app/games/mancala/awale/AwaleRules';
 import { MancalaState } from 'src/app/games/mancala/common/MancalaState';
 import { MancalaConfig } from 'src/app/games/mancala/common/MancalaConfig';
 import { MancalaMove } from 'src/app/games/mancala/common/MancalaMove';
-import { MGPOptional } from '@everyboard/lib';
-import { NoConfig } from '../../RulesConfigUtil';
 
 describe('MCTS', () => {
 
-    let mcts: MCTS<QuartoMove, QuartoState>;
+    let mcts: MCTS<QuartoMove, QuartoState, QuartoConfig>;
     const mctsOptions: AITimeLimitOptions = { name: '200ms', maxSeconds: 0.2 };
-    const defaultConfig: NoConfig = QuartoRules.get().getDefaultRulesConfig();
+    const defaultConfig: MGPOptional<QuartoConfig> = QuartoRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
         mcts = new MCTS('MCTS', new QuartoMoveGenerator(), QuartoRules.get());

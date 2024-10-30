@@ -36,7 +36,6 @@ module Make (External : External.EXTERNAL) (Jwt : Jwt.JWT) : TOKEN_REFRESHER = s
         let private_key = json
                           |> member "private_key"
                           |> to_string
-                          |> Cstruct.of_string
                           |> X509.Private_key.decode_pem in
         match private_key with
         | Ok (`RSA pk) ->

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="100%" height="100%"
-     [attr.viewBox]="'0 0 ' + (4.25 * SPACE_SIZE) + ' ' + (10.75 * SPACE_SIZE)"
+     class="board"
+     [attr.viewBox]="'0 0 ' + (4 * SPACE_SIZE + STROKE_WIDTH) + ' ' + (10.75 * SPACE_SIZE + STROKE_WIDTH)"
      preserveAspectRatio="xMidYMid meet"
 >
     <g transform="translate(5 5)">
@@ -84,7 +84,7 @@
             />
         </g>
         <g *ngFor="let coord of victoriousCoords" >
-            <rect id="victory"
+            <rect id="victory-{{ coord.x }}-{{ coord.y }}"
                   x="0" y="0"
                   [attr.width]="SPACE_SIZE"
                   [attr.height]="SPACE_SIZE"
@@ -125,50 +125,50 @@
                 />
             </g>
         </g>
-        <g *ngFor="let line of board; index as y"
-           [attr.transform]="getTranslationAtXY(0, 6.5)"
-        >
-            <rect [attr.x]="-0.125 * SPACE_SIZE"
-                  [attr.y]="-0.125 * SPACE_SIZE"
-                  [attr.width]="SPACE_SIZE * 4.25"
-                  [attr.height]="SPACE_SIZE * 4.25"
+        <g [attr.transform]="getTranslationAtXY(0, 6.5)" >
+            <rect [attr.x]="0"
+                  [attr.y]="0"
+                  [attr.width]="SPACE_SIZE * 4"
+                  [attr.height]="SPACE_SIZE * 4"
                   stroke-dasharray="10, 10"
                   class="base no-fill"
             />
-            <g *ngFor="let spaceContent of line; index as x">
-                <g *ngIf="isRemaining((4 * y) + x)"
-                   id="click-piece-{{ (4 * y) + x }}"
-                   (click)="clickPiece((4 * y) + x)"
-                >
-                    <rect *ngIf="pieceToGive.equalsValue(QuartoPiece.ofInt((4 * y) + x))"
-                          id="chosen-piece-{{ (4 * y) + x }}"
-                          [attr.x]="SPACE_SIZE * x"
-                          [attr.y]="SPACE_SIZE * y"
-                          [attr.width]="SPACE_SIZE"
-                          [attr.height]="SPACE_SIZE"
-                          class="base no-fill selected-stroke mid-stroke"
-                    />
-                    <rect *ngIf="((4*y)+x) % 4 < 2 else circle"
-                          [attr.x]="(SPACE_SIZE * x) + (SPACE_SIZE / 2) - getPieceSize((4 * y) + x)"
-                          [attr.y]="(SPACE_SIZE * y) + (SPACE_SIZE / 2) - getPieceSize((4 * y) + x)"
-                          [attr.width]="getPieceSize((4*y)+x)*2"
-                          [attr.height]="getPieceSize((4*y)+x)*2"
-                          [ngClass]="getPieceClasses((4*y)+x)"
-                          class="base"
-                    />
-                    <ng-template #circle>
-                        <circle [attr.cx]="(SPACE_SIZE * x) + (SPACE_SIZE / 2)"
-                                [attr.cy]="(SPACE_SIZE * y) + (SPACE_SIZE / 2)"
-                                [attr.r]="getPieceSize((4*y)+x)"
-                                [ngClass]="getPieceClasses((4*y)+x)"
-                                class="base"
+            <g *ngFor="let line of board; index as y">
+                <g *ngFor="let spaceContent of line; index as x">
+                    <g *ngIf="isRemaining((4 * y) + x)"
+                       id="click-piece-{{ (4 * y) + x }}"
+                       (click)="clickPiece((4 * y) + x)"
+                    >
+                        <rect *ngIf="pieceToGive.equalsValue(QuartoPiece.ofInt((4 * y) + x))"
+                              id="chosen-piece-{{ (4 * y) + x }}"
+                              [attr.x]="SPACE_SIZE * x"
+                              [attr.y]="SPACE_SIZE * y"
+                              [attr.width]="SPACE_SIZE"
+                              [attr.height]="SPACE_SIZE"
+                              class="base no-fill selected-stroke mid-stroke"
                         />
-                    </ng-template>
-                    <circle *ngIf="pieceHasDot((4*y)+x)"
-                            [attr.cx]="(SPACE_SIZE * x) + (SPACE_SIZE / 2)"
-                            [attr.cy]="(SPACE_SIZE * y) + (SPACE_SIZE / 2)"
-                            [attr.r]="10"
-                    />
+                        <rect *ngIf="((4*y)+x) % 4 < 2 else circle"
+                              [attr.x]="(SPACE_SIZE * x) + (SPACE_SIZE / 2) - getPieceSize((4 * y) + x)"
+                              [attr.y]="(SPACE_SIZE * y) + (SPACE_SIZE / 2) - getPieceSize((4 * y) + x)"
+                              [attr.width]="getPieceSize((4*y)+x)*2"
+                              [attr.height]="getPieceSize((4*y)+x)*2"
+                              [ngClass]="getPieceClasses((4*y)+x)"
+                              class="base"
+                        />
+                        <ng-template #circle>
+                            <circle [attr.cx]="(SPACE_SIZE * x) + (SPACE_SIZE / 2)"
+                                    [attr.cy]="(SPACE_SIZE * y) + (SPACE_SIZE / 2)"
+                                    [attr.r]="getPieceSize((4*y)+x)"
+                                    [ngClass]="getPieceClasses((4*y)+x)"
+                                    class="base"
+                            />
+                        </ng-template>
+                        <circle *ngIf="pieceHasDot((4*y)+x)"
+                                [attr.cx]="(SPACE_SIZE * x) + (SPACE_SIZE / 2)"
+                                [attr.cy]="(SPACE_SIZE * y) + (SPACE_SIZE / 2)"
+                                [attr.r]="10"
+                        />
+                    </g>
                 </g>
             </g>
         </g>

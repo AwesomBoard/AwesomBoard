@@ -671,14 +671,14 @@ export class LodestoneComponent
         const dx: number = (x + (halfSize - this.viewInfo.capturesToPlace.length / 2)) * this.SPACE_SIZE +
             this.SPACE_SIZE / 2;
         const dy: number = - (this.platesGroupSize + 0.5 * this.SPACE_SIZE + this.STROKE_WIDTH);
-        return `translate(${ dx }, ${ dy })`;
+        return this.getSVGTranslation(dx, dy);
     }
 
     public getAvailableLodestoneTransform(x: number): string {
         const halfSize: number = LodestoneState.SIZE / 2;
         const dx: number = (x + (halfSize - this.viewInfo.availableLodestones.length / 2)) * this.SPACE_SIZE;
         const dy: number = this.boardSize + this.platesGroupSize + this.STROKE_WIDTH;
-        return `translate(${dx}, ${dy})`;
+        return this.getSVGTranslation(dx, dy);
     }
 
 }

@@ -97,9 +97,6 @@
 .indicator-fill {
     fill: var(--indicator);
 }
-.selectable-fill {
-    fill: var(--selectable);
-}
 .selectable-stroke {
     stroke: var(--selectable);
 }
@@ -192,8 +189,8 @@
 .text-medium {
     font: 35px sans-serif;
 }
-.text-20 {
-    font: 20px sans-serif;
+.text-small {
+    font: 25px sans-serif;
 }
 .text-bold {
     font-weight: bold;
@@ -211,7 +208,7 @@
     filter: brightness(110%);
 }
 svg {
-    max-height: calc(100vh - 10rem); /* Full height minus the navbar */
+    max-height: calc(100vh - 15rem); /* Full height minus the navbar */
 }
 .click-delegator {
     pointer-events: none;

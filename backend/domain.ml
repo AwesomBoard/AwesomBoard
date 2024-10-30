@@ -12,13 +12,31 @@ module Player = struct
             Zero, `Int 0;
             One, `Int 1;
         ]
+
+    let opponent_of = fun (player : t) : t ->
+        match player with
+        | Zero -> One
+        | One -> Zero
+end
+
+(** It is sometimes useful to represent player maps *)
+module PlayerMap = struct
+    type 'a t = {
+        zero : 'a;
+        one : 'a;
+    }
+
+    let get = fun (map : 'a t) (player : Player.t) ->
+        match player with
+        | Zero -> map.zero
+        | One -> map.one
 end
 
 (** The role a user may have in a config-room *)
 module Role = struct
     type t = Player | Observer | Creator | ChosenOpponent | Candidate
 
-    (* Roles are represented as strings in the database *)
+    (** Roles are represented as strings in the database *)
     let (to_yojson, of_yojson) =
         JSON.for_enum [
             Player, `String "Player";
@@ -61,6 +79,22 @@ module User = struct
 
     let to_minimal_user = fun (uid : string) (user : t) : MinimalUser.t ->
         { id = uid; name = Option.get user.username }
+
+    (** The user contains a sub-collection containing its elo score for each game.
+        Each game therefore has an EloInfo.t *)
+    module EloInfo = struct
+        type t = {
+            current_elo : float [@key "currentElo"];
+            number_of_games_played : int [@key "numberOfGamesPlayed"];
+        }
+        [@@deriving yojson]
+
+        let empty : t = {
+            current_elo = 0.0;
+            number_of_games_played = 0;
+        }
+    end
+
 end
 
 (** The config room document in Firestore *)
@@ -114,6 +148,7 @@ module ConfigRoom = struct
     (** The config room itself *)
     type t = {
         creator: MinimalUser.t;
+        creator_elo: float;
         chosen_opponent: MinimalUser.t option [@key "chosenOpponent"];
         game_status: GameStatus.t [@key "partStatus"];
         first_player: FirstPlayer.t [@key "firstPlayer"];
@@ -125,15 +160,16 @@ module ConfigRoom = struct
     [@@deriving yojson]
 
     (** The initial config room that we create when creating a new game *)
-    let initial = fun (creator : MinimalUser.t) : t -> {
+    let initial = fun (creator : MinimalUser.t) (creator_elo : float) : t -> {
         creator;
+        creator_elo;
         first_player = FirstPlayer.Random;
         chosen_opponent = None;
         game_status = GameStatus.Created;
         game_type = GameType.Standard;
         maximal_move_duration = GameType.standard_move_duration;
         total_part_duration = GameType.standard_game_duration;
-        rules_config = `Assoc [];
+        rules_config = `Null;
     }
 
     (** A config room with similar characteristics as the [config_room] parameter, but for its rematch *)
@@ -240,6 +276,7 @@ module Game = struct
     type t = {
         type_game: string [@key "typeGame"];
         player_zero: MinimalUser.t [@key "playerZero"];
+        player_zero_elo: float [@key "playerZeroElo"];
         turn: int;
         result: GameResult.t;
 
@@ -351,9 +388,10 @@ module Game = struct
     end
 
     (** Constructor for the initial game from its name and the creator *)
-    let initial = fun (game_name : string) (creator : MinimalUser.t) : t -> {
+    let initial = fun (game_name : string) (creator : MinimalUser.t) (creator_elo : float) : t -> {
         type_game = game_name;
         player_zero = creator;
+        player_zero_elo = creator_elo;
         turn = -1;
         result = GameResult.Unachieved;
         player_one = None;
@@ -366,8 +404,8 @@ module Game = struct
 
     (** Constructor for a rematch, given the config room *)
     let rematch = fun (game_name : string) (config_room : ConfigRoom.t) (now : int) (rand_bool : unit -> bool) : t ->
-        let starting = Updates.Start.get config_room now rand_bool in
-        let initial_game = initial game_name config_room.creator in
+        let starting : Updates.Start.t = Updates.Start.get config_room now rand_bool in
+        let initial_game : t = initial game_name config_room.creator config_room.creator_elo  in
         {
             initial_game with
             player_zero = starting.player_zero;
@@ -375,7 +413,6 @@ module Game = struct
             turn = starting.turn;
             beginning = starting.beginning;
         }
-
 
 end
 

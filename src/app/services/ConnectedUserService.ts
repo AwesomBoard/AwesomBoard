@@ -160,7 +160,7 @@ export class ConnectedUserService implements OnDestroy {
         try {
             await Auth.sendPasswordResetEmail(this.auth, email);
             return MGPValidation.SUCCESS;
-        } catch (e) {
+        } catch (e: unknown) {
             return this.catchFirebaseError(e);
         }
     }
@@ -186,7 +186,7 @@ export class ConnectedUserService implements OnDestroy {
             const user: FireAuth.User = Utils.getNonNullable(userCredential.user);
             await this.createUser(user.uid, username);
             return MGPFallible.success(user);
-        } catch (e) {
+        } catch (e: unknown) {
             return this.catchFirebaseError(e);
         }
     }
@@ -234,7 +234,7 @@ export class ConnectedUserService implements OnDestroy {
             try {
                 await Auth.sendEmailVerification(user.get());
                 return MGPValidation.SUCCESS;
-            } catch (e) {
+            } catch (e: unknown) {
                 return this.catchFirebaseError(e);
             }
         } else {
@@ -251,7 +251,7 @@ export class ConnectedUserService implements OnDestroy {
             // Login through firebase. If the login is incorrect or fails for some reason, an error is thrown.
             await Auth.signInWithEmailAndPassword(this.auth, email, password);
             return MGPValidation.SUCCESS;
-        } catch (e) {
+        } catch (e: unknown) {
             return this.catchFirebaseError(e);
         }
     }
@@ -279,7 +279,7 @@ export class ConnectedUserService implements OnDestroy {
                 await this.createUser(user.uid);
             }
             return MGPFallible.success(user);
-        } catch (e) {
+        } catch (e: unknown) {
             return this.catchFirebaseError(e);
         }
 
@@ -313,7 +313,7 @@ export class ConnectedUserService implements OnDestroy {
             // Reload the user to notify listeners that the user has changed
             await this.reloadUser();
             return MGPValidation.SUCCESS;
-        } catch (e) {
+        } catch (e: unknown) {
             return this.catchFirebaseError(e);
         }
     }
@@ -322,7 +322,7 @@ export class ConnectedUserService implements OnDestroy {
             const currentUser: FireAuth.User = Utils.getNonNullable(this.auth.currentUser);
             await Auth.updateProfile(currentUser, { photoURL: url });
             return MGPValidation.SUCCESS;
-        } catch (e) {
+        } catch (e: unknown) {
             return this.catchFirebaseError(e);
         }
     }

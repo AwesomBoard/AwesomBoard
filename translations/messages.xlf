@@ -35,14 +35,8 @@
       <trans-unit id="5075342719298110640" datatype="html">
         <source><x id="PH" equiv-text="unreadMessages"/> new messages</source>
       </trans-unit>
-      <trans-unit id="1260099573097287890" datatype="html">
-        <source>Add <x id="INTERPOLATION" equiv-text="{{ timeToAdd }}"/></source>
-      </trans-unit>
       <trans-unit id="1735231057781616406" datatype="html">
         <source>Number of columns: </source>
-      </trans-unit>
-      <trans-unit id="3437618805826291312" datatype="html">
-        <source>Squared</source>
       </trans-unit>
       <trans-unit id="2821179408673282599" datatype="html">
         <source>Home</source>
@@ -497,20 +491,20 @@
       <trans-unit id="1944212987695444934" datatype="html">
         <source>Turn n°<x id="INTERPOLATION" equiv-text="{{ gameComponent.getTurn() + 1 }}"/></source>
       </trans-unit>
+      <trans-unit id="8647687729200262691" datatype="html">
+        <source>Draw</source>
+      </trans-unit>
+      <trans-unit id="2993214884777755957" datatype="html">
+        <source>Player <x id="INTERPOLATION" equiv-text="{{ player.getValue()+1 }}"/></source>
+      </trans-unit>
       <trans-unit id="7800061171704298797" datatype="html">
         <source>Human</source>
       </trans-unit>
       <trans-unit id="3795472118461355324" datatype="html">
         <source>Pick the options</source>
       </trans-unit>
-      <trans-unit id="187187500641108332" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="option.name }}"/></source>
-      </trans-unit>
       <trans-unit id="3272612818120648715" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="gameComponent.scores.get().get(Player.ZERO) }}"/> points</source>
-      </trans-unit>
-      <trans-unit id="8647687729200262691" datatype="html">
-        <source>Draw</source>
+        <source><x id="INTERPOLATION" equiv-text="gameComponent.scores.get().get(player) }}"/> points</source>
       </trans-unit>
       <trans-unit id="6267418979719843573" datatype="html">
         <source>Pass a turn</source>
@@ -575,9 +569,6 @@
       <trans-unit id="3724541577412345595" datatype="html">
         <source>It is <x id="INTERPOLATION" equiv-text="{{ currentUser?.name }}"/>&apos;s turn.</source>
       </trans-unit>
-      <trans-unit id="715032829765584790" datatype="html">
-        <source>vs.</source>
-      </trans-unit>
       <trans-unit id="4830863788651301313" datatype="html">
         <source>You agreed to draw.</source>
       </trans-unit>
@@ -638,50 +629,26 @@
       <trans-unit id="7360329324887745743" datatype="html">
         <source>You must answer your opponent&apos;s request.</source>
       </trans-unit>
-      <trans-unit id="1487672983218679675" datatype="html">
-        <source>5 minutes</source>
+      <trans-unit id="5096328327178345486" datatype="html">
+        <source>05:00</source>
       </trans-unit>
-      <trans-unit id="7078290923964101744" datatype="html">
-        <source>30 seconds</source>
+      <trans-unit id="4506170566742059239" datatype="html">
+        <source>00:30</source>
       </trans-unit>
-      <trans-unit id="353130366888208691" datatype="html">
-        <source>Game creation</source>
-      </trans-unit>
-      <trans-unit id="1102665189929883417" datatype="html">
-        <source>Random</source>
-      </trans-unit>
-      <trans-unit id="720557322859638078" datatype="html">
-        <source>You</source>
-      </trans-unit>
-      <trans-unit id="6102520113052735150" datatype="html">
-        <source>The opponent</source>
-      </trans-unit>
-      <trans-unit id="3691607884455851073" datatype="html">
-        <source>Game type</source>
-      </trans-unit>
-      <trans-unit id="2798807656507405918" datatype="html">
-        <source>Standard</source>
-      </trans-unit>
-      <trans-unit id="3120304451891406993" datatype="html">
-        <source>Maximal turn duration: </source>
-      </trans-unit>
-      <trans-unit id="6773728044030876768" datatype="html">
-        <source>Maximal game duration: <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="RT_DURATION | humanDuration }}"/> per player<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
-      </trans-unit>
-      <trans-unit id="4073116770334354573" datatype="html">
-        <source>Blitz</source>
-      </trans-unit>
-      <trans-unit id="7590013429208346303" datatype="html">
-        <source>Custom</source>
-      </trans-unit>
-      <trans-unit id="594218318757354614" datatype="html">
-        <source>Maximal game duration: <x id="START_TAG_OUTPUT" ctype="x-output" equiv-text="&lt;output&gt;"/><x id="INTERPOLATION" equiv-text="tDuration || 0) | humanDuration }}"/> per player<x id="CLOSE_TAG_OUTPUT" ctype="x-output" equiv-text="&lt;/output&gt;"/></source>
+      <trans-unit id="3923856758825729241" datatype="html">
+        <source>Creation of a game of <x id="INTERPOLATION" equiv-text="{{ getGameName().getOrElse(&apos;&apos;) }}"/> </source>
       </trans-unit>
       <trans-unit id="4247449258896721566" datatype="html">
         <source>Opponents</source>
       </trans-unit>
-      <trans-unit id="5268374384098882347" datatype="html">
-        <source>Potential opponents that join the game will appear here.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/>Wait for an opponent to join, so that you can pick one.</source>
+      <trans-unit id="2561597132169540579" datatype="html">
+        <source>Potential opponents will appear here. If no one comes, you can:</source>
+      </trans-unit>
+      <trans-unit id="1406698782162165226" datatype="html">
+        <source>Look for other games</source>
+      </trans-unit>
+      <trans-unit id="5070629625537228486" datatype="html">
+        <source>Play against AI</source>
       </trans-unit>
       <trans-unit id="5056292777668083757" datatype="html">
         <source>Click on the opponent against which you would like to play.</source>
@@ -695,6 +662,36 @@
       <trans-unit id="8698515801873408462" datatype="html">
         <source>Pick</source>
       </trans-unit>
+      <trans-unit id="7709161982270147002" datatype="html">
+        <source>Random first player</source>
+      </trans-unit>
+      <trans-unit id="5246623381325349376" datatype="html">
+        <source>You start</source>
+      </trans-unit>
+      <trans-unit id="7738132709044699358" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="viewInfo.chosenOpponent }}"/> starts</source>
+      </trans-unit>
+      <trans-unit id="4492847529610715272" datatype="html">
+        <source>The opponent starts</source>
+      </trans-unit>
+      <trans-unit id="8926567047186783072" datatype="html">
+        <source>Standard time</source>
+      </trans-unit>
+      <trans-unit id="3120304451891406993" datatype="html">
+        <source>Maximal turn duration: </source>
+      </trans-unit>
+      <trans-unit id="6773728044030876768" datatype="html">
+        <source>Maximal game duration: <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="RT_DURATION | humanDuration }}"/> per player<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
+      </trans-unit>
+      <trans-unit id="4073116770334354573" datatype="html">
+        <source>Blitz</source>
+      </trans-unit>
+      <trans-unit id="3154403333894623756" datatype="html">
+        <source>Custom time</source>
+      </trans-unit>
+      <trans-unit id="594218318757354614" datatype="html">
+        <source>Maximal game duration: <x id="START_TAG_OUTPUT" ctype="x-output" equiv-text="&lt;output&gt;"/><x id="INTERPOLATION" equiv-text="tDuration || 0) | humanDuration }}"/> per player<x id="CLOSE_TAG_OUTPUT" ctype="x-output" equiv-text="&lt;/output&gt;"/></source>
+      </trans-unit>
       <trans-unit id="1612262766071402559" datatype="html">
         <source>Propose configuration</source>
       </trans-unit>
@@ -704,8 +701,8 @@
       <trans-unit id="6482290849972032593" datatype="html">
         <source>Cancel game</source>
       </trans-unit>
-      <trans-unit id="4046928906081232002" datatype="html">
-        <source>Configuration proposal</source>
+      <trans-unit id="9099721398759347967" datatype="html">
+        <source>Configuration proposal for <x id="INTERPOLATION" equiv-text="{{ getGameName().getOrElse(&apos;&apos;) }}"/></source>
       </trans-unit>
       <trans-unit id="7416818230860591701" datatype="html">
         <source>You have been selected as the opponent.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br/&gt;"/> <x id="INTERPOLATION" equiv-text="{{ viewInfo.creator }}"/> is modifying the configuration.</source>
@@ -773,8 +770,11 @@
       <trans-unit id="5607669932062416162" datatype="html">
         <source>Default</source>
       </trans-unit>
-      <trans-unit id="7536677055379713952" datatype="html">
-        <source>Configuration of your <x id="INTERPOLATION" equiv-text="{{ urlName }}"/> game</source>
+      <trans-unit id="3008420115644088420" datatype="html">
+        <source>Configuration</source>
+      </trans-unit>
+      <trans-unit id="7590013429208346303" datatype="html">
+        <source>Custom</source>
       </trans-unit>
       <trans-unit id="6594123400599013490" datatype="html">
         <source>Step finished!</source>
@@ -802,6 +802,9 @@
       </trans-unit>
       <trans-unit id="8893431763975992974" datatype="html">
         <source>Initial board and object of the game</source>
+      </trans-unit>
+      <trans-unit id="4780631467843839550" datatype="html">
+        <source>Rules configuration</source>
       </trans-unit>
       <trans-unit id="6439401135646542284" datatype="html">
         <source>Failure</source>
@@ -1659,6 +1662,12 @@
         Light has 8 territories and 1 prisoner.
         The end result is therefore 18 - 9 for Dark.</source>
       </trans-unit>
+      <trans-unit id="2798807656507405918" datatype="html">
+        <source>Standard</source>
+      </trans-unit>
+      <trans-unit id="35620818119550087" datatype="html">
+        <source>Hexagonal</source>
+      </trans-unit>
       <trans-unit id="5525890868343399241" datatype="html">
         <source>The game of Trigo is a triangular adaptation of the game of Go. Go is present on Everyboard, you can go learn it &lt;a href=&quot;/tutorial/Go&quot;&gt;here&lt;a/&gt;. This tutorial will only review the small differences that this experimental adaptation induced.</source>
       </trans-unit>
@@ -2248,8 +2257,8 @@
       <trans-unit id="2949583224863920715" datatype="html">
         <source>Sowing</source>
       </trans-unit>
-      <trans-unit id="3369432302159653901" datatype="html">
-        <source>The main move in Mancala games is sowing, let&apos;s see how seeds are sown. As you are playing Dark, the 6 houses on the bottom are yours.&lt;br/&gt;&lt;br/&gt;Click on the rightmost bottom house to sow the seeds it contains: they will be sown clockwise, one seed per house.&lt;br/&gt;&lt;br/&gt;Click on the rightmost house!</source>
+      <trans-unit id="8108647656025671310" datatype="html">
+        <source>The main move in Mancala games is sowing, let&apos;s see how seeds are sown. As you are playing Dark, the 6 houses on the bottom are yours.&lt;br/&gt;&lt;br/&gt;When you sow a house, the seeds it contains are sown clockwise, one seed per house.&lt;br/&gt;&lt;br/&gt;Click on the rightmost house!</source>
       </trans-unit>
       <trans-unit id="8909995708712093055" datatype="html">
         <source>Look at the 4 houses that follow clockwise the one you picked, they now contain one more seed. This is how seeds are sown: one by one from the house next to the one they come from, clockwise.</source>
@@ -2583,27 +2592,20 @@
       <trans-unit id="6246016939611902421" datatype="html">
         <source>You cannot give the piece that was in your hands.</source>
       </trans-unit>
-      <trans-unit id="5993757870187587252" datatype="html">
-        <source>Quarto is an alignment game.
-        The goal is to align four pieces that have at least one common aspect:
-        &lt;ul&gt;
-          &lt;li&gt;their color (light or dark),&lt;/li&gt;
-          &lt;li&gt;their size (big or small),&lt;/li&gt;
-          &lt;li&gt;their pattern (empty or dotted),&lt;/li&gt;
-          &lt;li&gt;their shape (round or square).&lt;/li&gt;
-        &lt;/ul&gt;
-        Here, we have a board with a victory by an alignment of dark pieces.
-        Note that the pieces are not owned by any player.</source>
+      <trans-unit id="2864332255120486791" datatype="html">
+        <source>Player One Level</source>
+      </trans-unit>
+      <trans-unit id="6804516002090214742" datatype="html">
+        <source>Player Two Level</source>
+      </trans-unit>
+      <trans-unit id="760255515343953338" datatype="html">
+        <source>Quarto is an alignment game. The goal is to align four pieces that have at least one common aspect:&lt;ul&gt;&lt;li&gt;their color (light or dark),&lt;/li&gt;&lt;li&gt;their size (big or small),&lt;/li&gt;&lt;li&gt;their pattern (empty or dotted),&lt;/li&gt;&lt;li&gt;their shape (round or square).&lt;/li&gt;&lt;/ul&gt;Here, we have a board with a victory by an alignment of dark pieces. Note that the pieces are not owned by any player.</source>
       </trans-unit>
       <trans-unit id="5869780110608474933" datatype="html">
         <source>Placement</source>
       </trans-unit>
-      <trans-unit id="6434452961453198943" datatype="html">
-        <source>Every placement occurs in two steps: placing the piece you have in hand (in the small square) on a square of the board,
-        and picking a piece that the opponent will have to place, by clicking on one of the pieces inside the dotted square.
-        If you prefer, the order of these two steps can be reversed.
-        Keep in mind that the second click confirms the move.&lt;br/&gt;&lt;br/&gt;
-        Make a move.</source>
+      <trans-unit id="3421981370095781630" datatype="html">
+        <source>Every placement occurs in two steps: placing the piece you have in hand (in the small square) on a square of the board, and picking a piece that the opponent will have to place, by clicking on one of the pieces inside the dotted square. If you prefer, the order of these two steps can be reversed. Keep in mind that the second click confirms the move.&lt;br/&gt;&lt;br/&gt; Make a move.</source>
       </trans-unit>
       <trans-unit id="2296943727359810458" datatype="html">
         <source>Perfect!</source>
@@ -2611,15 +2613,20 @@
       <trans-unit id="7849803408372436927" datatype="html">
         <source>Situation</source>
       </trans-unit>
-      <trans-unit id="8833867623403187066" datatype="html">
-        <source>We have here a tricky situation.&lt;br/&gt;&lt;br/&gt;
-        Analyze the board and play your move, carefully paying attention not to let the opponent win on the next move.</source>
+      <trans-unit id="4119107654622098665" datatype="html">
+        <source>We have here a tricky situation.&lt;br/&gt;&lt;br/&gt;Analyze the board and play your move, carefully paying attention not to let the opponent win on the next move.</source>
       </trans-unit>
       <trans-unit id="4715207105849605918" datatype="html">
         <source>Well done!</source>
       </trans-unit>
       <trans-unit id="8424758512320418629" datatype="html">
         <source>Failed! Your opponent can either align:&lt;ul&gt;&lt;li&gt;the squares horizontally on the third line or vertically on the third column,&lt;/li&gt;&lt;li&gt;small pieces horizontally on the first line or vertically on the second or third column,&lt;/li&gt;&lt;li&gt;empty pieces horizontally on the first line or vertically on the first column,&lt;/li&gt;&lt;li&gt;clear pieces diagonally.&lt;/li&gt;&lt;/ul&gt;</source>
+      </trans-unit>
+      <trans-unit id="5648428630068792235" datatype="html">
+        <source>A game of Quarto can be configured to make it more complicated for one or both players.&lt;br/&gt;When you create a game and you want to change the original configuration, you can add a level to one or both players. When your level increases, it becomes easier for you to win. So, if the first player is weaker at this game, make the first player play at level two and the game will be more even and interesting.&lt;br/&gt;At level two, a player can win by grouping pieces with a common criterion on a 2x2 square.&lt;br/&gt;In this board, Light can win by making a square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Light, win.</source>
+      </trans-unit>
+      <trans-unit id="2467449610168621115" datatype="html">
+        <source>Wrong, you could have won by making a square.</source>
       </trans-unit>
       <trans-unit id="8819839276456625538" datatype="html">
         <source>You must pick a space from the edge of the board.</source>

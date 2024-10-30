@@ -42,12 +42,10 @@ module Make (External : External.EXTERNAL) : JWT = struct
 
     (** Sign a string with RS256 *)
     let sign = fun (private_key : private_key) (content : string) : string ->
-        let pkcs1_sha256 = fun (m : Cstruct.t) : Cstruct.t ->
+        let pkcs1_sha256 = fun (m : string) : string ->
             Mirage_crypto_pk.Rsa.PKCS1.sign ~hash:`SHA256 ~key:private_key (`Message m) in
         content
-        |> Cstruct.of_string
         |> pkcs1_sha256
-        |> Cstruct.to_string
 
     (** Construct a JWT from an email [iss] private key [pk], a set of scopes
         [scopes] and an audience [audience] *)
@@ -97,10 +95,10 @@ module Make (External : External.EXTERNAL) : JWT = struct
         let only_sha256 = function
             | `SHA256 -> true
             | _ -> false in
-        let pkcs1_sha256_verify = fun (m : Cstruct.t) (signature : Cstruct.t) : bool ->
-            Mirage_crypto_pk.Rsa.PKCS1.verify ~hashp:only_sha256 ~key:pk ~signature:signature (`Message m) in
+        let pkcs1_sha256_verify = fun (m : string) (signature : string) : bool ->
+            Mirage_crypto_pk.Rsa.PKCS1.verify ~hashp:only_sha256 ~key:pk ~signature (`Message m) in
         let header_and_content_b64 = (token.header |> JSON.to_string |> b64) ^ "." ^ (token.payload |> JSON.to_string |> b64) in
-        pkcs1_sha256_verify (Cstruct.of_string header_and_content_b64) (Cstruct.of_string token.signature)
+        pkcs1_sha256_verify header_and_content_b64 token.signature
 
     (** Verify the signature of a JWT according to https://firebase.google.com/docs/auth/admin/verify-id-tokens.
         Depends on the public keys listed at https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com

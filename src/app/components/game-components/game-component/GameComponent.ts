@@ -1,9 +1,8 @@
-import { ActivatedRoute } from '@angular/router';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { ArrayUtils, Encoder, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+import { Encoder, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { Move } from '../../../jscaip/Move';
 import { SuperRules } from '../../../jscaip/Rules';
-import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
+import { Player } from 'src/app/jscaip/Player';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { TutorialStep } from '../../wrapper-components/tutorial-game-wrapper/TutorialStep';
 import { GameState } from 'src/app/jscaip/state/GameState';
@@ -14,23 +13,8 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Debug } from 'src/app/utils/Debug';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
-
-abstract class BaseComponent {
-
-    /**
-     * Gets the CSS class for a player color
-     */
-    public getPlayerClass(player: PlayerOrNone, suffix: string = 'fill'): string {
-        switch (player) {
-            case Player.ZERO: return 'player0-' + suffix;
-            case Player.ONE: return 'player1-' + suffix;
-            default:
-                Utils.expectToBe(player, PlayerOrNone.NONE);
-                return '';
-        }
-    }
-
-}
+import { BaseComponent } from '../../BaseComponent';
+import { Orthogonal } from 'src/app/jscaip/Orthogonal';
 
 /**
  * Define some methods that are useful to have in game components.
@@ -45,24 +29,13 @@ export abstract class BaseGameComponent extends BaseComponent {
 
     public readonly SMALL_STROKE_WIDTH: number = 2;
 
-    // Make ArrayUtils available in game components
-    public ArrayUtils: typeof ArrayUtils = ArrayUtils;
-
     public getSVGTranslation(x: number, y: number): string {
         return 'translate(' + x + ', ' + y + ')';
     }
-}
 
-export abstract class BaseWrapperComponent extends BaseComponent {
-
-    public constructor(public readonly activatedRoute: ActivatedRoute) {
-        super();
+    public getSVGTranslationAt(coord: Coord): string {
+        return this.getSVGTranslation(coord.x, coord.y);
     }
-
-    protected getGameUrlName(): string {
-        return Utils.getNonNullable(this.activatedRoute.snapshot.paramMap.get('compo'));
-    }
-
 }
 
 /**
@@ -245,6 +218,39 @@ export abstract class GameComponent<R extends SuperRules<M, S, C, L>,
         const svgX: number = x * this.SPACE_SIZE;
         const svgY: number = y * this.SPACE_SIZE;
         return this.getSVGTranslation(svgX, svgY);
+    }
+
+    public getArrowTransform(boardWidth: number, boardHeight: number, orthogonal: Orthogonal): string {
+        // The triangle that forms the arrow head will be wrapped inside a square
+        // The board will be considered here as a 3x3 on which we place the triangle in (tx, ty)
+        let tx: number;
+        let ty: number;
+        switch (orthogonal) {
+            case Orthogonal.UP:
+                tx = 1;
+                ty = 0;
+                break;
+            case Orthogonal.DOWN:
+                tx = 1;
+                ty = 2;
+                break;
+            case Orthogonal.LEFT:
+                tx = 0;
+                ty = 1;
+                break;
+            default:
+                Utils.expectToBe(orthogonal, Orthogonal.RIGHT);
+                tx = 2;
+                ty = 1;
+                break;
+        }
+        const scale: string = `scale( ${ boardWidth / 300} ${ boardHeight / 300 } )`;
+        const realX: number = tx * 100;
+        const realY: number = ty * 100;
+        const translation: string = this.getSVGTranslation(realX, realY);
+        const angle: number = orthogonal.getAngle();
+        const rotation: string = 'rotate(' + angle + ' 50 50)';
+        return [scale, translation, rotation].join(' ');
     }
 
 }

@@ -16,4 +16,5 @@ let () =
         ConfigRoomEndpointTests.tests;
         GameEndpointTests.tests;
         ServerUtilsTests.tests;
+        EloTests.tests;
     ]

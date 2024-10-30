@@ -176,7 +176,6 @@ describe('ChatComponent', () => {
             spyOn(component, 'scrollToBottom').and.callThrough();
             await testUtils.clickElement('#scrollToBottomIndicator');
             testUtils.detectChanges();
-            await testUtils.whenStable();
 
             // Then the view is scrolled to the bottom
             expect(component.scrollToBottom).toHaveBeenCalledOnceWith();
@@ -218,11 +217,9 @@ describe('ChatComponent', () => {
             const messageInput: DebugElement = testUtils.findElement('#message');
             messageInput.nativeElement.value = 'hello';
             messageInput.nativeElement.dispatchEvent(new Event('input'));
-            await testUtils.whenStable();
 
             await testUtils.clickElement('#send');
             testUtils.detectChanges();
-            await testUtils.whenStable();
 
             // Then the message is sent
             const user: MinimalUser = UserMocks.CONNECTED_MINIMAL_USER;
@@ -288,7 +285,6 @@ describe('ChatComponent', () => {
         }));
         afterEach(fakeAsync(async() => {
             component.ngOnDestroy();
-            await testUtils.whenStable();
         }));
     });
 });

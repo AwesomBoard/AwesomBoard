@@ -125,10 +125,6 @@ export class SimpleComponentTestUtils<T> {
         return this.fixture.destroy();
     }
 
-    public async whenStable(): Promise<void> {
-        return this.fixture.whenStable();
-    }
-
     public prepareMessageDisplayerSpies(): void {
         const messageDisplayer: MessageDisplayer = TestBed.inject(MessageDisplayer);
         if (jasmine.isSpy(messageDisplayer.gameMessage)) {
@@ -157,7 +153,6 @@ export class SimpleComponentTestUtils<T> {
     public async expectToDisplayGameMessage<U>(message: string, fn: () => Promise<U>): Promise<U> {
         this.gameMessageSpy.and.returnValue(undefined);
         const result: U = await fn();
-        await this.whenStable();
         expect(this.gameMessageSpy).toHaveBeenCalledOnceWith(message);
         this.gameMessageSpy.calls.reset();
         this.gameMessageSpy.and.callFake(this.failOn('gameMessage')); // Restore previous spy behavior
@@ -182,16 +177,10 @@ export class SimpleComponentTestUtils<T> {
         return result;
     }
 
-    public async clickElement(elementName: string,
-                              awaitStability: boolean = true,
-                              waitInMs?: number)
-    : Promise<void>
-    {
+    public async clickElement(elementName: string, waitInMs?: number): Promise<void> {
         const element: DebugElement = this.findElement(elementName);
         element.triggerEventHandler('click', null);
-        if (awaitStability) {
-            await this.whenStable();
-        }
+        tick(0);
         if (waitInMs !== undefined) {
             tick(waitInMs);
         }
@@ -387,7 +376,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
     }
 
     public async acceptDefaultConfig(): Promise<void> {
-        await this.clickElement('#startGameWithConfig');
+        await this.clickElement('#start-game-with-config');
         tick(1);
     }
 
@@ -498,7 +487,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         if (context == null) {
             context = 'expectInterfaceClickSuccess(' + elementName + ')';
         }
-        await this.clickElement(elementName, false, waitInMs);
+        await this.clickElement(elementName, waitInMs);
 
         expect(this.cancelMoveSpy).withContext(context).not.toHaveBeenCalledWith();
         expect(this.chooseMoveSpy).withContext(context).not.toHaveBeenCalledWith();
@@ -599,11 +588,11 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
     }
 
     public expectPassToBeForbidden(): void {
-        this.expectElementNotToExist('#passButton');
+        this.expectElementNotToExist('#pass-button');
     }
 
     public async expectPassSuccess(move: Move): Promise<void> {
-        await this.clickElement('#passButton', true, 0);
+        await this.clickElement('#pass-button', 0);
         expect(this.chooseMoveSpy).toHaveBeenCalledOnceWith(move);
         this.chooseMoveSpy.calls.reset();
         expect(this.onLegalUserMoveSpy).toHaveBeenCalledOnceWith(move);
@@ -615,18 +604,18 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         await this.choosingAILevel(player);
     }
 
-    public async choosingAIOrHuman(player: Player, aiOrHuman: 'AI' | 'human'): Promise<void> {
-        const dropDownName: string = player === Player.ZERO ? '#playerZeroSelect' : '#playerOneSelect';
+    public choosingAIOrHuman(player: Player, aiOrHuman: 'AI' | 'human'): void {
+        const dropDownName: string = player === Player.ZERO ? '#player-select-0' : '#player-select-1';
         const selectAI: HTMLSelectElement = this.findElement(dropDownName).nativeElement;
         selectAI.value = aiOrHuman === 'AI' ? selectAI.options[1].value : selectAI.options[0].value;
         selectAI.dispatchEvent(new Event('change'));
         this.detectChanges();
-        await this.whenStable();
+        tick(0);
     }
 
     public async choosingAILevel(player: Player): Promise<void> {
-        const dropDownName: string = player === Player.ZERO ? '#aiZeroOptionSelect' : '#aiOneOptionSelect';
-        const childrenName: string = player === Player.ZERO ? 'playerZero_option_Level 1' : 'playerOne_option_Level 1';
+        const dropDownName: string = player === Player.ZERO ? '#ai-option-select-0' : '#ai-option-select-1';
+        const childrenName: string = player === Player.ZERO ? 'player-0-option-Level 1' : 'player-1-option-Level 1';
         await this.selectChildElementOfDropDown(dropDownName, childrenName);
         const selectDepth: HTMLSelectElement = this.findElement(dropDownName).nativeElement;
         const aiDepth: string = selectDepth.options[selectDepth.selectedIndex].label;

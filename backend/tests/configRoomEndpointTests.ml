@@ -15,13 +15,13 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing *)
-            let game_id = "game-id" in
-            let config_room = ConfigRoom.initial DomainTests.another_minimal_user in
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = ConfigRoom.initial DomainTests.another_minimal_user DomainTests.another_minimal_user_current_elo in
             FirestoreTests.Mock.ConfigRoom.set config_room;
 
             (* When joining the game *)
             let target = Printf.sprintf "config-room/%s/candidates" game_id in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should return OK and have added the candidate to the config room *)
@@ -35,13 +35,13 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing *)
-            let game_id = "game-id" in
-            let config_room = ConfigRoom.initial DomainTests.a_minimal_user in
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo in
             FirestoreTests.Mock.ConfigRoom.set config_room;
 
             (* When joining the game as creator *)
             let target = Printf.sprintf "config-room/%s/candidates" game_id in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should return OK and have not added the candidate to the config room *)
@@ -58,14 +58,14 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing, and where we are candidate *)
-            let game_id = "game-id" in
-            let config_room = ConfigRoom.initial DomainTests.a_minimal_user in
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo in
             FirestoreTests.Mock.ConfigRoom.set config_room;
             let uid = DomainTests.a_minimal_user.id in
 
             (* When removing ourselves from the game *)
             let target = Printf.sprintf "config-room/%s/candidates/%s" game_id uid in
-            let request = Dream.request ~method_:`DELETE ~target "" in
+            let request : Dream.request = Dream.request ~method_:`DELETE ~target "" in
             let* result = handler request in
 
             (* Then it should return OK and have removed the candidate to the config room *)
@@ -79,9 +79,9 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing, and where we are the selected opponent *)
-            let game_id = "game-id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.another_minimal_user) with
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.another_minimal_user DomainTests.another_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.a_minimal_user
             } in
             FirestoreTests.Mock.ConfigRoom.set config_room;
@@ -89,7 +89,7 @@ let tests = [
 
             (* When removing ourselves from the game *)
             let target = Printf.sprintf "config-room/%s/candidates/%s" game_id uid in
-            let request = Dream.request ~method_:`DELETE ~target "" in
+            let request : Dream.request = Dream.request ~method_:`DELETE ~target "" in
             let* result = handler request in
 
             (* Then it should return OK and have removed the candidate to the config room *)
@@ -108,9 +108,9 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing, with a selected opponent, and where we are creator *)
-            let game_id = "game-id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.a_minimal_user) with
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.another_minimal_user
             } in
             FirestoreTests.Mock.ConfigRoom.set config_room;
@@ -126,7 +126,7 @@ let tests = [
             } in
             let update_str = Dream.to_percent_encoded (JSON.to_string update) in
             let target = Printf.sprintf "config-room/%s?action=propose&config=%s" game_id update_str  in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should update the config accordingly *)
@@ -140,9 +140,9 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing, with a selected opponent, and where we are creator *)
-            let game_id = "game-id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.a_minimal_user) with
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.another_minimal_user
             } in
             FirestoreTests.Mock.ConfigRoom.set config_room;
@@ -151,7 +151,7 @@ let tests = [
             (* Then it should fail with a BadInput exception *)
             let* _ = lwt_check_raises "failure" ((=) (BadInput "Invalid config proposal")) (fun () ->
                 let target = Printf.sprintf "config-room/%s?action=propose" game_id in
-                let request = Dream.request ~method_:`POST ~target "" in
+                let request : Dream.request = Dream.request ~method_:`POST ~target "" in
                 let* _ = handler request in
                 Lwt.return ()) in
             (* and it should not have made any changes *)
@@ -163,9 +163,9 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing, with a selected opponent, and where we are creator *)
-            let game_id = "game-id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.a_minimal_user) with
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.another_minimal_user
             } in
             FirestoreTests.Mock.ConfigRoom.set config_room;
@@ -174,7 +174,7 @@ let tests = [
             (* Then it should fail with a BadInput exception *)
             let* _ = lwt_check_raises "failure" ((=) (BadInput "Invalid config proposal")) (fun () ->
                 let target = Printf.sprintf "config-room/%s?action=propose&config={}" game_id in
-                let request = Dream.request ~method_:`POST ~target "" in
+                let request : Dream.request = Dream.request ~method_:`POST ~target "" in
                 let* _ = handler request in
                 Lwt.return ()) in
             (* and it should not have made any changes *)
@@ -186,9 +186,9 @@ let tests = [
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
             (* Given a game with a config room already existing, with a selected opponent, and where we are creator *)
-            let game_id = "game-id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.a_minimal_user) with
+            let game_id : string = "game-id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.another_minimal_user
             } in
             FirestoreTests.Mock.ConfigRoom.set config_room;
@@ -206,7 +206,7 @@ let tests = [
                 ] in
                 let update_str = Dream.to_percent_encoded (JSON.to_string update) in
                 let target = Printf.sprintf "config-room/%s?action=propose&config=%s" game_id update_str  in
-                let request = Dream.request ~method_:`POST ~target "" in
+                let request : Dream.request = Dream.request ~method_:`POST ~target "" in
                 let* _ = handler request in
                 Lwt.return ())
         );
@@ -221,16 +221,16 @@ let tests = [
             ExternalTests.Mock.current_time_seconds := now;
 
             (* Given a game proposed to us *)
-            let game_id = "game_id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.another_minimal_user) with
+            let game_id : string = "game_id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.another_minimal_user DomainTests.another_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.a_minimal_user
             } in
             FirestoreTests.Mock.ConfigRoom.set config_room;
 
             (* When accepting it *)
             let target = Printf.sprintf "config-room/%s?action=accept" game_id in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should update the config room, game, and send an action *)
@@ -252,16 +252,16 @@ let tests = [
             ExternalTests.Mock.current_time_seconds := now;
 
             (* Given a game proposed to us *)
-            let game_id = "game_id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.another_minimal_user) with
+            let game_id : string = "game_id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.another_minimal_user DomainTests.another_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.a_minimal_user
             } in
             FirestoreTests.Mock.ConfigRoom.set config_room;
 
             (* When accepting it *)
             let target = Printf.sprintf "config-room/%s?action=accept" game_id in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should be able to select chosen player as starter *)
@@ -288,8 +288,8 @@ let tests = [
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
 
             (* Given a game *)
-            let game_id = "game_id" in
-            let config_room = ConfigRoom.initial DomainTests.a_minimal_user in
+            let game_id : string = "game_id" in
+            let config_room : Domain.ConfigRoom.t = ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo in
             FirestoreTests.Mock.ConfigRoom.set config_room;
 
             (* When selecting a candidate *)
@@ -297,7 +297,7 @@ let tests = [
             let opponent_json = MinimalUser.to_yojson opponent in
             let opponent_str = Dream.to_percent_encoded (JSON.to_string opponent_json) in
             let target = Printf.sprintf "config-room/%s?action=selectOpponent&opponent=%s" game_id opponent_str in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should update the config room *)
@@ -314,15 +314,15 @@ let tests = [
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
 
             (* Given a game *)
-            let game_id = "game_id" in
-            let config_room = ConfigRoom.initial DomainTests.a_minimal_user in
+            let game_id : string = "game_id" in
+            let config_room : Domain.ConfigRoom.t = ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo in
             FirestoreTests.Mock.ConfigRoom.set config_room;
 
             (* When selecting a candidate without specifying opponent *)
             (* Then it should fail with a BadInput exception *)
             let* _ = lwt_check_raises "failure" ((=) (BadInput "Invalid opponent")) (fun () ->
                 let target = Printf.sprintf "config-room/%s?action=selectOpponent" game_id in
-                let request = Dream.request ~method_:`POST ~target "" in
+                let request : Dream.request = Dream.request ~method_:`POST ~target "" in
                 let* _ = handler request in
                 Lwt.return ()) in
             (* and it should not have made any changes *)
@@ -336,15 +336,15 @@ let tests = [
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
 
             (* Given a game *)
-            let game_id = "game_id" in
-            let config_room = ConfigRoom.initial DomainTests.a_minimal_user in
+            let game_id : string = "game_id" in
+            let config_room : Domain.ConfigRoom.t = ConfigRoom.initial DomainTests.a_minimal_user DomainTests.a_minimal_user_current_elo in
             FirestoreTests.Mock.ConfigRoom.set config_room;
 
             (* When selecting a candidate without specifying opponent *)
             (* Then it should fail with a BadInput exception *)
             let* _ = lwt_check_raises "failure" ((=) (BadInput "Invalid opponent")) (fun () ->
                 let target = Printf.sprintf "config-room/%s?action=selectOpponent&opponent=oulala" game_id in
-                let request = Dream.request ~method_:`POST ~target "" in
+                let request : Dream.request = Dream.request ~method_:`POST ~target "" in
                 let* _ = handler request in
                 Lwt.return ()) in
             (* and it should not have made any changes *)
@@ -359,9 +359,9 @@ let tests = [
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
 
             (* Given a game with a proposed config *)
-            let game_id = "game_id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.another_minimal_user) with
+            let game_id : string = "game_id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.another_minimal_user DomainTests.another_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.a_minimal_user;
                 game_status = ConfigRoom.GameStatus.ConfigProposed;
             } in
@@ -369,7 +369,7 @@ let tests = [
 
             (* When reviewing the config *)
             let target = Printf.sprintf "config-room/%s?action=review" game_id in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should update the config room accordingly *)
@@ -388,9 +388,9 @@ let tests = [
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
 
             (* Given a game with a proposed config *)
-            let game_id = "game_id" in
-            let config_room = {
-                (ConfigRoom.initial DomainTests.another_minimal_user) with
+            let game_id : string = "game_id" in
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial DomainTests.another_minimal_user DomainTests.another_minimal_user_current_elo) with
                 chosen_opponent = Some DomainTests.a_minimal_user;
                 game_status = ConfigRoom.GameStatus.ConfigProposed;
             } in
@@ -398,7 +398,7 @@ let tests = [
 
             (* When reviewing the config and removing the opponent *)
             let target = Printf.sprintf "config-room/%s?action=reviewConfigAndRemoveOpponent" game_id in
-            let request = Dream.request ~method_:`POST ~target "" in
+            let request : Dream.request = Dream.request ~method_:`POST ~target "" in
             let* result = handler request in
 
             (* Then it should update the config room accordingly *)
@@ -414,24 +414,24 @@ let tests = [
     "ConfigRoomEndpoint.routes POST config-room/:game-id", [
         lwt_test "should fail if no action is provided" (fun () ->
             (* Given a game *)
-            let game_id = "game_id" in
+            let game_id : string = "game_id" in
             (* When making a POST request without action *)
             (* Then it should fail *)
             lwt_check_raises "failure" ((=) (BadInput "Missing action")) (fun () ->
                 let target = Printf.sprintf "config-room/%s" game_id in
-                let request = Dream.request ~method_:`POST ~target "" in
+                let request : Dream.request = Dream.request ~method_:`POST ~target "" in
                 let* _ = handler request in
                 Lwt.return ())
         );
 
         lwt_test "should fail if an unknown action is provided" (fun () ->
             (* Given a game *)
-            let game_id = "game_id" in
+            let game_id : string = "game_id" in
             (* When making a POST request without action *)
             (* Then it should fail *)
             lwt_check_raises "failure" ((=) (BadInput "Unknown action")) (fun () ->
                 let target = Printf.sprintf "config-room/%s?action=doTheRoar" game_id in
-                let request = Dream.request ~method_:`POST ~target "" in
+                let request : Dream.request = Dream.request ~method_:`POST ~target "" in
                 let* _ = handler request in
                 Lwt.return ())
         );

@@ -211,6 +211,17 @@ describe('QuixoRules', () => {
 
     describe('getVictoriousCoords', () => {
 
+        it('should return empty row when no victories', () => {
+            // Given a board without victories
+            const state: QuixoState = QuixoRules.get().getInitialState(defaultConfig);
+
+            // When calling getVictoriousCoords
+            const result: Coord[] = QuixoRules.getVictoriousCoords(state);
+
+            // Then result should be empty
+            expect(result).toEqual([]);
+        });
+
         it('should return victorious column', () => {
             const board: Table<PlayerOrNone> = [
                 [O, _, _, _, X],
@@ -287,6 +298,56 @@ describe('QuixoRules', () => {
                 new Coord(4, 2),
                 new Coord(5, 3),
                 new Coord(6, 4),
+            ]);
+            expect(victoriousCoord.equals(expectedVictoriousCoord)).toBeTrue();
+        });
+
+        it('should return victorious line from opponent, not yours, when creating two', () => {
+            // Given a board with two victories
+            const board: Table<PlayerOrNone> = [
+                [_, X, O, _, _],
+                [_, X, O, _, _],
+                [_, X, O, _, _],
+                [_, X, O, _, _],
+                [_, X, O, _, _],
+            ];
+            const state: QuixoState = new QuixoState(board, 1);
+
+            // When evaluating victorious coords
+            const victoriousCoord: CoordSet = new CoordSet(QuixoRules.getVictoriousCoords(state));
+
+            // Then it should be only the opponent coord
+            const expectedVictoriousCoord: CoordSet = new CoordSet([
+                new Coord(1, 0),
+                new Coord(1, 1),
+                new Coord(1, 2),
+                new Coord(1, 3),
+                new Coord(1, 4),
+            ]);
+            expect(victoriousCoord.equals(expectedVictoriousCoord)).toBeTrue();
+        });
+
+        it('should return victorious line when giving opponent victory', () => {
+            // Given a board with opponent victory
+            const board: Table<PlayerOrNone> = [
+                [_, _, X, _, _],
+                [_, _, X, _, _],
+                [_, _, X, _, _],
+                [_, _, X, _, _],
+                [_, _, X, _, _],
+            ];
+            const state: QuixoState = new QuixoState(board, 1);
+
+            // When evaluating victorious coords
+            const victoriousCoord: CoordSet = new CoordSet(QuixoRules.getVictoriousCoords(state));
+
+            // Then it should be only the opponent coord
+            const expectedVictoriousCoord: CoordSet = new CoordSet([
+                new Coord(2, 0),
+                new Coord(2, 1),
+                new Coord(2, 2),
+                new Coord(2, 3),
+                new Coord(2, 4),
             ]);
             expect(victoriousCoord.equals(expectedVictoriousCoord)).toBeTrue();
         });

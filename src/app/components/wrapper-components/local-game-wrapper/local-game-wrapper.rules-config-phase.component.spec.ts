@@ -20,10 +20,10 @@ describe('LocalGameWrapperComponent (rules config phase)', () => {
     it('should show partCreation config and button to accept default config, at start', () => {
         // Given any game needing a config, like P4
         // When rendering component
-        // Then a rules Configuration component should be present
-        testUtils.expectElementToExist('#rulesConfigComponent');
+        // Then a RulesConfiguration component should be present
+        testUtils.expectElementToExist('#rules-config-component');
         // And a button to accept default rules config should be present
-        testUtils.expectElementToExist('#startGameWithConfig');
+        testUtils.expectElementToExist('#start-game-with-config');
     });
 
     it('should disable button to accept default configuration when receiving empty optional from child component', fakeAsync(async() => {
@@ -34,14 +34,14 @@ describe('LocalGameWrapperComponent (rules config phase)', () => {
         component.updateConfig(MGPOptional.empty());
 
         // Then the button to accept default rules config should be disabled
-        testUtils.expectElementToBeDisabled('#startGameWithConfig');
+        testUtils.expectElementToBeDisabled('#start-game-with-config');
     }));
 
     it('should create game component once you click on the button', fakeAsync(async() => {
         // Given any game needing a config, like P4
         // When clicking on startGameWithConfig
         testUtils.expectElementNotToExist('#board');
-        await testUtils.clickElement('#startGameWithConfig');
+        await testUtils.clickElement('#start-game-with-config');
 
         // Then game component should be created
         testUtils.expectElementToExist('#board');

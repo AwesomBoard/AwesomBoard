@@ -207,7 +207,7 @@ export function DoTaflTests<C extends TaflComponent<R, M>,
             await testUtils.expectMoveSuccess(landingSpace, move);
 
             // When taking it back
-            await testUtils.expectInterfaceClickSuccess('#takeBack');
+            await testUtils.expectInterfaceClickSuccess('#take-back');
 
             // Then no highlight should be found
             testUtils.expectElementNotToHaveClass('#space-' + playersCoord, 'moved-fill');

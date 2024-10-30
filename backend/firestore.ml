@@ -13,6 +13,10 @@ module type FIRESTORE = sig
     module User : sig
         (** Retrieve an user from its id *)
         val get : Domain.User.t getter
+        (** Retrieve the elo (if present) of an user and a certain game, return [Domain.User.EloInfo.empty] if absent *)
+        val get_elo : request:Dream.request -> user_id:string -> type_game:string -> Domain.User.EloInfo.t Lwt.t
+        (** Update the elo of the document for an user and a certain game *)
+        val update_elo : request:Dream.request -> user_id:string -> type_game:string -> new_elo:Domain.User.EloInfo.t -> unit Lwt.t
     end
 
     module Game : sig
@@ -24,7 +28,7 @@ module type FIRESTORE = sig
             @raise [DocumentInvalid _] if it exist but is invalid *)
         val get_name : string getter
 
-        (** Create a game  *)
+        (** Create a game *)
         val create : request:Dream.request -> game:Domain.Game.t -> string Lwt.t
 
         (** Delete a game *)
@@ -90,6 +94,21 @@ module Make (FirestorePrimitives : FirestorePrimitives.FIRESTORE_PRIMITIVES) : F
 
         let get = fun ~(request : Dream.request) ~(id : string) : Domain.User.t Lwt.t ->
             get request ("users/" ^ id) Domain.User.of_yojson
+
+        let update_elo = fun ~(request : Dream.request) ~(user_id : string) ~(type_game : string) ~(new_elo : Domain.User.EloInfo.t) : unit Lwt.t ->
+            let update: JSON.t = Domain.User.EloInfo.to_yojson new_elo in
+            FirestorePrimitives.update_doc ~request ~path:("users/" ^ user_id ^ "/elos/" ^ type_game) ~update
+
+        let get_elo = fun ~(request : Dream.request) ~(user_id : string) ~(type_game : string) : Domain.User.EloInfo.t Lwt.t ->
+            let* doc : JSON.t Option.t = FirestorePrimitives.try_get_doc ~request ~path:("users/" ^ user_id ^ "/elos/" ^ type_game) in
+            match doc with
+            | None -> Lwt.return Domain.User.EloInfo.empty
+            | Some json ->
+                begin match Domain.User.EloInfo.of_yojson json with
+                    | Error _ -> raise (UnexpectedError (Printf.sprintf "Invalid EloInfo for %s/%s: %s" user_id type_game (JSON.to_string json)))
+                    | Ok elo -> Lwt.return elo
+                end
+
     end
 
     module Game = struct

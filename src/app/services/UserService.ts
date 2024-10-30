@@ -1,3 +1,4 @@
+import { Utils, MGPOptional } from '@everyboard/lib';
 import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { UserDAO } from '../dao/UserDAO';
@@ -5,7 +6,6 @@ import { User } from '../domain/User';
 import { FirestoreTime } from '../domain/Time';
 import { FirestoreDocument } from '../dao/FirestoreDAO';
 import { serverTimestamp } from 'firebase/firestore';
-import { Utils, MGPOptional } from '@everyboard/lib';
 
 /**
   * The aim of this service is to:
@@ -20,18 +20,23 @@ import { Utils, MGPOptional } from '@everyboard/lib';
 })
 export class UserService {
 
-    public constructor(private readonly userDAO: UserDAO) {
+    public constructor(private readonly userDAO: UserDAO)
+    {
     }
+
     public async usernameIsAvailable(username: string): Promise<boolean> {
         const usersWithSameUsername: FirestoreDocument<User>[] = await this.userDAO.findWhere([['username', '==', username]]);
         return usersWithSameUsername.length === 0;
     }
+
     public async setUsername(uid: string, username: string): Promise<void> {
         await this.userDAO.update(uid, { username: username });
     }
+
     public async markAsVerified(uid: string): Promise<void> {
         await this.userDAO.update(uid, { verified: true });
     }
+
     /**
      * Observes an user, ignoring local updates.
      */
@@ -45,6 +50,7 @@ export class UserService {
             callback(user);
         });
     }
+
     public async getUserLastUpdateTime(id: string): Promise<MGPOptional<FirestoreTime>> {
         const user: MGPOptional<User> = await this.userDAO.read(id);
         if (user.isAbsent()) {
@@ -55,9 +61,11 @@ export class UserService {
             return MGPOptional.of(lastUpdateTime as FirestoreTime);
         }
     }
+
     public updatePresenceToken(userId: string): Promise<void> {
         return this.userDAO.update(userId, {
             lastUpdateTime: serverTimestamp(),
         });
     }
+
 }

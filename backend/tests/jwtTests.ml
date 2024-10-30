@@ -85,9 +85,9 @@ let get_rsa = function
 
 let tests () =
 
-    let private_key = private_key_str |> Cstruct.of_string |> X509.Private_key.decode_pem |> Result.get_ok |> get_rsa in
+    let private_key = private_key_str |> X509.Private_key.decode_pem |> Result.get_ok |> get_rsa in
 
-    let public_key = public_key_str |> Cstruct.of_string |> X509.Public_key.decode_pem |> Result.get_ok |> get_rsa in
+    let public_key = public_key_str |> X509.Public_key.decode_pem |> Result.get_ok |> get_rsa in
 
     (* Some identity token *)
     let identity_token =
@@ -114,8 +114,8 @@ let tests () =
             ];
         ] in
         let to_sign = (b64_of_json header) ^ "." ^ (b64_of_json payload) in
-        let signature = Mirage_crypto_pk.Rsa.PKCS1.sign ~hash:`SHA256 ~key:private_key (`Message (Cstruct.of_string to_sign)) |> Cstruct.to_string in
-        Printf.printf "verify: %b\n%!" (Mirage_crypto_pk.Rsa.PKCS1.verify ~hashp:(function _ -> true) ~key:public_key ~signature:(Cstruct.of_string signature) (`Message (Cstruct.of_string to_sign)));
+        let signature = Mirage_crypto_pk.Rsa.PKCS1.sign ~hash:`SHA256 ~key:private_key (`Message to_sign) in
+        Printf.printf "verify: %b\n%!" (Mirage_crypto_pk.Rsa.PKCS1.verify ~hashp:(function _ -> true) ~key:public_key ~signature (`Message to_sign));
         (* signature = Option.get (Dream.from_base64url "w356bi9Dwx9gGqORRfOwKSPLhq21XyiE7V1pmqnNxpUsQJeKRlHz9vi8QeJDwFT1dTkt79pVRacqd2w4G52tjNv7Khf6aRx6arbBtWfqLBNzbzD-US2iQFkPnXy_EkJma-YGTGbUSly6Ry9vd0axiUAvUkJ_DD1Ig1ySeYLMzeVkf501MZHshn7FO4Gx27DeLEQOLebNR9wJW4YnFN1lzyD4FM8KMpkgrpe7QQdoKNtG01aG96musc0YW0LofXN8_oQILg2Ocpnm9GLtSoUy7XNSqmQzgjiDvCR9xrPKMoPHmLcWZdrsTwTzLda9q4g0-RFGzA1yV1JMKzfY9qoRgQ"); *)
         Jwt.{ header; payload; signature } in
 
@@ -135,7 +135,7 @@ let tests () =
             "iat", `Int 1702952401;
         ] in
         let to_sign = (b64_of_json header) ^ "." ^ (b64_of_json payload) in
-        let signature = Mirage_crypto_pk.Rsa.PKCS1.sign ~hash:`SHA256 ~key:private_key (`Message (Cstruct.of_string to_sign)) |> Cstruct.to_string in
+        let signature = Mirage_crypto_pk.Rsa.PKCS1.sign ~hash:`SHA256 ~key:private_key (`Message to_sign) in
         Jwt.{
             header;
             payload;

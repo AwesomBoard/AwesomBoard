@@ -17,6 +17,7 @@ import { RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
 import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
+import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -37,6 +38,8 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     public displayAIMetrics: boolean = false;
 
     public configIsSet: boolean = false;
+
+    public configDemo: DemoNodeInfo;
 
     public rulesConfig: MGPOptional<RulesConfig> = MGPOptional.empty();
 
@@ -108,13 +111,15 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
                 const winner: string = $localize`Player ${gameStatus.winner.getValue() + 1}`;
                 const loser: Player = gameStatus.winner.getOpponent();
                 const loserValue: number = loser.getValue();
-                if (this.players[gameStatus.winner.getValue()].equalsValue('human')) { // When human win
+                if (this.players[gameStatus.winner.getValue()].equalsValue('human')) {
+                    // When human wins
                     if (this.players[loserValue].equalsValue('human')) {
                         this.winnerMessage = MGPOptional.of($localize`${ winner } won`);
                     } else {
                         this.winnerMessage = MGPOptional.of($localize`You won`);
                     }
-                } else { // When AI win
+                } else {
+                    // When AI wins
                     if (this.players[loserValue].equalsValue('human')) {
                         this.winnerMessage = MGPOptional.of($localize`You lost`);
                     } else {
@@ -272,6 +277,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     public async restartGame(): Promise<void> {
         const config: MGPOptional<RulesConfig> = await this.getConfig();
         this.gameComponent.node = this.gameComponent.rules.getInitialNode(config);
+        this.gameComponent.cancelMoveAttempt();
         this.gameComponent.hideLastMove();
         await this.gameComponent.updateBoardAndRedraw(false);
         this.endGame = false;
@@ -314,8 +320,12 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     public updateConfig(rulesConfig: MGPOptional<RulesConfig>): void {
         this.rulesConfig = rulesConfig;
         // If there is no config for this game, then rulesConfig value will be MGPOptional.empty()
-        if (rulesConfig.isPresent() && Object.keys(rulesConfig.get()).length === 0) {
-            this.markConfigAsFilled();
+        if (rulesConfig.isPresent()) {
+            this.setConfigDemo(rulesConfig.get());
+            if (Object.keys(rulesConfig.get()).length === 0) {
+                // There is nothing to configure for this game!
+                this.markConfigAsFilled();
+            }
         }
     }
 
@@ -349,6 +359,23 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             node.showDot(this.gameComponent.rules, this.rulesConfig, mctsLabel, 1);
         // Shows the graph on an online tool by opening a new tab
         window.open('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(result.dot));
+    }
+
+    private setConfigDemo(config: RulesConfig): void {
+        const stateProvider: MGPOptional<(config: MGPOptional<RulesConfig>) => GameState> = this.getStateProvider();
+        if (stateProvider.isPresent()) {
+            const node: AbstractNode = new GameNode(stateProvider.get()(MGPOptional.of(config)));
+            this.configDemo = {
+                click: MGPOptional.empty(),
+                name: this.getGameUrlName(),
+                node,
+            };
+            this.cdr.detectChanges();
+        }
+    }
+
+    public getConfigDemo(): DemoNodeInfo {
+        return this.configDemo;
     }
 
 }

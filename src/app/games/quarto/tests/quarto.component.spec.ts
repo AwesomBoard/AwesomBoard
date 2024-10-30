@@ -7,7 +7,8 @@ import { QuartoState } from 'src/app/games/quarto/QuartoState';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { ComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { QuartoRules } from '../QuartoRules';
+import { QuartoConfig, QuartoRules } from '../QuartoRules';
+import { MGPOptional } from '@everyboard/lib';
 
 describe('QuartoComponent', () => {
 
@@ -15,6 +16,10 @@ describe('QuartoComponent', () => {
 
     const NULL: QuartoPiece = QuartoPiece.EMPTY;
     const AAAA: QuartoPiece = QuartoPiece.AAAA;
+    const AAAB: QuartoPiece = QuartoPiece.AAAB;
+    const AABA: QuartoPiece = QuartoPiece.AABA;
+    const AABB: QuartoPiece = QuartoPiece.AABB;
+    const defaultConfig: MGPOptional<QuartoConfig> = QuartoRules.get().getDefaultRulesConfig();
 
     beforeEach(fakeAsync(async() => {
         testUtils = await ComponentTestUtils.forGame<QuartoComponent>('Quarto');
@@ -126,48 +131,74 @@ describe('QuartoComponent', () => {
         }));
     });
 
-    it('should show the piece in hand', fakeAsync(async() => {
-        // Given a state not at the last turn
-        // When displaying it
-        // Then it should show the piece in hand
-        testUtils.expectElementToExist('#piece-in-hand');
-    }));
+    describe('View', () => {
 
-    it('should not show a piece in hand at the very last turn when all pieces are on the board', fakeAsync(async() => {
-        // Given a state of a part finished at the last turn
-        const board: QuartoPiece[][] = [
-            [QuartoPiece.AABB, QuartoPiece.AAAB, QuartoPiece.ABBA, QuartoPiece.BBAA],
-            [QuartoPiece.BBAB, QuartoPiece.BAAA, QuartoPiece.BBBA, QuartoPiece.ABBB],
-            [QuartoPiece.BABA, QuartoPiece.BBBB, QuartoPiece.ABAA, QuartoPiece.AABA],
-            [QuartoPiece.AAAA, QuartoPiece.ABAB, QuartoPiece.BABB, QuartoPiece.BAAB],
-        ];
-        const pieceInHand: QuartoPiece = QuartoPiece.EMPTY;
-        const state: QuartoState = new QuartoState(board, 16, pieceInHand);
+        it('should show the piece in hand', fakeAsync(async() => {
+            // Given a state not at the last turn
+            // When displaying it
+            // Then it should show the piece in hand
+            testUtils.expectElementToExist('#piece-in-hand');
+        }));
 
-        // When displaying it
-        await testUtils.setupState(state);
+        it('should not show a piece in hand at the very last turn when all pieces are on the board', fakeAsync(async() => {
+            // Given a state of a part finished at the last turn
+            const board: QuartoPiece[][] = [
+                [QuartoPiece.AABB, QuartoPiece.AAAB, QuartoPiece.ABBA, QuartoPiece.BBAA],
+                [QuartoPiece.BBAB, QuartoPiece.BAAA, QuartoPiece.BBBA, QuartoPiece.ABBB],
+                [QuartoPiece.BABA, QuartoPiece.BBBB, QuartoPiece.ABAA, QuartoPiece.AABA],
+                [QuartoPiece.AAAA, QuartoPiece.ABAB, QuartoPiece.BABB, QuartoPiece.BAAB],
+            ];
+            const pieceInHand: QuartoPiece = QuartoPiece.EMPTY;
+            const state: QuartoState = new QuartoState(board, 16, pieceInHand);
 
-        // Then it should not show any piece in hand
-        testUtils.expectElementNotToExist('#piece-in-hand');
-    }));
+            // When displaying it
+            await testUtils.setupState(state);
 
-    it('should show last move', fakeAsync(async() => {
-        // Given any state where user has made a move
-        const board: Table<QuartoPiece> = [
-            [AAAA, NULL, NULL, NULL],
-            [NULL, NULL, NULL, NULL],
-            [NULL, NULL, NULL, NULL],
-            [NULL, NULL, NULL, NULL],
-        ];
-        const state: QuartoState = new QuartoState(board, 1, QuartoPiece.AAAB);
-        const previousState: QuartoState = QuartoRules.get().getInitialState();
-        const previousMove: QuartoMove = new QuartoMove(0, 0, QuartoPiece.AAAA);
+            // Then it should not show any piece in hand
+            testUtils.expectElementNotToExist('#piece-in-hand');
+        }));
 
-        // When displaying it
-        await testUtils.setupState(state, { previousState, previousMove });
+        it('should show last move', fakeAsync(async() => {
+            // Given any state where user has made a move
+            const board: Table<QuartoPiece> = [
+                [AAAA, NULL, NULL, NULL],
+                [NULL, NULL, NULL, NULL],
+                [NULL, NULL, NULL, NULL],
+                [NULL, NULL, NULL, NULL],
+            ];
+            const state: QuartoState = new QuartoState(board, 1, QuartoPiece.AAAB);
+            const previousState: QuartoState = QuartoRules.get().getInitialState(defaultConfig);
+            const previousMove: QuartoMove = new QuartoMove(0, 0, QuartoPiece.AAAA);
 
-        // Then it should show last move
-        testUtils.expectElementToExist('#last-move-0-0');
-        testUtils.expectElementToHaveClasses('#last-move-0-0', ['base', 'no-fill', 'last-move-stroke', 'mid-stroke']);
-    }));
+            // When displaying it
+            await testUtils.setupState(state, { previousState, previousMove });
+
+            // Then it should show last move
+            testUtils.expectElementToHaveClasses('#last-move-0-0', ['base', 'no-fill', 'last-move-stroke', 'mid-stroke']);
+        }));
+
+        it('should display victory', fakeAsync(async() => {
+            // Given any state where user has made a move
+            const board: Table<QuartoPiece> = [
+                [AAAA, AAAB, AABA, AABB],
+                [NULL, NULL, NULL, NULL],
+                [NULL, NULL, NULL, NULL],
+                [NULL, NULL, NULL, NULL],
+            ];
+            const state: QuartoState = new QuartoState(board, 4, QuartoPiece.BBBB);
+            const previousState: QuartoState = QuartoRules.get().getInitialState(defaultConfig);
+            const previousMove: QuartoMove = new QuartoMove(0, 0, QuartoPiece.AAAA);
+
+            // When displaying it
+            await testUtils.setupState(state, { previousState, previousMove });
+
+            // Then it should show last move
+            testUtils.expectElementToHaveClasses('#victory-0-0', ['base', 'no-fill', 'victory-stroke']);
+            testUtils.expectElementToHaveClasses('#victory-1-0', ['base', 'no-fill', 'victory-stroke']);
+            testUtils.expectElementToHaveClasses('#victory-2-0', ['base', 'no-fill', 'victory-stroke']);
+            testUtils.expectElementToHaveClasses('#victory-3-0', ['base', 'no-fill', 'victory-stroke']);
+        }));
+
+    });
+
 });

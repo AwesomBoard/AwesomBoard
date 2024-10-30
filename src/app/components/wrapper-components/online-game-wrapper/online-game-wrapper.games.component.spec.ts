@@ -18,7 +18,7 @@ describe('OnlineGameWrapperComponent (games)', () => {
     let testUtils: ComponentTestUtils<AbstractGameComponent, MinimalUser>;
 
     for (const gameInfo of GameInfo.getAllGames()) {
-        it(`click methods should refuse when observer clicks (${ gameInfo.urlName})`, fakeAsync(async() => {
+        it(`click methods should refuse when observer clicks (${gameInfo.urlName})`, fakeAsync(async() => {
             // Given a online game
             const game: { [methodName: string]: unknown[] } | undefined = clickableMethods[gameInfo.urlName];
             if (game == null) {
@@ -27,11 +27,9 @@ describe('OnlineGameWrapperComponent (games)', () => {
             testUtils = (await prepareStartedGameFor<AbstractGameComponent>(UserMocks.CREATOR_AUTH_USER,
                                                                             gameInfo.urlName,
                                                                             PreparationOptions.dontWait)).testUtils;
-            // When displaying the component
             tick(2);
             testUtils.detectChanges();
 
-            // Then the svg component should have no rotation
             const wrapper: OnlineGameWrapperComponent = testUtils.getWrapper() as OnlineGameWrapperComponent;
             expect(wrapper.gameComponent).toBeDefined();
             await testUtils.getWrapper().setRole(PlayerOrNone.NONE);

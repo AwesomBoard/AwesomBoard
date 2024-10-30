@@ -50,7 +50,7 @@ module CryptoUtils = struct
         PEM string that represents a certificate. Raises [UnexpectedError] in case
         of failure. *)
     let public_key_of_certificate_string = fun (pem : string) : public_key ->
-        let public_key = pem |> Cstruct.of_string |> X509.Certificate.decode_pem in
+        let public_key = pem |> X509.Certificate.decode_pem in
         match public_key with
         | Error _ -> raise (UnexpectedError "Invalid certificate")
         | Ok cert -> match X509.Certificate.public_key cert with
@@ -69,7 +69,7 @@ module DreamUtils = struct
     let authorization_header = fun (access_token : string) : (string * string) ->
         ("Authorization", "Bearer " ^ access_token)
 
-    let get_json_param = fun (request : Dream.request) (field : string) : (Yojson.Safe.t, string) result ->
+    let get_json_param = fun (request : Dream.request) (field : string) : (JSON.t, string) result ->
         match Dream.query request field with
         | None -> Error (Printf.sprintf "parameter missing: %s" field)
         | Some value ->

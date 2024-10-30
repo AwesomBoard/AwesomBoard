@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="100%" height="100%"
+     class="board"
      [attr.viewBox]="getViewBox().toSVGString()"
      preserveAspectRatio="xMidYMid meet">
     <defs>
@@ -23,7 +23,7 @@
              xlink:href="#triangle"
              id="chooseDirection_{{ direction }}"
              (click)="chooseDirection(direction)"
-             [attr.transform]="getArrowTransform(direction)"
+             [attr.transform]="getQuixoArrowTransform(direction)"
              class="semi-transparent"/>
     </g>
 </svg>

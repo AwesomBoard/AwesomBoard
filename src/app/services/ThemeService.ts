@@ -38,6 +38,10 @@ export class ThemeService {
         return MGPOptional.empty();
     }
     public loadTheme(theme: Theme): void {
+        // The data-theme attribute of the <html> element governs the bulma theme
+        const htmlElement: HTMLElement = this.document.getElementsByTagName('html')[0];
+        htmlElement.setAttribute('data-theme', theme);
+        // And we also need to load our own CSS for our game colors
         this.loadStyle(theme + '.css');
         this.theme = theme;
     }

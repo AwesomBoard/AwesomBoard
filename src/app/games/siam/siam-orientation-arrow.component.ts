@@ -39,7 +39,7 @@ export class SiamOrientationArrowComponent extends BaseGameComponent {
         centralCoord = centralCoord.scale(this.SPACE_SIZE, this.SPACE_SIZE);
 
         const orientationDegrees: number = (orientation.toInt() - 2) * 90;
-        const translation: string = `translate(${centralCoord.x}, ${centralCoord.y})`;
+        const translation: string = this.getSVGTranslationAt(centralCoord);
         const scale: string = `scale(${ scaleValue })`;
         const rotation: string = `rotate(${orientationDegrees} ${this.SPACE_SIZE/2} ${this.SPACE_SIZE/2})`;
         return [translation, scale, rotation].join(' ');

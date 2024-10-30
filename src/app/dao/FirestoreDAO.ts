@@ -57,10 +57,12 @@ export abstract class FirestoreDAO<T extends FirestoreJSONObject> implements IFi
         const firestore: Firestore.Firestore = Firestore.getFirestore();
         this.collection = Firestore.collection(firestore, this.collectionName).withConverter<T>(genericConverter);
     }
+
     public async create(newElement: T): Promise<string> {
         const docRef: Firestore.DocumentReference = await Firestore.addDoc(this.collection, newElement);
         return docRef.id;
     }
+
     public async read(id: string): Promise<MGPOptional<T>> {
         const docSnapshot: Firestore.DocumentSnapshot<T> = await Firestore.getDoc(Firestore.doc(this.collection, id));
         if (docSnapshot.exists()) {
@@ -69,24 +71,30 @@ export abstract class FirestoreDAO<T extends FirestoreJSONObject> implements IFi
             return MGPOptional.empty();
         }
     }
+
     public async exists(id: string): Promise<boolean> {
         return (await this.read(id)).isPresent();
     }
+
     public async update(id: string, update: Firestore.UpdateData<T>): Promise<void> {
         return Firestore.updateDoc(Firestore.doc(this.collection, id), update);
     }
-    public delete(id: string): Promise<void> {
+
+    public async delete(id: string): Promise<void> {
         return Firestore.deleteDoc(Firestore.doc(this.collection, id));
     }
-    public set(id: string, element: T): Promise<void> {
+
+    public async set(id: string, element: T): Promise<void> {
         return Firestore.setDoc(Firestore.doc(this.collection, id), element);
     }
+
     public subscribeToChanges(id: string, callback: (doc: MGPOptional<T>) => void): Subscription {
         return new Subscription(Firestore.onSnapshot(Firestore.doc(this.collection, id),
                                                      (doc: Firestore.DocumentSnapshot<T>) => {
                                                          callback(MGPOptional.ofNullable(doc.data()));
                                                      }));
     }
+
     public async findWhere(conditions: FirestoreCondition[], order?: string, limit?: number)
     : Promise<FirestoreDocument<T>[]>
     {
@@ -99,6 +107,7 @@ export abstract class FirestoreDAO<T extends FirestoreJSONObject> implements IFi
             };
         });
     }
+
     /**
      * Observe the data according to the given conditions, where a condition consists of:
      * - a field
@@ -150,6 +159,7 @@ export abstract class FirestoreDAO<T extends FirestoreJSONObject> implements IFi
             }
         }));
     }
+
     private constructQuery(conditions: FirestoreCondition[], order?: string, limit?: number): Firestore.Query<T> {
         let query: Firestore.Query<T> = Firestore.query(this.collection);
         if (order != null) {
@@ -163,6 +173,7 @@ export abstract class FirestoreDAO<T extends FirestoreJSONObject> implements IFi
         }
         return query;
     }
+
     public subCollectionDAO<U extends FirestoreJSONObject>(id: string, name: string): IFirestoreDAO<U> {
         const fullPath: string = `${this.collection.path}/${id}/${name}`;
         if (fullPath in this.subDAOs) {
@@ -177,4 +188,5 @@ export abstract class FirestoreDAO<T extends FirestoreJSONObject> implements IFi
             return subDAO;
         }
     }
+
 }

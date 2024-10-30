@@ -83,8 +83,8 @@ describe('TrigoComponent', () => {
         testUtils.expectElementToExist('#territory-2-4');
     }));
 
-    it('should show ko coord', fakeAsync(async() => {
-        // Given a board in counting phase with dead and territory
+    it('should show ko coord (downward)', fakeAsync(async() => {
+        // Given a board with a ko
         const board: Table<GoPiece> = [
             [N, N, N, N, _, N, N, N, N],
             [N, N, N, _, O, _, N, N, N],
@@ -93,13 +93,32 @@ describe('TrigoComponent', () => {
             [O, _, O, _, _, _, _, X, _],
         ];
         const state: GoState =
-            new GoState(board, PlayerNumberMap.of(2, 1), 3, MGPOptional.of(new Coord(1, 4)), 'COUNTING');
+            new GoState(board, PlayerNumberMap.of(2, 1), 3, MGPOptional.of(new Coord(1, 4)), 'PLAYING');
 
         // When rendering it
         await testUtils.setupState(state, { config: MGPOptional.of({ size: 5 }) });
 
-        // Then it should render the dead
+        // Then it should render the ko
         testUtils.expectElementToExist('#ko-1-4');
+    }));
+
+    it('should show ko coord (updward)', fakeAsync(async() => {
+        // Given a board with a ko
+        const board: Table<GoPiece> = [
+            [N, N, N, N, O, N, N, N, N],
+            [N, N, N, _, O, _, N, N, N],
+            [N, N, _, _, O, _, _, N, N],
+            [N, _, _, _, _, X, X, _, N],
+            [_, _, _, O, _, O, X, _, _],
+        ];
+        const state: GoState =
+            new GoState(board, PlayerNumberMap.of(2, 1), 11, MGPOptional.of(new Coord(4, 4)), 'PLAYING');
+
+        // When rendering it
+        await testUtils.setupState(state, { config: MGPOptional.of({ size: 5 }) });
+
+        // Then it should render the ko
+        testUtils.expectElementToExist('#ko-4-4');
     }));
 
 });

@@ -49,21 +49,21 @@ describe('GipfComponent', () => {
             const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 4), MGPOptional.empty()), [], []);
 
             // Then the move should succeed and insert immediately the piece on that space
-            await testUtils.expectMoveSuccess('#click_0_4', move);
+            await testUtils.expectMoveSuccess('#click-0-4', move);
         }));
 
         it('should not accept selecting a non-border coord for placement', fakeAsync(async() => {
             // Given any board with empty space
             // When clicking on those spaces as first click
             // Then it should fail
-            await testUtils.expectClickFailure('#click_3_3', GipfFailure.PLACEMENT_NOT_ON_BORDER());
+            await testUtils.expectClickFailure('#click-3-3', GipfFailure.PLACEMENT_NOT_ON_BORDER());
         }));
 
         it('should show possible directions after selecting an occupied placement coord', fakeAsync(async() => {
             // Given any board
 
             // When clicking on an occupied border space
-            await testUtils.expectClickSuccess('#click_6_3');
+            await testUtils.expectClickSuccess('#click-6-3');
 
             // Then the possible pushing direction should be shown
             expect(testUtils.getGameComponent().arrows.length).toBe(3);
@@ -88,14 +88,14 @@ describe('GipfComponent', () => {
 
             // When clicking on a space/piece not part of a capture
             // Then it should fail
-            await testUtils.expectClickFailure('#click_6_3', GipfFailure.MISSING_CAPTURES());
+            await testUtils.expectClickFailure('#click-6-3', GipfFailure.MISSING_CAPTURES());
         }));
 
         it('should highlight initial captures directly', fakeAsync(async() => {
             // Given a board on which a capture is possible
             const board: Table<FourStatePiece> = [
                 [N, N, N, _, _, _, _],
-                [N, N, _, _, _, _, _],
+                [N, N, _, B, _, _, _],
                 [N, _, _, A, _, _, _],
                 [_, _, _, A, _, _, _],
                 [_, _, _, A, _, _, N],
@@ -106,13 +106,20 @@ describe('GipfComponent', () => {
             await testUtils.setupState(state);
 
             // When clicking a piece amongst the capturable one
-            await testUtils.expectClickSuccess('#click_3_3');
+            await testUtils.expectClickSuccess('#click-3-3');
 
             // Then the capture should already be shown (the piece "captured")
-            testUtils.expectElementToHaveClasses('#space_3_2', ['base', 'captured-fill']);
-            testUtils.expectElementToHaveClasses('#space_3_3', ['base', 'captured-fill']);
-            testUtils.expectElementToHaveClasses('#space_3_4', ['base', 'captured-fill']);
-            testUtils.expectElementToHaveClasses('#space_3_5', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-1', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-2', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-3', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-4', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-5', ['base', 'captured-fill']);
+
+            testUtils.expectElementToHaveClasses('#dead-piece-3-1', ['base', 'semi-transparent', 'player1-fill']);
+            testUtils.expectElementToHaveClasses('#dead-piece-3-2', ['base', 'semi-transparent', 'player0-fill']);
+            testUtils.expectElementToHaveClasses('#dead-piece-3-3', ['base', 'semi-transparent', 'player0-fill']);
+            testUtils.expectElementToHaveClasses('#dead-piece-3-4', ['base', 'semi-transparent', 'player0-fill']);
+            testUtils.expectElementToHaveClasses('#dead-piece-3-5', ['base', 'semi-transparent', 'player0-fill']);
         }));
 
         it('should make pieces disappear upon selection of a capture', fakeAsync(async() => {
@@ -130,7 +137,7 @@ describe('GipfComponent', () => {
             await testUtils.setupState(state);
 
             // When clicking on a piece part of the capture
-            await testUtils.expectClickSuccess('#click_3_3');
+            await testUtils.expectClickSuccess('#click-3-3');
 
             // Then the piece should be disappeared
             expect(testUtils.getGameComponent().isPiece(new Coord(3, 2))).toBeFalse();
@@ -155,7 +162,7 @@ describe('GipfComponent', () => {
 
             // When clicking on that space
             // Then it should fail due to ambiguity
-            await testUtils.expectClickFailure('#click_2_3', GipfFailure.AMBIGUOUS_CAPTURE_COORD());
+            await testUtils.expectClickFailure('#click-2-3', GipfFailure.AMBIGUOUS_CAPTURE_COORD());
         }));
 
         it('should not allow selecting placement when no direction is valid', fakeAsync(async() => {
@@ -174,98 +181,234 @@ describe('GipfComponent', () => {
 
             // When clicking on that space
             // Then it should fail
-            await testUtils.expectClickFailure('#click_0_6', GipfFailure.NO_DIRECTIONS_AVAILABLE());
+            await testUtils.expectClickFailure('#click-0-6', GipfFailure.NO_DIRECTIONS_AVAILABLE());
         }));
 
     });
 
-    it('should accept placing after performing initial captures', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, _, _, A, _, _],
-            [N, _, _, A, _, A, _],
-            [_, _, _, A, A, _, _],
-            [_, _, _, A, B, B, N],
-            [_, _, B, A, _, N, N],
-            [_, _, _, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
+    describe('Second click', () => {
 
-        await testUtils.expectClickSuccess('#click_3_3');
-        const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 4), MGPOptional.empty()),
-                                            [new GipfCapture([
-                                                new Coord(3, 2), new Coord(3, 3), new Coord(3, 4), new Coord(3, 5),
-                                            ])], []);
-        await testUtils.expectMoveSuccess('#click_0_4', move);
-    }));
+        it('should accept placing after performing initial captures', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, _, _, A, _, _],
+                [N, _, _, A, _, A, _],
+                [_, _, _, A, A, _, _],
+                [_, _, _, A, B, B, N],
+                [_, _, B, A, _, N, N],
+                [_, _, _, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
 
-    it('should not allow clicking on anything else than a capture if there is one in the final captures', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, _, _, _, _, _],
-            [N, _, _, A, _, A, _],
-            [B, B, A, _, _, _, _],
-            [_, A, B, _, _, _, N],
-            [A, _, B, _, _, N, N],
-            [_, _, B, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P1Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
+            await testUtils.expectClickSuccess('#click-3-3');
+            const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 4), MGPOptional.empty()),
+                                                [new GipfCapture([
+                                                    new Coord(3, 2), new Coord(3, 3), new Coord(3, 4), new Coord(3, 5),
+                                                ])], []);
+            await testUtils.expectMoveSuccess('#click-0-4', move);
+        }));
 
-        // Perform the placement to prepare for final capture
-        await testUtils.expectClickSuccess('#click_0_3');
-        await testUtils.expectClickSuccess('#click_1_3');
-        await testUtils.expectClickFailure('#click_3_3', GipfFailure.MISSING_CAPTURES());
-    }));
+        it('should highlight moved pieces only', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, _, _, A, _, _],
+                [N, _, _, _, _, A, _],
+                [_, _, _, _, B, _, _],
+                [_, _, _, A, _, _, N],
+                [_, _, _, _, _, N, N],
+                [_, B, _, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
 
-    it('should perform move after final captures has been done', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, _, _, _, _, _],
-            [N, _, _, A, _, A, _],
-            [B, B, A, _, _, _, _],
-            [_, A, B, _, _, _, N],
-            [A, _, B, _, _, N, N],
-            [_, _, B, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P1Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
+            const placement: GipfPlacement = new GipfPlacement(new Coord(1, 6), MGPOptional.of(HexaDirection.UP_RIGHT));
+            const move: GipfMove = new GipfMove(placement, [], []);
+            await testUtils.expectClickSuccess('#click-1-6');
+            await testUtils.expectMoveSuccess('#click-2-5', move);
 
-        await testUtils.expectClickSuccess('#click_0_3');
-        await testUtils.expectClickSuccess('#click_1_3');
+            expect(testUtils.getGameComponent().getSpaceClass(new Coord(1, 6))).toEqual('moved-fill');
+            expect(testUtils.getGameComponent().getSpaceClass(new Coord(2, 5))).toEqual('moved-fill');
+            expect(testUtils.getGameComponent().getSpaceClass(new Coord(3, 4))).not.toEqual('moved-fill');
+        }));
 
-        const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 3), MGPOptional.of(HexaDirection.RIGHT)),
-                                            [],
-                                            [new GipfCapture([
-                                                new Coord(2, 3), new Coord(2, 4), new Coord(2, 5), new Coord(2, 6),
-                                            ])]);
+        it('should highlight captured pieces positions', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, _, _, A, _, _],
+                [N, _, _, A, _, A, _],
+                [_, _, _, A, A, _, _],
+                [_, _, _, A, B, B, N],
+                [_, _, B, A, _, N, N],
+                [_, _, _, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
 
-        await testUtils.expectMoveSuccess('#click_2_3', move);
-    }));
+            await testUtils.expectClickSuccess('#click-3-3');
+            const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 4), MGPOptional.empty()),
+                                                [new GipfCapture([
+                                                    new Coord(3, 2), new Coord(3, 3), new Coord(3, 4), new Coord(3, 5),
+                                                ])], []);
 
-    it('should highlight moved pieces only', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, _, _, A, _, _],
-            [N, _, _, _, _, A, _],
-            [_, _, _, _, B, _, _],
-            [_, _, _, A, _, _, N],
-            [_, _, _, _, _, N, N],
-            [_, B, _, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
+            await testUtils.expectMoveSuccess('#click-0-4', move);
 
-        const placement: GipfPlacement = new GipfPlacement(new Coord(1, 6), MGPOptional.of(HexaDirection.UP_RIGHT));
-        const move: GipfMove = new GipfMove(placement, [], []);
-        await testUtils.expectClickSuccess('#click_1_6');
-        await testUtils.expectMoveSuccess('#click_2_5', move);
+            testUtils.expectElementToHaveClasses('#space-3-2', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-3', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-4', ['base', 'captured-fill']);
+            testUtils.expectElementToHaveClasses('#space-3-5', ['base', 'captured-fill']);
+        }));
 
-        expect(testUtils.getGameComponent().getSpaceClass(new Coord(1, 6))).toEqual('moved-fill');
-        expect(testUtils.getGameComponent().getSpaceClass(new Coord(2, 5))).toEqual('moved-fill');
-        expect(testUtils.getGameComponent().getSpaceClass(new Coord(3, 4))).not.toEqual('moved-fill');
-    }));
+        it('should update the number of pieces available', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, _, _, A, _, _],
+                [N, _, _, A, _, A, _],
+                [_, _, _, A, A, _, _],
+                [_, _, _, A, B, B, N],
+                [_, _, B, A, _, N, N],
+                [_, _, _, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
+
+            await testUtils.expectClickSuccess('#click-3-3');
+            const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 4), MGPOptional.empty()),
+                                                [new GipfCapture([
+                                                    new Coord(3, 2), new Coord(3, 3), new Coord(3, 4), new Coord(3, 5),
+                                                ])], []);
+
+            await testUtils.expectMoveSuccess('#click-0-4', move);
+
+            expect(testUtils.getGameComponent().getPlayerSidePieces(Player.ZERO).length).toBe(8);
+            expect(testUtils.getGameComponent().getPlayerSidePieces(Player.ONE).length).toBe(5);
+        }));
+
+        it('should deselect piece when clicking a second time on it', fakeAsync(async() => {
+            // Given any board on which one piece is selected for push
+            await testUtils.expectClickSuccess('#click-6-3');
+
+            // When clicking on it again
+            await testUtils.expectClickFailure('#click-6-3');
+
+            // Then it should no longer be selected
+            expect(testUtils.getGameComponent().arrows.length).toBe(0);
+        }));
+
+        it('should not accept placement on a complete line', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, _, _, A, _, B],
+                [N, _, _, _, _, A, _],
+                [_, _, _, _, B, _, _],
+                [_, _, _, A, _, _, N],
+                [_, _, B, _, _, N, N],
+                [_, B, _, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
+
+            await testUtils.expectClickSuccess('#click-1-6');
+            expect(testUtils.getGameComponent().arrows.length).toBe(1);
+            await testUtils.expectClickFailure('#click-2-5', GipfFailure.PLACEMENT_ON_COMPLETE_LINE());
+        }));
+
+        it('should select clicked coord when clicking on another piece to push', fakeAsync(async() => {
+            // Given any board where an insertion coord has been chosen
+            await testUtils.expectClickSuccess('#click-6-3');
+
+            // When clicking on an occupied border space
+            await testUtils.expectClickSuccess('#click-3-6');
+
+            // Then the possible pushing direction should be shown
+            expect(testUtils.getGameComponent().arrows.length).toBe(3);
+            expectToHaveArrow(new Coord(3, 6), new Coord(2, 6));
+            expectToHaveArrow(new Coord(3, 6), new Coord(3, 5));
+            expectToHaveArrow(new Coord(3, 6), new Coord(4, 5));
+        }));
+
+    });
+
+    describe('Third click', () => {
+
+        it('should not allow clicking on anything else than a capture if there is one in the final captures', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, _, _, _, _, _],
+                [N, _, _, A, _, A, _],
+                [B, B, A, _, _, _, _],
+                [_, A, B, _, _, _, N],
+                [A, _, B, _, _, N, N],
+                [_, _, B, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P1Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
+
+            // Perform the placement to prepare for final capture
+            await testUtils.expectClickSuccess('#click-0-3');
+            await testUtils.expectClickSuccess('#click-1-3');
+            await testUtils.expectClickFailure('#click-3-3', GipfFailure.MISSING_CAPTURES());
+        }));
+
+        it('should perform move after final captures has been done', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, _, _, _, _, _],
+                [N, _, _, A, _, A, _],
+                [B, B, A, _, _, _, _],
+                [_, A, B, _, _, _, N],
+                [A, _, B, _, _, N, N],
+                [_, _, B, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P1Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
+
+            await testUtils.expectClickSuccess('#click-0-3');
+            await testUtils.expectClickSuccess('#click-1-3');
+
+            const move: GipfMove = new GipfMove(
+                new GipfPlacement(new Coord(0, 3), MGPOptional.of(HexaDirection.RIGHT)),
+                [],
+                [new GipfCapture([
+                    new Coord(2, 3), new Coord(2, 4), new Coord(2, 5), new Coord(2, 6),
+                ])],
+            );
+
+            await testUtils.expectMoveSuccess('#click-2-3', move);
+        }));
+
+        it('should accept moves with two initial captures', fakeAsync(async() => {
+            const board: Table<FourStatePiece> = [
+                [N, N, N, _, _, _, _],
+                [N, N, A, _, A, _, _],
+                [N, _, A, _, A, _, _],
+                [_, _, A, _, A, _, _],
+                [_, _, A, _, A, _, N],
+                [_, _, _, _, _, N, N],
+                [_, _, _, _, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            await testUtils.setupState(state);
+
+            const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(6, 3),
+                                                                  MGPOptional.empty()),
+                                                [
+                                                    new GipfCapture([
+                                                        new Coord(4, 4), new Coord(4, 3),
+                                                        new Coord(4, 2), new Coord(4, 1),
+                                                    ]),
+                                                    new GipfCapture([
+                                                        new Coord(2, 4), new Coord(2, 3),
+                                                        new Coord(2, 2), new Coord(2, 1),
+                                                    ]),
+                                                ], []);
+
+            await testUtils.expectClickSuccess('#click-4-4');
+            await testUtils.expectClickSuccess('#click-2-4');
+            await testUtils.expectMoveSuccess('#click-6-3', move);
+        }));
+
+    });
 
     it('should highlight capturable pieces', fakeAsync(async() => {
         const board: Table<FourStatePiece> = [
@@ -286,107 +429,6 @@ describe('GipfComponent', () => {
             new Coord(3, 4),
             new Coord(3, 5),
         ]));
-    }));
-
-    it('should highlight captured pieces positions', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, _, _, A, _, _],
-            [N, _, _, A, _, A, _],
-            [_, _, _, A, A, _, _],
-            [_, _, _, A, B, B, N],
-            [_, _, B, A, _, N, N],
-            [_, _, _, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
-
-        await testUtils.expectClickSuccess('#click_3_3');
-        const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 4), MGPOptional.empty()),
-                                            [new GipfCapture([
-                                                new Coord(3, 2), new Coord(3, 3), new Coord(3, 4), new Coord(3, 5),
-                                            ])], []);
-
-        await testUtils.expectMoveSuccess('#click_0_4', move);
-
-        testUtils.expectElementToHaveClasses('#space_3_2', ['base', 'captured-fill']);
-        testUtils.expectElementToHaveClasses('#space_3_3', ['base', 'captured-fill']);
-        testUtils.expectElementToHaveClasses('#space_3_4', ['base', 'captured-fill']);
-        testUtils.expectElementToHaveClasses('#space_3_5', ['base', 'captured-fill']);
-    }));
-
-    it('should update the number of pieces available', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, _, _, A, _, _],
-            [N, _, _, A, _, A, _],
-            [_, _, _, A, A, _, _],
-            [_, _, _, A, B, B, N],
-            [_, _, B, A, _, N, N],
-            [_, _, _, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
-
-        await testUtils.expectClickSuccess('#click_3_3');
-        const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(0, 4), MGPOptional.empty()),
-                                            [new GipfCapture([
-                                                new Coord(3, 2), new Coord(3, 3), new Coord(3, 4), new Coord(3, 5),
-                                            ])], []);
-
-        await testUtils.expectMoveSuccess('#click_0_4', move);
-
-        expect(testUtils.getGameComponent().getPlayerSidePieces(Player.ZERO).length).toBe(8);
-        expect(testUtils.getGameComponent().getPlayerSidePieces(Player.ONE).length).toBe(5);
-    }));
-
-    it('should not accept placement on a complete line', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, _, _, A, _, B],
-            [N, _, _, _, _, A, _],
-            [_, _, _, _, B, _, _],
-            [_, _, _, A, _, _, N],
-            [_, _, B, _, _, N, N],
-            [_, B, _, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
-
-        await testUtils.expectClickSuccess('#click_1_6');
-        expect(testUtils.getGameComponent().arrows.length).toBe(1);
-        await testUtils.expectClickFailure('#click_2_5', GipfFailure.PLACEMENT_ON_COMPLETE_LINE());
-    }));
-
-    it('should accept moves with two initial captures', fakeAsync(async() => {
-        const board: Table<FourStatePiece> = [
-            [N, N, N, _, _, _, _],
-            [N, N, A, _, A, _, _],
-            [N, _, A, _, A, _, _],
-            [_, _, A, _, A, _, _],
-            [_, _, A, _, A, _, N],
-            [_, _, _, _, _, N, N],
-            [_, _, _, _, N, N, N],
-        ];
-        const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
-        await testUtils.setupState(state);
-
-        const move: GipfMove = new GipfMove(new GipfPlacement(new Coord(6, 3),
-                                                              MGPOptional.empty()),
-                                            [
-                                                new GipfCapture([
-                                                    new Coord(4, 4), new Coord(4, 3),
-                                                    new Coord(4, 2), new Coord(4, 1),
-                                                ]),
-                                                new GipfCapture([
-                                                    new Coord(2, 4), new Coord(2, 3),
-                                                    new Coord(2, 2), new Coord(2, 1),
-                                                ]),
-                                            ], []);
-
-        await testUtils.expectClickSuccess('#click_4_4');
-        await testUtils.expectClickSuccess('#click_2_4');
-        await testUtils.expectMoveSuccess('#click_6_3', move);
     }));
 
     it('should accept moves with two final captures', fakeAsync(async() => {
@@ -416,10 +458,10 @@ describe('GipfComponent', () => {
                                                 ]),
                                             ]);
 
-        await testUtils.expectClickSuccess('#click_5_4'); // select placement coord
-        await testUtils.expectClickSuccess('#click_4_4'); // select direction
-        await testUtils.expectClickSuccess('#click_4_4'); // select first capture
-        await testUtils.expectMoveSuccess('#click_2_4', move); // select second capture
+        await testUtils.expectClickSuccess('#click-5-4'); // select placement coord
+        await testUtils.expectClickSuccess('#click-4-4'); // select direction
+        await testUtils.expectClickSuccess('#click-4-4'); // select first capture
+        await testUtils.expectMoveSuccess('#click-2-4', move); // select second capture
     }));
 
     it('should remove highlights and arrows upon move cancelation', fakeAsync(async() => {
@@ -435,13 +477,13 @@ describe('GipfComponent', () => {
         const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
         await testUtils.setupState(state);
 
-        await testUtils.expectClickSuccess('#click_3_3');
-        await testUtils.expectClickSuccess('#click_4_5');
-        await testUtils.expectClickSuccess('#click_4_4');
-        await testUtils.expectClickFailure('#click_3_3', GipfFailure.MISSING_CAPTURES());
+        await testUtils.expectClickSuccess('#click-3-3');
+        await testUtils.expectClickSuccess('#click-4-5');
+        await testUtils.expectClickSuccess('#click-4-4');
+        await testUtils.expectClickFailure('#click-3-3', GipfFailure.MISSING_CAPTURES());
 
-        testUtils.expectElementToHaveClasses('#space_4_5', ['base']);
-        testUtils.expectElementToHaveClasses('#space_3_3', ['base']);
+        testUtils.expectElementToHaveClasses('#space-4-5', ['base']);
+        testUtils.expectElementToHaveClasses('#space-3-3', ['base']);
         expect(testUtils.getGameComponent().arrows.length).toBe(0);
     }));
 
@@ -483,36 +525,11 @@ describe('GipfComponent', () => {
                 ]),
             ],
         );
-        await testUtils.expectClickSuccess('#click_6_0'); // Initial capture
-        await testUtils.expectClickSuccess('#click_3_6'); // Placement coord
-        await testUtils.expectClickSuccess('#click_3_5'); // Placement direction
-        await testUtils.expectClickSuccess('#click_0_5'); // Final capture 1
-        await testUtils.expectMoveSuccess('#click_3_0', move); // Final capture 2
-    }));
-
-    it('should select clicked coord when clicking on another piece to push', fakeAsync(async() => {
-        // Given any board where an insertion coord has been chosen
-        await testUtils.expectClickSuccess('#click_6_3');
-
-        // When clicking on an occupied border space
-        await testUtils.expectClickSuccess('#click_3_6');
-
-        // Then the possible pushing direction should be shown
-        expect(testUtils.getGameComponent().arrows.length).toBe(3);
-        expectToHaveArrow(new Coord(3, 6), new Coord(2, 6));
-        expectToHaveArrow(new Coord(3, 6), new Coord(3, 5));
-        expectToHaveArrow(new Coord(3, 6), new Coord(4, 5));
-    }));
-
-    it('should deselect piece when clicking a second time on it', fakeAsync(async() => {
-        // Given any board on which one piece is selected for push
-        await testUtils.expectClickSuccess('#click_6_3');
-
-        // When clicking on it again
-        await testUtils.expectClickFailure('#click_6_3');
-
-        // Then it should no longer be selected
-        expect(testUtils.getGameComponent().arrows.length).toBe(0);
+        await testUtils.expectClickSuccess('#click-6-0'); // Initial capture
+        await testUtils.expectClickSuccess('#click-3-6'); // Placement coord
+        await testUtils.expectClickSuccess('#click-3-5'); // Placement direction
+        await testUtils.expectClickSuccess('#click-0-5'); // Final capture 1
+        await testUtils.expectMoveSuccess('#click-3-0', move); // Final capture 2
     }));
 
 });

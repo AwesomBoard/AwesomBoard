@@ -15,6 +15,7 @@ import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { Debug } from 'src/app/utils/Debug';
 import { CoordSet } from 'src/app/jscaip/CoordSet';
+import { HexagonalUtils } from 'src/app/jscaip/HexagonalUtils';
 
 export class SaharaNode extends GameNode<SaharaMove, SaharaState> {}
 
@@ -31,18 +32,35 @@ export class SaharaRules extends Rules<SaharaMove, SaharaState> {
     }
 
     public override getInitialState(): SaharaState {
+        const size: number = 3;
         const N: FourStatePiece = FourStatePiece.UNREACHABLE;
         const O: FourStatePiece = FourStatePiece.ZERO;
         const X: FourStatePiece = FourStatePiece.ONE;
         const _: FourStatePiece = FourStatePiece.EMPTY;
-        const board: FourStatePiece[][] = [
-            [N, N, O, X, _, _, _, O, X, N, N],
-            [N, _, _, _, _, _, _, _, _, _, N],
-            [X, _, _, _, _, _, _, _, _, _, O],
-            [O, _, _, _, _, _, _, _, _, _, X],
-            [N, _, _, _, _, _, _, _, _, _, N],
-            [N, N, X, O, _, _, _, X, O, N, N],
-        ];
+
+        const board: FourStatePiece[][] = HexagonalUtils.createBoard(size, N, _);
+        const start: number = (size + 1) % 2;
+        const xEnd: number = (4 * size) - (2 - start);
+        const yEnd: number = (size * 2) - 1;
+        const first: number = size - (size % 2);
+        const second: number = first + 1;
+        const third: number = first + (2 * size) - 1;
+        const fourth: number = third + 1;
+
+        board[0][first] = O;
+        board[0][second] = X;
+        board[0][third] = O;
+        board[0][fourth] = X;
+
+        board[first - start][start] = X;
+        board[second - start][start] = O;
+        board[first - start][xEnd] = O;
+        board[second - start][xEnd] = X;
+
+        board[yEnd][first] = O;
+        board[yEnd][second] = X;
+        board[yEnd][third] = O;
+        board[yEnd][fourth] = X;
         return new SaharaState(board, 0);
     }
 

@@ -47,4 +47,8 @@ export class Vector implements ComparableObject {
         return '(' + this.x + ', ' + this.y + ')';
     }
 
+    public toHTMLClassName(): string {
+        return this.toString().replace('_', '-');
+    }
+
 }

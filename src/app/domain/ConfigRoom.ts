@@ -10,10 +10,10 @@ export type ConfigRoom = {
     readonly partStatus: IPartStatus;
 
     readonly firstPlayer: IFirstPlayer;
-    readonly partType: IPartType
+    readonly partType: IPartType;
     readonly maximalMoveDuration: number;
     readonly totalPartDuration: number;
-    readonly rulesConfig: RulesConfig; // It is in the ConfigRoom in PartCreationComponent that this is set
+    readonly rulesConfig: RulesConfig;
 };
 
 export type ConfigRoomDocument = FirestoreDocument<ConfigRoom>;

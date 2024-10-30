@@ -119,21 +119,23 @@ export class GipfRules extends Rules<GipfMove, GipfState, GipfLegalityInformatio
     public static applyPlacement(placement: GipfPlacement, state: GipfState): GipfState {
         const player: Player = state.getCurrentPlayer();
         let newState: GipfState = state;
-        let prevPiece: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
+        let previousPiece: FourStatePiece = FourStatePiece.ofPlayer(state.getPreviousOpponent());
         if (placement.direction.isAbsent()) {
             // Only valid if there is an empty spot
             const coord: Coord = placement.coord;
             if (state.getPieceAt(coord) !== FourStatePiece.EMPTY) {
                 throw new Error('Apply placement called without direction while the coord is occupied');
             }
-            newState = newState.setAt(coord, prevPiece);
+            newState = newState.setAt(coord, previousPiece);
         } else {
-            for (let cur: Coord = placement.coord;
-                newState.isOnBoard(cur) && prevPiece !== FourStatePiece.EMPTY;
-                cur = cur.getNext(placement.direction.get())) {
+            for (
+                let cur: Coord = placement.coord;
+                newState.isOnBoard(cur) && previousPiece !== FourStatePiece.EMPTY;
+                cur = cur.getNext(placement.direction.get()))
+            {
                 const curPiece: FourStatePiece = state.getPieceAt(cur);
-                newState = newState.setAt(cur, prevPiece);
-                prevPiece = curPiece;
+                newState = newState.setAt(cur, previousPiece);
+                previousPiece = curPiece;
             }
         }
         const sidePieces: PlayerNumberMap = state.sidePieces.getCopy();

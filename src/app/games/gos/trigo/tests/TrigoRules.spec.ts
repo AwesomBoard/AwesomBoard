@@ -3,7 +3,7 @@ import { MGPOptional } from '@everyboard/lib';
 import { GoMove } from '../../GoMove';
 import { GoState } from '../../GoState';
 import { GoPiece } from '../../GoPiece';
-import { Table } from 'src/app/jscaip/TableUtils';
+import { Table, TableUtils } from 'src/app/jscaip/TableUtils';
 import { Coord } from 'src/app/jscaip/Coord';
 import { TrigoConfig, TrigoRules } from '../TrigoRules';
 import { GoFailure } from '../../GoFailure';
@@ -780,6 +780,48 @@ describe('TrigoRules', () => {
         // Then the function should count normally
         const expectedScore: number[] = [2, 4];
         expect(score).withContext('Score should be 2 vs 4').toEqual(expectedScore);
+    });
+
+    describe('alternative configs', () => {
+
+        it('should make valid shape on hexagonal mode (size 1)', () => {
+            // Given an alternative config, hexagonal of size 1
+            const alternateConfig: MGPOptional<TrigoConfig> = MGPOptional.of({
+                hexagonal: true,
+                size: 1,
+            });
+
+            // When getting initial board
+            const board: Table<GoPiece> = rules.getInitialState(alternateConfig).board;
+
+            // Then it should have a correct table (trailing N because sizes are even)
+            const expectedBoard: Table<GoPiece> = [
+                [_, _, _, N],
+                [_, _, _, N],
+            ];
+            expect(TableUtils.equals(board, expectedBoard)).toBeTrue();
+        });
+
+        it('should make valid shape on hexagonal mode (size 2)', () => {
+            // Given an alternative config, hexagonal of size 1
+            const alternateConfig: MGPOptional<TrigoConfig> = MGPOptional.of({
+                hexagonal: true,
+                size: 2,
+            });
+
+            // When getting initial board
+            const board: Table<GoPiece> = rules.getInitialState(alternateConfig).board;
+
+            // Then it should have a correct table
+            const expectedBoard: Table<GoPiece> = [
+                [N, N, _, _, _, _, _, N],
+                [N, _, _, _, _, _, _, _],
+                [N, _, _, _, _, _, _, _],
+                [N, N, _, _, _, _, _, N],
+            ];
+            expect(TableUtils.equals(board, expectedBoard)).toBeTrue();
+        });
+
     });
 
 });

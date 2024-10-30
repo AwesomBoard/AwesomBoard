@@ -176,9 +176,10 @@ export class CoerceoComponent extends TriangularGameComponent<CoerceoRules,
         const spaceContent: FourStatePiece = this.state.getPieceAt(coord);
         const parent: MGPOptional<CoerceoNode> = this.node.parent;
         if (spaceContent === FourStatePiece.UNREACHABLE && parent.isPresent()) {
-            const previousContent: FourStatePiece = parent.get().gameState.getPieceAt(coord);
+            const previousState: CoerceoState = parent.get().gameState;
+            const previousContent: FourStatePiece = previousState.getPieceAt(coord);
             return previousContent === FourStatePiece.EMPTY ||
-                   previousContent.is(parent.get().gameState.getCurrentPlayer());
+                   previousContent.is(previousState.getCurrentPlayer());
         } else {
             return false;
         }
@@ -241,8 +242,10 @@ export class CoerceoComponent extends TriangularGameComponent<CoerceoRules,
             yHexagonalPadding = 2 * Math.abs(Math.floor((y - 1) / 2)) * this.STROKE_WIDTH;
             yHexagonalPadding += this.STROKE_WIDTH;
         }
-        return 'translate(' + (triangleTranslation.x + xHexagonalPadding) + ', ' +
-                              (triangleTranslation.y + yHexagonalPadding) + ')';
+        return this.getSVGTranslation(
+            triangleTranslation.x + xHexagonalPadding,
+            triangleTranslation.y + yHexagonalPadding,
+        );
     }
 
     public getTilesCountTranslation(player: Player): string {
@@ -255,7 +258,7 @@ export class CoerceoComponent extends TriangularGameComponent<CoerceoRules,
             x = this.getWidth() - this.SPACE_SIZE;
             y = this.getHeight() - this.SPACE_SIZE;
         }
-        return 'translate(' + x + ', ' + y + ')';
+        return this.getSVGTranslation(x, y);
     }
 
     public getViewBox(): ViewBox {

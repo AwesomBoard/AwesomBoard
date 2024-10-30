@@ -18,7 +18,7 @@ def to_missing(x):
     return int(high)-int(low)
 
 def load_coverage_data():
-    files = glob("coverage/app/**/*.ts.html", recursive=True)
+    files = glob("coverage/src/app/**/*.ts.html", recursive=True)
     if files == []:
         print('ERROR: No file found! Check the path to the coverage files.')
         exit(1)

@@ -21,6 +21,10 @@ export class GoPiece implements ComparableObject {
 
     public static UNREACHABLE: GoPiece = new GoPiece(PlayerOrNone.NONE, 'unreachable'); // For Trigo
 
+    public static isReachable(piece: GoPiece): boolean {
+        return piece.isReachable();
+    }
+
     private constructor(readonly player: PlayerOrNone, public readonly type: PieceType) { }
 
     public equals(other: GoPiece): boolean {

@@ -1,128 +1,97 @@
-<div *ngIf="configIsSet">
-    <div class="tile is-ancestor">
-        <div class="tile is-3 is-vertical is-parent">
-            <div *ngIf="gameComponent"
-                 id="info"
-                 class="tile is-child box has-text-centered">
-                <div id="turnIndicator"
-                     class="block">
-                    <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
-                </div>
-                <div id="playerSelector"
-                     class="columns">
-                    <div class="column is-6 is-vcentered">
-                        <div class="select">
-                            <select id="playerZeroSelect"
-                                    (change)="updatePlayer(Player.ZERO)"
-                                    [(ngModel)]="playerSelection[0]">
-                                <option selected
-                                        value="human" i18n>Human</option>
-                                <option *ngFor="let ai of gameComponent.availableAIs"
-                                        id="playerZero_ai_{{ ai.name }}"
-                                        [value]="ai.name">{{ ai.name }}</option>
-                            </select>
-                       </div>
-                        <div class="select">
-                            <select *ngIf="players[0].equalsValue('human') === false"
-                                    id="aiZeroOptionSelect"
-                                    [(ngModel)]="aiOptions[0]"
-                                    (change)="updatePlayer(Player.ZERO)">
-                                <option selected
-                                        value="none"
-                                        i18n>Pick the options</option>
-                                <option *ngFor="let option of this.availableAIOptions(0)"
-                                        id="playerZero_option_{{ option.name }}"
-                                        [value]="option.name"
-                                        i18n>{{ option.name }}</option>
-                            </select>
-                        </div>
-                        <p *ngIf="gameComponent.scores.isPresent()"
-                           id="scoreZero"
-                           class="block"
-                           i18n>{{ gameComponent.scores.get().get(Player.ZERO) }} points</p>
-                    </div>
-                    <div class="column is-6">
-                        <div class="select">
-                            <select id="playerOneSelect"
-                                    (change)="updatePlayer(Player.ONE)"
-                                    [(ngModel)]="playerSelection[1]">
-                                <option selected
-                                        value="human"
-                                        i18n>Human</option>
-                                <option *ngFor="let ai of gameComponent.availableAIs"
-                                        id="playerOne_ai_{{ ai.name }}"
-                                        [value]="ai.name">{{ ai.name }}</option>
-                            </select>
-                        </div>
-                        <div class="select">
-                            <select *ngIf="players[1].equalsValue('human') === false"
-                                    id="aiOneOptionSelect"
-                                    [(ngModel)]="aiOptions[1]"
-                                    (change)="updatePlayer(Player.ONE)">
-                                <option selected
-                                        value="none"
-                                        i18n>Pick the options</option>
-                                <option *ngFor="let option of this.availableAIOptions(1)"
-                                        id="playerOne_option_{{ option.name }}"
-                                        [value]="option.name"
-                                        i18n>{{ option.name }}</option>
-                            </select>
-                        </div>
-                        <p *ngIf="gameComponent.scores.isPresent()"
-                           id="scoreOne"
-                           class="block"
-                           i18n>{{ gameComponent.scores.get().get(Player.ONE) }} points</p>
-                    </div>
-                </div>
-                <div *ngIf="endGame"
-                     id="gameResult"
-                     class="block">
-                    <h4 *ngIf="winnerMessage.isPresent()"
-                        id="winner">{{ winnerMessage.get() }}</h4>
-                    <h4 *ngIf="winnerMessage.isAbsent()"
-                        id="draw"
-                        i18n>Draw</h4>
-                </div>
+<div *ngIf="configIsSet" class="columns is-vcentered is-align-items-stretch">
+    <div class="column is-one-quarter has-text-centered">
+        <div *ngIf="gameComponent"
+             id="info"
+             class="box is-fullheight">
+            <div class="mb-5">
+                <p class="title">{{ getGameName().getOrElse('') }}</p>
+                <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
             </div>
-            <div *ngIf="gameComponent"
-                 class="tile is-child box is-vcentered">
-                <button *ngIf="endGame === false && gameComponent.canPass"
-                        id="passButton"
-                        class="button is-primary is-fullwidth mb-1"
-                        (click)="gameComponent.pass()"
-                        i18n
-                >Pass a turn</button>
-                <button *ngIf="canTakeBack()"
-                        id="takeBack"
-                        class="button is-fullwidth mb-1"
-                        (click)="takeBack()"
-                        i18n
-                >Take back move</button>
-                <button id="restartButton"
-                        class="button is-fullwidth"
-                        (click)="restartGame()"
-                        i18n
-                >Start a new game</button>
-                <div *ngIf="gameComponent.node.previousMove.isPresent() && displayAIInfo()"
-                     id="AIInfo">
-                    <ng-container *ngFor="let ai of gameComponent.availableAIs">
-                        {{ ai.name + ': ' + ai.getInfo(gameComponent.node, gameComponent.config) }} <br/>
-                    </ng-container>
-                    Created {{ getCreatedNodes() }} nodes since the beginning.<br/>
-                    Minimax time: {{ getMinimaxTime() }}ms since the beginning.<br/>
-                    <button (click)="viewTreeFromCurrentNode()"
-                            class="button is-medium is-fullwidth is-primary mb-1">
-                        DOT from current node</button>
-                    <button (click)="viewTreeFromPreviousNode()"
-                            class="button is-medium is-fullwidth is-primary mb-1">
-                        DOT from previous node</button>
+            <div *ngIf="endGame"
+                 id="game-result"
+                 class="block">
+                <p *ngIf="winnerMessage.isPresent()"
+                   id="winner"
+                   class="title">{{ winnerMessage.get() }}</p>
+                <p *ngIf="winnerMessage.isAbsent()"
+                   id="draw"
+                   class="title"
+                   i18n>Draw</p>
+            </div>
+            <div *ngFor="let player of [Player.of(0), Player.of(1)]"
+                 class="px-2 py-4 mb-4"
+                 [ngClass]="player.getHTMLClass('-bg')">
+                <p class="mb-2 subtitle"
+                   [ngClass]="player.getHTMLClass('-fg')"
+                   i18n>Player {{ player.getValue()+1 }}</p>
+                <div class="select is-fullwidth">
+                    <select id="player-select-{{ player.getValue() }}"
+                            (change)="updatePlayer(player)"
+                            [(ngModel)]="playerSelection[player.getValue()]">
+                        <option selected
+                                value="human" i18n>Human</option>
+                        <option *ngFor="let ai of gameComponent.availableAIs"
+                                id="player-{{ player.getValue() }}-ai-{{ ai.name }}"
+                                [value]="ai.name">{{ ai.name }}</option>
+                    </select>
                 </div>
+                <div *ngIf="players[player.getValue()].equalsValue('human') === false"
+                     class="select is-fullwidth">
+                    <select id="ai-option-select-{{ player.getValue() }}"
+                            [(ngModel)]="aiOptions[player.getValue()]"
+                            (change)="updatePlayer(player)">
+                        <option selected
+                                value="none"
+                                i18n>Pick the options</option>
+                        <option *ngFor="let option of this.availableAIOptions(player.getValue())"
+                                id="player-{{ player.getValue() }}-option-{{ option.name }}"
+                                [value]="option.name"
+                                >{{ option.name }}</option>
+                    </select>
+                </div>
+                <p *ngIf="gameComponent.scores.isPresent()"
+                   id="score-{{ player.getValue() }}"
+                   [ngClass]="player.getHTMLClass('-fg')"
+                   i18n>{{ gameComponent.scores.get().get(player) }} points</p>
+            </div>
+            <button *ngIf="endGame === false && gameComponent.canPass"
+                    id="pass-button"
+                    class="button is-primary is-fullwidth mb-1"
+                    (click)="gameComponent.pass()"
+                    i18n
+            >Pass a turn</button>
+            <button *ngIf="canTakeBack()"
+                    id="take-back"
+                    class="button is-fullwidth mb-1"
+                    (click)="takeBack()"
+                    i18n
+            >Take back move</button>
+            <button id="restart-button"
+                    class="button is-fullwidth"
+                    (click)="restartGame()"
+                    i18n
+            >Start a new game</button>
+            <div *ngIf="gameComponent.node.previousMove.isPresent() && displayAIInfo()"
+                 id="ai-info">
+                <ng-container *ngFor="let ai of gameComponent.availableAIs">
+                    {{ ai.name + ': ' + ai.getInfo(gameComponent.node, gameComponent.config) }} <br/>
+                </ng-container>
+                Created {{ getCreatedNodes() }} nodes since the beginning.<br/>
+                Minimax time: {{ getMinimaxTime() }}ms since the beginning.<br/>
+                <button (click)="viewTreeFromCurrentNode()"
+                        class="button is-medium is-fullwidth is-primary mb-1">
+                    DOT from current node</button>
+                <button (click)="viewTreeFromPreviousNode()"
+                        class="button is-medium is-fullwidth is-primary mb-1">
+                    DOT from previous node</button>
             </div>
         </div>
-        <div class="tile is-parent is-9 is-vcentered"
+    </div>
+    <div class="column">
+        <div class="p-5 is-fullheight"
+             id="board-highlight"
              [ngClass]="getBoardHighlight()">
-            <div id="board"
-                 class="tile is-child box">
+            <div id="board" class="box is-fullheight">
                 <div #board></div>
             </div>
         </div>
@@ -130,24 +99,40 @@
 </div>
 
 <div *ngIf="configIsSet === false"
-     class="box">
-    <app-rules-configuration id="rulesConfigComponent"
-                             [stateProvider]="getStateProvider()"
-                             [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
-                             [userIsCreator]="true"
-                             (updateCallback)="updateConfig($event)">
-    </app-rules-configuration>
-    <div class="field is-horizontal">
-        <div class="field-body">
-            <div class="field">
-                <div class="control">
-                    <button id="startGameWithConfig"
-                            class="button is-primary is-fullwidth"
-                            [disabled]="rulesConfig.isAbsent()"
-                            (click)="markConfigAsFilled()"
-                            i18n>Start with this config</button>
+     class="columns is-vcentered is-align-items-stretch">
+
+    <div class="column">
+        <div class="box is-fullheight">
+            <p class="title">{{ getGameName().getOrElse('') }}</p>
+            <app-rules-configuration id="rules-config-component"
+                                     [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
+                                     [editable]="true"
+                                     (updateCallback)="updateConfig($event)">
+            </app-rules-configuration>
+
+            <div class="field is-horizontal">
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">
+                            <button id="start-game-with-config"
+                                    class="button is-primary is-fullwidth mt-2"
+                                    [disabled]="rulesConfig.isAbsent()"
+                                    (click)="markConfigAsFilled()"
+                                    i18n>Start with this config</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
+
+    <div class="column">
+        <div class="box is-fullheight">
+            <app-demo-card id="demo-card"
+                           *ngIf="getConfigDemo() !== undefined"
+                           [demoNodeInfo]="getConfigDemo()"></app-demo-card>
+        </div>
+    </div>
+
 </div>

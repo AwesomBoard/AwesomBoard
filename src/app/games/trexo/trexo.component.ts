@@ -325,7 +325,7 @@ export class TrexoComponent extends ParallelogramGameComponent<TrexoRules, Trexo
     public getTranslationAtXYZ(x: number, y: number, z: number): string {
         const mode: ModeConfig = TrexoComponent.modeMap[this.chosenMode];
         const coordTransform: Coord = this.getCoordTranslation(x, y, z, mode);
-        const translation: string = 'translate(' + coordTransform.x + ' ' + coordTransform.y + ')';
+        const translation: string = this.getSVGTranslationAt(coordTransform);
         return translation;
     }
 
@@ -351,7 +351,7 @@ export class TrexoComponent extends ParallelogramGameComponent<TrexoRules, Trexo
         const verticalUnWideness: number = (1 - (1 / widness)) / 2;
         const translationX: number = (10 + mode3D.offsetRatio) * mode3D.parallelogramHeight;
         const translationY: number = (9 + verticalUnWideness) * mode3D.parallelogramHeight;
-        const translation: string = 'translate(' + translationX + ', ' + translationY + ')';
+        const translation: string = this.getSVGTranslation(translationX, translationY);
         return translation + scale;
     }
 

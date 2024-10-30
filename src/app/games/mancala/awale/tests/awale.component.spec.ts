@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import { fakeAsync } from '@angular/core/testing';
+import { MGPOptional } from '@everyboard/lib';
 
 import { AwaleComponent } from '../awale.component';
 import { AwaleRules } from '../AwaleRules';
@@ -10,7 +11,8 @@ import { AwaleMoveGenerator } from '../AwaleMoveGenerator';
 import { MancalaConfig } from '../../common/MancalaConfig';
 import { ComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { MancalaDistribution, MancalaMove } from '../../common/MancalaMove';
-import { MGPOptional } from '@everyboard/lib';
+import { Table } from 'src/app/jscaip/TableUtils';
+import { MancalaFailure } from '../../common/MancalaFailure';
 
 const defaultConfig: MGPOptional<MancalaConfig> = AwaleRules.get().getDefaultRulesConfig();
 
@@ -121,5 +123,20 @@ describe('AwaleComponent', () => {
         }));
 
     });
+
+    it('should not animate illegal distribution', fakeAsync(async() => {
+        // Given a state where the player could feed its opponent
+        const board: Table<number> = [
+            [1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0],
+        ];
+        const state: MancalaState = new MancalaState(board, 1, PlayerNumberMap.of(23, 23));
+        const testUtils: ComponentTestUtils<AwaleComponent> = await ComponentTestUtils.forGame<AwaleComponent>('Awale');
+        await testUtils.setupState(state);
+
+        // When performing a click that would trigger an illegal move
+        // Then the move should be illegal
+        await testUtils.expectClickFailure('#click-0-0', MancalaFailure.SHOULD_DISTRIBUTE());
+    }));
 
 });

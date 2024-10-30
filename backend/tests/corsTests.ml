@@ -30,12 +30,12 @@ let tests = [
     "Cors.middleware", [
 
         lwt_test "should reply to OPTIONS request with appropriate headers" (fun () ->
-            let request = Dream.request ~method_:`OPTIONS "/" in
+            let request : Dream.request = Dream.request ~method_:`OPTIONS "/" in
             check_presence_of_headers request);
 
 
         lwt_test "should reply to other requests with appropriate headers" (fun () ->
-            let request = Dream.request ~method_:`GET "/" in
+            let request : Dream.request = Dream.request ~method_:`GET "/" in
             check_presence_of_headers request);
     ]
 ]

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="100%" height="100%"
+     class="board"
      [attr.viewBox]="viewBox"
      preserveAspectRatio="xMidYMid meet">
     <g *ngFor="let groundInfo of ground">
@@ -49,7 +49,7 @@
             <polygon *ngIf="pieceInfo.content.strokeClasses.length > 0"
                      id="piece-stroke-{{ pieceInfo.x }}-{{ pieceInfo.y }}-{{ z }}"
                      [attr.points]="getHexaPoints()"
-                     [attr.transform]="'translate(0 ' + -(z+1) * PIECE_HEIGHT + ')'"
+                     [attr.transform]="getSVGTranslation(0, -(z+1) * PIECE_HEIGHT)"
                      class="base no-fill small-stroke"
                      [ngClass]="pieceInfo.content.strokeClasses"
                      (click)="selectPiece(pieceInfo.x, pieceInfo.y, z)"/>

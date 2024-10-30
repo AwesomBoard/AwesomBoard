@@ -10,6 +10,10 @@ run: gamelist
 	GAMES=$$(cat games.txt)
 	opam exec -- dune exec -- ./main.exe
 
+run-local: gamelist
+	GAMES=$$(cat games.txt)
+	opam exec -- dune exec -- ./main.exe -no-emulator -project everyboard-test -origin '*' -endpoint 'https://firestore.googleapis.com' -show-errors
+
 run-load-test: gamelist
 	GAMES=$$(cat games.txt)
 	opam exec -- dune exec -- ./main.exe -no-emulator -endpoint https://firestore.googleapis.com -show-errors -project everyboard-loadtest -origin '*' -service-account ../service-accounts/loadtest.json
@@ -21,9 +25,14 @@ test: bin gamelist
 	opam exec -- bisect-ppx-report html
 	echo 'Coverage produced in _coverage/index.html'
 
+generate-coverage:
+	opam exec -- bisect-ppx-report html
+	echo 'Coverage produced in _coverage/index.html'
+
 check-coverage:
 	opam exec -- bisect-ppx-report summary
 	opam exec -- bisect-ppx-report summary | grep '100.00%' || ( echo 'Coverage too low!' && exit 1 )
+	find . -name '*.coverage' | xargs rm -f
 
 docker: gamelist
 	sed -i 's/;; //' dune
@@ -38,7 +47,7 @@ docker: gamelist
 	docker save "backend-$(target)" > "backend-$(target).tar"
 
 deploy: docker
-	ssh -p "$(port)" "$(user)@$(server)" "(docker stop \$$(docker ps -q --filter ancestor=backend-$(target)) || echo 'container not running yet') && docker load && docker container prune -f && docker image prune -f && docker run -d -p $(listen-port):8081 backend-$(target) /main.static.exe $(args)" < "backend-$(target).tar"
+	ssh -p "$(port)" "$(user)@$(server)" "docker stop \$$(docker ps -q --filter publish=$(listen-port)) ; docker load && docker container prune -f && docker image prune -f && docker run -d -p $(listen-port):8081 backend-$(target) /main.static.exe $(args)" < "backend-$(target).tar"
 
 clean:
 	opam exec -- dune clean

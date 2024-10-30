@@ -54,27 +54,28 @@ module Make
     let middleware = fun (handler : Dream.handler) (request : Dream.request) ->
         let check_everything_and_process_request = fun () ->
             (* Extract the Authorization header *)
-            let authorization_header =
+            let authorization_header : string =
                 match Dream.header request "Authorization" with
                 | None -> raise (AuthError "Authorization token is missing")
                 | Some authorization -> authorization in
             (* Parse the token *)
-            let user_token =
+            let user_token : string =
                 match String.split_on_char ' ' authorization_header with
                 | ["Bearer"; user_token] -> user_token
                 | _ -> raise (AuthError "Authorization header is invalid") in
-            let parsed_token =
+            let parsed_token : Jwt.t =
                 match Jwt.parse user_token with
-                | None -> raise (AuthError "Authorization token is invalid")
+                | None -> raise (AuthError "Authorization token cannot be parsed")
                 | Some token -> token in
             (* Check the token validity and extract its uid *)
-            let* certificates = GoogleCertificates.get () in
-            let uid =
+            let* certificates : GoogleCertificates.certificates =
+                GoogleCertificates.get () in
+            let uid : string =
                 match Jwt.verify_and_get_uid parsed_token (!Options.project_id) certificates with
-                | None -> raise (AuthError "Authorization token is invalid")
+                | None -> raise (AuthError "Authorization token cannot be verified")
                 | Some uid -> uid in
             (* Get the user and check its verification status *)
-            let* user = Firestore.User.get ~request ~id:uid in
+            let* user : Domain.User.t = Firestore.User.get ~request ~id:uid in
             if user.verified then begin
                 (* The user has a verified account, so we can finally call the handler *)
                 Dream.set_field request user_field (uid, user);

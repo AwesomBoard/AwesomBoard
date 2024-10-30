@@ -11,6 +11,12 @@ module type FIRESTORE_PRIMITIVES = sig
         @raise [UnexpectedError reason] in case the document can't be converted to JSON *)
     val get_doc : request:Dream.request -> path:string -> JSON.t Lwt.t
 
+    (** [try_get_doc ~request ~path] is like to [get_doc ~request ~path], but
+        preferred to use when it is expected that the document may not exist. If
+        the document does not exist, [None] is returned.
+        @raise [UnexpectedError reason] in case the document can't be converted to JSON *)
+    val try_get_doc : request:Dream.request -> path:string -> JSON.t Option.t Lwt.t
+
     (** [create_doc ~request ~collection ~doc] creates a new document with content [doc] in the provided [collection].
         [request] is used to store read/write statistics.
         @raise [UnexpectedError reason] in case Firestore rejects our creation. *)
@@ -45,14 +51,21 @@ module Make
     let is_error = fun (response : Cohttp.Response.t) ->
         Cohttp.Code.is_error (Cohttp.Code.code_of_status response.status)
 
-    let get_doc = fun ~(request : Dream.request) ~(path : string) : JSON.t Lwt.t ->
+    let try_get_doc = fun ~(request : Dream.request) ~(path : string) : JSON.t Option.t Lwt.t ->
         Stats.read request;
         logger.info (fun log -> log ~request "Getting %s" path);
         let* headers = TokenRefresher.header request in
         let* (response, body) = External.Http.get ~headers (endpoint path) in
-        if is_error response
-        then raise (DocumentNotFound path)
-        else Lwt.return (of_firestore (JSON.from_string body))
+        if is_error response then
+            Lwt.return None
+        else
+            Lwt.return (Some (of_firestore (JSON.from_string body)))
+
+    let get_doc = fun ~(request : Dream.request) ~(path : string) : JSON.t Lwt.t ->
+        let* doc = try_get_doc ~request ~path in
+        match doc with
+        | Some found -> Lwt.return found
+        | None -> raise (DocumentNotFound path)
 
     let create_doc = fun ~(request : Dream.request) ~(collection : string) ~(doc : JSON.t) : string Lwt.t ->
         let get_id_from_firestore_document_name (doc : JSON.t) : string =

@@ -30,7 +30,7 @@
                     id="part-{{ i }}"
                     (click)="joinGame(part)">
                     <td class="td data-game-name">{{ part.getGameName() }}</td>
-                    <td class="td" id="part-of-{{ part.data.playerZero.name}}">{{ part.data.playerZero.name }}</td>
+                    <td class="td" id="part-of-{{ part.data.playerZero.name}}">{{ part.data.playerZero.name + ' (' + part.getPlayerZeroFloorElo() + ')' }}</td>
                     <td class="td">
                         <ng-container *ngIf="part.data.playerOne else waitingForOpponent">{{ part.data.playerOne.name }}</ng-container>
                         <ng-template #waitingForOpponent>

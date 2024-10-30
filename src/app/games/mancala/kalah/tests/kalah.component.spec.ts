@@ -299,7 +299,7 @@ describe('KalahComponent', () => {
             await mancalaTestUtils.expectMoveSuccess('#click-0-1', move, defaultConfig.get());
 
             // When taking back
-            await mancalaTestUtils.testUtils.expectInterfaceClickSuccess('#takeBack');
+            await mancalaTestUtils.testUtils.expectInterfaceClickSuccess('#take-back');
 
             // Then the board should be restored
             mancalaTestUtils.expectHouseToContain(new Coord(0, 1), ' 4 ');

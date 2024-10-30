@@ -19,16 +19,18 @@ import textwrap
 HEADLESS = True
 # Set to True if somehow the selenium driver is acting like a mobile device (with small screen)
 MOBILE = False
-USER_RESPONSE_TIME=0.2 # A typical user cannot click faster than once every 200ms
+USER_RESPONSE_TIME=0.2 # A typical user cannot click faster than once every 200ms, and we may need some more time for displaying some components
 
 class PlayerDriver():
     def __init__(self):
         options = Options()
         if HEADLESS:
             options.add_argument('-headless')
-        # If the browser (fake) window is too small, selenium complains that some elements are not clickable
-        options.add_argument('window-size=1200x600')
         self.driver = webdriver.Chrome(options=options)
+        # If the browser (fake) window is too small, selenium complains that some elements are not clickable, so make sure it's big enough
+        self.driver.set_window_size(1920, 1080)
+        # Print the window size so that we can detect from the logs if it's done correctly
+        print(self.driver.get_window_size())
 
     def close(self):
         '''Close the browser'''
@@ -185,10 +187,10 @@ class PlayerDriver():
         '''Pick the default config on a game, if there is one'''
         try:
             # Click on 'accept config' for configurable games
-            accept_config_button = self.driver.find_element(By.ID, 'startGameWithConfig')
+            accept_config_button = self.driver.find_element(By.ID, 'start-game-with-config')
             accept_config_button.click()
         except:
-            # Games that do not have startGameWithConfig are not configurable so we already use the default config
+            # Games that do not have start-game-with-config are not configurable so we already use the default config
             pass
 
     def create_part(self, opponent):
@@ -346,7 +348,7 @@ def can_play_local_2_players(user):
     user.click('#click-3-0 > rect')
 
     # Now 0 ("Player 1") won
-    winner = user.get_text_of('#gameResult')
+    winner = user.get_text_of('#game-result')
     if winner != 'Player 1 won':
         raise Exception('failed: text should be {}'.format(winner))
 
@@ -364,15 +366,16 @@ def can_play_local_vs_ai(user):
     user.use_default_config()
 
     # Select the AI as second player
-    user.select('#playerOneSelect', 'Minimax')
-    user.select('#aiOneOptionSelect', 'Level 1')
+    user.select('#player-select-1', 'Minimax')
+    user.select('#ai-option-select-1', 'Level 1')
 
     # I play a move
     user.click('#click-2-0 > rect')
 
     # Let AI play
     # It's back to us when the background is set to our color
-    user.wait_for('.player0-bg')
+    # (it's important to have no space between the CSS class and the id)
+    user.wait_for('.player0-bg#board-highlight')
 
     # AI should have played a second move, I can play again
     user.click('#click-1-0 > rect')
@@ -463,14 +466,14 @@ def can_perform_time_actions(user1, user2):
         return int(minutes) * 60 + int(seconds)
 
     def check_time_increase(chrono_name):
-        remainingTimeBeforeAddition = parse_time(user1.get_text_of('{} p'.format(chrono_name)))
+        remainingTimeBeforeAddition = parse_time(user1.get_text_of('{} span'.format(chrono_name)))
 
         # I add time to the opponent
         user1.click('{} .button'.format(chrono_name))
         time.sleep(1) # wait a bit to receive the update
 
         # I can see they have more time now
-        remainingTimeAfterAddition = parse_time(user1.get_text_of('{} p'.format(chrono_name)))
+        remainingTimeAfterAddition = parse_time(user1.get_text_of('{} span'.format(chrono_name)))
         if not(remainingTimeAfterAddition > remainingTimeBeforeAddition):
             print('Time was not added!')
             raise Exception('Test failed')

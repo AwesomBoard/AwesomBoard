@@ -21,6 +21,8 @@ let test_json_conversion (type t) (module M : JSONable with type t = t) (value :
 let a_minimal_user : MinimalUser.t =
     { id = "uid"; name = "JeanJJ" }
 
+let a_minimal_user_current_elo : float = 0.0
+
 let a_minimal_user_json : JSON.t =
     `Assoc [("id", `String a_minimal_user.id); ("name", `String a_minimal_user.name)]
 
@@ -34,6 +36,8 @@ let a_user : User.t = {
 let another_minimal_user : MinimalUser.t =
     { id = "other-uid"; name = "Jeanne Jaja" }
 
+let another_minimal_user_current_elo : float = 0.0
+
 let another_minimal_user_json : JSON.t =
     `Assoc [("id", `String another_minimal_user.id); ("name", `String another_minimal_user.name)]
 
@@ -44,14 +48,29 @@ let another_user : User.t = {
     current_game = None;
 }
 
+let elo_result_after_first_game_is_lost : User.EloInfo.t = {
+    current_elo = 1.0;
+    number_of_games_played = 1;
+}
+
+let elo_result_after_first_game_is_won : User.EloInfo.t = {
+    current_elo = 30.0;
+    number_of_games_played = 1;
+}
+
+let elo_result_after_first_game_is_draw : User.EloInfo.t = {
+    current_elo = 1.0;
+    number_of_games_played = 1;
+}
+
 let tests = [
 
     "Domain.MinimalUser show", [
         test "should work" (fun () ->
             (* Given a minimal user *)
-            let minimal_user = MinimalUser.{ id = "123"; name = "laponira"; } in
+            let minimal_user : MinimalUser.t = MinimalUser.{ id = "123"; name = "laponira"; } in
             (* When "showing" it *)
-            let shown = MinimalUser.show minimal_user in
+            let shown : string = MinimalUser.show minimal_user in
             (* Then it should have converted it to a legible string  that can be used for debugging *)
             let expected = "{ Domain.MinimalUser.id = \"123\"; name = \"laponira\" }" in
             check string "success" expected shown
@@ -80,7 +99,7 @@ let tests = [
 
         test "should convert to and from JSON when there is an opponent" (fun () ->
             (* Given a current game without opponent *)
-            let current_game = CurrentGame.{
+            let current_game : CurrentGame.t = CurrentGame.{
                 id = "game-id";
                 game_name = "P4";
                 opponent = Some a_minimal_user;
@@ -102,7 +121,7 @@ let tests = [
 
         test "should work" (fun () ->
             (* Given a user *)
-            let user = User.{
+            let user : User.t = User.{
                 username = Some "foo";
                 last_update_time = Some "24 September 2023 at 11:02:56 UTC-4";
                 verified = true;
@@ -129,7 +148,7 @@ let tests = [
             let actual = Result.get_ok (User.of_yojson user_json) in
             (* Then it should give the expected user *)
             (* (we can't rely on test_json_conversion here as it would include last update time in one way) *)
-            let expected = User.{
+            let expected : User.t = User.{
                 username = Some "foo";
                 last_update_time = None;
                 verified = true;
@@ -213,7 +232,7 @@ let tests = [
                 current_game = None;
             } in
             (* When converting it to a minimal user *)
-            let actual = User.to_minimal_user "some-id" user in
+            let actual : Domain.MinimalUser.t = User.to_minimal_user "some-id" user in
             (* Then it should keep its name and add the uid *)
             let expected = MinimalUser.{
                 id = "some-id";
@@ -226,16 +245,17 @@ let tests = [
     "Domain.ConfigRoom JSON conversion", [
         test "should work with initial config room" (fun () ->
             (* Given the initial config room *)
-            let config_room = ConfigRoom.initial a_minimal_user in
+            let config_room : Domain.ConfigRoom.t = ConfigRoom.initial a_minimal_user a_minimal_user_current_elo in
             let config_room_json = `Assoc [
                 "creator", a_minimal_user_json;
+                "creator_elo", `Float a_minimal_user_current_elo;
                 "chosenOpponent", `Null;
                 "partStatus", `Int 0;
                 "firstPlayer", `String "RANDOM";
                 "partType", `String "STANDARD";
                 "maximalMoveDuration", `Int (2*60);
                 "totalPartDuration", `Int (30*60);
-                "rulesConfig", `Assoc [];
+                "rulesConfig", `Null;
             ] in
             (* When converting it to and from JSON *)
             (* Then it should work *)
@@ -244,16 +264,20 @@ let tests = [
 
         test "should work with a config room that has a chosen opponent" (fun () ->
             (* Given a config room with a chosen opponent *)
-            let config_room = { (ConfigRoom.initial a_minimal_user) with chosen_opponent = Some another_minimal_user } in
+            let config_room : Domain.ConfigRoom.t ={
+                (ConfigRoom.initial a_minimal_user a_minimal_user_current_elo)
+                with chosen_opponent = Some another_minimal_user
+            } in
             let config_room_json = `Assoc [
                 "creator", a_minimal_user_json;
+                "creator_elo", `Float a_minimal_user_current_elo;
                 "chosenOpponent", another_minimal_user_json;
                 "partStatus", `Int 0;
                 "firstPlayer", `String "RANDOM";
                 "partType", `String "STANDARD";
                 "maximalMoveDuration", `Int (2*60);
                 "totalPartDuration", `Int (30*60);
-                "rulesConfig", `Assoc [];
+                "rulesConfig", `Null;
             ] in
             (* When converting it to and from JSON *)
             (* Then it should work *)
@@ -264,15 +288,15 @@ let tests = [
     "Domain.ConfigRoom.rematch", [
         test "should change expected fields" (fun () ->
             (* Given a config room *)
-            let config_room = { (ConfigRoom.initial a_minimal_user) with chosen_opponent = Some another_minimal_user } in
+            let config_room : Domain.ConfigRoom.t = { (ConfigRoom.initial a_minimal_user a_minimal_user_current_elo) with chosen_opponent = Some another_minimal_user } in
             (* When creating the rematch config room *)
             let first_player = ConfigRoom.FirstPlayer.Creator in
             let creator = another_minimal_user in
-            let chosen_opponent = a_minimal_user in
+            let chosen_opponent : MinimalUser.t = a_minimal_user in
             let actual = ConfigRoom.rematch config_room first_player creator chosen_opponent in
             (* Then it should have updated game status, first player, creator, and chosen opponent *)
             let expected = {
-                (ConfigRoom.initial a_minimal_user) with
+                (ConfigRoom.initial a_minimal_user a_minimal_user_current_elo) with
                 first_player;
                 game_status = ConfigRoom.GameStatus.Started;
                 creator;
@@ -285,10 +309,11 @@ let tests = [
     "Domain.Game JSON conversion", [
         test "should convert an unstarted game correctly" (fun () ->
             (* Given an unstarted game *)
-            let game = Game.initial "P4" a_minimal_user in
+            let game : Domain.Game.t = Game.initial "P4" a_minimal_user a_minimal_user_current_elo in
             let game_json = `Assoc [
                 "typeGame", `String "P4";
                 "playerZero", a_minimal_user_json;
+                "playerZeroElo", `Float a_minimal_user_current_elo;
                 "turn", `Int (-1);
                 "result", `Int 5;
                 "playerOne", `Null;
@@ -305,8 +330,8 @@ let tests = [
 
         test "should convert a started game correctly" (fun () ->
             (* Given an started game *)
-            let game = {
-                (Game.initial "P4" a_minimal_user) with
+            let game : Domain.Game.t = {
+                (Game.initial "P4" a_minimal_user a_minimal_user_current_elo) with
                 player_one = Some another_minimal_user;
                 turn = 0;
                 beginning = Some 42;
@@ -314,6 +339,7 @@ let tests = [
             let game_json = `Assoc [
                 "typeGame", `String "P4";
                 "playerZero", a_minimal_user_json;
+                "playerZeroElo", `Float a_minimal_user_current_elo;
                 "turn", `Int 0;
                 "result", `Int 5;
                 "playerOne", another_minimal_user_json;
@@ -330,8 +356,8 @@ let tests = [
 
         test "should convert a finished game (with scores) correctly" (fun () ->
             (* Given an finished game *)
-            let game = {
-                (Game.initial "P4" a_minimal_user) with
+            let game : Domain.Game.t = {
+                (Game.initial "P4" a_minimal_user a_minimal_user_current_elo) with
                 player_one = Some another_minimal_user;
                 turn = 8;
                 result = Game.GameResult.Victory;
@@ -344,6 +370,7 @@ let tests = [
             let game_json = `Assoc [
                 "typeGame", `String "P4";
                 "playerZero", a_minimal_user_json;
+                "playerZeroElo", `Float a_minimal_user_current_elo;
                 "turn", `Int 8;
                 "result", `Int 3;
                 "playerOne", another_minimal_user_json;
@@ -362,16 +389,16 @@ let tests = [
     "Domain.Game.rematch", [
         test "should inherit players from config room and start the game" (fun () ->
             (* Given a config room *)
-            let config_room = {
-                (ConfigRoom.initial a_minimal_user) with
+            let config_room : Domain.ConfigRoom.t = {
+                (ConfigRoom.initial a_minimal_user a_minimal_user_current_elo) with
                 chosen_opponent = Some another_minimal_user;
                 first_player = ConfigRoom.FirstPlayer.Creator;
             } in
             (* When creating the rematch game *)
             let actual = Game.rematch "P4" config_room 42 ExternalTests.Mock.rand_bool in
             (* Then it should have updated the fields as expected *)
-            let expected = {
-                (Game.initial "P4" a_minimal_user) with
+            let expected : Game.t = {
+                (Game.initial "P4" a_minimal_user a_minimal_user_current_elo) with
                 player_zero = a_minimal_user;
                 player_one = Some another_minimal_user;
                 beginning = Some 42;

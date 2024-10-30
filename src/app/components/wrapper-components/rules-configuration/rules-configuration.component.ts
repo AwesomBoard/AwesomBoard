@@ -1,14 +1,11 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { ConfigDescriptionType, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
-import { BaseWrapperComponent } from '../../game-components/game-component/GameComponent';
 import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
-import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
-import { GameState } from 'src/app/jscaip/state/GameState';
-import { AbstractNode, GameNode } from 'src/app/jscaip/AI/GameNode';
 import { RulesConfigDescription } from './RulesConfigDescription';
+import { BaseWrapperComponent } from '../BaseWrapperComponent';
 
 type ConfigFormJSON = {
     [member: string]: FormControl<ConfigDescriptionType>;
@@ -20,15 +17,14 @@ type ConfigFormJSON = {
 })
 export class RulesConfigurationComponent extends BaseWrapperComponent implements OnInit {
 
-    @Input() stateProvider: MGPOptional<(config: MGPOptional<RulesConfig>) => GameState>;
-
     @Input() rulesConfigDescriptionOptional: MGPOptional<RulesConfigDescription<RulesConfig>>;
     public rulesConfigDescription: RulesConfigDescription<RulesConfig>;
 
     // Only needed for the non-creator
     @Input() rulesConfigToDisplay?: RulesConfig;
 
-    @Input() userIsCreator: boolean;
+    // Whether this config can be edited or not
+    @Input() editable: boolean;
 
     /**
      * notify that the config has been updated
@@ -38,18 +34,21 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
      */
     @Output() updateCallback: EventEmitter<MGPOptional<RulesConfig>> = new EventEmitter<MGPOptional<RulesConfig>>();
 
-    public configDemo: DemoNodeInfo; // set in onInit
-
     public rulesConfigForm: FormGroup = new FormGroup({});
 
     public urlName: string; // set in onInit
 
     private chosenConfigName: string = '';
 
-    public constructor(activatedRoute: ActivatedRoute,
-                       private readonly cdr: ChangeDetectorRef)
+    public constructor(activatedRoute: ActivatedRoute)
     {
         super(activatedRoute);
+    }
+
+    private checkInputs(): void {
+        if (this.editable === false) {
+            Utils.assert(this.rulesConfigToDisplay !== undefined, 'Config should be provided if RulesConfigurationComponent is not editable');
+        }
     }
 
     public getChosenConfigName(): string {
@@ -57,37 +56,14 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
     }
 
     public ngOnInit(): void {
-        this.assertParamsAreCoherent();
+        this.checkInputs();
         this.urlName = this.getGameUrlName();
         if (this.isCustomisable()) {
             const defaultConfig: NamedRulesConfig<RulesConfig> = this.rulesConfigDescription.getDefaultConfig();
             this.setChosenConfig(defaultConfig.name());
-            if (this.userIsCreator) {
-                this.setConfigDemo(defaultConfig.config);
-            } else {
-                const configToDisplay: RulesConfig = Utils.getNonNullable(this.rulesConfigToDisplay);
-                this.setConfigDemo(configToDisplay);
-            }
         } else {
             return this.updateCallback.emit(MGPOptional.of({}));
         }
-    }
-
-    private setConfigDemo(config: RulesConfig): void {
-        if (this.stateProvider.isPresent()) {
-            const stateProvider: (config: MGPOptional<RulesConfig>) => GameState = this.stateProvider.get();
-            const node: AbstractNode = new GameNode(stateProvider(MGPOptional.of(config)));
-            this.configDemo = {
-                click: MGPOptional.empty(),
-                name: this.urlName,
-                node,
-            };
-            this.cdr.detectChanges();
-        }
-    }
-
-    public getConfigDemo(): DemoNodeInfo {
-        return this.configDemo;
     }
 
     private generateForm(config: RulesConfig, configurable: boolean): void {
@@ -103,15 +79,8 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
         this.rulesConfigForm = new FormGroup(group);
     }
 
-    private assertParamsAreCoherent(): void {
-        if (this.userIsCreator === false) {
-            Utils.assert(this.rulesConfigToDisplay != null,
-                         'Config should be provided to non-creator in RulesConfigurationComponent');
-        }
-    }
-
     private getRulesConfigDescriptionValue(name: string, defaultValue: ConfigDescriptionType): ConfigDescriptionType {
-        if (this.userIsCreator) {
+        if (this.editable) {
             return defaultValue;
         } else {
             const configuration: RulesConfig = Utils.getNonNullable(this.rulesConfigToDisplay);
@@ -130,9 +99,9 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
         return formControl;
     }
 
-    public onUpdate(): void {
-        Utils.assert(this.userIsCreator, 'Only creator should be able to modify rules config');
-        Utils.assert(this.chosenConfigName === 'Custom', 'Only Customifiable config should be modified!');
+    private onUpdate(): void {
+        // Note: we may receive updates just because the form has changed from "editable" to "non editable"
+        // (e.g., due to proposing to the opponent or clicking on "changing configuration").
         const rulesConfig: RulesConfig = {};
         const parameterNames: string[] = this.rulesConfigDescription.getFields();
         for (const parameterName of parameterNames) {
@@ -144,7 +113,6 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
                 return; // In order not to send update when form is invalid
             }
         }
-        this.setConfigDemo(rulesConfig);
         this.updateCallback.emit(MGPOptional.of(rulesConfig));
     }
 
@@ -194,23 +162,33 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
         let config: RulesConfig;
         if (this.chosenConfigName === 'Custom') {
             config = this.rulesConfigDescription.getDefaultConfig().config;
-            this.generateForm(config, this.userIsCreator);
+            this.generateForm(config, this.editable);
         } else {
             config = this.rulesConfigDescription.getConfig(this.chosenConfigName);
             this.generateForm(config, false);
-            this.updateCallback.emit(MGPOptional.of(config)); // As standard config are always legal
+            // Emit the config directly because standard config are always legal
+            this.updateCallback.emit(MGPOptional.of(config));
         }
-        this.setConfigDemo(config);
     }
 
     public isCustomisable(): boolean {
         if (this.rulesConfigDescriptionOptional.isAbsent()) {
+            // This game has no configurability, so no need to show  this component
             return false;
         } else {
             Utils.assert(this.rulesConfigDescriptionOptional.get().getFields().length > 0,
                          'If rulesConfigDescriptionOptional is present it should have fields !');
             this.rulesConfigDescription = this.rulesConfigDescriptionOptional.get();
             return true;
+        }
+    }
+
+    public setEditable(editable: boolean): void {
+        this.editable = editable;
+        if (this.editable && this.chosenConfigName === 'Custom') {
+            this.rulesConfigForm.enable();
+        } else {
+            this.rulesConfigForm.disable();
         }
     }
 

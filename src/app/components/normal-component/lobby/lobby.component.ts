@@ -32,6 +32,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
                        private readonly currentGameService: CurrentGameService)
     {
     }
+
     public ngOnInit(): void {
         this.activePartsSubscription = this.activePartsService.subscribeToActiveParts(
             (activeParts: PartDocument[]) => {
@@ -45,10 +46,12 @@ export class LobbyComponent implements OnInit, OnDestroy {
                 }
             });
     }
+
     public ngOnDestroy(): void {
         this.activePartsSubscription.unsubscribe();
         this.currentGameSubscription.unsubscribe();
     }
+
     public async joinGame(part: PartDocument): Promise<void> {
         const partId: string = part.id;
         const typeGame: string = part.data.typeGame;
@@ -60,6 +63,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
             this.messageDisplayer.criticalMessage(canUserJoin.getReason());
         }
     }
+
     public selectTab(tab: Tab): void {
         if (tab ==='create') {
             const canUserCreate: MGPValidation = this.currentGameService.canUserCreate();
@@ -72,4 +76,5 @@ export class LobbyComponent implements OnInit, OnDestroy {
             this.currentTab = tab;
         }
     }
+
 }

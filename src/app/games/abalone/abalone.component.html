@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="100%" height="100%"
+     class="board"
      viewBox="-165 0 470 500"
      preserveAspectRatio="xMidYMid meet"
 >
     <polygon *ngFor="let invisibleSpace of boardNeighboringCoords"
-             id="invisible_space_{{ invisibleSpace.x }}_{{ invisibleSpace.y }}"
+             id="invisible-space-{{ invisibleSpace.x }}-{{ invisibleSpace.y }}"
              [attr.transform]="getHexaCenterTranslationAt(invisibleSpace)"
-             (click)="onSpaceClick(invisibleSpace)"
+             (click)="onInvisibleSpaceClick(invisibleSpace)"
              class="transparent"
              [attr.points]="getHexaPoints()"
              stroke-linecap="round"
@@ -15,7 +15,7 @@
     <g *ngFor="let coordAndContent of getState().getCoordsAndContents()">
         <g *ngIf="isReachable(coordAndContent.content)"
            [attr.transform]="getHexaCenterTranslationAt(coordAndContent.coord)">
-            <polygon id="space_{{ coordAndContent.coord.x }}_{{ coordAndContent.coord.y }}"
+            <polygon id="space-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
                      (click)="onSpaceClick(coordAndContent.coord)"
                      [ngClass]="getSquareClassesAt(coordAndContent.coord)"
                      class="base"
@@ -23,7 +23,7 @@
                      stroke-linecap="round"
             />
             <circle *ngIf="isPiece(coordAndContent.content)"
-                    id="piece_{{ coordAndContent.coord.x }}_{{ coordAndContent.coord.y }}"
+                    id="piece-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
                     (click)="onPieceClick(coordAndContent.coord)"
                     cx="0"
                     cy="0"
@@ -36,13 +36,13 @@
 
     <g *ngFor="let captured of captureds"
        [attr.transform]="getHexaCenterTranslationAt(captured.coord)">
-        <polygon id="space_{{ captured.coord.x }}_{{ captured.coord.y }}"
+        <polygon id="space-{{ captured.coord.x }}-{{ captured.coord.y }}"
                  [ngClass]="getSquareClassesAt(captured.coord)"
                  class="base captured-fill"
                  [attr.points]="getHexaPoints()"
                  stroke-linecap="round"
         />
-        <circle id="piece_{{ captured.coord.x }}_{{ captured.coord.y }}"
+        <circle id="piece-{{ captured.coord.x }}-{{ captured.coord.y }}"
                 cx="0"
                 cy="0"
                 [attr.r]="SPACE_SIZE * 0.5"
@@ -52,7 +52,7 @@
     </g>
 
     <g *ngFor="let arrow of directions"
-       id="arrow_{{ arrow.start.x }}_{{ arrow.start.y }}_to_{{ arrow.landing.x }}_{{ arrow.landing.y }}"
+       id="arrow-{{ arrow.start.x }}-{{ arrow.start.y }}-to-{{ arrow.landing.x }}-{{ arrow.landing.y }}"
        (click)="chooseDirection(arrow.dir)"
        app-hex-arrow
        [arrow]="arrow"

@@ -189,14 +189,14 @@ export class ApagosComponent extends GameComponent<ApagosRules, ApagosMove, Apag
         const x: number = this.SPACE_SIZE / 2;
         const y: number = this.SPACE_SIZE / 2;
         if (square.count(PlayerOrNone.NONE) === 1) {
-            return `translate(${x}, ${y})`;
+            return this.getSVGTranslation(x, y);
         }
         const nbCircle: number = square.count(PlayerOrNone.NONE);
         const angle: number = (i * 2 * Math.PI / nbCircle) - (Math.PI / 2);
         const radius: number = this.SPACE_SIZE * 0.30;
         const deltaX: number = radius * Math.cos(angle);
         const deltaY: number = radius * Math.sin(angle);
-        return `translate(${x + deltaX}, ${y + deltaY})`;
+        return this.getSVGTranslation(x + deltaX, y + deltaY);
     }
 
     public canDisplayArrow(x: number, player: Player): boolean {
@@ -211,7 +211,7 @@ export class ApagosComponent extends GameComponent<ApagosRules, ApagosMove, Apag
     public getBlockTransform(x: number): string {
         const yOffset: number = ((this.board.length - 1 - x) * this.SPACE_SIZE) + (0.5 * this.SPACE_SIZE);
         const xOffset: number = x * this.SPACE_SIZE;
-        return 'translate(' + xOffset + ', ' + yOffset + ')';
+        return this.getSVGTranslation(xOffset, yOffset);
     }
 
     public getSquareClasses(x: number): string[] {

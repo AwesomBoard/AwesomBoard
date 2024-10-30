@@ -1,6 +1,7 @@
 import { Coord } from '../Coord';
 import { MGPOptional } from '@everyboard/lib';
 import { Orthogonal } from '../Orthogonal';
+import { TableUtils } from '../TableUtils';
 
 
 export class TriangularCheckerBoard {
@@ -48,6 +49,26 @@ export class TriangularCheckerBoard {
 
     public static isSpaceDark(coord: Coord): boolean {
         return (coord.x + coord.y) % 2 === 0;
+    }
+
+    public static createBoard<T>(size: number, empty: T, full: T): T[][] {
+        const width: number = (size * 2) - (size % 2);
+        const board: T[][] = TableUtils.create(
+            width,
+            size,
+            empty,
+        );
+        const lineStartIndex: number = size - (size % 2);
+        for (let y: number = 0; y < size; y++) {
+            const lineEndIndex: number = lineStartIndex + (y * 2);
+            for (let x: number = 0; x < width; x++) {
+                const diagonalIndex: number = x + y;
+                if (lineStartIndex <= diagonalIndex && diagonalIndex <= lineEndIndex) {
+                    board[y][x] = full;
+                }
+            }
+        }
+        return board;
     }
 
 }

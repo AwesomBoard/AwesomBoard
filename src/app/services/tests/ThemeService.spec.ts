@@ -28,7 +28,6 @@ describe('ThemeService', () => {
         it('should load some theme at construction', fakeAsync(async() => {
             // When the page loads
             testUtils.detectChanges();
-            await testUtils.whenStable();
             tick(1000);
             // Then the CSS is set to an existing theme
             expect(getThemeElement().href).toMatch('/(light|dark).css$');

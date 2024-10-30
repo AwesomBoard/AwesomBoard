@@ -1,16 +1,21 @@
-import { MGPOptional } from 'lib/dist';
+import { MGPOptional } from '@everyboard/lib';
 import { AbstractGoRules } from '../AbstractGoRules';
 import { GoState } from '../GoState';
 import { GoPiece } from '../GoPiece';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
-import { NumberConfig, RulesConfigDescription, RulesConfigDescriptionLocalizable } from 'src/app/components/wrapper-components/rules-configuration/RulesConfigDescription';
+import { BooleanConfig, NumberConfig, RulesConfigDescription, RulesConfigDescriptionLocalizable } from 'src/app/components/wrapper-components/rules-configuration/RulesConfigDescription';
 import { MGPValidators } from 'src/app/utils/MGPValidator';
-import { TableUtils } from 'src/app/jscaip/TableUtils';
 import { TriangularGoGroupDataFactory } from '../GoGroupDataFactory';
 import { GroupDataFactory } from 'src/app/jscaip/BoardData';
+import { TriangularCheckerBoard } from 'src/app/jscaip/state/TriangularCheckerBoard';
+import { HexagonalUtils } from 'src/app/jscaip/HexagonalUtils';
 
 export type TrigoConfig = {
+
     size: number;
+
+    hexagonal: boolean;
+
 };
 
 export class TrigoRules extends AbstractGoRules<TrigoConfig> {
@@ -21,9 +26,13 @@ export class TrigoRules extends AbstractGoRules<TrigoConfig> {
         new RulesConfigDescription<TrigoConfig>({
             name: (): string => $localize`Standard`,
             config: {
-                size: new NumberConfig(7,
-                                       RulesConfigDescriptionLocalizable.SIZE,
-                                       MGPValidators.range(1, 99)),
+                size: new NumberConfig(
+                    7,
+                    RulesConfigDescriptionLocalizable.SIZE,
+                    MGPValidators.range(1, 99)),
+                hexagonal: new BooleanConfig(
+                    false,
+                    () => $localize`Hexagonal`),
             },
         });
 
@@ -36,21 +45,12 @@ export class TrigoRules extends AbstractGoRules<TrigoConfig> {
 
     public override getInitialState(optionalConfig: MGPOptional<TrigoConfig>): GoState {
         const config: TrigoConfig = optionalConfig.get();
-        const width: number = (config.size * 2) - (config.size % 2);
-        const board: GoPiece[][] = TableUtils.create(
-            width,
-            config.size,
-            GoPiece.UNREACHABLE,
-        );
-        const lineStartIndex: number = config.size - (config.size % 2);
-        for (let y: number = 0; y < config.size; y++) {
-            const lineEndIndex: number = lineStartIndex + (y * 2);
-            for (let x: number = 0; x < width; x++) {
-                const diagonalIndex: number = x + y;
-                if (lineStartIndex <= diagonalIndex && diagonalIndex <= lineEndIndex) {
-                    board[y][x] = GoPiece.EMPTY;
-                }
-            }
+        const size: number = config.size;
+        let board: GoPiece[][];
+        if (config.hexagonal) {
+            board = HexagonalUtils.createBoard(size, GoPiece.UNREACHABLE, GoPiece.EMPTY);
+        } else {
+            board = TriangularCheckerBoard.createBoard(size, GoPiece.UNREACHABLE, GoPiece.EMPTY);
         }
         return new GoState(board, PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'PLAYING');
     }

@@ -17,6 +17,7 @@ import { GoLegalityInformation } from '../AbstractGoRules';
 import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 import { TriangularCheckerBoard } from 'src/app/jscaip/state/TriangularCheckerBoard';
 import { TrigoMinimax } from './TrigoMinimax';
+import { TableUtils } from 'src/app/jscaip/TableUtils';
 
 @Component({
     selector: 'app-trigo',
@@ -66,9 +67,12 @@ export class TrigoComponent extends TriangularGameComponent<TrigoRules,
 
     public getViewBox(): ViewBox {
         const state: GoState = this.getState();
-        const abstractSize: number = state.getWidth() / 2;
-        const oddnessOffset: number = 0.5 * this.SPACE_SIZE * (state.getWidth() % 2);
-        const evennessOffset: number = 0.5 * this.SPACE_SIZE * ((state.getWidth() + 1) % 2);
+        const leftmostOccupiedX: number = TableUtils.getLeftmostMatchColumn(state.board, GoPiece.isReachable).get();
+        const width: number = state.board[0].length;
+        const occupiedWidth: number = width - leftmostOccupiedX;
+        const abstractSize: number = occupiedWidth / 2;
+        const oddnessOffset: number = 0.5 * this.SPACE_SIZE * (occupiedWidth % 2);
+        const evennessOffset: number = leftmostOccupiedX * 0.5 * this.SPACE_SIZE;
         return new ViewBox(
             evennessOffset,
             0,
@@ -142,7 +146,7 @@ export class TrigoComponent extends TriangularGameComponent<TrigoRules,
         } else {
             y = 15;
         }
-        return 'translate(20 ' + y + ') scale(0.6)';
+        return this.getSVGTranslation(20, y) + ' scale(0.6)';
     }
 
     public isUpward(coord: Coord): boolean {
@@ -151,6 +155,19 @@ export class TrigoComponent extends TriangularGameComponent<TrigoRules,
 
     public isDownward(coord: Coord): boolean {
         return TriangularCheckerBoard.isSpaceDark(coord) === false;
+    }
+
+    public getKoTranslationAt(koCoord: Coord): string {
+        const koTranslationCoord: Coord = this.getKoTranslationCoordAt(koCoord);
+        return this.getSVGTranslationAt(koTranslationCoord);
+    }
+
+    private getKoTranslationCoordAt(koCoord: Coord): Coord {
+        if (this.isUpward(koCoord)) {
+            return this.getTriangleTranslationCoord(koCoord).getNext(new Coord(0, 25));
+        } else {
+            return this.getTriangleTranslationCoord(koCoord);
+        }
     }
 
 }

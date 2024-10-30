@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { QuartoMove } from './QuartoMove';
 import { QuartoState } from './QuartoState';
-import { QuartoRules } from './QuartoRules';
+import { QuartoConfig, QuartoRules } from './QuartoRules';
 import { QuartoPiece } from './QuartoPiece';
 import { Coord } from 'src/app/jscaip/Coord';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
+import { MGPOptional, MGPValidation, Set } from '@everyboard/lib';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
@@ -20,7 +20,8 @@ import { QuartoMinimax } from './QuartoMinimax';
 export class QuartoComponent extends RectangularGameComponent<QuartoRules,
                                                               QuartoMove,
                                                               QuartoState,
-                                                              QuartoPiece>
+                                                              QuartoPiece,
+                                                              QuartoConfig>
 {
     public EMPTY: QuartoPiece = QuartoPiece.EMPTY;
     public QuartoPiece: typeof QuartoPiece = QuartoPiece;
@@ -31,7 +32,7 @@ export class QuartoComponent extends RectangularGameComponent<QuartoRules,
     public pieceInHand: QuartoPiece = QuartoPiece.EMPTY;
     // the piece that the user wants to give to the opponent
     public pieceToGive: MGPOptional<QuartoPiece> = MGPOptional.empty();
-    public victoriousCoords: Coord[] = [];
+    public victoriousCoords: Set<Coord> = new Set();
 
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
         super(messageDisplayer, cdr);
@@ -48,7 +49,8 @@ export class QuartoComponent extends RectangularGameComponent<QuartoRules,
         const state: QuartoState = this.getState();
         this.board = state.getCopiedBoard();
         this.pieceInHand = state.pieceInHand;
-        this.victoriousCoords = this.rules.getVictoriousCoords(state);
+        const config: QuartoConfig = this.getConfig().get();
+        this.victoriousCoords = this.rules.getVictoriousCoords(state, config);
     }
 
     public async clickCoord(x: number, y: number): Promise<MGPValidation> {

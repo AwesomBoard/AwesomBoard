@@ -26,7 +26,7 @@ let tests = [
        lwt_test "should answer with the current time in JSON" (fun () ->
            ExternalTests.Mock.current_time_seconds := 42;
            (* When requesting the current time *)
-           let request = Dream.request ~method_:`GET "/time" in
+           let request : Dream.request = Dream.request ~method_:`GET "/time" in
            let* response = ServerUtils.server_time request in
            let* body = Dream.body response in
            (* Then it should answer with a JSON containing the time *)
@@ -40,7 +40,7 @@ let tests = [
    "ServerUtils.error_handler", [
        lwt_test "should answer with JSONified error and 400 in case of BadInput" (fun () ->
            (* Given a BadInput exception that was raised *)
-           let error_message = "I can't do this!" in
+           let error_message : string = "I can't do this!" in
            let exn = BadInput error_message in
            let error = error_of_exn exn in
            (* When handling it with the error handler *)
@@ -58,7 +58,7 @@ let tests = [
 
        lwt_test "should answer with JSONified error and 500 in case of DocumentInvalid" (fun () ->
            (* Given a DocumentInvalid exception that was raised *)
-           let document_path = "/foo/bar" in
+           let document_path : string = "/foo/bar" in
            let exn = DocumentInvalid document_path in
            let error = error_of_exn exn in
            (* When handling it with the error handler *)
@@ -76,7 +76,7 @@ let tests = [
 
        lwt_test "should answer with JSONified error and 404 in case of DocumentNotFound" (fun () ->
            (* Given a DocumentNotFound exception that was raised *)
-           let document_path = "/foo/bar" in
+           let document_path : string = "/foo/bar" in
            let exn = DocumentNotFound document_path in
            let error = error_of_exn exn in
            (* When handling it with the error handler *)

@@ -1,4 +1,16 @@
+$primary: #ffc34d;
+
+@use "../../node_modules/bulma/sass" with (
+  $primary: $primary,
+  $footer-padding: 1rem,
+  // $card-shadow: none,
+  $navbar-burger-color: --bulma-navbar-item-color,
+);
+
+@use "./mystyles.scss";
+
 :root {
+    --primary: $primary;
     --alt-alt-background-fill: dimgray;
     --alt-background-fill: gray;
     --alt-captured: #990000;
@@ -26,25 +38,7 @@
     --defeat: red;
 }
 
-$primary: #ffc34d;
-$footer-padding:2rem 1rem 2rem;
-@import "../../node_modules/bulmaswatch/default/bulmaswatch.scss";
-@import "../../node_modules/@creativebulma/bulma-tooltip/dist/bulma-tooltip.css";
-@import "./mystyles.scss";
-
-.button {
-    // Fix for the following bug: https://github.com/jgthms/bulma/issues/3471
-    justify-content: center;
-}
-
-.modal-card-head, .is-primary {
-    background-color: $primary;
-}
-
 .has-text-passive {
     color: #AAA;
 }
-/* Show the page only after the CSS has been loaded */
-html, body {
-    display: block;
-}
+

@@ -152,7 +152,7 @@ describe('LinesOfActionComponent', () => {
         await testUtils.setupState(state, { previousState, previousMove });
 
         // When taking it back
-        await testUtils.expectInterfaceClickSuccess('#takeBack');
+        await testUtils.expectInterfaceClickSuccess('#take-back');
 
         // Then no highlight should be found
         testUtils.expectElementNotToHaveClass('#space_2_0', 'moved-fill');

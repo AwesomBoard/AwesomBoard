@@ -183,8 +183,7 @@ export class MartianChessComponent extends RectangularGameComponent<MartianChess
         const padding: number = 0;
         const translationX: number = (5.25 * this.SPACE_SIZE) + padding;
         const translationY: number = (7 * this.SPACE_SIZE) + padding + (2 * this.STROKE_WIDTH);
-        const translation: string = 'translate(' + translationX + ', ' + translationY + ')';
-        return translation;
+        return this.getSVGTranslation(translationX, translationY);
     }
 
     public getConfigCogTransformation(): string {
@@ -192,7 +191,7 @@ export class MartianChessComponent extends RectangularGameComponent<MartianChess
         const wantedSize: number = this.SPACE_SIZE - padding;
         const scaler: number = wantedSize / 40;
         const scale: string = 'scale(' + scaler + ' ' + scaler +')';
-        const translation: string = 'translate(' + (1.0 * padding) + ', ' + (1.0 * padding) + ')';
+        const translation: string = this.getSVGTranslation(padding, padding);
         return translation + ' ' + scale;
     }
 
@@ -402,7 +401,7 @@ export class MartianChessComponent extends RectangularGameComponent<MartianChess
     }
 
     public getBoardTransformation(): string {
-        const translation: string = 'translate(' + this.SPACE_SIZE + ', 0)';
+        const translation: string = this.getSVGTranslation(this.SPACE_SIZE, 0);
         const rotation: string = 'rotate(' + (this.getPointOfView().getValue() * 180) + ' ' + this.HORIZONTAL_CENTER + ' ' + this.VERTICAL_CENTER + ')';
         return translation + ' ' + rotation;
     }
@@ -414,7 +413,7 @@ export class MartianChessComponent extends RectangularGameComponent<MartianChess
         if (player === this.getPointOfView()) {
             translationY += (10 * this.SPACE_SIZE) + (4 * this.STROKE_WIDTH);
         }
-        const translation: string = 'translate(' + translationX + ', ' + translationY + ')';
+        const translation: string = this.getSVGTranslation(translationX, translationY);
         return scale + ' ' + translation;
     }
 

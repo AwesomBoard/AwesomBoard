@@ -28,6 +28,7 @@ class PlayerNone implements ComparableObject {
     public getValue() : number {
         return this.value;
     }
+
 }
 
 export class Player implements ComparableObject {
@@ -109,6 +110,10 @@ export class Player implements ComparableObject {
 
     public getValue(): number {
         return this.value;
+    }
+
+    public getHTMLClass(postfix: string): string {
+        return 'player' + this.getValue() + postfix;
     }
 
 }

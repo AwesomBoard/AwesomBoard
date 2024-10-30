@@ -15,6 +15,10 @@ export class GipfState extends HexagonalGameState<FourStatePiece> {
         super(turn, board, 7, 7, [3, 2, 1], FourStatePiece.EMPTY);
     }
 
+    public getScores(): PlayerNumberMap {
+        return this.capturedPieces;
+    }
+
     public equals(other: GipfState): boolean {
         if (this.turn !== other.turn) return false;
         if (this.sidePieces.equals(other.sidePieces) === false) return false;

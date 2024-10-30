@@ -11,7 +11,8 @@ import { TrexoMove } from '../TrexoMove';
 describe('TrexoHalfSquareComponent', () => {
 
     function expectAllLinesToBeDisplayed(): void {
-        /** Then all those lines should be displayed:
+        /**
+         * Then all those lines should be displayed:
          *     0------1
          *    /      /|
          *   2------3 |
@@ -75,7 +76,8 @@ describe('TrexoHalfSquareComponent', () => {
         // When displaying it
         testUtils.detectChanges();
 
-        /** Then all those lines should be displayed:
+        /**
+         * Then all those lines should be displayed:
          *     0------1
          *    /
          *   2------3
@@ -102,7 +104,8 @@ describe('TrexoHalfSquareComponent', () => {
         // When displaying it
         testUtils.detectChanges();
 
-        /** Then all those lines should be displayed:
+        /**
+         * Then all those lines should be displayed:
          *     0------1
          *           /|
          *   2------3 |
@@ -129,7 +132,8 @@ describe('TrexoHalfSquareComponent', () => {
         // When displaying it
         testUtils.detectChanges();
 
-        /** Then all those lines should be displayed:
+        /**
+         * Then all those lines should be displayed:
          *     0------1
          *    /      /|
          *   2      3 |
@@ -156,7 +160,8 @@ describe('TrexoHalfSquareComponent', () => {
         // When displaying it
         testUtils.detectChanges();
 
-        /** Then all those lines should be displayed:
+        /**
+         * Then all those lines should be displayed:
          *     0      1
          *    /      /
          *   2------3
@@ -183,7 +188,8 @@ describe('TrexoHalfSquareComponent', () => {
         // When displaying it
         testUtils.detectChanges();
 
-        /** Then all those lines should be displayed:
+        /**
+         * Then all those lines should be displayed:
          *     0      1
          *    /      /
          *   2------3

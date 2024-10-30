@@ -175,9 +175,9 @@ export class MartianChessRules extends Rules<MartianChessMove, MartianChessState
         }
         const emptyTerritory: MGPOptional<Player> = state.getEmptyTerritory();
         if (emptyTerritory.isPresent()) {
-            const lastPlayer: Player = state.getCurrentOpponent();
-            const lastPlayerVictoryStatus: GameStatus = GameStatus.getVictory(lastPlayer);
-            return this.getGameStatusScoreVictoryOr(state, lastPlayerVictoryStatus);
+            const previousPlayer: Player = state.getPreviousPlayer();
+            const previousPlayerVictoryStatus: GameStatus = GameStatus.getVictory(previousPlayer);
+            return this.getGameStatusScoreVictoryOr(state, previousPlayerVictoryStatus);
         }
         return GameStatus.ONGOING;
     }

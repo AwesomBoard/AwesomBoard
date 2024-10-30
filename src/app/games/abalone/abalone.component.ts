@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { ArrayUtils, MGPFallible, MGPOptional, MGPValidation, Utils, Set } from '@everyboard/lib';
 import { HexagonalGameComponent } from 'src/app/components/game-components/game-component/HexagonalGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Direction } from 'src/app/jscaip/Direction';
@@ -10,7 +11,6 @@ import { PointyHexaOrientation } from 'src/app/jscaip/HexaOrientation';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { ArrayUtils, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { AbaloneFailure } from './AbaloneFailure';
 import { AbaloneState } from './AbaloneState';
 import { AbaloneMove } from './AbaloneMove';
@@ -56,11 +56,11 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
 
     public selecteds: Coord[] = [];
 
-    public boardNeighboringCoords: Coord[] = AbaloneRules
+    public boardNeighboringCoords: Coord[] = new Set(AbaloneRules
         .get()
         .getInitialState()
         .getCoordsAndContents()
-        .flatMap((coordAndContent: { coord: Coord }) => coordAndContent.coord.getOrdinalNeighbors());
+        .flatMap((coordAndContent: { coord: Coord }) => coordAndContent.coord.getOrdinalNeighbors())).toList();
 
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
         super(messageDisplayer, cdr);
@@ -133,7 +133,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
                 this.moveds.push(landing);
             } else {
                 // Since only current player could have translated out their pieces
-                const previousPlayer: Player = this.getPreviousState().getCurrentPlayer();
+                const previousPlayer: Player = this.getState().getPreviousPlayer();
                 this.captureds.push({
                     coord: landing,
                     pieceClasses: [this.getPlayerClass(previousPlayer)],
@@ -146,7 +146,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
     public async onPieceClick(coord: Coord): Promise<MGPValidation> {
         const x: number = coord.x;
         const y: number = coord.y;
-        const clickValidity: MGPValidation = await this.canUserPlay('#piece_' + x + '_' + y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#piece-' + x + '-' + y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
@@ -322,7 +322,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
     }
 
     public async chooseDirection(dir: HexaDirection): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#direction_' + dir.toString());
+        const clickValidity: MGPValidation = await this.canUserPlay('#direction-' + dir.toString());
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
@@ -341,8 +341,16 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         }
     }
 
+    public async onInvisibleSpaceClick(coord: Coord): Promise<MGPValidation> {
+        const clickValidity: MGPValidation = await this.canUserPlay('#invisible-space-' + coord.x + '-' + coord.y);
+        if (clickValidity.isFailure()) {
+            return this.cancelMove(clickValidity.getReason());
+        }
+        return this.tryChoosingDirection(coord);
+    }
+
     public async onSpaceClick(coord: Coord): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#space_' + coord.x + '_' + coord.y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#space-' + coord.x + '-' + coord.y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }

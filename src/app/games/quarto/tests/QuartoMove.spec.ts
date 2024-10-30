@@ -1,14 +1,14 @@
 /* eslint-disable max-lines-per-function */
-import { QuartoNode, QuartoRules } from '../QuartoRules';
+import { MGPOptional } from '@everyboard/lib';
+import { QuartoConfig, QuartoNode, QuartoRules } from '../QuartoRules';
 import { QuartoMove } from '../QuartoMove';
 import { QuartoPiece } from '../QuartoPiece';
 import { EncoderTestUtils } from '@everyboard/lib';
 import { QuartoMoveGenerator } from '../QuartoMoveGenerator';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 
 describe('QuartoMove', () => {
 
-    const defaultConfig: NoConfig = QuartoRules.get().getDefaultRulesConfig();
+    const defaultConfig: MGPOptional<QuartoConfig> = QuartoRules.get().getDefaultRulesConfig();
 
     it('should have a bijective encoder', () => {
         const rules: QuartoRules = QuartoRules.get();

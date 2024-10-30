@@ -1,7 +1,7 @@
-<div class="tile is-ancestor">
-    <div class="tile is-5 is-vertical is-parent">
+<div class="columns is-vcentered is-align-items-stretch">
+    <div class="column is-one-third">
         <div id="infos"
-             class="tile is-child box">
+             class="box is-fullheight">
             <progress class="progress is-primary" [attr.value]="successfulSteps" [attr.max]="getNumberOfSteps()"></progress>
             <div class="content is-medium">
                 <p class="title">{{ getCurrentStepTitle() }} [{{stepIndex + 1}}/{{ getNumberOfSteps() }}]</p>
@@ -74,11 +74,12 @@
             </div>
         </div>
     </div>
-    <div class="tile is-parent is-7 is-vcentered"
-         [ngClass]="getBoardHighlight()">
-        <div id="board"
-             class="tile is-child box">
-            <div #board></div>
+    <div class="column">
+        <div class="box is-fullheight p-5"
+             [ngClass]="getBoardHighlight()">
+            <div id="board" class="box is-fullheight">
+                <div #board></div>
+            </div>
         </div>
     </div>
 </div>

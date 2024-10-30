@@ -19,8 +19,6 @@ export class DemoPageComponent {
 
     public numberOfColumns: FormControl = new FormControl(5);
 
-    public squared: FormControl = new FormControl(true);
-
     public columns: DemoNodeInfo[][] = [];
 
     public constructor() {

@@ -2,8 +2,8 @@
 if [ "$1" != "skip" ]; then
     ./scripts/update-translations.sh
 fi
-python ./scripts/check-translations.py script
-if [ "$?" -eq 0 ]; then
+
+if python ./scripts/check-translations.py script; then
     echo 'Translations are OK!'
     echo 'Generating fr.json'
     BEFORE=$(sha256sum src/assets/fr.json)

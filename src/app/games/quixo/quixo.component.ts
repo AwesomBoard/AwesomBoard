@@ -11,7 +11,6 @@ import { PlayerOrNone } from 'src/app/jscaip/Player';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { QuixoMoveGenerator } from './QuixoMoveGenerator';
-import { GameComponentUtils } from 'src/app/components/game-components/GameComponentUtils';
 import { QuixoMinimax } from './QuixoMinimax';
 
 @Component({
@@ -127,11 +126,11 @@ export class QuixoComponent extends RectangularGameComponent<QuixoRules,
         return this.chooseMove(move);
     }
 
-    public getArrowTransform(orientation: Orthogonal): string {
+    public getQuixoArrowTransform(orientation: Orthogonal): string {
         const state: QuixoState = this.getState();
         const boardWidth: number = state.getWidth() * this.SPACE_SIZE;
         const boardHeight: number = state.getHeight() * this.SPACE_SIZE;
-        return GameComponentUtils.getArrowTransform(boardWidth, boardHeight, orientation);
+        return this.getArrowTransform(boardWidth, boardHeight, orientation);
     }
 
 }

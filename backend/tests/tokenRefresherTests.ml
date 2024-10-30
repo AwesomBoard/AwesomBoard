@@ -36,7 +36,7 @@ let tests = [
     "TokenRefresher.header", [
         lwt_test "should fail if the middleware is absent" (fun () ->
             lwt_check_raises "failure" ((=) (UnexpectedError "get_token_field not set, the middleware is probably missing")) (fun () ->
-                let request = Dream.request "/" in
+                let request : Dream.request = Dream.request "/" in
                 let* _ = TokenRefresher.header request in
                 Lwt.return ()
             )
@@ -76,7 +76,7 @@ let tests = [
             let body = access_token_str in
             let mock = ExternalTests.Mock.Http.mock_response (response, body) in
             (* When the middleware receives a request *)
-            let request = Dream.request "/" in
+            let request : Dream.request = Dream.request "/" in
             (* Then it should bind the headers containing the token in the request passed to the handler *)
             let handler = Dream.router [ Dream.get "/" (fun request ->
                 let* header = TokenRefresher.header request in
@@ -100,7 +100,7 @@ let tests = [
             let body = access_token_str in (* this token expires in 42 seconds! *)
             let mock = ExternalTests.Mock.Http.mock_response (response, body) in
             (* A first request is made to retrieve the token *)
-            let request = Dream.request "/" in
+            let request : Dream.request = Dream.request "/" in
             let handler = Dream.router [ Dream.get "/" (fun request ->
                 let* header = TokenRefresher.header request in
                 let actual = Cohttp.Header.to_list header in
@@ -126,7 +126,7 @@ let tests = [
             let response = response `OK in
             let body = access_token_str in (* expires in 42 seconds! *)
             let mock = ExternalTests.Mock.Http.mock_response (response, body) in
-            let request = Dream.request "/" in
+            let request : Dream.request = Dream.request "/" in
             let handler = Dream.router [ Dream.get "/" (fun request ->
                 let* header = TokenRefresher.header request in
                 let actual = Cohttp.Header.to_list header in
@@ -153,7 +153,7 @@ let tests = [
             let body = access_token_str in
             let mock = ExternalTests.Mock.Http.mock_response (response, body) in
             (* When the middleware receives a request *)
-            let request = Dream.request "/" in
+            let request : Dream.request = Dream.request "/" in
             (* Then it should not retrieve the token but use the string "owner" instead *)
             let handler = Dream.router [ Dream.get "/" (fun request ->
                 let* header = TokenRefresher.header request in

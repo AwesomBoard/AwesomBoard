@@ -72,6 +72,22 @@ export class TableUtils {
         return total;
     }
 
+    /**
+     * Return the column of the leftmost match in each line of this table
+     */
+    public static getLeftmostMatchColumn<T>(table: Table<T>, predicate: (element: T) => boolean): MGPOptional<number> {
+        const width: number = table[0].length;
+        const height: number = table.length;
+        for (let x: number = 0; x < width; x++) {
+            for (let y: number = 0; y < height; y++) {
+                if (predicate(table[y][x])) {
+                    return MGPOptional.of(x);
+                }
+            }
+        }
+        return MGPOptional.empty();
+    }
+
 }
 
 export type Cell<T> = {

@@ -41,7 +41,7 @@ let tests = [
     "Auth.middleware", [
         lwt_test "should fail if there is no Authorization token" (fun () ->
             (* Given a request without Authorization token *)
-            let request = Dream.request ~headers:[] "/" in
+            let request : Dream.request = Dream.request ~headers:[] "/" in
             (* When it is received by the middleware *)
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
@@ -53,7 +53,7 @@ let tests = [
 
         lwt_test "should fail if the authorization header is invalid" (fun () ->
             (* Given a request with an invalid Authorization header *)
-            let request = Dream.request ~headers:[("Authorization", "i'm missing the Bearer part")] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "i'm missing the Bearer part")] "/" in
             (* When it is received by the middleware *)
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
@@ -65,43 +65,43 @@ let tests = [
 
         lwt_test "should fail if the token is invalid" (fun () ->
             (* Given a request with an invalid Authorization token *)
-            let request = Dream.request ~headers:[("Authorization", "Bearer foo")] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "Bearer foo")] "/" in
             (* When it is received by the middleware *)
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
             (* Then it should fail *)
-            let json_response = `Assoc [("reason", `String "Authorization token is invalid")] in
+            let json_response = `Assoc [("reason", `String "Authorization token cannot be parsed")] in
             let expected = Dream.response ~status:`Unauthorized (JSON.to_string json_response) in
             lwt_check_response "failure" expected actual
         );
 
         lwt_test "should fail if the token is invalid (but is base64)" (fun () ->
             (* Given a request with an invalid Authorization token, but correctly formed as 3 base64 strings *)
-            let request = Dream.request ~headers:[("Authorization", "Bearer TUdQ.SmVhbkphamE=.cnVsZXo=")] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "Bearer TUdQ.SmVhbkphamE=.cnVsZXo=")] "/" in
             (* When it is received by the middleware *)
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
             (* Then it should fail *)
-            let json_response = `Assoc [("reason", `String "Authorization token is invalid")] in
+            let json_response = `Assoc [("reason", `String "Authorization token cannot be parsed")] in
             let expected = Dream.response ~status:`Unauthorized (JSON.to_string json_response) in
             lwt_check_response "failure" expected actual
         );
 
         lwt_test "should fail if the token is invalid (but is base64 from JSON)" (fun () ->
             (* Given a request with an invalid Authorization token, but correctly formed as 3 base64 strings from JSON *)
-            let request = Dream.request ~headers:[("Authorization", "Bearer e30=.e30=.e30=")] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "Bearer e30=.e30=.e30=")] "/" in
             (* When it is received by the middleware *)
             let handler = Dream.router [ Dream.get "/" (fun _ -> Dream.empty `Found) ] in
             let* actual = Auth.middleware handler request in
             (* Then it should fail *)
-            let json_response = `Assoc [("reason", `String "Authorization token is invalid")] in
+            let json_response = `Assoc [("reason", `String "Authorization token cannot be verified")] in
             let expected = Dream.response ~status:`Unauthorized (JSON.to_string json_response) in
             lwt_check_response "failure" expected actual
         );
 
         lwt_test "should fail if the user has no account" (fun () ->
             (* Given a request with a valid Authorization token, but no corresponding user *)
-            let request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
             JwtTests.Mock.validate_token := true;
             FirestoreTests.Mock.user := (fun () -> raise (DocumentNotFound "user"));
             (* When it is received by the middleware *)
@@ -115,7 +115,7 @@ let tests = [
 
         lwt_test "should fail if the user is broken" (fun () ->
             (* Given a request with a valid Authorization token, but no corresponding user *)
-            let request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
             JwtTests.Mock.validate_token := true;
             FirestoreTests.Mock.user := (fun () -> raise (DocumentInvalid "user"));
             (* When it is received by the middleware *)
@@ -129,7 +129,7 @@ let tests = [
 
         lwt_test "should fail if the user has an unverified account" (fun () ->
             (* Given a request with a valid Authorization token for an user that is not verified *)
-            let request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
             JwtTests.Mock.validate_token := true;
             FirestoreTests.Mock.user := (fun () -> FirestoreTests.unverified_user);
             (* When it is received by the middleware *)
@@ -143,7 +143,7 @@ let tests = [
 
         lwt_test "should call the handler with the user bound if the request is well formed" (fun () ->
             (* Given a request with a valid Authorization token for an user that is verified *)
-            let request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
+            let request : Dream.request = Dream.request ~headers:[("Authorization", "Bearer " ^ valid_token)] "/" in
             JwtTests.Mock.validate_token := true;
             FirestoreTests.Mock.user := (fun () -> FirestoreTests.verified_user);
             (* When it is received by the middleware *)
@@ -168,7 +168,7 @@ let tests = [
     "Auth.get_user", [
         test "should fail if there is no middleware" (fun () ->
             check_raises "failure" (UnexpectedError "No user stored. Is the Auth middleware missing?") (fun () ->
-                let request = Dream.request "" in
+                let request : Dream.request = Dream.request "" in
                 let _ = Auth.get_user request in
                 ()
             )

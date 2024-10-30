@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Utils } from '@everyboard/lib';
+import { Player } from 'src/app/jscaip/Player';
 import { Debug } from 'src/app/utils/Debug';
 
 @Component({
@@ -10,6 +11,7 @@ import { Debug } from 'src/app/utils/Debug';
 @Debug.log
 export class CountDownComponent implements OnDestroy {
 
+    @Input() player: Player;
     @Input() debugName: string;
     @Input() timeToAdd: string;
     @Input() dangerTimeLimit: number;

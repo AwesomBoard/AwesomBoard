@@ -63,10 +63,9 @@ module.exports = {
             '@typescript-eslint/no-empty-function': ['off'],
             '@typescript-eslint/no-namespace': ['off'],
             '@typescript-eslint/explicit-function-return-type': ['error'],
-            '@typescript-eslint/ban-types': [
-                'error',
-                { 'types': { 'String': { 'message': 'Use string instead', 'fixWith': 'string' } } },
-            ],
+            '@typescript-eslint/no-empty-object-type': ['error'],
+            '@typescript-eslint/no-unsafe-function-type': ['error'],
+            '@typescript-eslint/no-wrapper-object-types': ['error'], // bans Object, Number, String, etc.
             '@typescript-eslint/no-this-alias': ['error'],
             '@typescript-eslint/no-inferrable-types': ['off'],
             '@typescript-eslint/no-redeclare': [

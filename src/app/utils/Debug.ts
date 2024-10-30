@@ -25,7 +25,9 @@ export class Debug {
     private static getStringified(o: object): string {
         try {
             return JSON.stringify(o);
-        } catch (e) {
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        catch (e: unknown) {
             return 'recursive and not stringifiable!';
         }
     }
@@ -37,7 +39,9 @@ export class Debug {
             if (verbosity[name] == null) return [false, false];
             Utils.assert(Array.isArray(verbosity[name]), `malformed verbosity levels for ${name}: ${verbosity[name]}`);
             return verbosity[name] as [boolean, boolean];
-        } catch (e) {
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        catch (e: unknown) {
             // Verbosity is not proper JSON
             throw new Error(`malformed verbosity object: ${verbosityJSON}`);
         }

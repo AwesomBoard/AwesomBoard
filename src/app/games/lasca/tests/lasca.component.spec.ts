@@ -38,8 +38,8 @@ describe('LascaComponent', () => {
             await testUtils.expectClickSuccess('#coord-4-4');
 
             // Then its landing coord should be landable
-            testUtils.expectElementToHaveClass('#square-3-3', 'selectable-fill');
-            testUtils.expectElementToHaveClass('#square-5-3', 'selectable-fill');
+            testUtils.expectElementToHaveClass('#clickable-highlight-3-3', 'clickable-stroke');
+            testUtils.expectElementToHaveClass('#clickable-highlight-5-3', 'clickable-stroke');
         }));
 
         it('should highlight piece that can move this turn (when forced capture)', fakeAsync(async() => {
@@ -57,11 +57,11 @@ describe('LascaComponent', () => {
             // When displaying the board
             await testUtils.setupState(state);
 
-            // Then only the one that must capture must be "selectable-fill"
-            testUtils.expectElementToHaveClass('#square-0-2', 'selectable-fill');
-            testUtils.expectElementNotToHaveClass('#square-2-2', 'selectable-fill');
-            testUtils.expectElementNotToHaveClass('#square-4-2', 'selectable-fill');
-            testUtils.expectElementNotToHaveClass('#square-6-2', 'selectable-fill');
+            // Then only the one that must capture must be "clickable-stroke"
+            testUtils.expectElementToHaveClass('#clickable-highlight-0-2', 'clickable-stroke');
+            testUtils.expectElementNotToExist('#clickable-highlight-2-2');
+            testUtils.expectElementNotToExist('#clickable-highlight-4-2');
+            testUtils.expectElementNotToExist('#clickable-highlight-6-2');
         }));
 
         it(`should forbid clicking on opponent's pieces`, fakeAsync(async() => {
@@ -164,10 +164,10 @@ describe('LascaComponent', () => {
             await testUtils.expectClickFailure('#coord-4-4');
 
             // Then the possible first choices should be shown again
-            testUtils.expectElementToHaveClass('#square-0-4', 'selectable-fill');
-            testUtils.expectElementToHaveClass('#square-2-4', 'selectable-fill');
-            testUtils.expectElementToHaveClass('#square-4-4', 'selectable-fill');
-            testUtils.expectElementToHaveClass('#square-6-4', 'selectable-fill');
+            testUtils.expectElementToHaveClass('#clickable-highlight-0-4', 'clickable-stroke');
+            testUtils.expectElementToHaveClass('#clickable-highlight-2-4', 'clickable-stroke');
+            testUtils.expectElementToHaveClass('#clickable-highlight-4-4', 'clickable-stroke');
+            testUtils.expectElementToHaveClass('#clickable-highlight-6-4', 'clickable-stroke');
         }));
 
         it('should change selected piece when clicking on another one of your pieces', fakeAsync(async() => {
@@ -320,8 +320,8 @@ describe('LascaComponent', () => {
             await testUtils.expectClickFailure('#coord-0-1', LascaFailure.CAPTURE_STEPS_MUST_BE_DOUBLE_DIAGONAL());
 
             // Then the highlight should be at the expected place only, not at their symmetric point
-            testUtils.expectElementToHaveClass('#square-0-2', 'selectable-fill');
-            testUtils.expectElementNotToHaveClass('#square-6-4', 'selectable-fill');
+            testUtils.expectElementToHaveClass('#clickable-highlight-0-2', 'clickable-stroke');
+            testUtils.expectElementNotToExist('#clickable-highlight-6-4');
         }));
 
         it('should show last move reversed', fakeAsync(async() => {
@@ -374,10 +374,10 @@ describe('LascaComponent', () => {
             // When it is interactive
             testUtils.getGameComponent().setInteractive(true);
             // Then it should show possible selections
-            testUtils.expectElementToHaveClass('#square-0-4', 'selectable-fill');
-            testUtils.expectElementToHaveClass('#square-2-4', 'selectable-fill');
-            testUtils.expectElementToHaveClass('#square-4-4', 'selectable-fill');
-            testUtils.expectElementToHaveClass('#square-6-4', 'selectable-fill');
+            testUtils.expectElementToHaveClass('#clickable-highlight-0-4', 'clickable-stroke');
+            testUtils.expectElementToHaveClass('#clickable-highlight-2-4', 'clickable-stroke');
+            testUtils.expectElementToHaveClass('#clickable-highlight-4-4', 'clickable-stroke');
+            testUtils.expectElementToHaveClass('#clickable-highlight-6-4', 'clickable-stroke');
         }));
 
         it('should not show possible selections for opponent', fakeAsync(async() => {
@@ -389,7 +389,7 @@ describe('LascaComponent', () => {
             await testUtils.setupState(state);
 
             // Then it should not show possible selections
-            testUtils.expectElementNotToExist('.selectable-fill');
+            testUtils.expectElementNotToExist('.clickable-stroke');
         }));
 
     });

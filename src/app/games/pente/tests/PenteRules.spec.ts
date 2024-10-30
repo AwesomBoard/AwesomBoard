@@ -132,7 +132,7 @@ describe('PenteRules', () => {
     });
 
     it('should support multiple captures', () => {
-        // Given a state almost at a double sandwich point, aka a triplette
+        // Given a state almost at a double sandwich point, i.e. a triplette
         const state: PenteState = new PenteState([
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],

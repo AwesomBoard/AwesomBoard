@@ -1,17 +1,6 @@
 rules_version = "2";
 service cloud.firestore {
     match /databases/{database}/documents {
-        // ----------------8<-------------[ cut from here ]------------------
-        // The rules used for testing are the production rules, with the addition that we have a /foo/ collection to test our DAO mock.
-        match /foo/{document=**} {
-            // only used for testing purposes, do not push to production
-            allow read, write: if true;
-        }
-        match /chats/{id} {
-            // only used for testing purposes, do not push to production
-            allow create: if userIsVerified();
-        }
-        // -----------[ cut until here ]--------------->8---------------------
         // From here, the rest of the file matches with firestore.rules
         function hasField(data, field) {
             return field in data && data[field] != null;
@@ -82,6 +71,12 @@ service cloud.firestore {
             // This is because before user creation, we need to check if the username is free.
             allow read: if true;
         }
+        match /users/{userId}/elos/{typeGame} {
+            // Nobody can write elos (except the backend)
+            allow write: if false;
+            // Any verified user can read the user elo
+            allow read: if userIsVerified();
+        }
         function authenticatedUserCreatesUnverifiedUser(userId, update) {
             // Only an authenticated account can create its own user, and they cannot directly be verified
             return isAuthenticated() && request.auth.uid == userId && update.verified == false;
@@ -89,7 +84,6 @@ service cloud.firestore {
         function isAuthenticated() {
             return request != null && request.auth != null;
         }
-
         function authenticatedUserUpdatesUser(userId, user, update) {
             // Only the user can change its fields
             // Moreover, the username cannot be changed once set

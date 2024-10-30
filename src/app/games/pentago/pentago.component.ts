@@ -80,7 +80,7 @@ export class PentagoComponent extends RectangularGameComponent<PentagoRules,
         let yTranslate: number = (this.SPACE_SIZE + this.PIECE_SEPARATION) * coord.y;
         xTranslate += this.STROKE_WIDTH;
         yTranslate += this.STROKE_WIDTH;
-        return 'translate(' + xTranslate + ', ' + yTranslate + ')';
+        return this.getSVGTranslation(xTranslate, yTranslate);
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
@@ -261,7 +261,7 @@ export class PentagoComponent extends RectangularGameComponent<PentagoRules,
 
     public getSkipRotationCircleTranslate(): string {
         const translate: number = this.BLOCK_WIDTH + (this.PIECE_SEPARATION / 2) - this.STROKE_WIDTH;
-        return `translate(${ translate } ${ translate })`;
+        return this.getSVGTranslation(translate, translate);
     }
 
 }

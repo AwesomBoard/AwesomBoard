@@ -16,16 +16,21 @@ import { MGPValidators } from 'src/app/utils/MGPValidator';
 import { Debug } from 'src/app/utils/Debug';
 
 export class SiamLegalityInformation {
+
     public constructor(public readonly resultingBoard: Table<SiamPiece>,
                        public readonly moved: Coord[]) {
     }
+
 }
 
 export class SiamNode extends GameNode<SiamMove, SiamState> {}
 
 type ClosestPusher = {
+
     distance: number,
+
     coord: Coord
+
 };
 
 type InitialLineInfo = {

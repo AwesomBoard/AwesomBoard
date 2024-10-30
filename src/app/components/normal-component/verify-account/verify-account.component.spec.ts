@@ -44,7 +44,6 @@ describe('VerifyAccountComponent', () => {
             testUtils.fillInput('#username', username);
             testUtils.detectChanges();
             await testUtils.clickElement('#pickUsername');
-            await testUtils.whenStable();
 
             // Then the success message is shown
             testUtils.expectElementToExist('#success');
@@ -58,7 +57,6 @@ describe('VerifyAccountComponent', () => {
             testUtils.fillInput('#username', 'jeanjiji');
             testUtils.detectChanges();
             await testUtils.clickElement('#pickUsername');
-            await testUtils.whenStable();
 
             // Then the failure message is shown
             testUtils.expectElementNotToExist('#success');

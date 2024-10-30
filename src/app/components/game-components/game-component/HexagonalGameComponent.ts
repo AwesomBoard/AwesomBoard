@@ -41,7 +41,7 @@ export abstract class HexagonalGameComponent<R extends SuperRules<M, S, C, L>,
 
     public getHexaCenterTranslationAtXY(x: number, y: number): string {
         const centerAtXY: Coord = this.getCenterAtXY(x, y);
-        return `translate(${ centerAtXY.x }, ${ centerAtXY.y })`;
+        return this.getSVGTranslationAt(centerAtXY);
     }
 
 }

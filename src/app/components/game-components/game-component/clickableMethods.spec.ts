@@ -1,3 +1,4 @@
+import { MGPOptional } from '@everyboard/lib';
 import { DiamPiece } from 'src/app/games/diam/DiamPiece';
 import { EncapsulePiece } from 'src/app/games/encapsule/EncapsulePiece';
 import { HivePiece } from 'src/app/games/hive/HivePiece';
@@ -6,12 +7,12 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { Orthogonal } from 'src/app/jscaip/Orthogonal';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { Player } from 'src/app/jscaip/Player';
-import { MGPOptional } from '@everyboard/lib';
 
 export const clickableMethods: { [gameName: string]: { [methodName: string]: unknown[]; }; } = {
     Abalone: {
-        onPieceClick: [0, 0],
-        onSpaceClick: [0, 0],
+        onPieceClick: [new Coord(0, 0)],
+        onSpaceClick: [new Coord(0, 0)],
+        onInvisibleSpaceClick: [new Coord(0, 0)],
         chooseDirection: [Ordinal.UP],
     },
     Apagos: {

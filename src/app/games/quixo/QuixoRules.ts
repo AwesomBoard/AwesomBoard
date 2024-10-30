@@ -90,7 +90,28 @@ export class QuixoRules extends ConfigurableRules<QuixoMove, QuixoState, QuixoCo
     }
 
     public static getVictoriousCoords(state: QuixoState): Coord[] {
-        return QuixoRules.QUIXO_HELPER.getVictoriousCoord(state);
+        const victoriousCoord: Coord[] = QuixoRules.QUIXO_HELPER.getVictoriousCoord(state);
+        const opponentCoords: Coord[] =
+            QuixoRules.getPlayersCoords(victoriousCoord, state, state.getPreviousOpponent());
+        const playerCoords: Coord[] = QuixoRules.getPlayersCoords(victoriousCoord, state, state.getPreviousPlayer());
+        if (opponentCoords.length === 0) {
+            if (playerCoords.length === 0) {
+                return []; // Nobody won
+            } else {
+                return playerCoords; // Player won
+            }
+        } else {
+            // if there is no player coords, then opponent won
+            // if there is both player coords,
+            // Then player made opponent win by making two victories
+            return opponentCoords;
+        }
+    }
+
+    public static getPlayersCoords(coords: Coord[], state: QuixoState, player: Player): Coord[] {
+        return coords.filter((coord: Coord) => {
+            return state.getPieceAt(coord).equals(player);
+        });
     }
 
     public static getFullestLine(playerLinesInfo: MGPMap<string, NumberMap<number>>): number {

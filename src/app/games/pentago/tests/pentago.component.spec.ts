@@ -182,7 +182,7 @@ describe('PentagoComponent', () => {
         await testUtils.setupState(state, { previousState, previousMove });
 
         // When taking it back
-        await testUtils.expectInterfaceClickSuccess('#takeBack');
+        await testUtils.expectInterfaceClickSuccess('#take-back');
 
         // Then no highlight should be found
         testUtils.expectElementNotToHaveClass('#click-5-5', 'last-move-stroke');

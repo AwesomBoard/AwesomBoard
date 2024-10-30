@@ -1,7 +1,19 @@
-<div [ngClass]="getTimeClass()">
-    <p class="data-remaining-time">{{ displayedMinute }}:{{ displayedSec | number:'2.0-0' }}</p>
-    <button class="button is-small is-fullwidth data-add-time"
-            *ngIf="canAddTime"
-            (click)="addTime()"
-            i18n>Add {{ timeToAdd }}</button>
+<div [ngClass]="getTimeClass()"
+     class="level columns is-gapless"
+     [ngClass]="player.getHTMLClass('-bg')">
+        <div class="level-item column">
+            <span class="is-size-3 has-text-weight-bold data-remaining-time"
+                  [ngClass]="player.getHTMLClass('-fg')">
+                {{ displayedMinute }}:{{ displayedSec | number:'2.0-0' }}
+            </span>
+        </div>
+        <div class="level-item column"
+             *ngIf="canAddTime">
+            <button class="button is-medium data-add-time has-text-black my-2"
+                    [ngClass]="player.getHTMLClass('-bg-darker')"
+                    style="width: 6em"
+                    (click)="addTime()">
+                <svg class="svg-inline-fa" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M21.9208 13.265C21.9731 12.8507 22 12.4285 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C12.4354 22 12.8643 21.9722 13.285 21.9182M12 6V12L15.7384 13.8692M19 22V16M16 19H22" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>
+                &nbsp;{{ timeToAdd }}</button>
+        </div>
 </div>
