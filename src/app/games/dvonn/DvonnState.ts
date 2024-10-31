@@ -19,15 +19,15 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
      */
     public static balancedBoard(): Table<DvonnPieceStack> {
         const _: DvonnPieceStack = DvonnPieceStack.UNREACHABLE;
-        const W: DvonnPieceStack = DvonnPieceStack.PLAYER_ZERO;
-        const B: DvonnPieceStack = DvonnPieceStack.PLAYER_ONE;
-        const D: DvonnPieceStack = DvonnPieceStack.SOURCE;
+        const O: DvonnPieceStack = DvonnPieceStack.PLAYER_ZERO;
+        const X: DvonnPieceStack = DvonnPieceStack.PLAYER_ONE;
+        const S: DvonnPieceStack = DvonnPieceStack.SOURCE;
         return [
-            [_, _, W, B, B, B, W, W, B, D, B],
-            [_, B, B, W, W, W, B, B, W, B, B],
-            [B, B, B, B, W, D, B, W, W, W, W],
-            [W, W, B, W, W, B, B, B, W, W, _],
-            [W, D, W, B, B, W, W, W, B, _, _],
+            [_, _, O, X, X, X, O, O, X, S, X],
+            [_, X, X, O, O, O, X, X, O, X, X],
+            [X, X, X, X, O, S, X, O, O, O, O],
+            [O, O, X, O, O, X, X, X, O, O, _],
+            [O, S, O, X, X, O, O, O, X, _, _],
         ];
     }
 
