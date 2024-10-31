@@ -48,7 +48,7 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
     public override getViewBox(): ViewBox {
         const boardViewBox: ViewBox = super.getViewBox();
         return boardViewBox
-            .expandAll(2 * this.SPACE_SIZE);
+            .expandAll(1.3333 * this.SPACE_SIZE);
     }
 
     public override async showLastMove(move: EncapsuleMove): Promise<void> {
@@ -262,12 +262,12 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
     }
 
     public getRemainingPieceQuantityTransform(piece: EncapsulePiece, pieceIdx: number): string {
-        const pieceRadius: number = this.getRemainingPieceQuantityStrokeWidth(piece);
-        let cx: number = - this.SPACE_SIZE;
-        let cy: number = pieceRadius * 0.33;
-        if (pieceIdx > this.getConfig().get().height) {
+        const offsetX: number = 0.7 * this.SPACE_SIZE;
+        let cx: number = - offsetX;
+        let cy: number = 0;
+        if (pieceIdx > this.getState().getHeight()) {
             cx = 0;
-            cy = this.SPACE_SIZE;
+            cy = offsetX;
         }
         if (piece.owner === PlayerOrNone.ONE) {
             cx = -cx;

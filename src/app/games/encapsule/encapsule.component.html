@@ -18,6 +18,9 @@
             />
             <text id="player-zero-tiles-count"
                   class="backgrounded-text text-big"
+                  dominant-baseline="middle"
+                  dy="0.1em"
+                  text-anchor="middle"
                   [attr.transform]="getRemainingPieceQuantityTransform(piece, pieceIdX)"
             >{{ getRemainingPieceQuantity(piece) }}</text>
         </g>
