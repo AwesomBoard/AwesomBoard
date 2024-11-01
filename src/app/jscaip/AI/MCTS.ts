@@ -128,7 +128,7 @@ implements AI<M, S, AITimeLimitOptions, C>
         return this.getCounterFromCache(node, 'simulations');
     }
 
-    private getCounterFromCache(node: GameNode<M, S>, name: string): number {
+    public getCounterFromCache(node: GameNode<M, S>, name: string): number {
         const cachedValue: MGPOptional<number> = node.getCache(this.uniqueId + name);
         if (cachedValue.isPresent()) {
             return cachedValue.get();

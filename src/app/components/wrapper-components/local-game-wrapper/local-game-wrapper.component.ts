@@ -18,6 +18,7 @@ import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
 import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
+import { MCTS } from 'src/app/jscaip/AI/MCTS';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -349,13 +350,21 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     }
 
     private viewTreeFrom(node: GameNode<Move, GameState>): void {
+        // We will use the data from the previous turn's AI
+        const opponentAI: MGPOptional<AbstractAI> = this.getAI((this.gameComponent.getTurn() + 1) % 2);
         // We will annotate the trees with data from MCTS
         function mctsLabel(nodeToLabel: GameNode<Move, GameState>): string {
-            const wins: number = nodeToLabel.getCache('wins').getOrElse(0) as number;
-            const simulations: number = nodeToLabel.getCache('simulations').getOrElse(0) as number;
-            return `${wins}/${simulations} = ${Math.round(wins/simulations * 100)}%`;
+            console.log(opponentAI)
+            if (opponentAI.isPresent() && opponentAI.get() instanceof MCTS) {
+                const mcts: MCTS<Move, GameState, RulesConfig, unknown> = opponentAI.get() as MCTS<Move, GameState, RulesConfig, unknown>;
+                const wins: number = mcts.getCounterFromCache(nodeToLabel, 'wins') as number;
+                const simulations: number = mcts.getCounterFromCache(nodeToLabel, 'simulations') as number;
+                return `${wins}/${simulations} = ${Math.round(wins/simulations * 100)}%`;
+            } else {
+                return '';
+            }
         }
-        const result: { dot: string, nextId: number, winner: PlayerOrNone} =
+        const result: { dot: string, nextId: number, winner: PlayerOrNone } =
             node.showDot(this.gameComponent.rules, this.rulesConfig, mctsLabel, 1);
         // Shows the graph on an online tool by opening a new tab
         window.open('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(result.dot));
