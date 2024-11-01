@@ -3,9 +3,6 @@
         <div *ngIf="gameComponent"
              id="info"
              class="box is-fullheight">
-            <div class="mb-5">
-                <p class="title">{{ getGameName().getOrElse('') }}</p>
-
             <div id="config-modal"
                  *ngIf="viewConfig"
                  class="modal is-active" >
@@ -27,14 +24,17 @@
                     </section>
                 </div>
             </div>
-            <a id="show-config"
-                *ngIf="rulesConfig.isPresent()"
-                (click)="openConfig()"
-                class="button is-fullwidth"
-                i18n
-            >View configuration</button>
-                <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
+            <div class="mb-5">
+                <p class="title">
+                    {{ getGameName().getOrElse('') }}
+                    <a id="show-config"
+                       *ngIf="rulesConfig.isPresent()"
+                       (click)="openConfig()"
+                       i18n-data-tooltip
+                       data-tooltip="View configuration"><fa-icon [icon]="faCog"></fa-icon></a>
+                </p>
             </div>
+            <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
             <div *ngIf="endGame"
                  id="game-result"
                  class="block">

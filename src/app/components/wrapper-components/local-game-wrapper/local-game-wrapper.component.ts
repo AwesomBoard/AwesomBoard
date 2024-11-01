@@ -18,7 +18,7 @@ import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
 import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
-import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faQuestion, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -49,14 +49,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public faCog: IconDefinition = faCog;
     public viewConfig: boolean = false;
-
-    public openConfig() {
-        this.viewConfig = true;
-    }
-
-    public closeConfig() {
-        this.viewConfig = false;
-    }
 
     public constructor(activatedRoute: ActivatedRoute,
                        connectedUserService: ConnectedUserService,
@@ -366,6 +358,14 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public getConfigDemo(): DemoNodeInfo {
         return this.configDemo;
+    }
+
+    public openConfig() {
+        this.viewConfig = true;
+    }
+
+    public closeConfig() {
+        this.viewConfig = false;
     }
 
 }

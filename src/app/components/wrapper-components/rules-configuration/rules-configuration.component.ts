@@ -17,7 +17,6 @@ type ConfigFormJSON = {
 })
 export class RulesConfigurationComponent extends BaseWrapperComponent implements OnInit {
 
-    // TODO: why optional?
     @Input() rulesConfigDescriptionOptional: MGPOptional<RulesConfigDescription<RulesConfig>>;
     public rulesConfigDescription: RulesConfigDescription<RulesConfig>;
 

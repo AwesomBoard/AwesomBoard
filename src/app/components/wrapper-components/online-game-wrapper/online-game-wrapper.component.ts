@@ -29,6 +29,7 @@ import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { Debug } from 'src/app/utils/Debug';
 import { ServerTimeService } from 'src/app/services/ServerTimeService';
 import { UserService } from 'src/app/services/UserService';
+import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export class OnlineGameWrapperMessages {
 
@@ -80,6 +81,9 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     public readonly allRequests: RequestType[] = ['TakeBack', 'Draw', 'Rematch'];
 
     private moveSentButNotReceivedYet: boolean = false;
+
+    public faCog: IconDefinition = faCog;
+    public viewConfig: boolean = false;
 
     public constructor(activatedRoute: ActivatedRoute,
                        connectedUserService: ConnectedUserService,
@@ -579,6 +583,14 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     public override async getConfig(): Promise<MGPOptional<RulesConfig>> {
         const rulesConfig: RulesConfig = this.configRoom.rulesConfig;
         return MGPOptional.of(rulesConfig);
+    }
+
+    public openConfig() {
+        this.viewConfig = true;
+    }
+
+    public closeConfig() {
+        this.viewConfig = false;
     }
 
 }
