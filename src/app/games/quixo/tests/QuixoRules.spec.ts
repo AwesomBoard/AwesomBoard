@@ -117,7 +117,7 @@ describe('QuixoRules', () => {
         RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
     });
 
-    it('should declare winner player zero when he create a line of his symbol', () => {
+    it('should declare winner player zero when he create a line of their symbol', () => {
         const board: Table<PlayerOrNone> = [
             [_, _, _, _, O],
             [_, _, _, _, O],
@@ -140,7 +140,7 @@ describe('QuixoRules', () => {
         RulesUtils.expectToBeVictoryFor(rules, node, Player.ZERO, defaultConfig);
     });
 
-    it('should declare winner player one when he create a line of his symbol', () => {
+    it('should declare winner player one when he create a line of their symbol', () => {
         const board: Table<PlayerOrNone> = [
             [_, _, _, _, X],
             [_, _, _, _, X],
@@ -163,7 +163,7 @@ describe('QuixoRules', () => {
         RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
     });
 
-    it('should declare loser player zero who create a line of his opponent symbol, even if creating a line of his symbol too', () => {
+    it('should declare loser player zero who create a line of their opponent symbol, even if creating a line of their symbol too', () => {
         const board: Table<PlayerOrNone> = [
             [X, _, _, _, O],
             [X, _, _, _, O],
@@ -186,7 +186,7 @@ describe('QuixoRules', () => {
         RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
     });
 
-    it('should declare loser player one who create a line of his opponent symbol, even if creating a line of his symbol too', () => {
+    it('should declare loser player one who create a line of their opponent symbol, even if creating a line of their symbol too', () => {
         const board: Table<PlayerOrNone> = [
             [O, _, _, _, X],
             [O, _, _, _, X],

@@ -209,8 +209,8 @@ export class ReversiRules extends ConfigurableRules<ReversiMove,
             }
         }
         if (moves.length === 0) {
-            // When the user cannot start, his only move is to pass, which he cannot do otherwise
-            // board unchanged, only the turn changed "pass"
+            // When the user cannot move, their only move is to pass, which they cannot do otherwise
+            // The board remains unchanged, only the turn changed, and the move is a "pass"
             moves.push(new ReversiMoveWithSwitched(ReversiMove.PASS, 0));
         }
         return moves;

@@ -5,6 +5,34 @@
              class="box is-fullheight">
             <div class="mb-5">
                 <p class="title">{{ getGameName().getOrElse('') }}</p>
+
+            <div id="config-modal"
+                 *ngIf="viewConfig"
+                 class="modal is-active" >
+                <div class="modal-background"
+                     (click)="closeConfig()"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head is-primary">
+                        <p class="modal-card-title" i18n>Rules configuration</p>
+                        <button class="delete"
+                                aria-label="close"
+                                (click)="closeConfig()"></button>
+                    </header>
+                    <section class="modal-card-body">
+                      <app-rules-configuration id="rules-config-component"
+                                               [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
+                                               [rulesConfigToDisplay]="rulesConfig.get()"
+                                               [editable]="false">
+                      </app-rules-configuration>
+                    </section>
+                </div>
+            </div>
+            <a id="show-config"
+                *ngIf="rulesConfig.isPresent()"
+                (click)="openConfig()"
+                class="button is-fullwidth"
+                i18n
+            >View configuration</button>
                 <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
             </div>
             <div *ngIf="endGame"
@@ -54,32 +82,6 @@
                    [ngClass]="player.getHTMLClass('-fg')"
                    i18n>{{ gameComponent.scores.get().get(player) }} points</p>
             </div>
-            <div id="config-modal"
-                 *ngIf="viewConfig"
-                 class="modal is-active" >
-                <div class="modal-background"
-                     (click)="closeConfig()"></div>
-                <div class="modal-card">
-                    <header class="modal-card-head is-primary">
-                        <p class="modal-card-title" i18n>Rules configuration</p>
-                        <button class="delete"
-                                aria-label="close"
-                                (click)="closeConfig()"></button>
-                    </header>
-                    <section class="modal-card-body">
-                      <app-rules-configuration id="rules-config-component"
-                                               [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
-                                               [editable]="true">
-                      </app-rules-configuration>
-                    </section>
-                </div>
-            </div>
-            <button id="show-config"
-                    *ngIf="rulesConfig.isPresent()"
-                    (click)="openConfig()"
-                    class="button is-fullwidth"
-                    i18n
-            >View configuration</button>
             <button *ngIf="endGame === false && gameComponent.canPass"
                     id="pass-button"
                     class="button is-primary is-fullwidth mb-1"

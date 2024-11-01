@@ -120,7 +120,7 @@ export class SixComponent
         if (this.pieces.some((coord: Coord) => coord.equals(lastDrop)) === false &&
             newPieces.some((coord: Coord) => coord.equals(lastDrop)) === false)
         {
-            disconnecteds.push(lastDrop); // Dummy captured his own piece
+            disconnecteds.push(lastDrop); // Dummy captured their own piece
         }
         return disconnecteds;
     }

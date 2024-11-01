@@ -1513,10 +1513,10 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER);
 
             // When the opponent token become too old
-            // Creator update his last presence token
+            // Creator updatetheir last presence token
             const userService: UserService = TestBed.inject(UserService);
             await userService.updatePresenceToken(UserMocks.CREATOR_AUTH_USER.id);
-            // but chosenOpponent don't update his last presence token
+            // but chosenOpponent don't update their last presence token
             tick(PartCreationComponent.TOKEN_TIMEOUT); // two token time pass and reactive the timeout
             testUtils.detectChanges();
 

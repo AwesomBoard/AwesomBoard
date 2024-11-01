@@ -289,9 +289,9 @@ describe('PartCreationComponent', () => {
 
                 // When the candidate token becomes too old
                 spyOn(currentGameService, 'updateCurrentGame').and.callThrough();
-                // Creator update his last presence token
+                // Creator update their last presence token
                 await userService.updatePresenceToken(UserMocks.CREATOR_AUTH_USER.id);
-                // but chosenOpponent don't update his last presence token
+                // but chosenOpponent don't update their last presence token
                 const infoMessage: string = UserMocks.OPPONENT.username + ' left the game, please pick another opponent.';
                 await testUtils.expectToDisplayInfoMessage(infoMessage, async() => {
                     tick(PartCreationComponent.TOKEN_TIMEOUT); // two token time pass and timeout is reached

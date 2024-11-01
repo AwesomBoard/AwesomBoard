@@ -360,7 +360,7 @@ describe('SixRules', () => {
                 RulesUtils.expectToBeVictoryFor(rules, node, Player.ZERO, defaultConfig);
             });
 
-            it('should consider winner player who draw a circle/hexagon of his pieces', () => {
+            it('should consider winner player who draw a circle/hexagon of their pieces', () => {
                 // Given a board close to be a victory
                 const board: Table<PlayerOrNone> = [
                     [_, _, _, _, X],
@@ -390,7 +390,7 @@ describe('SixRules', () => {
                 RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
             });
 
-            it('should consider winner player who draw a triangle of his pieces (corner drop)', () => {
+            it('should consider winner player who draw a triangle of their pieces (corner drop)', () => {
                 // Given a bboard about to have a triangle victory
                 const board: Table<PlayerOrNone> = [
                     [O, X, _, X, _],
@@ -418,7 +418,7 @@ describe('SixRules', () => {
                 RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
             });
 
-            it('should consider winner player who draw a triangle of his pieces (edge drop)', () => {
+            it('should consider winner player who draw a triangle of their pieces (edge drop)', () => {
                 // Given a board where a triangle is about to be created
                 const board: Table<PlayerOrNone> = [
                     [O, _, _, _, X],
@@ -446,7 +446,7 @@ describe('SixRules', () => {
                 RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
             });
 
-            it('should consider winner player who draw a circle/hexagon of his pieces (coverage remix)', () => {
+            it('should consider winner player who draw a circle/hexagon of their pieces (coverage remix)', () => {
                 // Given a board with a hexagon about to be created
                 const board: Table<PlayerOrNone> = [
                     [O, _, _, _, _],
