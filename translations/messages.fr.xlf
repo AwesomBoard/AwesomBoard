@@ -1169,9 +1169,9 @@
         <source>Congratulations! You know everything you need to start a game!</source>
         <target>Bravo ! Vous savez tout ce qu&apos;il faut pour commencer une partie !</target>
       </trans-unit>
-      <trans-unit id="4997655560871347865" datatype="html">
-        <source>You will see when creating a game that you can configure two things.&lt;br/&gt;&lt;br/&gt;First, the number of captures needed to win. The default is 6, changing it will help changing the game's duration if wanted.&lt;br/&gt;&lt;br/&gt;Last, the maximum size of a moved group. The default is 3 but if you want a more chaotic and fun game, you could increase that limit and play a more powerful alternative version of the game!</source>
-        <target>Vous verrez en créant votre première partie, que vous pouvez configurer deux choses.&lt;br/&gt;&lt;br/&gt;Premièrement, le nombre de captures nécessaires pour gagner. La valeur par défaut est 6, la changer permet de changer la durée des parties.&lt;br/&gt;&lt;br/&gt;Dernièrement, la taille maximale d'un groupe déplacé. Cette valeur et à 3 par défaut, mais si vous voulez une partie plus chaotique et amusante, vous pouvez augmenter ce nombre et jouer une version alternative plus &quot;puissante&quot; !</target>
+      <trans-unit id="4205635339791256611" datatype="html">
+        <source>You will see when creating a game that you can configure two things.&lt;br/&gt;&lt;br/&gt;&lt;ul&gt;&lt;li&gt;First, the number of captures needed to win. The default is 6, changing it will help changing the game&apos;s duration if wanted.&lt;/li&gt;&lt;li&gt;Last, the maximum size of a moved group. The default is 3 but if you want a more chaotic and fun game, you could increase that limit and play a more powerful alternative version of the game!&lt;/li&gt;&lt;/ul&gt;</source>
+        <target>Vous verrez en créant votre première partie, que vous pouvez configurer deux choses.&lt;br/&gt;&lt;br/&gt;&lt;ul&gt;&lt;li&gt;Premièrement, le nombre de captures nécessaires pour gagner. La valeur par défaut est 6, la changer permet de changer la durée des parties.&lt;/li&gt;&lt;li&gt;Dernièrement, la taille maximale d'un groupe déplacé. Cette valeur et à 3 par défaut, mais si vous voulez une partie plus chaotique et amusante, vous pouvez augmenter ce nombre et jouer une version alternative plus &quot;puissante&quot; !&lt;/li&gt;&lt;/ul&gt;</target>
       </trans-unit>
       <trans-unit id="4382056880714150954" datatype="html">
         <source>Pieces should only move downward!</source>
