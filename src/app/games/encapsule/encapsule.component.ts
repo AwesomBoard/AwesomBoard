@@ -257,10 +257,6 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
             .getOrElse(-1);
     }
 
-    public getRemainingPieceQuantityStrokeWidth(piece: EncapsulePiece): number {
-        return 2.4 * this.getPieceRadius(piece);
-    }
-
     public getRemainingPieceQuantityTransform(piece: EncapsulePiece, pieceIdx: number): string {
         const offsetX: number = 0.7 * this.SPACE_SIZE;
         let cx: number = - offsetX;
