@@ -42,7 +42,7 @@ export class MCTSWithHeuristic<M extends Move,
             const boardValue: B = this.heuristic.getBoardValue(node, config);
             const optionalBounds: MGPOptional<HeuristicBounds<B>> = this.heuristic.getBounds(config);
             Utils.assert(optionalBounds.isPresent(),
-                         'MCTSWithHeuristic used with a heuristic that has no max value, please define getMaxValue');
+                         'MCTSWithHeuristic used with a heuristic that has no max value, please define getBounds');
             const bounds: HeuristicBounds<B> = optionalBounds.get();
             Utils.assert(boardValue.metrics.length === bounds.player0Max.metrics.length &&
                          boardValue.metrics.length === bounds.player1Max.metrics.length,
