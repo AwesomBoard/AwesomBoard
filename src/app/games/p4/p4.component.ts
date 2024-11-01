@@ -10,6 +10,10 @@ import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { P4MoveGenerator } from './P4MoveGenerator';
 import { P4Minimax } from './P4Minimax';
+import { MCTSWithHeuristic } from 'src/app/jscaip/AI/MCTSWithHeuristic';
+import { DummyHeuristic, Minimax } from 'src/app/jscaip/AI/Minimax';
+import { P4OrderedMoveGenerator } from './P4OrderedMoveGenerator';
+import { P4Heuristic } from './P4Heuristic';
 
 @Component({
     selector: 'app-p4',
@@ -27,7 +31,9 @@ export class P4Component extends RectangularGameComponent<P4Rules, P4Move, P4Sta
         this.setRulesAndNode('P4');
         this.availableAIs = [
             new P4Minimax(),
+            new Minimax(`Minimax dummy`, P4Rules.get(), new DummyHeuristic(), new P4OrderedMoveGenerator()),
             new MCTS($localize`MCTS`, new P4MoveGenerator(), this.rules),
+            new MCTSWithHeuristic($localize`MCTS Heuristic`, new P4MoveGenerator(), this.rules, new P4Heuristic()),
         ];
         this.encoder = P4Move.encoder;
     }
