@@ -12,7 +12,7 @@ import { AbstractRules, SuperRules } from 'src/app/jscaip/Rules';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { AbstractGameComponent } from '../../game-components/game-component/GameComponent';
 import { GameState } from 'src/app/jscaip/state/GameState';
-import { Player } from 'src/app/jscaip/Player';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { TutorialStepMessage } from './TutorialStepMessage';
 
@@ -155,7 +155,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
                 ], [
                     EncapsuleRules.get(),
                     encapsuleTutorial[3],
-                    EncapsuleMove.ofDrop(EncapsulePiece.BIG_DARK, new Coord(0, 2)),
+                    EncapsuleMove.ofDrop(EncapsulePiece.ofSizeAndPlayer(3, PlayerOrNone.ZERO), new Coord(0, 2)),
                     MGPValidation.failure(`You won, but the exercise is to win while moving a piece!`),
                 ], [
                     EncapsuleRules.get(),

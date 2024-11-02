@@ -2000,6 +2000,14 @@
         <source>You are performing a move, you must select a landing square.</source>
         <target>Vous effectuez un déplacement, choisissez votre case de destination.</target>
       </trans-unit>
+      <trans-unit id="3734443501087651549" datatype="html">
+        <source>Number of different piece sizes</source>
+        <target>Nombre de différentes tailles de pièces</target>
+      </trans-unit>
+      <trans-unit id="893013149323570447" datatype="html">
+        <source>Number of pieces for each size</source>
+        <target>Nombre de pièces pour chaque taille</target>
+      </trans-unit>
       <trans-unit id="7821413127222759201" datatype="html">
         <source>The goal of Encapsule is to align three of your pieces. Here, Dark wins.</source>
         <target>Le but du jeu à Encapsule est d&apos;aligner trois de vos pièces. Ici, Foncé gagne.</target>
@@ -2024,23 +2032,9 @@
         <source>Particularity</source>
         <target>Spécificité</target>
       </trans-unit>
-      <trans-unit id="5705047859470313792" datatype="html">
-        <source>At Encapsule, pieces encapsulate each other.
-        It is therefore possible to have up to three pieces per square!
-        However, only the biggest piece of each square counts:
-        you cannot win with a piece that is &quot;hidden&quot; by a bigger piece.
-        Similarly, you cannot move a piece if it is encapsulated by a bigger piece.
-        Finally, you cannot encapsulate a piece with a smaller piece.
-        Here, Dark can win now in various ways.&lt;br/&gt;&lt;br/&gt;
-        You&apos;re playing Dark, try to win by making a move, and not by putting a new piece on the board.</source>
-        <target>À Encapsule, les pièces s&apos;encapsulent les unes sur les autres.
-        Il est donc possible d&apos;avoir jusqu&apos;à trois pièces par case !
-        Cependant, seulement la plus grosse pièce de chaque case compte :
-        il n&apos;est pas possible de gagner avec une pièce « cachée » par une pièce plus grande.
-        De même, il n&apos;est pas possible de déplacer une pièce qui est recouverte par une autre pièce plus grande.
-        Finalement, il est interdit de recouvrir une pièce avec une autre pièce plus petite.
-        Ici, Foncé peut gagner à ce tour de plusieurs façons.&lt;br/&gt;&lt;br/&gt;
-        Vous jouez Foncé, essayez de gagner en effectuant un déplacement, et non un placement (c&apos;est à dire en déposant une nouvelle pièce).</target>
+      <trans-unit id="3463587376927829861" datatype="html">
+        <source>At Encapsule, pieces encapsulate each other. It is therefore possible to have up to three pieces per square! However, only the biggest piece of each square counts: you cannot win with a piece that is &quot;hidden&quot; by a bigger piece. Similarly, you cannot move a piece if it is encapsulated by a bigger piece. Finally, you cannot encapsulate a piece with a smaller piece. Here, Dark can win now in various ways.&lt;br/&gt;&lt;br/&gt; You&apos;re playing Dark, try to win by making a move, and not by putting a new piece on the board.</source>
+        <target>À Encapsule, les pièces s&apos;encapsulent les unes sur les autres. Il est donc possible d&apos;avoir jusqu&apos;à trois pièces par case ! Cependant, seulement la plus grosse pièce de chaque case compte : il n&apos;est pas possible de gagner avec une pièce « cachée » par une pièce plus grande. De même, il n&apos;est pas possible de déplacer une pièce qui est recouverte par une autre pièce plus grande. Finalement, il est interdit de recouvrir une pièce avec une autre pièce plus petite. Ici, Foncé peut gagner à ce tour de plusieurs façons.&lt;br/&gt;&lt;br/&gt; Vous jouez Foncé, essayez de gagner en effectuant un déplacement, et non un placement (c&apos;est à dire en déposant une nouvelle pièce).</target>
       </trans-unit>
       <trans-unit id="6204412729347708092" datatype="html">
         <source>You won, but the exercise is to win while moving a piece!</source>

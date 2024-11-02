@@ -186,6 +186,9 @@
 .text-big {
     font: 50px sans-serif;
 }
+.backgrounded-text {
+    fill: var(--backgrounded-text-color);
+}
 .text-medium-plus {
     font: 38px sans-serif;
 }

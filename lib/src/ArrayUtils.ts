@@ -61,7 +61,7 @@ export class ArrayUtils {
      * A method that can be used to sort an array with the smallest number first with xs.sort(ArrayUtils.smallerFirst);
      */
     public static smallerFirst(a: number, b: number): number {
-        return a-b;
+        return a - b;
     }
 
     /**

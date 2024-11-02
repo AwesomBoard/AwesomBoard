@@ -1,24 +1,45 @@
+import { ArrayUtils, MGPMap, MGPOptional, NumberMap, Utils } from '@everyboard/lib';
 import { GameStateWithTable } from 'src/app/jscaip/state/GameStateWithTable';
-import { EncapsulePiece, Size } from 'src/app/games/encapsule/EncapsulePiece';
+import { EncapsulePiece } from 'src/app/games/encapsule/EncapsulePiece';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { Table } from 'src/app/jscaip/TableUtils';
-import { ArrayUtils, MGPOptional, Utils } from '@everyboard/lib';
+import { PlayerMap } from 'src/app/jscaip/PlayerMap';
+
+export class EncapsuleRemainingPieces extends PlayerMap<EncapsuleSizeToNumberMap> {
+}
+export class EncapsuleSizeToNumberMap extends NumberMap<number> {
+}
 
 export class EncapsuleState extends GameStateWithTable<EncapsuleSpace> {
 
-    private readonly remainingPieces: ReadonlyArray<EncapsulePiece>;
+    public readonly remainingPieces: EncapsuleRemainingPieces;
 
-    public constructor(board: Table<EncapsuleSpace>, turn: number, remainingPieces: EncapsulePiece[]) {
+    public readonly nbOfPieceSize: number;
+
+    public constructor(
+        board: Table<EncapsuleSpace>,
+        turn: number,
+        remainingPieces: EncapsuleRemainingPieces,
+        nbOfPieceSize: number)
+    {
         super(board, turn);
         this.remainingPieces = remainingPieces;
+        this.remainingPieces.get(Player.ZERO).makeImmutable();
+        this.remainingPieces.get(Player.ONE).makeImmutable();
+        this.remainingPieces.makeImmutable();
+        this.nbOfPieceSize = nbOfPieceSize;
     }
 
-    public getRemainingPieces(): EncapsulePiece[] {
-        return ArrayUtils.copy(this.remainingPieces);
+    public getRemainingPiecesCopy(): EncapsuleRemainingPieces {
+        const playerZeroValue: EncapsuleSizeToNumberMap = this.remainingPieces.get(Player.ZERO).getCopy();
+        const playerOneValue: EncapsuleSizeToNumberMap = this.remainingPieces.get(Player.ONE).getCopy();
+        playerZeroValue.makeImmutable();
+        playerOneValue.makeImmutable();
+        return PlayerMap.ofValues(playerZeroValue, playerOneValue);
     }
 
-    public getRemainingPiecesOfPlayer(player: Player): EncapsulePiece[] {
-        return this.getRemainingPieces().filter((piece: EncapsulePiece) => piece.getPlayer() === player);
+    public getRemainingPiecesOfPlayer(player: Player): EncapsuleSizeToNumberMap {
+        return this.getRemainingPiecesCopy().get(player);
     }
 
     public pieceBelongsToCurrentPlayer(piece: EncapsulePiece): boolean {
@@ -26,60 +47,66 @@ export class EncapsuleState extends GameStateWithTable<EncapsuleSpace> {
     }
 
     public isDroppable(piece: EncapsulePiece): boolean {
-        return this.pieceBelongsToCurrentPlayer(piece) && this.isInRemainingPieces(piece);
+        return this.pieceBelongsToCurrentPlayer(piece) &&
+               this.isInRemainingPieces(piece);
     }
 
     public isInRemainingPieces(piece: EncapsulePiece): boolean {
-        return this.remainingPieces.some((p: EncapsulePiece) => p === piece);
+        const playerPieces: EncapsuleSizeToNumberMap = this.remainingPieces.get(piece.getPlayer() as Player);
+        const numberOfPieces: number = playerPieces.get(piece.getSize()).getOrElse(0);
+        return numberOfPieces > 0;
     }
 
-    public getPlayerRemainingPieces(): EncapsulePiece[] {
-        return this.remainingPieces.filter((piece: EncapsulePiece) => this.pieceBelongsToCurrentPlayer(piece));
-    }
 }
 
 export class EncapsuleSpace {
 
-    public static readonly EMPTY: EncapsuleSpace =
-        new EncapsuleSpace(PlayerOrNone.NONE, PlayerOrNone.NONE, PlayerOrNone.NONE);
+    public static readonly EMPTY: EncapsuleSpace = new EncapsuleSpace(new MGPMap());
 
-    public constructor(public readonly small: PlayerOrNone,
-                       public readonly medium: PlayerOrNone,
-                       public readonly big: PlayerOrNone)
-    {
+    public constructor(public readonly pieces: MGPMap<number, Player>) {
+        this.pieces.makeImmutable();
+    }
+
+    public getOccupiedCircles(): MGPMap<number, Player> {
+        return this.pieces.filter(this.isEmptyKeyValue);
     }
 
     public isEmpty(): boolean {
-        return this.small.isNone() && this.medium.isNone() && this.big.isNone();
+        const occupiedCircles: MGPMap<number, Player> = this.getOccupiedCircles();
+        return occupiedCircles.size() === 0;
+    }
+
+    private isEmptyKeyValue(_: number, value: PlayerOrNone): boolean {
+        return value.isPlayer();
     }
 
     public toList(): EncapsulePiece[] {
-        const l: EncapsulePiece[] = [];
-        if (this.small.isPlayer()) l.push(EncapsulePiece.ofSizeAndPlayer(Size.SMALL, this.small));
-        if (this.medium.isPlayer()) l.push(EncapsulePiece.ofSizeAndPlayer(Size.MEDIUM, this.medium));
-        if (this.big.isPlayer()) l.push(EncapsulePiece.ofSizeAndPlayer(Size.BIG, this.big));
-        return l;
-    }
-
-    public toOrderedPieceNames(): string[] {
-        const smallPiece: EncapsulePiece = EncapsulePiece.ofSizeAndPlayer(Size.SMALL, this.small);
-        const mediumPiece: EncapsulePiece = EncapsulePiece.ofSizeAndPlayer(Size.MEDIUM, this.medium);
-        const bigPiece: EncapsulePiece = EncapsulePiece.ofSizeAndPlayer(Size.BIG, this.big);
-        return [smallPiece.toString(), mediumPiece.toString(), bigPiece.toString()];
+        const pieces: EncapsulePiece[] = [];
+        for (const size of this.pieces.getKeyList()) {
+            const player: PlayerOrNone = this.pieces.get(size).get();
+            if (player.isPlayer()) {
+                const newPiece: EncapsulePiece = EncapsulePiece.ofSizeAndPlayer(size, player);
+                pieces.push(newPiece);
+            }
+        }
+        return pieces;
     }
 
     public getBiggest(): EncapsulePiece {
-        if (this.big === Player.ZERO) return EncapsulePiece.BIG_DARK;
-        if (this.big === Player.ONE) return EncapsulePiece.BIG_LIGHT;
-        if (this.medium === Player.ZERO) return EncapsulePiece.MEDIUM_DARK;
-        if (this.medium === Player.ONE) return EncapsulePiece.MEDIUM_LIGHT;
-        if (this.small === Player.ZERO) return EncapsulePiece.SMALL_DARK;
-        if (this.small === Player.ONE) return EncapsulePiece.SMALL_LIGHT;
-        return EncapsulePiece.NONE;
+        const occupiedCircles: MGPMap<number, Player> = this.getOccupiedCircles();
+        const occupiedSizes: number[] = occupiedCircles.getKeyList();
+        const sortedSizes: number[] = ArrayUtils.maximumsBy(occupiedSizes, (value: number) => value);
+        if (sortedSizes.length === 0) {
+            return EncapsulePiece.NONE;
+        } else {
+            const biggestSize: number = sortedSizes[0];
+            const biggestPlayer: PlayerOrNone = this.pieces.get(biggestSize).get();
+            return EncapsulePiece.ofSizeAndPlayer(biggestSize, biggestPlayer);
+        }
     }
 
     public tryToSuperposePiece(piece: EncapsulePiece): MGPOptional<EncapsuleSpace> {
-        const biggestPresent: Size = this.getBiggest().getSize();
+        const biggestPresent: number = this.getBiggest().getSize();
         if (piece === EncapsulePiece.NONE) {
             throw new Error('Cannot move EMPTY on a space');
         }
@@ -93,48 +120,28 @@ export class EncapsuleSpace {
     public removeBiggest(): {removedSpace: EncapsuleSpace, removedPiece: EncapsulePiece} {
         const removedPiece: EncapsulePiece = this.getBiggest();
         if (removedPiece === EncapsulePiece.NONE) {
-            throw new Error('Cannot removed piece from empty space');
+            throw new Error('Cannot remove piece from empty space');
         }
-        let removedSpace: EncapsuleSpace;
-        const size: Size = removedPiece.getSize();
-        switch (size) {
-            case Size.BIG:
-                removedSpace = new EncapsuleSpace(this.small, this.medium, PlayerOrNone.NONE);
-                break;
-            case Size.MEDIUM:
-                removedSpace = new EncapsuleSpace(this.small, PlayerOrNone.NONE, PlayerOrNone.NONE);
-                break;
-            default:
-                Utils.expectToBe(size, Size.SMALL);
-                removedSpace = new EncapsuleSpace(PlayerOrNone.NONE, PlayerOrNone.NONE, PlayerOrNone.NONE);
-        }
+        const size: number = removedPiece.getSize();
+        const removedPieces: MGPMap<number, Player> = this.pieces.getCopy();
+        removedPieces.delete(size);
+        removedPieces.makeImmutable();
+        const removedSpace: EncapsuleSpace = new EncapsuleSpace(removedPieces);
         return { removedSpace: removedSpace, removedPiece };
     }
 
     public put(piece: EncapsulePiece): EncapsuleSpace {
         if (piece === EncapsulePiece.NONE) throw new Error('Cannot put NONE on space');
-        const piecePlayer: PlayerOrNone = piece.getPlayer();
-        const size: Size = piece.getSize();
-        switch (size) {
-            case Size.BIG:
-                return new EncapsuleSpace(this.small, this.medium, piecePlayer);
-            case Size.MEDIUM:
-                Utils.assert(this.big.isNone(), 'Cannot put a piece on top of a bigger one');
-                return new EncapsuleSpace(this.small, piecePlayer, this.big);
-            default:
-                Utils.expectToBe(size, Size.SMALL);
-                Utils.assert(this.big.isNone(), 'Cannot put a piece on top of a bigger one');
-                Utils.assert(this.medium.isNone(), 'Cannot put a piece on top of a bigger one');
-                return new EncapsuleSpace(piecePlayer, this.medium, this.big);
-        }
+        const biggest: EncapsulePiece = this.getBiggest();
+        Utils.assert(biggest.size < piece.size, 'Cannot put a piece on top of a bigger one');
+        const addedPieces: MGPMap<number, Player> = this.pieces.getCopy();
+        addedPieces.put(piece.getSize(), piece.getPlayer() as Player);
+        addedPieces.makeImmutable();
+        return new EncapsuleSpace(addedPieces);
     }
 
     public belongsTo(player: Player): boolean {
         return this.getBiggest().getPlayer() === player;
     }
 
-    public toString(): string {
-        const pieceNames: string[] = this.toOrderedPieceNames();
-        return '(' + pieceNames[0] + ', ' + pieceNames[1] + ', ' + pieceNames[2] + ')';
-    }
 }
