@@ -46,6 +46,14 @@ describe('CheckersMove', () => {
             expect(move.isSuccess()).toBeTrue();
         });
 
+        it('should allow "frisian-capture"', () => {
+            // When trying to create a frisian capture
+            const move: MGPFallible<CheckersMove> = CheckersMove.fromCapture([new Coord(0, 0), new Coord(0, 4)]);
+
+            // Then it should succeed
+            expect(move.isSuccess()).toBeTrue();
+        });
+
     });
 
     describe('Encoder', () => {
@@ -110,7 +118,7 @@ describe('CheckersMove', () => {
             const short: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(4, 4)]).get();
 
             // When calling isPrefix on one and passing the other
-            // Then the result should be false
+            // Then the result should be true
             expect(long.isPrefix(short)).toBeTrue();
             expect(short.isPrefix(long)).toBeTrue();
         });
@@ -148,10 +156,10 @@ describe('CheckersMove', () => {
             // Given any move
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(4, 4)]).get();
 
-            // When calling getStartingCoord
+            // When calling getEndingCoord
             const endingCoord: Coord = move.getEndingCoord();
 
-            // Then it should return first coord
+            // Then it should return last coord
             expect(endingCoord.equals(move.coords.get(1))).toBeTrue();
         });
 
@@ -166,7 +174,7 @@ describe('CheckersMove', () => {
             // When calling getSteppedOverCoords
             const steppedOverCoords: Coord[] = move.getSteppedOverCoords().get().toList();
 
-            // Then the piece should be the stepped over coords
+            // Then we should get the list of coords stepped over
             expect(steppedOverCoords).toEqual([new Coord(2, 2), new Coord(3, 3), new Coord(4, 4)]);
         });
 
@@ -175,21 +183,21 @@ describe('CheckersMove', () => {
     describe('concatenate', () => {
 
         it('should concatenate moves and return a new one', () => {
-            // Given two moves, the second starting where the first start
-            const first: CheckersMove = CheckersMove.fromCapture([new Coord(0, 0), new Coord(2, 2)]).get();
-            const second: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(4, 4)]).get();
+            // Given two moves, the second starting where the first ends
+            const start: CheckersMove = CheckersMove.fromCapture([new Coord(0, 0), new Coord(2, 2)]).get();
+            const end: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(4, 4)]).get();
 
             // When concatenating them
-            const third: CheckersMove = first.concatenate(second);
+            const concatenated: CheckersMove = start.concatenate(end).get();
 
-            // Then the third should have all the coords
+            // Then the concatenated move should have all the coords
             const coords: Coord[] = [
                 new Coord(0, 0),
                 new Coord(2, 2),
                 new Coord(4, 4),
             ];
-            const expectedThird: CheckersMove = CheckersMove.fromCapture(coords).get();
-            expect(third.equals(expectedThird)).toBeTrue();
+            const expected: CheckersMove = CheckersMove.fromCapture(coords).get();
+            expect(concatenated.equals(expected)).toBeTrue();
         });
 
     });

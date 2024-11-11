@@ -40,7 +40,7 @@ export class DiaballikState extends GameStateWithTable<DiaballikPiece> {
         return TableUtils.equals(this.board, other.board);
     }
 
-    public coordIsOwnerByNone(coord: Coord): boolean {
+    public isEmptyAt(coord: Coord): boolean {
         const optional: MGPOptional<DiaballikPiece> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().owner.isNone();

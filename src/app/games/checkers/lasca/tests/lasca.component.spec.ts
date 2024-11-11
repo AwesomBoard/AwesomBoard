@@ -410,7 +410,7 @@ describe('LascaComponent', () => {
             await testUtils.expectClickSuccess('#coord-2-2');
             await testUtils.expectClickSuccess('#coord-4-4');
 
-            // When doing the last clic that make an illegal step
+            // When doing the last click that make an illegal step
             const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
             await testUtils.expectClickFailure('#coord-6-5', reason);
 
@@ -465,9 +465,37 @@ describe('LascaComponent', () => {
             await testUtils.setupState(state);
 
             // Then the score should be displayed
-            const score: PlayerMap<number> = PlayerNumberMap.ofValues(2, 3);
+            const score: PlayerNumberMap = PlayerNumberMap.of(2, 3);
             const scoreOptional: MGPOptional<PlayerMap<number>> = MGPOptional.of(score);
             expect(testUtils.getGameComponent().scores).toEqual(scoreOptional);
+        }));
+
+    });
+
+    describe('Custom configs', () => {
+// TODO: when doing (0, 2) without capture, dont call it a capture in the error toast
+        it('should fail when doing invalid frisian capture', fakeAsync(async() => {
+            // Given any board with a selected piece that could do a frisian capture
+            const customConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                frisianCaptureAllowed: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [_V, __, _U, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+            ], 1);
+            await testUtils.setupState(state, { config: customConfig });
+            await testUtils.expectClickSuccess('#coord-0-2');
+
+            // When clicking on an empty square in (+3; 0) of selected piece
+            // Then it should fail
+            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_ORDINAL();
+            await testUtils.expectClickFailure('#coord-3-2', reason);
         }));
 
     });

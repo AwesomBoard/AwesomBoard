@@ -102,20 +102,20 @@ export class PylosRules extends Rules<PylosMove, PylosState> {
     }
 
     public static getPossibleCaptures(state: PylosState): Set<Set<PylosCoord>> {
-        let possiblesCapturesSet: Set<Set<PylosCoord>> = new Set();
+        let possibleCapturesSets: Set<Set<PylosCoord>> = new Set();
 
         const freeToMoveFirsts: Set<PylosCoord> = state.getFreeToMoves();
         for (const freeToMoveFirst of freeToMoveFirsts) {
-            possiblesCapturesSet = possiblesCapturesSet.addElement(new Set([freeToMoveFirst]));
+            possibleCapturesSets = possibleCapturesSets.addElement(new Set([freeToMoveFirst]));
 
             const secondState: PylosState = state.removePieceAt(freeToMoveFirst);
             const freeToMoveThens: Set<PylosCoord> = secondState.getFreeToMoves();
             for (const freeToMoveThen of freeToMoveThens) {
                 const captures: Set<PylosCoord> = new Set([freeToMoveFirst, freeToMoveThen]);
-                possiblesCapturesSet = possiblesCapturesSet.addElement(captures);
+                possibleCapturesSets = possibleCapturesSets.addElement(captures);
             }
         }
-        return possiblesCapturesSet;
+        return possibleCapturesSets;
     }
 
     public static isValidCapture(state: PylosState, move: PylosMove, capture: PylosCoord): boolean {

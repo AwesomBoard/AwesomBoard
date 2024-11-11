@@ -44,7 +44,7 @@ describe('TeekoMove', () => {
     describe('TeekoTranslationMove', () => {
 
         it('should fail for static move', () => {
-            // Given a static move created with the same start and end coord
+            // Given a move created with the same start and end coord
             const coord: Coord = new Coord(3, 4);
 
             // When calling from

@@ -2,7 +2,7 @@ import { MoveGenerator } from 'src/app/jscaip/AI/AI';
 import { DiaballikMove, DiaballikBallPass, DiaballikSubMove, DiaballikTranslation, isTranslation } from './DiaballikMove';
 import { DiaballikPiece, DiaballikState } from './DiaballikState';
 import { DiaballikNode, DiaballikRules } from './DiaballikRules';
-import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
+import { Player } from 'src/app/jscaip/Player';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Orthogonal } from 'src/app/jscaip/Orthogonal';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
@@ -283,7 +283,7 @@ export class DiaballikMoveGenerator extends MoveGenerator<DiaballikMove, Diaball
         // A legal translation is an orthogonal translation that ends on an empty space
         for (const direction of Orthogonal.factory.all) {
             const end: Coord = start.getNext(direction);
-            if (state.coordIsOwnerByNone(end)) {
+            if (state.isEmptyAt(end)) {
                 ends.push(end);
             }
         }

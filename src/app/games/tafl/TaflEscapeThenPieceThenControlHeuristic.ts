@@ -50,7 +50,7 @@ export class TaflEscapeThenPieceThenControlHeuristic<M extends TaflMove> extends
             // not found:
             return MGPOptional.empty();
         }
-        if (nextGen.some((coord: Coord) => this.rules.isExternalThrone(state, coord))) {
+        if (nextGen.some((coord: Coord) => state.isExternalThrone(coord))) {
             return MGPOptional.of(step);
         } else {
             step++;

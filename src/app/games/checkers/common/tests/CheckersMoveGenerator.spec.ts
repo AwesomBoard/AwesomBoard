@@ -6,9 +6,11 @@ import { AbstractCheckersRules, CheckersConfig, CheckersNode } from '../Abstract
 import { CheckersPiece, CheckersStack, CheckersState } from '../CheckersState';
 import { InternationalCheckersRules } from '../../international-checkers/InternationalCheckersRules';
 import { LascaRules } from '../../lasca/LascaRules';
+import { Coord } from 'src/app/jscaip/Coord';
 
 const u: CheckersStack = new CheckersStack([CheckersPiece.ZERO]);
 const v: CheckersStack = new CheckersStack([CheckersPiece.ONE]);
+const X: CheckersStack = new CheckersStack([CheckersPiece.ONE_PROMOTED]);
 const _: CheckersStack = CheckersStack.EMPTY;
 
 const rules: AbstractCheckersRules[] = [
@@ -37,6 +39,39 @@ for (const rule of rules) {
 
             // Then it should return the list of steps
             expect(moves.every((move: CheckersMove) => rule.isMoveStep(move))).toBe(true);
+        });
+
+        it('should not suggest invalid move (not jumping twice the same coord)', () => {
+            // Given a state where current player could be tempted to do illegal capture
+            const customConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...rule.getDefaultRulesConfig().get(),
+                frisianCaptureAllowed: true,
+                promotedPiecesCanFly: true,
+                mustMakeMaximalCapture: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [u, _, u, _, X, _, u],
+                [_, _, _, u, _, _, _],
+                [u, _, u, _, u, _, _],
+                [_, _, _, _, _, _, _],
+                [v, _, v, _, _, _, v],
+                [_, v, _, v, _, _, _],
+                [v, _, v, _, v, _, v],
+            ], 1);
+            const node: CheckersNode = new CheckersNode(state);
+
+            // When listing the moves
+            const moves: CheckersMove[] = moveGenerator.getListMoves(node, customConfig);
+
+            // Then it should return the list of capture
+            console.log(moves.map((value: CheckersMove) => value.toString()))
+            expect(moves.length).toBe(1);
+            const captures: Coord[] = [
+                new Coord(4, 0),
+                new Coord(4, 4),
+                new Coord(1, 1),
+            ];
+            // expect(moves[0]).toEqual(CheckersMove.fromCapture(captures).get());
         });
 
     });

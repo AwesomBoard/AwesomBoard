@@ -138,14 +138,13 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
         return pieces;
     }
 
-    public isPiece(coord: Coord): boolean {
-        const piece: FourStatePiece = this.getPiece(coord);
-        return piece !== FourStatePiece.EMPTY;
+    public isPlayer(coord: Coord): boolean {
+        const piece: FourStatePiece = this.getPieceAt(coord);
+        return piece.isPlayer();
     }
 
-    private getPiece(coord: Coord): FourStatePiece {
-        const piece: FourStatePiece = this.constructedState.getPieceAt(coord);
-        return piece;
+    private getPieceAt(coord: Coord): FourStatePiece {
+        return this.constructedState.getPieceAt(coord);
     }
 
     public async onClick(coord: Coord): Promise<MGPValidation> {
@@ -321,7 +320,7 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
     }
 
     public getPieceClass(coord: Coord): string {
-        const piece: FourStatePiece = this.getPiece(coord);
+        const piece: FourStatePiece = this.getPieceAt(coord);
         return this.getPlayerClass(piece.getPlayer());
     }
 

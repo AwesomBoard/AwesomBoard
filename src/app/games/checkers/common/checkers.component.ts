@@ -197,9 +197,9 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     private async capture(clicked: Coord): Promise<MGPValidation> {
         const numberOfClicks: number = this.currentMoveClicks.length;
         const lastCoord: Coord = this.currentMoveClicks[numberOfClicks - 1];
-        const delta: Vector = lastCoord.getVectorToward(clicked);
-        if (delta.isDiagonal() === false) {
-            return this.cancelMove(CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
+        const captureValidity: MGPValidation = this.getCaptureValidity(lastCoord, clicked);
+        if (captureValidity.isFailure()) {
+            return this.cancelMove(captureValidity.getReason());
         } else {
             for (const flyiedOver of lastCoord.getCoordsToward(clicked)) {
                 if (this.constructedState.getPieceAt(flyiedOver).isOccupied()) {
@@ -209,14 +209,40 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
                 }
             }
             this.currentMoveClicks.push(clicked);
-            const currentMove: CheckersMove = CheckersMove.fromCapture(this.currentMoveClicks).get();
-            if (this.legalMoves.some((capture: CheckersMove) => capture.isPrefix(currentMove))) {
+            const currentMove: MGPFallible<CheckersMove> = CheckersMove.fromCapture(this.currentMoveClicks);
+            if (currentMove.isFailure()) {
+                return this.cancelMove(currentMove.getReason());
+            }
+            if (this.legalMoves.some((capture: CheckersMove) => capture.isPrefix(currentMove.get()))) {
                 this.showPossibleClicks();
                 return this.applyPartialCapture();
             } else {
-                return this.chooseMove(currentMove);
+                return this.chooseMove(currentMove.get());
             }
         }
+    }
+
+    private getCaptureValidity(start: Coord, end: Coord): MGPValidation {
+        // const delta: Vector = start.getVectorToward(end);
+        // if (delta.isDiagonal()) {
+        //     return MGPValidation.SUCCESS;
+        // }
+        // const config: CheckersConfig = this.getConfig().get();
+        // if (config.frisianCaptureAllowed) {
+        //     if (delta.isOrthogonal() && start.getDistanceToward(end) === 4) {
+        //         return MGPValidation.SUCCESS;
+        //     } else {
+        //         return MGPValidation.failure(CheckersFailure.CAPTURE_STEPS_MUST_BE_ORDINAL());
+        //     }
+        // } else {
+        //     return MGPValidation.failure(CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
+        // }
+        const ongoingMove: MGPFallible<CheckersMove> = CheckersMove.fromCapture(this.currentMoveClicks);
+        if (ongoingMove.isFailure()) {
+            console.log('AH LA GROSSE JAJE');
+        }
+        const config: CheckersConfig = this.getConfig().get();
+        return this.rules.getSubMoveValidity(ongoingMove.get(), start, end, this.getState(), config);
     }
 
     private applyPartialCapture(): MGPValidation {

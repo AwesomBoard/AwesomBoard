@@ -97,7 +97,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
     }
     private getFirstPieceValidity(move: AbaloneMove, state: AbaloneState): MGPValidation {
         const firstPiece: FourStatePiece = state.getPieceAt(move.coord);
-        if (state.isPiece(move.coord) === false) {
+        if (firstPiece.isPlayer() === false) {
             return MGPValidation.failure(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_EMPTY());
         } else if (firstPiece === FourStatePiece.ofPlayer(state.getCurrentOpponent())) {
             return MGPValidation.failure(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
@@ -141,7 +141,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
             const landing: Coord = tested.getNext(move.dir);
             newBoard[tested.y][tested.x] = FourStatePiece.EMPTY;
             if (state.isOnBoard(landing)) {
-                if (state.isPiece(landing)) {
+                if (state.isPlayer(landing)) {
                     return MGPFallible.failure(AbaloneFailure.TRANSLATION_IMPOSSIBLE());
                 }
                 if (state.getPieceAt(landing) === FourStatePiece.EMPTY) {

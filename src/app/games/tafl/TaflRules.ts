@@ -77,15 +77,11 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
     }
 
     public isThrone(state: TaflState, coord: Coord): boolean {
-        if (this.isExternalThrone(state, coord)) {
+        if (state.isExternalThrone(coord) === true) {
             return true;
         } else {
             return state.isCentralThrone(coord);
         }
-    }
-
-    public isExternalThrone(state: TaflState, coord: Coord): boolean {
-        return state.isCorner(coord);
     }
 
     public tryCapture(player: Player, landingPawn: Coord, d: Orthogonal, state: TaflState, config: TaflConfig)
@@ -190,7 +186,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
                                      config: TaflConfig)
     : MGPOptional<Coord>
     {
-        if (this.isExternalThrone(state, backCoord)) {
+        if (state.isExternalThrone(backCoord) === true) {
             if (config.kingFarFromHomeCanBeSandwiched) {
                 return MGPOptional.of(kingCoord);
             }
@@ -320,7 +316,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
             return MGPOptional.of(this.getInvader(config));
         }
         const kingCoord: Coord = optionalKingCoord.get();
-        if (this.isExternalThrone(state, kingCoord)) {
+        if (state.isExternalThrone(kingCoord) === true) {
             Debug.display('TaflRules', 'getWinner', 'The king escape, victory to defender');
             // king reached one corner!
             return MGPOptional.of(this.getDefender(config));
@@ -395,18 +391,15 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
         // search the possible destinations for the piece at "start"
         const destinations: Coord[] = [];
         let foundDestination: Coord;
+        const pieceIsKing: boolean = state.getPieceAt(start).isKing();
         for (const dir of Orthogonal.ORTHOGONALS) {
             // we look for empty existing destinations in each direction as far as we can
             foundDestination = start.getNext(dir, 1);
             while (state.hasPieceAt(foundDestination, TaflPawn.UNOCCUPIED)) {
-                if (this.isExternalThrone(state, foundDestination)) {
-                    if (state.getPieceAt(start).isKing()) {
-                        destinations.push(foundDestination);
-                    }
+                if (state.isExternalThrone(foundDestination) === true && pieceIsKing) {
+                    destinations.push(foundDestination);
                 } else if (state.isCentralThrone(foundDestination)) {
-                    if (state.getPieceAt(start).isKing() &&
-                        config.castleIsLeftForGood === false)
-                    {
+                    if (pieceIsKing && config.castleIsLeftForGood === false) {
                         destinations.push(foundDestination);
                     }
                 } else {

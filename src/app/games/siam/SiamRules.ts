@@ -103,7 +103,7 @@ export class SiamRules extends ConfigurableRules<SiamMove, SiamState, SiamConfig
         const startedOutside: boolean = state.isNotOnBoard(move.coord);
         if (move.isRotation()) {
             if (startedOutside) {
-                return MGPFallible.failure($localize`Cannot rotate piece outside the board: ${move.toString()}`);
+                return MGPFallible.failure($localize`You cannot rotate piece outside the board: ${move.toString()}`);
             }
         } else {
             const finishedOutside: boolean = state.isNotOnBoard(move.coord.getNext(move.direction.get()));

@@ -225,11 +225,8 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
         const moved: Coord[] = [];
         const directions: readonly Ordinal[] = orientation === 'diagonal' ? Ordinal.DIAGONALS : Ordinal.ORTHOGONALS;
         for (const direction of directions) {
-            for (
-                let coord: Coord = lodestone.getNext(direction);
-                state.isOnBoard(coord);
-                coord = coord.getNext(direction))
-            {
+            let coord: Coord = lodestone.getNext(direction);
+            while (state.isOnBoard(coord)) {
                 const pieceOnTarget: LodestonePiece = board[coord.y][coord.x];
                 const next: Coord = coord.getNext(direction);
                 if (state.coordIsOwnedBy(next, currentPlayer)) {
@@ -252,6 +249,7 @@ export class LodestoneRules extends Rules<LodestoneMove, LodestoneState, Lodesto
                         }
                     }
                 }
+                coord = coord.getNext(direction);
             }
         }
         return { board, captures, moved };

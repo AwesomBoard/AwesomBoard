@@ -615,7 +615,7 @@ describe('LascaRules', () => {
             // And a config requesting to do capture instead of kill
             const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
-                stackPiece: false,
+                canStackPiece: false,
             });
             const state: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
@@ -640,6 +640,184 @@ describe('LascaRules', () => {
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, ___, ___, ___, ___],
             ], 2);
+            RulesUtils.expectMoveSuccess(rules, state, move, expectedState, alternateConfig);
+        });
+
+        it('Should allow forward frisian-capture when config allows it', () => {
+            // Given a board where a frisian capture is possible
+            const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                frisianCaptureAllowed: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, __U, ___, __V, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, __U, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 2);
+
+            // When doing the move
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(3, 5), new Coord(3, 1)]).get();
+
+            // Then it should succeed
+            const expectedState: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, _UV, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, __U, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 3);
+            RulesUtils.expectMoveSuccess(rules, state, move, expectedState, alternateConfig);
+        });
+
+        it('Should allow lateral frisian-capture when config allows it', () => {
+            // Given a board where a frisian capture is possible
+            const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                frisianCaptureAllowed: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, __U, ___, __V, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 2);
+
+            // When doing the move
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(1, 3), new Coord(5, 3)]).get();
+
+            // Then it should succeed
+            const expectedState: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, _UV, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 3);
+            RulesUtils.expectMoveSuccess(rules, state, move, expectedState, alternateConfig);
+        });
+
+        it('Should allow backward frisian-capture when config allows it', () => {
+            // Given a board where a frisian capture is possible
+            const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                frisianCaptureAllowed: true,
+                simplePieceCanCaptureBackwards: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, __U, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, __U, ___, __V, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 2);
+
+            // When doing the move
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(3, 1), new Coord(3, 5)]).get();
+
+            // Then it should succeed
+            const expectedState: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, __U, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, _UV, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 3);
+            RulesUtils.expectMoveSuccess(rules, state, move, expectedState, alternateConfig);
+        });
+
+        it('Should refuse frisian-step even if config allows frisian capture', () => {
+            // Given a board where a frisian capture is possible
+            const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                frisianCaptureAllowed: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, __V, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, __U, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 2);
+
+            // When doing the move
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(1, 3), new Coord(3, 3)]).get();
+
+            // Then it should fail
+            const reason: string = CheckersFailure.INVALID_FRISIAN_MOVE();
+            RulesUtils.expectMoveFailure(rules, state, move, reason, alternateConfig);
+        });
+
+        it('Should refuse uneven frisian capture even if config allows frisian capture', () => {
+            // Given a board where a frisian capture is possible
+            const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                frisianCaptureAllowed: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, __V, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, __U, ___, __V, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 2);
+
+            // When doing the move
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(1, 3), new Coord(4, 3)]).get();
+
+            // Then it should fail
+            const reason: string = CheckersFailure.INVALID_UNEVEN_FRISIAN_MOVE();
+            RulesUtils.expectMoveFailure(rules, state, move, reason, alternateConfig);
+        });
+
+        it('Should allow flying-frisian when config allows it', () => {
+            // Given a board where a frisian capture is possible
+            const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                frisianCaptureAllowed: true,
+                promotedPiecesCanFly: true,
+            });
+            const state: CheckersState = CheckersState.of([
+                [__O, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [__V, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+            ], 2);
+
+            // When doing the move
+            const move: CheckersMove = CheckersMove.fromCapture([new Coord(0, 0), new Coord(0, 6)]).get();
+
+            // Then it should succeed
+            const expectedState: CheckersState = CheckersState.of([
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [___, ___, ___, ___, ___, ___, ___],
+                [_OV, ___, ___, ___, ___, ___, ___],
+            ], 3);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, alternateConfig);
         });
 

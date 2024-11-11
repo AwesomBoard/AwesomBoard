@@ -1,9 +1,10 @@
+import { MGPOptional } from '@everyboard/lib';
+
 import { Coord } from '../../jscaip/Coord';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { TaflPawn } from './TaflPawn';
 import { RelativePlayer } from 'src/app/jscaip/RelativePlayer';
 import { GameStateWithTable } from 'src/app/jscaip/state/GameStateWithTable';
-import { MGPOptional } from 'lib/dist';
 
 export class TaflState extends GameStateWithTable<TaflPawn> {
 
@@ -45,6 +46,10 @@ export class TaflState extends GameStateWithTable<TaflPawn> {
         } else {
             return false;
         }
+    }
+
+    public isExternalThrone(coord: Coord): boolean {
+        return this.isCorner(coord);
     }
 
 }

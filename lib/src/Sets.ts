@@ -11,6 +11,7 @@ export class Sets {
         });
         return result;
     }
+
     public static toComparableSet<T extends Comparable>(list: readonly T[]): T[] {
         const result: T[] = [];
         list.forEach((other: T) => {
@@ -20,4 +21,5 @@ export class Sets {
         });
         return result;
     }
+
 }

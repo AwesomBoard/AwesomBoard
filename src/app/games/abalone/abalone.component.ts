@@ -242,8 +242,8 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         return c !== FourStatePiece.UNREACHABLE;
     }
 
-    public isPiece(c: FourStatePiece): boolean {
-        return c !== FourStatePiece.EMPTY;
+    public isPlayer(c: FourStatePiece): boolean {
+        return c.isPlayer();
     }
 
     private async secondClick(coord: Coord): Promise<MGPValidation> {

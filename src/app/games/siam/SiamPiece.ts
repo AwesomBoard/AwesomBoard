@@ -79,7 +79,7 @@ export class SiamPiece {
         return this.owner.isNone();
     }
 
-    public isPiece(): boolean {
+    public isPlayer(): boolean {
         return this.isEmptyOrMountain() === false;
     }
 

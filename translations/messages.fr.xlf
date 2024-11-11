@@ -214,7 +214,7 @@
         <source>You are in charge of a hive full of insects. Use the abilities of your insects to block the opponent&apos;s queen in order to win!</source>
         <target>Vous contrôlez une colonie d'insectes. Utilisez les capacités de vos insectes pour bloquer la reine de votre adversaire afin de gagner !</target>
       </trans-unit>
-      <trans-unit id="7475733938620811391" datatype="html">
+      <trans-unit id="1265878048705212004" datatype="html">
         <source>The famous checkers game, in its international version!</source>
         <target>Le fameux jeu de dames, sa version internationale !</target>
       </trans-unit>
@@ -2807,28 +2807,36 @@
         <source>A capture should be diagonal. Look at the indicators to help you!</source>
         <target>Les captures doivent être des sauts de deux pas en diagonale ! Regardez les indications pour vous aider !</target>
       </trans-unit>
+      <trans-unit id="3279301407223495954" datatype="html">
+        <source>A capture should be in straight line. Look at the indicators to help you!</source>
+        <target>Une capture devrais être en ligne droite ! Regardez les indications pour vous aider !</target>
+      </trans-unit>
+      <trans-unit id="8571603824915552772" datatype="html">
+        <source>This is an invalid orthogonal move, frisian capture must be at least steps of 4. Look at the indicators to help you!</source>
+        <target>Ceci est un mouvement orthogonal invalide, les captures frisiennes doivent être au minimum des pas de 4 ! Regardez les indications pour vous aider !</target>
+      </trans-unit>
       <trans-unit id="964675748683334375" datatype="html">
         <source>Normal pieces cannot move like this!</source>
         <target>Les pièces normales ne peuvent pas se déplacer comme ceci !</target>
       </trans-unit>
-      <trans-unit id="7075234186922635323" datatype="html">
-        <source>Normal pieces cannot capture like this!</source>
-        <target>Les pièces normales ne peuvent pas capturer comme ceci !</target>
+      <trans-unit id="4897086529827321658" datatype="html">
+        <source>Flying capture is forbidden for normal pieces!</source>
+        <target>Les pièces normales ne peuvent pas faire de capture volantes !</target>
       </trans-unit>
-      <trans-unit id="602226871567193977" datatype="html">
-        <source>No piece can do long jump!</source>
+      <trans-unit id="5556528437720213364" datatype="html">
+        <source>No piece is allowed to do a long jump</source>
         <target>Aucune pièce ne peut se déplacer de plus d'un pas !</target>
       </trans-unit>
-      <trans-unit id="7543542187423910186" datatype="html">
-        <source>Cannot do orthogonal capture!</source>
-        <target></target>
+      <trans-unit id="4561504947288666034" datatype="html">
+        <source>You cannot do orthogonal capture!</source>
+        <target>Vous ne pouvez pas faire de capture orthogonale</target>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
         <source>You cannot jump over the same square several times!</source>
         <target>Vous ne pouvez pas sauter au dessus d'une même case plusieurs fois !</target>
       </trans-unit>
-      <trans-unit id="1505463377783719524" datatype="html">
-        <source>You must do the biggest capture possible!</source>
+      <trans-unit id="8795923620032980614" datatype="html">
+        <source>You must do the longest capture possible!</source>
         <target>Vous devez faire la plus grande capture possible !</target>
       </trans-unit>
       <trans-unit id="6151712512701871680" datatype="html">
@@ -3362,21 +3370,29 @@
         <source>Wrong choice, your opponent will win in the next turn no matter which piece is dropped!</source>
         <target>Mauvais choix, votre adversaire va gagner au prochain tour quelle que soit la pièce déposée !</target>
       </trans-unit>
-      <trans-unit id="6642451818461891790" datatype="html">
-        <source>Stack piece instead of capturing it</source>
+      <trans-unit id="2406587628849019715" datatype="html">
+        <source>Stack pieces instead of capturing them</source>
         <target>Empiler les pièces plutôt que les capturer</target>
       </trans-unit>
       <trans-unit id="7021784120606335572" datatype="html">
         <source>You must capture the highest number of piece</source>
         <target>Vous devez capturer le plus grand nombre de pièces</target>
       </trans-unit>
-      <trans-unit id="8927712614062039032" datatype="html">
-        <source>Simple piece can back-capture</source>
+      <trans-unit id="1072817438513810472" datatype="html">
+        <source>Simple piece can capture backward</source>
         <target>Les simples pièces peuvent capturer en arrière</target>
       </trans-unit>
       <trans-unit id="5102353447213251496" datatype="html">
         <source>Promoted pieces can travel long distance</source>
         <target>Les pièces promies peuvent de déplacer sur de longues distances</target>
+      </trans-unit>
+      <trans-unit id="6664648362913409853" datatype="html">
+        <source>Occupy even square</source>
+        <target>Occuper les cases paires</target>
+      </trans-unit>
+      <trans-unit id="3072414657519570345" datatype="html">
+        <source>Can do frisian captures</source>
+        <target>Peux-t-on faire des captures frisiennes</target>
       </trans-unit>
       <trans-unit id="6434791622277704389" datatype="html">
         <source>Rightmost Focus</source>
@@ -3984,8 +4000,8 @@
         <source>The goal at Siam is to be the first to push a mountain out of the board. The initial board contains three mountains, and no pieces are initially on the board. During its turn, a player can do one of the following actions:&lt;ol&gt;&lt;li&gt;Put a new piece on the board.&lt;/li&gt;&lt;li&gt;Change the orientation of one of its piece&lt;/li&gt;&lt;li&gt;Move one of its piece and optionally reorient it.&lt;/li&gt;&lt;li&gt;Take one of its pieces out of the board.&lt;/li&gt;&lt;/ol&gt;</source>
         <target>Le but du Siam est d&apos;être le premier à pousser une montagne hors du plateau. Le plateau de départ en contient trois, au centre, et aucun pion n&apos;est initialement sur le plateau. Durant son tour de jeu un joueur peut effectuer l&apos;une des actions suivantes :&lt;ol&gt;&lt;li&gt;Faire entrer une pièce sur le plateau.&lt;/li&gt;&lt;li&gt;Changer l&apos;orientation d&apos;une de ses pièces.&lt;/li&gt;&lt;li&gt;Déplacer une de ses pièces et éventuellement la réorienter.&lt;/li&gt;&lt;li&gt;Sortir un de ses pions du plateau.&lt;/li&gt;&lt;/ol&gt;</target>
       </trans-unit>
-      <trans-unit id="5290831626966707862" datatype="html">
-        <source>Cannot rotate piece outside the board: <x id="PH" equiv-text="move.toString()"/></source>
+      <trans-unit id="7963871986685218015" datatype="html">
+        <source>You cannot rotate piece outside the board: <x id="PH" equiv-text="move.toString()"/></source>
         <target>On ne peut pas rotationner une pièce hors du plateau: <x id="PH" equiv-text="move.toString()"/></target>
       </trans-unit>
       <trans-unit id="3925814099582230333" datatype="html">

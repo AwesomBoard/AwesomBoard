@@ -1,4 +1,5 @@
 import { Comparable, comparableEquals } from './Comparable';
+import { Set } from './Set';
 import { Utils } from './Utils';
 
 export class ArrayUtils {
@@ -165,6 +166,15 @@ export class ArrayUtils {
             result.push(mapper(element));
         }
         return result;
+    }
+
+    public static hasDuplicates<V extends Comparable>(list: ReadonlyArray<V>): boolean {
+        const set: Set<V> = new Set(list);
+        if (list.length === set.size()) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

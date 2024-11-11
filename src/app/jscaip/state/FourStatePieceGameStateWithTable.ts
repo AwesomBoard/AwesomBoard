@@ -21,7 +21,7 @@ export class FourStatePieceGameStateWithTable extends GameStateWithTable<FourSta
             });
     }
 
-    public isPiece(coord: Coord): boolean {
+    public isPlayer(coord: Coord): boolean {
         const piece: FourStatePiece = this.getPieceAt(coord);
         return piece.isPlayer();
     }
@@ -45,12 +45,10 @@ export class FourStatePieceGameStateWithTable extends GameStateWithTable<FourSta
     }
 
     public override isOnBoard(coord: Coord): boolean {
-        const width: number = this.board[0].length;
-        const height: number = this.board.length;
-        if (coord.isNotInRange(width, height)) {
-            return false;
-        } else {
+        if (super.isOnBoard(coord)) {
             return this.getUnsafe(coord) !== FourStatePiece.UNREACHABLE;
+        } else {
+            return false;
         }
     }
 

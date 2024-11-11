@@ -12,14 +12,6 @@ export class CheckersPiece {
     public static readonly ZERO_PROMOTED: CheckersPiece = new CheckersPiece(Player.ZERO, true);
     public static readonly ONE_PROMOTED: CheckersPiece = new CheckersPiece(Player.ONE, true);
 
-    public static getPlayerPromoted(player: Player): CheckersPiece {
-        if (player === Player.ZERO) {
-            return CheckersPiece.ZERO_PROMOTED;
-        } else {
-            return CheckersPiece.ONE_PROMOTED;
-        }
-    }
-
     private constructor(public readonly player: Player, public readonly isPromoted: boolean) {}
 
     public toString(): string {
@@ -32,15 +24,28 @@ export class CheckersPiece {
                 return 'X';
         }
     }
+
     public equals(other: CheckersPiece): boolean {
         return this === other;
     }
+
+    /**
+     * Returns a promoted version of this piece
+     */
+    public promote(): CheckersPiece {
+        if (this.player === Player.ZERO) {
+            return CheckersPiece.ZERO_PROMOTED;
+        } else {
+            return CheckersPiece.ONE_PROMOTED;
+        }
+    }
+
 }
 export class CheckersStack {
 
     public static EMPTY: CheckersStack = new CheckersStack([]);
 
-    // The list of pieces is from top to bottom, hence [commander, its allies, its prisonner, more prisonner]
+    // The list of pieces is from top to bottom, hence [commander, its allies, its prisoner, more prisoner]
     public constructor(public readonly pieces: ReadonlyArray<CheckersPiece>) {}
 
     public isEmpty(): boolean {
@@ -88,7 +93,7 @@ export class CheckersStack {
         if (commander.isPromoted) {
             return this;
         } else {
-            commander = CheckersPiece.getPlayerPromoted(commander.player);
+            commander = commander.promote();
             const remainingStack: CheckersStack = this.getPiecesUnderCommander();
             const commandingStack: CheckersStack = new CheckersStack([commander]);
             return commandingStack.addStackBelow(remainingStack);
@@ -123,13 +128,9 @@ export class CheckersState extends GameStateWithTable<CheckersStack> {
 
     public getStacksOf(player: Player): Coord[] {
         const stackCoords: Coord[] = [];
-        const height: number = this.getHeight();
-        const width: number = this.getWidth();
-        for (let y: number = 0; y < height; y++) {
-            for (let x: number = 0; x < width; x++) {
-                if (this.getPieceAtXY(x, y).isCommandedBy(player)) {
-                    stackCoords.push(new Coord(x, y));
-                }
+        for (const coordAndContent of this.getCoordsAndContents()) {
+            if (coordAndContent.content.isCommandedBy(player)) {
+                stackCoords.push(coordAndContent.coord);
             }
         }
         return stackCoords;
@@ -166,7 +167,7 @@ export class CheckersState extends GameStateWithTable<CheckersStack> {
         }
     }
 
-    public coordIsEmpty(coord: Coord): boolean {
+    public isEmptyAt(coord: Coord): boolean {
         const optional: MGPOptional<CheckersStack> = this.getOptionalPieceAt(coord);
         if (optional.isPresent()) {
             return optional.get().isEmpty();
@@ -178,7 +179,7 @@ export class CheckersState extends GameStateWithTable<CheckersStack> {
     public getScores(): MGPOptional<PlayerNumberMap> {
         const zeroScore: number = this.getStacksOf(Player.ZERO).length;
         const oneScore: number = this.getStacksOf(Player.ONE).length;
-        const scores: PlayerNumberMap = PlayerNumberMap.ofValues(zeroScore, oneScore) as PlayerNumberMap;
+        const scores: PlayerNumberMap = PlayerNumberMap.of(zeroScore, oneScore);
         return MGPOptional.of(scores);
     }
 

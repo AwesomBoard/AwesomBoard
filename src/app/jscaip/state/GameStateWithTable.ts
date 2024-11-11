@@ -28,7 +28,7 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
         return this.getUnsafe(coord);
     }
 
-    public getUnsafe(coord: Coord): P {
+    protected getUnsafe(coord: Coord): P {
         return this.board[coord.y][coord.x];
     }
 
@@ -57,8 +57,8 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
     }
 
     public isOnBoard(coord: Coord): boolean {
-        const width: number = this.board[0].length;
-        const height: number = this.board.length;
+        const width: number = this.getWidth();
+        const height: number = this.getHeight();
         return coord.isInRange(width, height);
     }
 

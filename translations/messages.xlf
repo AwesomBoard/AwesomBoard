@@ -191,7 +191,7 @@
       <trans-unit id="4865500405661191388" datatype="html">
         <source>You are in charge of a hive full of insects. Use the abilities of your insects to block the opponent&apos;s queen in order to win!</source>
       </trans-unit>
-      <trans-unit id="7475733938620811391" datatype="html">
+      <trans-unit id="1265878048705212004" datatype="html">
         <source>The famous checkers game, in its international version!</source>
       </trans-unit>
       <trans-unit id="3778423604946977624" datatype="html">
@@ -949,17 +949,23 @@
       <trans-unit id="6535908388530528403" datatype="html">
         <source>Wrong choice, your opponent will win in the next turn no matter which piece is dropped!</source>
       </trans-unit>
-      <trans-unit id="6642451818461891790" datatype="html">
-        <source>Stack piece instead of capturing it</source>
+      <trans-unit id="2406587628849019715" datatype="html">
+        <source>Stack pieces instead of capturing them</source>
       </trans-unit>
       <trans-unit id="7021784120606335572" datatype="html">
         <source>You must capture the highest number of piece</source>
       </trans-unit>
-      <trans-unit id="8927712614062039032" datatype="html">
-        <source>Simple piece can back-capture</source>
+      <trans-unit id="1072817438513810472" datatype="html">
+        <source>Simple piece can capture backward</source>
       </trans-unit>
       <trans-unit id="5102353447213251496" datatype="html">
         <source>Promoted pieces can travel long distance</source>
+      </trans-unit>
+      <trans-unit id="6664648362913409853" datatype="html">
+        <source>Occupy even square</source>
+      </trans-unit>
+      <trans-unit id="3072414657519570345" datatype="html">
+        <source>Can do frisian captures</source>
       </trans-unit>
       <trans-unit id="318262165361158083" datatype="html">
         <source>Control</source>
@@ -982,23 +988,29 @@
       <trans-unit id="8924385103118910226" datatype="html">
         <source>A capture should be diagonal. Look at the indicators to help you!</source>
       </trans-unit>
+      <trans-unit id="3279301407223495954" datatype="html">
+        <source>A capture should be in straight line. Look at the indicators to help you!</source>
+      </trans-unit>
+      <trans-unit id="8571603824915552772" datatype="html">
+        <source>This is an invalid orthogonal move, frisian capture must be at least steps of 4. Look at the indicators to help you!</source>
+      </trans-unit>
       <trans-unit id="964675748683334375" datatype="html">
         <source>Normal pieces cannot move like this!</source>
       </trans-unit>
-      <trans-unit id="7075234186922635323" datatype="html">
-        <source>Normal pieces cannot capture like this!</source>
+      <trans-unit id="4897086529827321658" datatype="html">
+        <source>Flying capture is forbidden for normal pieces!</source>
       </trans-unit>
-      <trans-unit id="602226871567193977" datatype="html">
-        <source>No piece can do long jump!</source>
+      <trans-unit id="5556528437720213364" datatype="html">
+        <source>No piece is allowed to do a long jump</source>
       </trans-unit>
-      <trans-unit id="7543542187423910186" datatype="html">
-        <source>Cannot do orthogonal capture!</source>
+      <trans-unit id="4561504947288666034" datatype="html">
+        <source>You cannot do orthogonal capture!</source>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
         <source>You cannot jump over the same square several times!</source>
       </trans-unit>
-      <trans-unit id="1505463377783719524" datatype="html">
-        <source>You must do the biggest capture possible!</source>
+      <trans-unit id="8795923620032980614" datatype="html">
+        <source>You must do the longest capture possible!</source>
       </trans-unit>
       <trans-unit id="6151712512701871680" datatype="html">
         <source>Cannot jump over several pieces!</source>
@@ -2842,8 +2854,8 @@
       <trans-unit id="6496295523512347479" datatype="html">
         <source>Number of bonus mountains</source>
       </trans-unit>
-      <trans-unit id="5290831626966707862" datatype="html">
-        <source>Cannot rotate piece outside the board: <x id="PH" equiv-text="move.toString()"/></source>
+      <trans-unit id="7963871986685218015" datatype="html">
+        <source>You cannot rotate piece outside the board: <x id="PH" equiv-text="move.toString()"/></source>
       </trans-unit>
       <trans-unit id="3925814099582230333" datatype="html">
         <source>SiamMove should end or start on the board: <x id="PH" equiv-text="move.toString()"/></source>

@@ -17,13 +17,13 @@ export class PylosMoveGenerator extends MoveGenerator<PylosMove, PylosState> {
         const moves: PylosMove[] = climbings.concat(drops);
         for (const move of moves) {
             const postMoveState: PylosState = state.applyLegalMove(move, false);
-            let possiblesCaptures: Set<Set<PylosCoord>> = new Set();
+            let possibleCaptures: Set<Set<PylosCoord>> = new Set();
             if (PylosRules.canCapture(postMoveState, move.landingCoord)) {
-                possiblesCaptures = PylosRules.getPossibleCaptures(postMoveState);
+                possibleCaptures = PylosRules.getPossibleCaptures(postMoveState);
             } else {
                 result.push(move);
             }
-            for (const possiblesCapture of possiblesCaptures) {
+            for (const possiblesCapture of possibleCaptures) {
                 const newMove: PylosMove = PylosMove.changeCapture(move, possiblesCapture.toList());
                 result.push(newMove);
             }

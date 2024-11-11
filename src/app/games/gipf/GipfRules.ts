@@ -128,14 +128,12 @@ export class GipfRules extends Rules<GipfMove, GipfState, GipfLegalityInformatio
             }
             newState = newState.setAt(coord, previousPiece);
         } else {
-            for (
-                let cur: Coord = placement.coord;
-                newState.isOnBoard(cur) && previousPiece !== FourStatePiece.EMPTY;
-                cur = cur.getNext(placement.direction.get()))
-            {
+            let cur: Coord = placement.coord;
+            while (newState.isOnBoard(cur) && previousPiece !== FourStatePiece.EMPTY) {
                 const curPiece: FourStatePiece = state.getPieceAt(cur);
                 newState = newState.setAt(cur, previousPiece);
                 previousPiece = curPiece;
+                cur = cur.getNext(placement.direction.get())
             }
         }
         const sidePieces: PlayerNumberMap = state.sidePieces.getCopy();

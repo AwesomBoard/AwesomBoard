@@ -80,6 +80,7 @@ export class CheckersMove extends Move {
         return this.getRelation(other) === 'EQUALITY';
     }
 
+    // If one of the two is prefix to the other ?
     public isPrefix(other: CheckersMove): boolean {
         return this.getRelation(other) === 'PREFIX';
     }
@@ -96,7 +97,7 @@ export class CheckersMove extends Move {
         return CheckersMove.getSteppedOverCoords(this.coords.toList());
     }
 
-    public concatenate(move: CheckersMove): CheckersMove {
+    public concatenate(move: CheckersMove): MGPFallible<CheckersMove> {
         const lastLandingOfFirstMove: Coord = this.getEndingCoord();
         const startOfSecondMove: Coord = move.coords.toList()[0];
         Utils.assert(lastLandingOfFirstMove.equals(startOfSecondMove), 'should not concatenate non-touching move');
@@ -104,7 +105,7 @@ export class CheckersMove extends Move {
         const firstPart: Coord[] = ArrayUtils.copy(thisCoordList);
         const otherCoordList: Coord[] = move.coords.toList();
         const secondPart: Coord[] = ArrayUtils.copy(otherCoordList).slice(1);
-        return CheckersMove.fromCapture(firstPart.concat(secondPart)).get();
+        return CheckersMove.fromCapture(firstPart.concat(secondPart));
     }
 
 }
