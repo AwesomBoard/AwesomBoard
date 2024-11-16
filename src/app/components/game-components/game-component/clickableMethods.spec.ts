@@ -6,7 +6,7 @@ import { SiamMove } from 'src/app/games/siam/SiamMove';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Orthogonal } from 'src/app/jscaip/Orthogonal';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
-import { Player } from 'src/app/jscaip/Player';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 
 export const clickableMethods: { [gameName: string]: { [methodName: string]: unknown[]; }; } = {
     Abalone: {
@@ -40,7 +40,7 @@ export const clickableMethods: { [gameName: string]: { [methodName: string]: unk
     Dvonn: { onClick: [0, 0] },
     Encapsule: {
         onBoardClick: [0, 0],
-        onPieceClick: [0, EncapsulePiece.BIG_LIGHT, 0],
+        onPieceClick: [0, EncapsulePiece.ofSizeAndPlayer(3, PlayerOrNone.ONE), 0],
     },
     Epaminondas: { onClick: [0, 0] },
     Gipf: { onClick: [0, 0] },
