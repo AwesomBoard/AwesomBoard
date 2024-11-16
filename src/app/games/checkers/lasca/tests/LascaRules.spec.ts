@@ -99,7 +99,7 @@ describe('LascaRules', () => {
             const move: CheckersMove = CheckersMove.fromStep(new Coord(1, 5), new Coord(1, 3));
 
             // Then the move should be illegal
-            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_CAPTURE();
+            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
@@ -160,7 +160,7 @@ describe('LascaRules', () => {
                 [___, ___, ___, ___, ___, ___, __U],
             ], 0);
 
-            // When trying a move starting outside of the board
+            // When trying to make a long step with a normal piece
             const move: CheckersMove = CheckersMove.fromStep(new Coord(6, 6), new Coord(3, 3));
 
             // Then it should be illegal
@@ -180,7 +180,7 @@ describe('LascaRules', () => {
                 [___, ___, ___, ___, ___, ___, __O],
             ], 0);
 
-            // When trying a move starting outside of the board
+            // When trying to capture two pieces in one jump
             const move: CheckersMove = CheckersMove.fromStep(new Coord(6, 6), new Coord(2, 2));
 
             // Then it should be illegal
@@ -784,7 +784,7 @@ describe('LascaRules', () => {
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(1, 3), new Coord(4, 3)]).get();
 
             // Then it should fail
-            const reason: string = CheckersFailure.INVALID_UNEVEN_FRISIAN_MOVE();
+            const reason: string = CheckersFailure.FRISIAN_CAPTURE_MUST_BE_EVEN();
             RulesUtils.expectMoveFailure(rules, state, move, reason, alternateConfig);
         });
 

@@ -54,11 +54,14 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         const height: number = config.emptyRows + (2 * config.playerRows);
         const board: CheckersStack[][] = TableUtils.create(config.width, height, _);
         const occupiedSquare: number = config.occupyEvenSquare ? 0 : 1;
-        for (let y: number = 0; y < config.playerRows; y++) {
+        for (let y: number = 0; y < height; y++) {
             for (let x: number = 0; x < config.width; x++) {
                 if ((x + y) % 2 === occupiedSquare) {
-                    board[y][x] = V;
-                    board[height - 1 - y][config.width - 1 - x] = U;
+                    if (y < config.playerRows) {
+                        board[y][x] = V;
+                    } else if (config.playerRows + config.emptyRows <= y) {
+                        board[y][x] = U;
+                    }
                 }
             }
         }
@@ -318,7 +321,24 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
     public override isLegal(move: CheckersMove, state: CheckersState, config: MGPOptional<CheckersConfig>)
     : MGPValidation
     {
-        const outOfRangeCoord: MGPOptional<Coord> = this.getMoveOutOfRangeCoord(move, config.get());
+        const moveOwnerShipValidity: MGPValidation = this.getMoveOwnerShipValidity(move, state, config.get());
+        if (moveOwnerShipValidity.isFailure()) { // out of range, opponent, empty spaces
+            return moveOwnerShipValidity;
+        }
+        const moveValidity: MGPValidation = this.isLegalSubMoveList(move, state, config.get());
+        if (moveValidity.isFailure()) {
+            return moveValidity;
+        }
+        const possibleCaptures: CheckersMove[] = this.getCompleteCaptures(state, config.get());
+        if (possibleCaptures.length === 0) {
+            return MGPValidation.SUCCESS;
+        } else {
+            return this.isLegalCaptureChoice(move, possibleCaptures, config.get());
+        }
+    }
+
+    private getMoveOwnerShipValidity(move: CheckersMove, state: CheckersState, config: CheckersConfig): MGPValidation {
+        const outOfRangeCoord: MGPOptional<Coord> = this.getMoveOutOfRangeCoord(move, config);
         if (outOfRangeCoord.isPresent()) {
             return MGPValidation.failure(CoordFailure.OUT_OF_RANGE(outOfRangeCoord.get()));
         }
@@ -331,16 +351,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         if (movedStack.isCommandedBy(opponent)) {
             return MGPValidation.failure(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
         }
-        const moveValidity: MGPValidation = this.isLegalSubMoveList(move, state, config.get());
-        if (moveValidity.isFailure()) {
-            return moveValidity;
-        }
-        const possibleCaptures: CheckersMove[] = this.getCompleteCaptures(state, config.get());
-        if (possibleCaptures.length === 0) {
-            return MGPValidation.SUCCESS;
-        } else {
-            return this.isLegalCaptureChoice(move, possibleCaptures, config.get());
-        }
+        return MGPValidation.SUCCESS;
     }
 
     private getMoveOutOfRangeCoord(move: CheckersMove, config: CheckersConfig): MGPOptional<Coord> {
@@ -377,24 +388,16 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         if (landingPiece.getStackSize() > 0) {
             return MGPValidation.failure(RulesFailure.MUST_LAND_ON_EMPTY_SPACE());
         }
-        const direction: MGPFallible<Ordinal> = start.getDirectionToward(end);
-        if (direction.get().isOrthogonal()) {
-            if (config.frisianCaptureAllowed) {
-                const frisianSize: number = start.getDistanceToward(end);
-                if (frisianSize % 2 === 1) {
-                    return MGPValidation.failure(CheckersFailure.INVALID_UNEVEN_FRISIAN_MOVE());
-                } else if (frisianSize === 2) {
-                    return MGPValidation.failure(CheckersFailure.INVALID_FRISIAN_MOVE());
-                }
-            } else {
-                return MGPValidation.failure(CheckersFailure.CANNOT_DO_ORTHOGONAL_CAPTURE());
-            }
+        const directionValidity: MGPValidation = this.getDirectionValidity(start, end, config);
+        if (directionValidity.isFailure()) {
+            return directionValidity;
         }
         const flyiedOverPlayer: Player[] = this.getFlyiedOverPlayers(start, end, state);
         let isCapture: boolean;
         if (flyiedOverPlayer.length === 0) { // No Capture
-            if (this.isMisplacedStep(move)) { // The moves continue illegally
-                return MGPValidation.failure('Move cannot continue after non-capture move');
+            const nonCaptureValidity: MGPValidation = this.getNonCaptureValidity(move, state, start, config);
+            if (nonCaptureValidity.isFailure()) {
+                return nonCaptureValidity;
             }
             isCapture = false;
         } else if (flyiedOverPlayer.length > 1) { // Capturing 2+ pieces
@@ -408,10 +411,48 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         if (this.isNormalPieceGoingBackwardIllegaly(move, start, end, state, config)) {
             return MGPValidation.failure(CheckersFailure.CANNOT_GO_BACKWARD());
         }
-        const flyLegality: MGPValidation =
-            this.getFlyLegality(move, start, end, state, isCapture, config);
+        const flyLegality: MGPValidation = this.getFlyLegality(move, start, end, state, isCapture, config);
         if (flyLegality.isFailure()) {
             return flyLegality;
+        }
+        return MGPValidation.SUCCESS;
+    }
+
+    private getNonCaptureValidity(move: CheckersMove, state: CheckersState, start: Coord, config: CheckersConfig)
+    : MGPValidation
+    {
+        if (this.isMisplacedStep(move)) { // The moves continue illegally
+            const moveStart: Coord = move.getStartingCoord();
+            if (moveStart.equals(start)) {
+                if (state.getPieceAt(moveStart).getCommander().isPromoted) {
+                    if (config.promotedPiecesCanFly === false) {
+                        return MGPValidation.failure(CheckersFailure.NO_PIECE_CAN_DO_LONG_JUMP());
+                    }
+                } else {
+                    return MGPValidation.failure(CheckersFailure.NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS());
+                }
+            }
+            return MGPValidation.failure('Move cannot continue after non-capture move');
+        }
+        return MGPValidation.SUCCESS;
+    }
+
+    private getDirectionValidity(start: Coord, end: Coord, config: CheckersConfig): MGPValidation {
+        const direction: MGPFallible<Ordinal> = start.getDirectionToward(end);
+        if (direction.isFailure()) {
+            return MGPValidation.failure(direction.getReason());
+        }
+        if (direction.get().isOrthogonal()) {
+            if (config.frisianCaptureAllowed) {
+                const frisianSize: number = start.getDistanceToward(end);
+                if (frisianSize % 2 === 1) {
+                    return MGPValidation.failure(CheckersFailure.FRISIAN_CAPTURE_MUST_BE_EVEN());
+                } else if (frisianSize === 2) {
+                    return MGPValidation.failure(CheckersFailure.INVALID_FRISIAN_MOVE());
+                }
+            } else {
+                return MGPValidation.failure(CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE());
+            }
         }
         return MGPValidation.SUCCESS;
     }

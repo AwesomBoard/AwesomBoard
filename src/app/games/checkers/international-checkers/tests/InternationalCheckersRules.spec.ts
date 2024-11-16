@@ -96,7 +96,7 @@ describe('InternationalCheckersRules', () => {
             const move: CheckersMove = CheckersMove.fromStep(new Coord(5, 6), new Coord(5, 4));
 
             // Then the move should be illegal
-            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_CAPTURE();
+            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
@@ -163,7 +163,7 @@ describe('InternationalCheckersRules', () => {
                 [_, _, _, _, _, _, _, _, _, U],
             ], 0);
 
-            // When trying a move starting outside of the board
+            // When trying to make a long step with a normal piece
             const move: CheckersMove = CheckersMove.fromStep(new Coord(9, 9), new Coord(3, 3));
 
             // Then it should be illegal
@@ -583,7 +583,7 @@ describe('InternationalCheckersRules', () => {
                     [_, _, _, _, _, _, _, _, _, O],
                 ], 0);
 
-                // When trying a move starting outside of the board
+                // When trying to capture two pieces in one jump
                 const move: CheckersMove = CheckersMove.fromStep(new Coord(9, 9), new Coord(3, 3));
 
                 // Then it should be illegal
@@ -606,7 +606,7 @@ describe('InternationalCheckersRules', () => {
                     [_, _, _, _, _, _, _, _, _, O],
                 ], 0);
 
-                // When trying a move starting outside of the board
+                // When trying to capture two pieces in one jump
                 const move: CheckersMove = CheckersMove.fromStep(new Coord(9, 9), new Coord(3, 3));
 
                 // Then it should be illegal
@@ -1005,10 +1005,7 @@ describe('InternationalCheckersRules', () => {
             const reason: string = CheckersFailure.INVALID_FRISIAN_MOVE();
             RulesUtils.expectMoveFailure(rules, state, move, reason, alternateConfig);
         });
-// TODO: when clicking (0, 3) => speak about uneveness, not straightness
-// TODO: when doing non-capture frisian: say "this is not a valid step"
-// TODO: when clicking again on the currently moving piece: do not say that I clicked on empty space
-// TODO: should not allow frying capture from normal pieces
+
         it('Should refuse uneven frisian capture even if config allows frisian capture', () => {
             // Given a board where a frisian capture is possible
             const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
@@ -1029,7 +1026,7 @@ describe('InternationalCheckersRules', () => {
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(1, 3), new Coord(4, 3)]).get();
 
             // Then it should fail
-            const reason: string = CheckersFailure.INVALID_UNEVEN_FRISIAN_MOVE();
+            const reason: string = CheckersFailure.FRISIAN_CAPTURE_MUST_BE_EVEN();
             RulesUtils.expectMoveFailure(rules, state, move, reason, alternateConfig);
         });
 

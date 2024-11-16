@@ -12,6 +12,7 @@ import { CheckersPiece, CheckersStack, CheckersState } from '../../common/Checke
 import { CheckersConfig } from '../../common/AbstractCheckersRules';
 import { InternationalCheckersRules } from '../InternationalCheckersRules';
 import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
+import { DirectionFailure } from 'src/app/jscaip/Direction';
 
 describe('InternationalCheckersComponent', () => {
 
@@ -178,7 +179,7 @@ describe('InternationalCheckersComponent', () => {
 
             // When clicking on an empty square in (+2; +1) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
+            const reason: string = DirectionFailure.DIRECTION_MUST_BE_LINEAR();
             await testUtils.expectClickFailure('#coord-5-7', reason);
         }));
 
@@ -188,7 +189,7 @@ describe('InternationalCheckersComponent', () => {
 
             // When clicking on an empty square in (+0; -2) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
+            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
             await testUtils.expectClickFailure('#coord-5-4', reason);
         }));
 
@@ -307,10 +308,8 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectClickSuccess('#coord-2-2');
 
             // When doing that illegal capture
-            const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
-
-            // Then the move should be illegal
-            await testUtils.expectMoveFailure('#coord-0-4', RulesFailure.CANNOT_SELF_CAPTURE(), move);
+            // Then it should fail
+            await testUtils.expectClickFailure('#coord-0-4', RulesFailure.CANNOT_SELF_CAPTURE());
         }));
 
         it('should only highlight captured piece when doing flying capture with queen', fakeAsync(async() => {
@@ -457,7 +456,7 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectClickSuccess('#coord-0-3'); // Making the first click
 
             // When clicking on an invalid landing piece
-            await testUtils.expectClickFailure('#coord-1-5', CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
+            await testUtils.expectClickFailure('#coord-1-5', DirectionFailure.DIRECTION_MUST_BE_LINEAR());
 
             // Then the highlight should be at the expected place only, not at their symmetric point
             testUtils.expectElementToHaveClass('#clickable-highlight-0-3', 'clickable-stroke');
@@ -580,7 +579,7 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectClickSuccess('#coord-4-4');
 
             // When doing the last click that make an illegal step
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
+            const reason: string = DirectionFailure.DIRECTION_MUST_BE_LINEAR();
             await testUtils.expectClickFailure('#coord-6-5', reason);
 
             // Then the move should be cancelled and stack should be back in place

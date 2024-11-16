@@ -10,11 +10,7 @@ export class CheckersFailure {
 
     public static readonly THIS_PIECE_CANNOT_MOVE: Localized = () => $localize`This piece cannot move!`;
 
-    public static readonly CAPTURE_STEPS_MUST_BE_DIAGONAL: Localized = () => $localize`A capture should be diagonal. Look at the indicators to help you!`;
-
-    public static readonly CAPTURE_STEPS_MUST_BE_ORDINAL: Localized = () => $localize`A capture should be in straight line. Look at the indicators to help you!`;
-
-    public static readonly INVALID_UNEVEN_FRISIAN_MOVE: Localized = () => $localize`Frisian move cannot be of uneven length!`;
+    public static readonly FRISIAN_CAPTURE_MUST_BE_EVEN: Localized = () => $localize`Frisian capture must be of even length!`;
 
     public static readonly INVALID_FRISIAN_MOVE: Localized = () => $localize`This is an invalid orthogonal move, frisian capture must be at least steps of 4. Look at the indicators to help you!`;
 
@@ -24,7 +20,7 @@ export class CheckersFailure {
 
     public static readonly NO_PIECE_CAN_DO_LONG_JUMP: Localized = () => $localize`No piece is allowed to do a long jump`;
 
-    public static readonly CANNOT_DO_ORTHOGONAL_CAPTURE: Localized = () => $localize`You cannot do orthogonal capture!`;
+    public static readonly CANNOT_DO_ORTHOGONAL_MOVE: Localized = () => $localize`You cannot do orthogonal move!`;
 
     public static readonly CANNOT_CAPTURE_TWICE_THE_SAME_COORD: Localized = () => $localize`You cannot jump over the same square several times!`;
 

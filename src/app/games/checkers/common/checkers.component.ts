@@ -223,24 +223,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     }
 
     private getCaptureValidity(start: Coord, end: Coord): MGPValidation {
-        // const delta: Vector = start.getVectorToward(end);
-        // if (delta.isDiagonal()) {
-        //     return MGPValidation.SUCCESS;
-        // }
-        // const config: CheckersConfig = this.getConfig().get();
-        // if (config.frisianCaptureAllowed) {
-        //     if (delta.isOrthogonal() && start.getDistanceToward(end) === 4) {
-        //         return MGPValidation.SUCCESS;
-        //     } else {
-        //         return MGPValidation.failure(CheckersFailure.CAPTURE_STEPS_MUST_BE_ORDINAL());
-        //     }
-        // } else {
-        //     return MGPValidation.failure(CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
-        // }
         const ongoingMove: MGPFallible<CheckersMove> = CheckersMove.fromCapture(this.currentMoveClicks);
-        if (ongoingMove.isFailure()) {
-            console.log('AH LA GROSSE JAJE');
-        }
         const config: CheckersConfig = this.getConfig().get();
         return this.rules.getSubMoveValidity(ongoingMove.get(), start, end, this.getState(), config);
     }

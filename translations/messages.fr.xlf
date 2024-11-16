@@ -2797,15 +2797,11 @@
          Dans ce cas, le dernier joueur à avoir déplacé une pièce perd la partie.
          Ici, votre adversaire a déplacé sa pièce verte en dernier, vous êtes donc vainqueur !</target>
       </trans-unit>
-      <trans-unit id="8924385103118910226" datatype="html">
-        <source>A capture should be diagonal. Look at the indicators to help you!</source>
-        <target>Les captures doivent être des sauts de deux pas en diagonale ! Regardez les indications pour vous aider !</target>
+      <trans-unit id="3726954835052044930" datatype="html">
+        <source>Frisian capture must be of even length!</source>
+        <target>Une capture frisienne doit être un pas de longueur pair !</target>
       </trans-unit>
-      <trans-unit id="3279301407223495954" datatype="html">
-        <source>A capture should be in straight line. Look at the indicators to help you!</source>
-        <target>Une capture devrais être en ligne droite ! Regardez les indications pour vous aider !</target>
-      </trans-unit>
-      <trans-unit id="8571603824915552772" datatype="html">
+      <trans-unit id="7018562785463258954" datatype="html">
         <source>This is an invalid orthogonal move, frisian capture must be at least steps of 4. Look at the indicators to help you!</source>
         <target>Ceci est un mouvement orthogonal invalide, les captures frisiennes doivent être au minimum des pas de 4 ! Regardez les indications pour vous aider !</target>
       </trans-unit>
@@ -2821,9 +2817,9 @@
         <source>No piece is allowed to do a long jump</source>
         <target>Aucune pièce ne peut se déplacer de plus d'un pas !</target>
       </trans-unit>
-      <trans-unit id="4561504947288666034" datatype="html">
-        <source>You cannot do orthogonal capture!</source>
-        <target>Vous ne pouvez pas faire de capture orthogonale</target>
+      <trans-unit id="5106342617745818229" datatype="html">
+        <source>You cannot do orthogonal move!</source>
+        <target>Vous ne pouvez pas faire de déplacements orthogonaux !</target>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
         <source>You cannot jump over the same square several times!</source>

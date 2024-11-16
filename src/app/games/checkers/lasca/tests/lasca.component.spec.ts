@@ -12,6 +12,7 @@ import { CheckersPiece, CheckersStack, CheckersState } from '../../common/Checke
 import { CheckersConfig } from '../../common/AbstractCheckersRules';
 import { LascaRules } from '../LascaRules';
 import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
+import { DirectionFailure } from 'src/app/jscaip/Direction';
 
 describe('LascaComponent', () => {
 
@@ -145,7 +146,7 @@ describe('LascaComponent', () => {
 
             // When clicking on an empty square in (+2; +1) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
+            const reason: string = DirectionFailure.DIRECTION_MUST_BE_LINEAR();
             await testUtils.expectClickFailure('#coord-6-5', reason);
         }));
 
@@ -165,7 +166,7 @@ describe('LascaComponent', () => {
 
             // When clicking on an empty square in (+0; -2) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
+            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
             await testUtils.expectClickFailure('#coord-5-3', reason);
         }));
 
@@ -313,11 +314,30 @@ describe('LascaComponent', () => {
             await testUtils.expectClickSuccess('#coord-2-2');
 
             // When doing that illegal capture
-            const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
-
-            // Then the move should be illegal
-            await testUtils.expectMoveFailure('#coord-0-4', RulesFailure.CANNOT_SELF_CAPTURE(), move);
+            // Then it should fail
+            await testUtils.expectClickFailure('#coord-0-4', RulesFailure.CANNOT_SELF_CAPTURE());
         }));
+
+        it('should forbid long step for normal piece (2 step)', fakeAsync(async() => {
+            // Given any board where the selected piece could do a long jump
+            const state: CheckersState = CheckersState.of([
+                [_V, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, __],
+                [__, __, __, __, __, __, _U],
+            ], 0);
+            await testUtils.setupState(state);
+            await testUtils.expectClickSuccess('#coord-6-6');
+
+            // When trying doing a two step jump with a normal piece
+            // Then it should fail
+            const reason: string = CheckersFailure.NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS();
+            await testUtils.expectClickFailure('#coord-4-4', reason);
+        }));
+
     });
 
     describe('experience as second player (reversed board)', () => {
@@ -345,7 +365,7 @@ describe('LascaComponent', () => {
             await testUtils.expectClickSuccess('#coord-0-2'); // Making the first click
 
             // When clicking on an invalid landing piece
-            await testUtils.expectClickFailure('#coord-0-1', CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL());
+            await testUtils.expectClickFailure('#coord-1-4', DirectionFailure.DIRECTION_MUST_BE_LINEAR());
 
             // Then the highlight should be at the expected place only, not at their symmetric point
             testUtils.expectElementToHaveClass('#clickable-highlight-0-2', 'clickable-stroke');
@@ -411,7 +431,7 @@ describe('LascaComponent', () => {
             await testUtils.expectClickSuccess('#coord-4-4');
 
             // When doing the last click that make an illegal step
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_DIAGONAL();
+            const reason: string = DirectionFailure.DIRECTION_MUST_BE_LINEAR();
             await testUtils.expectClickFailure('#coord-6-5', reason);
 
             // Then the move should be cancelled and stack should be back in place
@@ -473,7 +493,6 @@ describe('LascaComponent', () => {
     });
 
     describe('Custom configs', () => {
-// TODO: when doing (0, 2) without capture, dont call it a capture in the error toast
         it('should fail when doing invalid frisian capture', fakeAsync(async() => {
             // Given any board with a selected piece that could do a frisian capture
             const customConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
@@ -494,7 +513,7 @@ describe('LascaComponent', () => {
 
             // When clicking on an empty square in (+3; 0) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CAPTURE_STEPS_MUST_BE_ORDINAL();
+            const reason: string = CheckersFailure.FRISIAN_CAPTURE_MUST_BE_EVEN();
             await testUtils.expectClickFailure('#coord-3-2', reason);
         }));
 
