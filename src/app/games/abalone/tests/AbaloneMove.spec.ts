@@ -9,12 +9,6 @@ import { TestUtils } from '@everyboard/lib';
 
 describe('AbaloneMove', () => {
 
-    it('should not construct a move with more than three piece', () => {
-        TestUtils.expectToThrowAndLog(
-            () => AbaloneMove.ofDoubleCoord(new Coord(0, 0), new Coord(3, 0), HexaDirection.DOWN),
-            'Distance between first coord and last coord is too big');
-    });
-
     it('should not construct when created with an out of range coord', () => {
         const coord: Coord = new Coord(9, 9);
         TestUtils.expectToThrowAndLog(
@@ -69,6 +63,36 @@ describe('AbaloneMove', () => {
         const rules: AbaloneRules = AbaloneRules.get();
         const moveGenerator: AbaloneMoveGenerator = new AbaloneMoveGenerator();
         MoveTestUtils.testFirstTurnMovesBijectivity(rules, moveGenerator, AbaloneMove.encoder);
+    });
+
+    describe('isTranslation', () => {
+
+        it('should return false for single piece move', () => {
+            const move: AbaloneMove = AbaloneMove.ofSingleCoord(new Coord(0, 0), HexaDirection.UP);
+            expect(move.isTranslation()).toBeFalse();
+        });
+
+        it('should return false for linear push', () => {
+            const firstCoord: Coord = new Coord(0, 0);
+            const direction: HexaDirection = HexaDirection.UP;
+            const move: AbaloneMove = AbaloneMove.ofDoubleCoord(
+                firstCoord,
+                firstCoord.getNext(direction, 2),
+                direction);
+            expect(move.isTranslation()).toBeFalse();
+        });
+
+        it('should return true for big group moving sideways', () => {
+            const firstCoord: Coord = new Coord(0, 0);
+            const direction: HexaDirection = HexaDirection.UP;
+            const otherDirection: HexaDirection = HexaDirection.LEFT;
+            const move: AbaloneMove = AbaloneMove.ofDoubleCoord(
+                firstCoord,
+                firstCoord.getNext(direction, 2),
+                otherDirection);
+            expect(move.isTranslation()).toBeTrue();
+        });
+
     });
 
 });

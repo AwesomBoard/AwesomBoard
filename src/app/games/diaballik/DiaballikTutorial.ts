@@ -20,7 +20,7 @@ export class DiaballikTutorial extends Tutorial {
             DiaballikRules.get().getInitialState(),
         ),
         TutorialStep.fromMove(
-            $localize`Translations`,
+            TutorialStepMessage.TRANSLATIONS(),
             $localize`During a turn, you are allowed up to three actions, including at most two translations. A translation is an orthogonal step of any piece that does not hold the ball.<br/><br/>Move your leftmost piece by one step. Once you are done, click on the green button that will appear on the bottom right of the board to indicate that you are done with your turn.`,
             DiaballikRules.get().getInitialState(),
             [new DiaballikMove(DiaballikTranslation.from(new Coord(0, 6), new Coord(0, 5)).get(),
