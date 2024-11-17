@@ -2,7 +2,7 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
-import { Rules } from 'src/app/jscaip/Rules';
+import { ConfigurableRules } from 'src/app/jscaip/Rules';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { AbaloneFailure } from './AbaloneFailure';
@@ -10,23 +10,48 @@ import { AbaloneState } from './AbaloneState';
 import { AbaloneMove } from './AbaloneMove';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Player } from 'src/app/jscaip/Player';
+import { NumberConfig, RulesConfigDescription } from 'src/app/components/wrapper-components/rules-configuration/RulesConfigDescription';
+import { MGPValidators } from 'src/app/utils/MGPValidator';
+
+export type AbaloneConfig = {
+
+    nbToCapture: number;
+
+    maximumPushingGroupSize: number;
+}
 
 export type AbaloneLegalityInformation = Table<FourStatePiece>;
 
 export class AbaloneNode extends GameNode<AbaloneMove, AbaloneState> {}
 
-export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegalityInformation> {
+export class AbaloneRules extends ConfigurableRules<AbaloneMove,
+                                                    AbaloneState,
+                                                    AbaloneConfig,
+                                                    AbaloneLegalityInformation>
+{
 
     private static singleton: MGPOptional<AbaloneRules> = MGPOptional.empty();
+
+    public static readonly RULES_CONFIG_DESCRIPTION: RulesConfigDescription<AbaloneConfig> =
+        new RulesConfigDescription<AbaloneConfig>({
+            name: (): string => $localize`Abalone`,
+            config: {
+                nbToCapture: new NumberConfig(6, () => $localize`Number of pieces to capture in order to win`, MGPValidators.range(1, 14)),
+                maximumPushingGroupSize: new NumberConfig(3, () => $localize`Maximum pushing group size`, MGPValidators.range(1, 9)),
+            },
+        });
 
     public static get(): AbaloneRules {
         if (AbaloneRules.singleton.isAbsent()) {
             AbaloneRules.singleton = MGPOptional.of(new AbaloneRules());
         }
         return AbaloneRules.singleton.get();
+    }
+
+    public override getRulesConfigDescription(): MGPOptional<RulesConfigDescription<AbaloneConfig>> {
+        return MGPOptional.of(AbaloneRules.RULES_CONFIG_DESCRIPTION);
     }
 
     public override getInitialState(): AbaloneState {
@@ -79,24 +104,27 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
 
     public override applyLegalMove(_move: AbaloneMove,
                                    state: AbaloneState,
-                                   _config: NoConfig,
+                                   _config: MGPOptional<AbaloneConfig>,
                                    newBoard: AbaloneLegalityInformation)
     : AbaloneState
     {
         return new AbaloneState(newBoard, state.turn + 1);
     }
 
-    public override isLegal(move: AbaloneMove, state: AbaloneState): MGPFallible<AbaloneLegalityInformation> {
+    public override isLegal(move: AbaloneMove, state: AbaloneState, config: MGPOptional<AbaloneConfig>)
+    : MGPFallible<AbaloneLegalityInformation>
+    {
         const firstPieceValidity: MGPValidation = this.getFirstPieceValidity(move, state);
         if (firstPieceValidity.isFailure()) {
             return firstPieceValidity.toOtherFallible();
         }
         if (move.isSingleCoord()) {
-            return this.isLegalPush(move, state);
+            return this.isLegalPush(move, state, config.get());
         } else {
             return this.isLegalSideStep(move, state);
         }
     }
+
     private getFirstPieceValidity(move: AbaloneMove, state: AbaloneState): MGPValidation {
         const firstPiece: FourStatePiece = state.getPieceAt(move.coord);
         if (state.isPiece(move.coord) === false) {
@@ -107,19 +135,25 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
             return MGPValidation.SUCCESS;
         }
     }
-    private isLegalPush(move: AbaloneMove, state: AbaloneState): MGPFallible<AbaloneLegalityInformation> {
+
+    private isLegalPush(move: AbaloneMove, state: AbaloneState, config: AbaloneConfig)
+    : MGPFallible<AbaloneLegalityInformation>
+    {
         let pieces: number = 1;
         let tested: Coord = move.coord.getNext(move.dir);
         const player: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
         const empty: FourStatePiece = FourStatePiece.EMPTY;
         const newBoard: FourStatePiece[][] = state.getCopiedBoard();
         newBoard[move.coord.y][move.coord.x] = empty;
-        while (pieces <= 3 && state.isOnBoard(tested) && state.getPieceAt(tested) === player) {
+        while (pieces <= config.maximumPushingGroupSize &&
+               state.isOnBoard(tested) &&
+               state.getPieceAt(tested) === player)
+        {
             pieces++;
             tested = tested.getNext(move.dir);
         }
-        if (pieces > 3) {
-            return MGPFallible.failure(AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
+        if (pieces > config.maximumPushingGroupSize) {
+            return MGPFallible.failure(AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(config.maximumPushingGroupSize));
         } else if (AbaloneState.isOnBoard(tested) === false) {
             return MGPFallible.success(newBoard);
         }
@@ -129,6 +163,7 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         }
         return AbaloneRules.isLegalRealPush(tested, move, state, pieces, newBoard);
     }
+
     private isLegalSideStep(move: AbaloneMove, state: AbaloneState): MGPFallible<AbaloneLegalityInformation> {
         let last: Coord = move.lastPiece.get();
         const alignment: Ordinal = move.coord.getDirectionToward(last).get();
@@ -154,11 +189,13 @@ export class AbaloneRules extends Rules<AbaloneMove, AbaloneState, AbaloneLegali
         }
         return MGPFallible.success(newBoard);
     }
-    public override getGameStatus(node: AbaloneNode): GameStatus {
+
+    public override getGameStatus(node: AbaloneNode, config: MGPOptional<AbaloneConfig>): GameStatus {
         const scores: PlayerNumberMap = node.gameState.getScores();
-        if (5 < scores.get(Player.ZERO)) {
+        const nbToCapture: number = config.get().nbToCapture;
+        if (nbToCapture <= scores.get(Player.ZERO)) {
             return GameStatus.ZERO_WON;
-        } else if (5 < scores.get(Player.ONE)) {
+        } else if (nbToCapture <= scores.get(Player.ONE)) {
             return GameStatus.ONE_WON;
         } else {
             return GameStatus.ONGOING;

@@ -2,16 +2,15 @@ import { MoveGenerator } from 'src/app/jscaip/AI/AI';
 import { Coord } from 'src/app/jscaip/Coord';
 import { HexaDirection } from 'src/app/jscaip/HexaDirection';
 import { Player } from 'src/app/jscaip/Player';
-import { MGPFallible, Set } from '@everyboard/lib';
+import { MGPFallible, MGPOptional, Set } from '@everyboard/lib';
 import { AbaloneMove } from './AbaloneMove';
-import { AbaloneLegalityInformation, AbaloneNode, AbaloneRules } from './AbaloneRules';
+import { AbaloneConfig, AbaloneLegalityInformation, AbaloneNode, AbaloneRules } from './AbaloneRules';
 import { AbaloneState } from './AbaloneState';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 
-export class AbaloneMoveGenerator extends MoveGenerator<AbaloneMove, AbaloneState> {
+export class AbaloneMoveGenerator extends MoveGenerator<AbaloneMove, AbaloneState, AbaloneConfig> {
 
-    public override getListMoves(node: AbaloneNode, _config: NoConfig): AbaloneMove[] {
+    public override getListMoves(node: AbaloneNode, config: MGPOptional<AbaloneConfig>): AbaloneMove[] {
         const moves: AbaloneMove[] = [];
         const state: AbaloneState = node.gameState;
         const player: Player = state.getCurrentPlayer();
@@ -23,7 +22,7 @@ export class AbaloneMoveGenerator extends MoveGenerator<AbaloneMove, AbaloneStat
                 }
                 for (const dir of HexaDirection.factory.all) {
                     const move: AbaloneMove = AbaloneMove.ofSingleCoord(first, dir);
-                    if (this.isAcceptablePush(move, state)) {
+                    if (this.isAcceptablePush(move, state, config)) {
                         moves.push(move);
                     } else {
                         continue;
@@ -36,7 +35,7 @@ export class AbaloneMoveGenerator extends MoveGenerator<AbaloneMove, AbaloneStat
                             const second: Coord = first.getNext(alignment, distance);
                             if (AbaloneState.isOnBoard(second)) {
                                 const translation: AbaloneMove = AbaloneMove.ofDoubleCoord(first, second, dir);
-                                if (AbaloneRules.get().isLegal(translation, state).isSuccess()) {
+                                if (AbaloneRules.get().isLegal(translation, state, config).isSuccess()) {
                                     moves.push(translation);
                                 }
                             } else {
@@ -50,9 +49,9 @@ export class AbaloneMoveGenerator extends MoveGenerator<AbaloneMove, AbaloneStat
         return new Set(moves).toList();
     }
 
-    private isAcceptablePush(move: AbaloneMove, state: AbaloneState): boolean {
+    private isAcceptablePush(move: AbaloneMove, state: AbaloneState, config: MGPOptional<AbaloneConfig>): boolean {
         const scores: PlayerNumberMap = state.getScores();
-        const status: MGPFallible<AbaloneLegalityInformation> = AbaloneRules.get().isLegal(move, state);
+        const status: MGPFallible<AbaloneLegalityInformation> = AbaloneRules.get().isLegal(move, state, config);
         if (status.isSuccess()) {
             const opponent: Player = state.getCurrentOpponent();
             const newState: AbaloneState = new AbaloneState(status.get(), state.turn + 1);
