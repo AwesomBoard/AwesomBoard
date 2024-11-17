@@ -17,8 +17,8 @@ export class TablutRules extends TaflRules<TablutMove> {
         new RulesConfigDescription<TaflConfig>({
             name: (): string => $localize`Tablut`,
             config: {
-                castleIsLeftForGood:
-                    new BooleanConfig(false, TaflRules.CASTLE_IS_LEFT_FOR_GOOD),
+                canReturnInCastle:
+                    new BooleanConfig(true, TaflRules.CAN_RETURN_IN_CASTLE),
                 edgesAreKingsEnnemy:
                     new BooleanConfig(true, TaflRules.EDGE_ARE_KING_S_ENNEMY),
                 centralThroneCanSurroundKing:

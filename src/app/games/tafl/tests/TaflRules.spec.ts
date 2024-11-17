@@ -15,7 +15,7 @@ import { TaflConfig } from '../TaflConfig';
 
 export const myTaflConfig: TaflConfig = {
 
-    castleIsLeftForGood: true,
+    canReturnInCastle: false,
 
     invaderStarts: true,
 
@@ -201,6 +201,33 @@ describe('TaflRules', () => {
 
             // Then the response should be Player.ONE
             expect(invader).toEqual(Player.ONE);
+        });
+
+    });
+
+    describe('getPossibleDestinations', () => {
+
+        it('should have the right number of move for soldier', () => {
+            // Given a board where a soldier has 16 destinations but 3 are thrones
+            const board: Table<TaflPawn> = [
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, O],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+            ];
+            const state: TaflState = new TaflState(board, 24);
+
+            // When calling getPossibleDestinations
+            const possibleDestinations: Coord[] =
+                rules.getPossibleDestinations(new Coord(8, 4), state, defaultConfig.get());
+
+            // Then the result should have 13 coords
+            expect(possibleDestinations.length).toBe(13);
         });
 
     });

@@ -20,7 +20,7 @@ export class TaflNode<M extends TaflMove> extends GameNode<M, TaflState> {}
 
 export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M, TaflState, TaflConfig> {
 
-    public static readonly CASTLE_IS_LEFT_FOR_GOOD: Localized = () => $localize`Central throne is left for good`;
+    public static readonly CAN_RETURN_IN_CASTLE: Localized = () => $localize`Central throne is left for good`;
     public static readonly EDGE_ARE_KING_S_ENNEMY: Localized = () => $localize`Edges are king's ennemy`;
     public static readonly CENTRAL_THRONE_CAN_SURROUND_KING: Localized = () => $localize`Central throne can surround king`;
     public static readonly KING_FAR_FROM_HOME_CAN_BE_SANDWICHED: Localized = () => $localize`King far from home can be sandwiched`;
@@ -57,7 +57,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
         }
         if (this.isThrone(state, move.getEnd())) {
             if (state.getPieceAt(move.getStart()).isKing()) {
-                if (state.isCentralThrone(move.getEnd()) && config.castleIsLeftForGood) {
+                if (state.isCentralThrone(move.getEnd()) && config.canReturnInCastle === false) {
                     return MGPValidation.failure(TaflFailure.THRONE_IS_LEFT_FOR_GOOD());
                 }
             } else {
@@ -396,10 +396,12 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
             // we look for empty existing destinations in each direction as far as we can
             foundDestination = start.getNext(dir, 1);
             while (state.hasPieceAt(foundDestination, TaflPawn.UNOCCUPIED)) {
-                if (state.isExternalThrone(foundDestination) === true && pieceIsKing) {
-                    destinations.push(foundDestination);
+                if (state.isExternalThrone(foundDestination)) {
+                    if (pieceIsKing) {
+                        destinations.push(foundDestination);
+                    }
                 } else if (state.isCentralThrone(foundDestination)) {
-                    if (pieceIsKing && config.castleIsLeftForGood === false) {
+                    if (pieceIsKing && config.canReturnInCastle) {
                         destinations.push(foundDestination);
                     }
                 } else {
