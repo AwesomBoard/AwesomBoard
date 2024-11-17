@@ -752,6 +752,9 @@
       <trans-unit id="3852843717175527075" datatype="html">
         <source>The game has been canceled!</source>
       </trans-unit>
+      <trans-unit id="7590013429208346303" datatype="html">
+        <source>Custom</source>
+      </trans-unit>
       <trans-unit id="2018922024247045709" datatype="html">
         <source>Width</source>
       </trans-unit>
@@ -772,9 +775,6 @@
       </trans-unit>
       <trans-unit id="3008420115644088420" datatype="html">
         <source>Configuration</source>
-      </trans-unit>
-      <trans-unit id="7590013429208346303" datatype="html">
-        <source>Custom</source>
       </trans-unit>
       <trans-unit id="6594123400599013490" datatype="html">
         <source>Step finished!</source>
