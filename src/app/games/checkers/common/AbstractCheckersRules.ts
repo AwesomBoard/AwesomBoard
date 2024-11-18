@@ -82,7 +82,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         const captures: CheckersMove[] = [];
         const playerPieces: Coord[] = state.getStacksOf(player);
         for (const playerPiece of playerPieces) {
-            captures.push(...this.getPieceCaptures(state, playerPiece, config));
+            captures.push(...this.getPieceCaptures(state, playerPiece, config, [playerPiece]));
         }
         return captures;
     }
@@ -109,7 +109,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                         .set(landing, moved);
                     // Not needed to do the real capture
                     const startOfMove: CheckersMove = CheckersMove.fromCapture([coord, landing]).get();
-                    const newFlyiedOvers: Coord[] = flyiedOvers.concat(...coord.getAllCoordsToward(landing));
+                    const newFlyiedOvers: Coord[] = flyiedOvers.concat(...coord.getCoordsToward(landing, false, true));
                     const endsOfMoves: CheckersMove[] = this.getPieceCaptures(fakePostCaptureState,
                                                                               landing,
                                                                               config,
@@ -165,24 +165,44 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                               config: CheckersConfig)
     : Coord[]
     {
-        let possibleLanding: Coord = captured.getNext(direction, 1);
+        // Because frisian capture do even move but fly over even coord as well
+        let possibleLanding: MGPOptional<Coord> = this.getNextPossibleLanding(state, captured, direction, flyiedOvers);
         const possibleLandings: Coord[] = [];
-        if (state.isEmptyAt(possibleLanding) &&
-            flyiedOvers.some((c: Coord) => c.equals(possibleLanding)) === false)
-        {
-            possibleLandings.push(possibleLanding);
+        if (possibleLanding.isPresent()) {
+            possibleLandings.push(possibleLanding.get());
             const isPromotedPiece: boolean = state.getPieceAt(coord).getCommander().isPromoted;
             if (config.promotedPiecesCanFly && isPromotedPiece) {
-                possibleLanding = possibleLanding.getNext(direction, 1);
-                while (state.isEmptyAt(possibleLanding) &&
-                       flyiedOvers.some((c: Coord) => c.equals(possibleLanding)) === false)
-                {
-                    possibleLandings.push(possibleLanding);
-                    possibleLanding = possibleLanding.getNext(direction, 1);
+                possibleLanding = this.getNextPossibleLanding(state, possibleLanding.get(), direction, flyiedOvers);
+                while (possibleLanding.isPresent()) {
+                    possibleLandings.push(possibleLanding.get());
+                    possibleLanding = this.getNextPossibleLanding(state, possibleLanding.get(), direction, flyiedOvers);
                 }
             }
         }
         return possibleLandings;
+    }
+
+    private getNextPossibleLanding(state: CheckersState, coord: Coord, direction: Vector, flyiedOvers: Coord[])
+    : MGPOptional<Coord>
+    {
+        const minimalisedDirection: Vector = direction.toMinimalVector();
+        const nextPossibleLanding: Coord = coord.getNext(direction, 1);
+        const distance: number = coord.getDistanceToward(nextPossibleLanding);
+        let i: number = 0;
+        while (i < distance) {
+            coord = coord.getNext(minimalisedDirection, 1);
+            if (state.isEmptyAt(coord) === false) {
+                return MGPOptional.empty();
+            } else if (this.isPresentIn(coord, flyiedOvers)) {
+                return MGPOptional.empty();
+            }
+            i++;
+        }
+        return MGPOptional.of(nextPossibleLanding);
+    }
+
+    private isPresentIn(coord: Coord, coordList: Coord[]): boolean {
+        return coordList.some((c: Coord) => c.equals(coord));
     }
 
     private getFirstCapturableCoordForFlyingCapture(state: CheckersState,
@@ -191,8 +211,10 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                                                     flyiedOvers: Coord[])
     : MGPOptional<Coord>
     {
+        // Because frisian capture do even move but fly over even coord as well
+        const minimalisedDirection: Vector = direction.toMinimalVector();
         const player: Player = state.getCurrentPlayer();
-        const nextCoord: Coord = coord.getNext(direction, 1);
+        const nextCoord: Coord = coord.getNext(minimalisedDirection, 1);
         if (state.isNotOnBoard(nextCoord) ||
             state.getPieceAt(nextCoord).isCommandedBy(player) ||
             flyiedOvers.some((c: Coord) => c.equals(nextCoord)))
@@ -200,7 +222,10 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
             return MGPOptional.empty();
         } else {
             if (state.getPieceAt(nextCoord).isEmpty()) {
-                return this.getFirstCapturableCoordForFlyingCapture(state, nextCoord, direction, flyiedOvers);
+                return this.getFirstCapturableCoordForFlyingCapture(state,
+                                                                    nextCoord,
+                                                                    minimalisedDirection,
+                                                                    flyiedOvers);
             } else {
                 return MGPOptional.of(nextCoord);
             }

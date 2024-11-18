@@ -64,14 +64,13 @@ for (const rule of rules) {
             const moves: CheckersMove[] = moveGenerator.getListMoves(node, customConfig);
 
             // Then it should return the list of capture
-            console.log(moves.map((value: CheckersMove) => value.toString()))
             expect(moves.length).toBe(1);
             const captures: Coord[] = [
                 new Coord(4, 0),
                 new Coord(4, 4),
                 new Coord(1, 1),
             ];
-            // expect(moves[0]).toEqual(CheckersMove.fromCapture(captures).get());
+            expect(moves[0]).toEqual(CheckersMove.fromCapture(captures).get());
         });
 
     });

@@ -30,7 +30,7 @@ describe('InternationalCheckersRules', () => {
         rules = InternationalCheckersRules.get();
     });
 
-    describe('Move', () => {
+    describe('Step', () => {
 
         it('should forbid move when first coord is empty', () => {
             // Given any board
@@ -171,7 +171,7 @@ describe('InternationalCheckersRules', () => {
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
-        it('should allow long move for queen', () => {
+        it('should allow long step for queen', () => {
             // Given any board with a queen
             const state: CheckersState = CheckersState.of([
                 [V, _, _, _, _, _, _, _, _, _],
@@ -203,6 +203,26 @@ describe('InternationalCheckersRules', () => {
                 [_, _, _, _, _, _, _, _, _, _],
             ], 1);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
+        });
+
+        it('should forbid jump over allies', () => {
+            // Given any board
+            const state: CheckersState = CheckersState.of([
+                [V, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _],
+                [_, _, _, U, _, _, _],
+                [_, _, _, _, U, _, _],
+                [_, _, _, _, _, _, _],
+                [_, _, _, _, _, _, O],
+            ], 0);
+
+            // When trying to capture two pieces in one jump
+            const move: CheckersMove = CheckersMove.fromStep(new Coord(6, 6), new Coord(2, 2));
+
+            // Then it should be illegal
+            const reason: string = CheckersFailure.CANNOT_JUMP_OVER_SEVERAL_PIECES();
+            RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
     });
@@ -312,6 +332,49 @@ describe('InternationalCheckersRules', () => {
                 RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
             });
 
+            it('should forbid to do small capture when big capture available', () => {
+                // Given a board where two different sized captures are possible
+                const state: CheckersState = CheckersState.of([
+                    [_, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _],
+                    [_, _, V, _, _, _, _],
+                    [_, U, _, U, _, _, _],
+                    [_, _, _, _, _, _, _],
+                    [_, _, _, _, _, U, _],
+                    [_, _, _, _, _, _, _],
+                ], 1);
+
+                // When doing the small capture
+                const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
+
+                // Then it should be illegal
+                const reason: string = CheckersFailure.MUST_DO_LONGEST_CAPTURE();
+                RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
+            });
+
+            it('should forbid long capture for normal piece', () => {
+                // Given a board where a normal piece could try a capture with a longer jump
+                const state: CheckersState = CheckersState.of([
+                    [_, _, V, _, _, _, _, _, _, _],
+                    [_, _, _, U, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, U, _, _, _, _],
+                    [_, _, V, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _, _, _, _],
+                    [U, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _, _, _, _],
+                ], 0);
+
+                // When trying to do a capture that does too long step
+                const move: CheckersMove = CheckersMove.fromCapture([new Coord(0, 6), new Coord(3, 3)]).get();
+
+                // Then it should fail
+                const reason: string = CheckersFailure.FLYING_CAPTURE_IS_FORBIDDEN_FOR_NORMAL_PIECES();
+                RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
+            });
+
             it('should allow backward simple capture', () => {
                 // Given a board on which a backward capture is possible
                 const state: CheckersState = CheckersState.of([
@@ -384,26 +447,6 @@ describe('InternationalCheckersRules', () => {
                     [_, _, _, _, _, _, _, _, _, _],
                 ], 2);
                 RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
-            });
-
-            it('should forbid to do small capture when big capture available', () => {
-                // Given a board where two different sized captures are possible
-                const state: CheckersState = CheckersState.of([
-                    [_, _, _, _, _, _, _],
-                    [_, _, _, _, _, _, _],
-                    [_, _, V, _, _, _, _],
-                    [_, U, _, U, _, _, _],
-                    [_, _, _, _, _, _, _],
-                    [_, _, _, _, _, U, _],
-                    [_, _, _, _, _, _, _],
-                ], 1);
-
-                // When doing the small capture
-                const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
-
-                // Then it should be illegal
-                const reason: string = CheckersFailure.MUST_DO_LONGEST_CAPTURE();
-                RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
             });
 
             it('should allow to do big capture when small capture available', () => {
@@ -511,29 +554,6 @@ describe('InternationalCheckersRules', () => {
                     [_, _, _, _, _, _, _, _, _, _],
                 ], 2);
                 RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
-            });
-
-            it('should forbid long capture for normal piece', () => {
-                // Given a board where a normal piece could try a capture with a longer jump
-                const state: CheckersState = CheckersState.of([
-                    [_, _, V, _, _, _, _, _, _, _],
-                    [_, _, _, U, _, _, _, _, _, _],
-                    [_, _, _, _, _, _, _, _, _, _],
-                    [_, _, _, _, _, U, _, _, _, _],
-                    [_, _, V, _, _, _, _, _, _, _],
-                    [_, _, _, _, _, _, _, _, _, _],
-                    [U, _, _, _, _, _, _, _, _, _],
-                    [_, _, _, _, _, _, _, _, _, _],
-                    [_, _, _, _, _, _, _, _, _, _],
-                    [_, _, _, _, _, _, _, _, _, _],
-                ], 0);
-
-                // When trying to do a capture that does too long step
-                const move: CheckersMove = CheckersMove.fromCapture([new Coord(0, 6), new Coord(3, 3)]).get();
-
-                // Then it should fail
-                const reason: string = CheckersFailure.FLYING_CAPTURE_IS_FORBIDDEN_FOR_NORMAL_PIECES();
-                RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
             });
 
         });
@@ -810,6 +830,7 @@ describe('InternationalCheckersRules', () => {
 
             // When checking the legal list of captures
             const legalCaptures: CheckersMove[] = rules.getLegalCaptures(state, defaultConfig.get());
+
             // Then it should be this one, the bigger not to fly over same coord twice
             const coords: Coord[] = [
                 new Coord(9, 7),
@@ -859,8 +880,8 @@ describe('InternationalCheckersRules', () => {
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, alternateConfig);
         });
 
-        it('should put piece on even square if config requires it', () => {
-            // Given a customConfig where piece are to be put on odd squares
+        it('should put piece on even squares if config requires it', () => {
+            // Given a customConfig where piece are to be put on even squares
             const customConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
                 occupyEvenSquare: true,
