@@ -26,8 +26,6 @@ export class AbaloneMove extends MoveCoord {
             HexaDirection.factory.fromDelta(direction.x, direction.y);
         Utils.assert(hexaDirectionOptional.isSuccess(), 'Invalid direction'); // Should be ensured by component
         const hexaDirection: HexaDirection = hexaDirectionOptional.get();
-        const distance: number = coords[1].getLinearDistanceToward(coords[0]);
-        Utils.assert(distance <= 2, 'Distance between first coord and last coord is too big');
         if (hexaDirection.equals(dir)) {
             return AbaloneMove.ofSingleCoord(coords[1], dir);
         } else if (hexaDirection.getOpposite().equals(dir)) {
@@ -35,28 +33,39 @@ export class AbaloneMove extends MoveCoord {
         }
         return new AbaloneMove(coords[1], dir, MGPOptional.of(coords[0]));
     }
+
     public static sortCoord(coord: Coord): number {
         return coord.y * 9 + coord.x;
     }
+
     private constructor(coord: Coord,
                         public dir: HexaDirection,
                         public lastPiece: MGPOptional<Coord>)
     {
         super(coord.x, coord.y);
     }
-    public toString(): string {
+
+    public override toString(): string {
         if (this.isSingleCoord()) {
             return 'AbaloneMove(' + this.coord.x + ', ' + this.coord.y + ', ' + this.dir.toString() + ')';
         } else {
             return 'AbaloneMove(' + this.coord.toString() + ' > ' + this.lastPiece.get().toString() + ', ' + this.dir.toString() + ')';
         }
     }
+
     public isSingleCoord(): boolean {
         return this.lastPiece.isAbsent();
     }
+
     public override equals(other: AbaloneMove): boolean {
         return other.coord.equals(this.coord) &&
                other.dir.equals(this.dir) &&
                other.lastPiece.equals(this.lastPiece);
     }
+
+    public isTranslation(): boolean {
+        return this.lastPiece.isPresent() &&
+               this.coord.getDirectionToward(this.lastPiece.get()).get().equals(this.dir) === false;
+    }
+
 }

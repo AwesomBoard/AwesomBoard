@@ -4,7 +4,7 @@
      preserveAspectRatio="xMidYMid meet">
     <g *ngFor="let coord of state.allCoords()">
         <g *ngFor="let spaceContent of [state.getPieceAt(coord)]"
-           id="click_{{ coord.x }}_{{ coord.y }}"
+           id="click-{{ coord.x }}-{{ coord.y }}"
            (click)="onClick(coord.x, coord.y)"
            [attr.transform]="getHexaCenterTranslationAt(coord)">
             <!-- Background -->
@@ -12,32 +12,33 @@
                      class="base mid-stroke"/>
             <!-- Piece -->
             <circle *ngIf="spaceContent.getSize() > 0"
-                    id="piece_{{ coord.x }}_{{ coord.y }}"
+                    id="piece-{{ coord.x }}-{{ coord.y }}"
                     cx="0"
                     cy="0"
                     [attr.r]="SPACE_SIZE"
                     [ngClass]="getPieceClasses(spaceContent)"
                     class="base mid-stroke"/>
-            <polygon *ngIf="spaceContent.containsSource()"
+            <polygon id="source-symbol-{{ coord.x }}-{{ coord.y }}"
+                     *ngIf="spaceContent.containsSource()"
                      class="nonplayer-light-fill"
                      points="157.055,0 90.798,196.319 164.417,196.319 88.344,400 289.571,159.509 218.405,159.509 311.656,0"
-                     [attr.transform]="spaceContent.getSize() === 1 ? 'translate(-18, -16) scale(0.10)' : 'translate(-3, -12) scale(0.07)'"/>
+                     [attr.transform]="getSourceSymbolTransform(spaceContent)"/>
             <text *ngIf="spaceContent.getSize() > 1"
                   (click)="onClick(coord.x, coord.y)"
-                  [attr.x]="spaceContent.containsSource() ? -7 : 0"
-                  y="0"
-                  class="text-center text-medium"
+                  [attr.transform]="getTextTransform(spaceContent)"
+                  class="text-center"
+                  [ngClass]="getTextSizeClass(spaceContent)"
                   dy="13">{{ spaceContent.getSize() }}</text>
 
         </g>
     </g>
     <!-- Show disconnecteds -->
     <g *ngFor="let disconnected of disconnectedSpaces"
-        id="disconnected_{{ disconnected.coord.x }}_{{ disconnected.coord.y }}" >
+        id="disconnected-{{ disconnected.coord.x }}-{{ disconnected.coord.y }}" >
         <polygon [attr.points]="getHexaPoints()"
                  [attr.transform]="getHexaCenterTranslationAt(disconnected.coord)"
                  class="base mid-stroke captured-fill"/>
-        <circle id="captured_{{ disconnected.coord.x }}_{{ disconnected.coord.y }}"
+        <circle id="captured-{{ disconnected.coord.x }}-{{ disconnected.coord.y }}"
                 [attr.cx]="getCenterAt(disconnected.coord).x"
                 [attr.cy]="getCenterAt(disconnected.coord).y"
                 [attr.r]="SPACE_SIZE"
@@ -60,7 +61,7 @@
     </ng-container>
     <!-- Highlight selected piece -->
     <polygon *ngIf="chosen.isPresent()"
-             id="chosen_{{ chosen.get().x }}_{{ chosen.get().y }}"
+             id="chosen-{{ chosen.get().x }}-{{ chosen.get().y }}"
              [attr.transform]="getHexaCenterTranslationAt(chosen.get())"
              [attr.points]="getHexaPoints()"
              class="base no-fill selected-stroke"/>

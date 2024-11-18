@@ -238,7 +238,7 @@
                             <app-rules-configuration #rulesConfigurationComponent
                                                      [rulesConfigDescriptionOptional]="rulesConfigDescription"
                                                      [editable]="false"
-                                                     [rulesConfigToDisplay]="currentConfigRoom?.rulesConfig">
+                                                     [rulesConfigToDisplay]="getRulesConfigToDisplay()">
                             </app-rules-configuration>
                             <button class="button is-primary is-fullwidth mt-2"
                                     (click)="acceptConfig()"
