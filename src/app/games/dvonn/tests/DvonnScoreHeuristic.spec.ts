@@ -1,4 +1,6 @@
 /* eslint-disable max-lines-per-function */
+import { MGPOptional } from '@everyboard/lib';
+
 import { Player } from 'src/app/jscaip/Player';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { DvonnPieceStack } from '../DvonnPieceStack';
@@ -6,6 +8,8 @@ import { DvonnNode, DvonnRules } from '../DvonnRules';
 import { DvonnScoreHeuristic } from '../DvonnScoreHeuristic';
 import { DvonnState } from '../DvonnState';
 import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
+import { HeuristicBounds } from 'src/app/jscaip/AI/Minimax';
+import { BoardValue } from 'src/app/jscaip/AI/BoardValue';
 
 const _N: DvonnPieceStack = DvonnPieceStack.UNREACHABLE;
 const __: DvonnPieceStack = DvonnPieceStack.EMPTY;
@@ -39,6 +43,16 @@ describe('DvonnScoreHeuristic', () => {
 
         // Then it should be 2 - 1 = 1
         expect(value).toEqual([1]);
+    });
+
+    it('should define heuristic bounds', () => {
+        // Given the heuristic
+        // When computing its bounds on the default config
+        const bounds: MGPOptional<HeuristicBounds<BoardValue>> = heuristic.getBounds(defaultConfig);
+        // Then it should be the maximal score (49) for each player
+        expect(bounds.isPresent()).toBeTrue();
+        expect(bounds.get().player0Max).toEqual(BoardValue.ofSingle(49, 0));
+        expect(bounds.get().player1Max).toEqual(BoardValue.ofSingle(0, 49));
     });
 
 });

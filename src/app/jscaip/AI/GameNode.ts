@@ -95,7 +95,6 @@ export class GameNode<M extends Move, S extends GameState> {
                    id: number = 0)
     : { dot: string, nextId: number, winner: PlayerOrNone }
     {
-        console.log(this.id)
         let buffer: string = '';
         if (level === 0) {
             buffer += 'digraph G {\n';
@@ -120,9 +119,7 @@ export class GameNode<M extends Move, S extends GameState> {
                 nextId = result.nextId;
                 buffer += result.dot;
                 // If current player has a guaranteed win with this move, color the node with player's color
-                console.log(`[${this.id}] subWinner: ${result.winner.toString()}, current: ${currentPlayer.toString()}`)
                 if (result.winner === currentPlayer) {
-                    console.log(`[${this.id}] setting winner to ${result.winner.toString()}`)
                     winner = result.winner;
                     onlyLosses = false;
                 }
@@ -137,13 +134,11 @@ export class GameNode<M extends Move, S extends GameState> {
         }
         if (gameStatus === GameStatus.ONGOING && onlyLosses) {
             winner = currentPlayer.getOpponent();
-            console.log(`[${this.id}] only loses, setting winner to ${winner}`)
         }
 
         let color: string = 'white';
         if (winner.isPlayer()) {
             color = this.getPlayerDotColor(winner);
-            console.log(`[${this.id}] winner is ${winner.toString()}, updating color to ${color}`)
         }
         if (gameStatus === GameStatus.DRAW) {
             color = 'gray';
@@ -155,16 +150,17 @@ export class GameNode<M extends Move, S extends GameState> {
         }
         buffer += `    node_${id} [label="${label}", style=filled, fillcolor="${color}"];\n`;
         if (level === 0) {
-            buffer += '}\n';
+            buffer += '}';
         }
         return { dot: buffer, nextId, winner };
     }
 
-    private getPlayerDotColor(player: PlayerOrNone): string {
+    private getPlayerDotColor(player: Player): string {
         switch (player) {
             case Player.ZERO: return '#994d00';
-            case Player.ONE: return '#ffc34d';
-            default: return 'grey';
+            default:
+                Utils.expectToBe(player, Player.ONE);
+                return '#ffc34d';
         }
     }
 

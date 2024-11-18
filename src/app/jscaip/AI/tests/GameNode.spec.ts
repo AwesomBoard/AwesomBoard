@@ -57,21 +57,21 @@ class RulesMock extends Rules<MoveMock, GameStateMock> {
     }
 }
 
-describe('GameNode', () => {
+fdescribe('GameNode', () => {
 
     let rules: RulesMock;
+    let config: NoConfig;
 
-    /*
-    describe('printDot', () => {
+    describe('showDot', () => {
 
         let treeRoot: GameNode<MoveMock, GameStateMock>;
         let terminalNode: MockNode;
-        let consoleLogBuffer: string[];
         let getGameStatusSpy: jasmine.Spy;
 
         beforeEach(() => {
             GameNode.ID = 0;
             rules = new RulesMock();
+            config = rules.getDefaultRulesConfig();
 
             const move: MoveMock = new MoveMock(1);
             const optionalMove: MGPOptional<MoveMock> = MGPOptional.of(move);
@@ -103,61 +103,51 @@ describe('GameNode', () => {
                 else return GameStatus.ONGOING;
             });
 
-            consoleLogBuffer = [];
-            spyOn(console, 'log').and.callFake((line: string) => {
-                consoleLogBuffer.push(line);
-            });
         });
 
-        it('should output a DOT representation of the node tree on standard output', () => {
+        it('should show a DOT representation of the node tree on standard output', () => {
             // Given a tree of game nodes
-            // When printing it
-            treeRoot.printDot(rules);
-            // Then it should have printed the expected DOT graph
-            const expectedOutput: string[] = [
-                'digraph G {',
-                '    node_0 [label="#0: 0", style=filled, fillcolor="white"];',
-                '    node_0 -> node_1 [label="MoveMock"];',
-                '    node_1 [label="#1: 1", style=filled, fillcolor="white"];',
-                '    node_1 -> node_2 [label="MoveMock"];',
-                '    node_2 [label="#2: 3", style=filled, fillcolor="white"];',
-                '    node_2 -> node_3 [label="MoveMock"];',
-                '    node_3 [label="#3: 4", style=filled, fillcolor="#994d00"];',
-                '    node_0 -> node_4 [label="MoveMock"];',
-                '    node_4 [label="#1: 2", style=filled, fillcolor="white"];',
-                '}',
-            ];
-            expect(consoleLogBuffer).toEqual(expectedOutput);
+            // When getting its DOT graph
+            const dot: string = treeRoot.showDot(rules, config).dot;
+            // Then it should give the expected DOT graph
+            const expectedDot: string = `digraph G {
+    node_0 -> node_1 [label="MoveMock"; color="#994d00"];
+    node_1 -> node_2 [label="MoveMock"; color="#ffc34d"];
+    node_2 -> node_3 [label="MoveMock"; color="#994d00"];
+    node_3 [label="#3: 4", style=filled, fillcolor="#994d00"];
+    node_2 [label="#2: 3", style=filled, fillcolor="#994d00"];
+    node_1 [label="#1: 1", style=filled, fillcolor="#994d00"];
+    node_0 -> node_4 [label="MoveMock"; color="#994d00"];
+    node_4 [label="#1: 2", style=filled, fillcolor="white"];
+    node_0 [label="#0: 0", style=filled, fillcolor="#994d00"];
+}`;
+            expect(dot).toEqual(expectedDot);
         });
 
-        it('should print with extra label if needed', () => {
+        it('should show DOT with extra label if needed', () => {
             // Given a tree of game nodes
-            // When printing it with a specific label
-            terminalNode.printDot(rules, (node: MockNode) => 'foo');
-            // Then it should have printed the tree with the extra label
-            const expectedOutput: string[] = [
-                'digraph G {',
-                '    node_0 [label="#3: 4 - foo", style=filled, fillcolor="#994d00"];',
-                '}',
-            ];
-            expect(consoleLogBuffer).toEqual(expectedOutput);
+            // When showing it with a specific label
+            const dot: string = terminalNode.showDot(rules, config, (node: MockNode) => 'foo').dot;
+            // Then it should have shown the tree with the extra label
+            const expectedDot: string = `digraph G {
+    node_0 [label="#3: 4 - foo", style=filled, fillcolor="#994d00"];
+}`;
+            expect(dot).toEqual(expectedDot);
         });
 
         it('should limit print depth to the provided max level', () => {
             // Given a tree of game nodes
-            // When printing it up to depth 1
-            treeRoot.printDot(rules, undefined, 1);
-            // Then it should have only printed the relevant nodes
-            const expectedOutput: string[] = [
-                'digraph G {',
-                '    node_0 [label="#0: 0", style=filled, fillcolor="white"];',
-                '    node_0 -> node_1 [label="MoveMock"];',
-                '    node_1 [label="#1: 1", style=filled, fillcolor="white"];',
-                '    node_0 -> node_2 [label="MoveMock"];',
-                '    node_2 [label="#1: 2", style=filled, fillcolor="white"];',
-                '}',
-            ];
-            expect(consoleLogBuffer).toEqual(expectedOutput);
+            // When showing it up to depth 1
+            const dot: string = treeRoot.showDot(rules, config, undefined, 1).dot;
+            // Then it should have only shown the relevant nodes
+            const expectedDot: string = `digraph G {
+    node_0 -> node_1 [label="MoveMock"; color="#994d00"];
+    node_1 [label="#1: 1", style=filled, fillcolor="#994d00"];
+    node_0 -> node_2 [label="MoveMock"; color="#994d00"];
+    node_2 [label="#1: 2", style=filled, fillcolor="#994d00"];
+    node_0 [label="#0: 0", style=filled, fillcolor="#994d00"];
+}`;
+            expect(dot).toEqual(expectedDot);
         });
 
         it('should color nodes based on game status (Player.ZERO)', () => {
@@ -166,14 +156,12 @@ describe('GameNode', () => {
                 return GameStatus.ZERO_WON;
             });
             // When printing it
-            terminalNode.printDot(rules);
+            const dot: string = terminalNode.showDot(rules, config).dot;
             // Then it should have printed the node with the player color
-            const expectedOutput: string[] = [
-                'digraph G {',
-                '    node_0 [label="#3: 4", style=filled, fillcolor="#994d00"];',
-                '}',
-            ];
-            expect(consoleLogBuffer).toEqual(expectedOutput);
+            const expectedDot: string = `digraph G {
+    node_0 [label="#3: 4", style=filled, fillcolor="#994d00"];
+}`;
+            expect(dot).toEqual(expectedDot);
         });
 
         it('should color nodes based on game status (Player.ONE)', () => {
@@ -182,14 +170,12 @@ describe('GameNode', () => {
                 return GameStatus.ONE_WON;
             });
             // When printing it
-            terminalNode.printDot(rules);
+            const dot: string = terminalNode.showDot(rules, config).dot;
             // Then it should have printed the node with the player color
-            const expectedOutput: string[] = [
-                'digraph G {',
-                '    node_0 [label="#3: 4", style=filled, fillcolor="#ffc34d"];',
-                '}',
-            ];
-            expect(consoleLogBuffer).toEqual(expectedOutput);
+            const expectedDot: string = `digraph G {
+    node_0 [label="#3: 4", style=filled, fillcolor="#ffc34d"];
+}`;
+            expect(dot).toEqual(expectedDot);
         });
 
         it('should color nodes based on game status (draw)', () => {
@@ -198,17 +184,14 @@ describe('GameNode', () => {
                 return GameStatus.DRAW;
             });
             // When printing it
-            terminalNode.printDot(rules);
-            // Then it should have printed the node in grey
-            const expectedOutput: string[] = [
-                'digraph G {',
-                '    node_0 [label="#3: 4", style=filled, fillcolor="grey"];',
-                '}',
-            ];
-            expect(consoleLogBuffer).toEqual(expectedOutput);
+            const dot: string = terminalNode.showDot(rules, config).dot;
+            // Then it should have printed the node in gray
+            const expectedDot: string = `digraph G {
+    node_0 [label="#3: 4", style=filled, fillcolor="gray"];
+}`;
+            expect(dot).toEqual(expectedDot);
         });
 
     });
-*/
 
 });

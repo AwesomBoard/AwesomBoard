@@ -15,7 +15,7 @@ export class MancalaScoreHeuristic extends PlayerMetricHeuristic<MancalaMove, Ma
     }
 
     public override getBounds(config: MGPOptional<MancalaConfig>): MGPOptional<HeuristicBounds<BoardValue>> {
-        const maxScore: number = config.get().width * config.get().seedsByHouse;
+        const maxScore: number = config.get().width * 2 * config.get().seedsByHouse;
         return MGPOptional.of({
             player0Max: BoardValue.ofSingle(maxScore, 0),
             player1Max: BoardValue.ofSingle(0, maxScore),
