@@ -168,13 +168,4 @@ export class ArrayUtils {
         return result;
     }
 
-    public static hasDuplicates<V extends Comparable>(list: ReadonlyArray<V>): boolean {
-        const set: Set<V> = new Set(list);
-        if (list.length === set.size()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
 }

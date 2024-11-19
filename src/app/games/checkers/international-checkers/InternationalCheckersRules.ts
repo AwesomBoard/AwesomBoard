@@ -1,5 +1,5 @@
 import { MGPOptional } from '@everyboard/lib';
-import { AbstractCheckersRules, CheckersConfig, CheckersLocalizable } from '../common/AbstractCheckersRules';
+import { AbstractCheckersRules, CheckersConfig, CheckersOptionLocalizable } from '../common/AbstractCheckersRules';
 import { BooleanConfig, NumberConfig, RulesConfigDescription, RulesConfigDescriptionLocalizable } from 'src/app/components/wrapper-components/rules-configuration/RulesConfigDescription';
 import { MGPValidators } from 'src/app/utils/MGPValidator';
 
@@ -20,17 +20,17 @@ export class InternationalCheckersRules extends AbstractCheckersRules {
                 width:
                     new NumberConfig(10, RulesConfigDescriptionLocalizable.WIDTH, MGPValidators.range(2, 99)),
                 canStackPiece:
-                    new BooleanConfig(false, CheckersLocalizable.STACK_PIECES),
+                    new BooleanConfig(false, CheckersOptionLocalizable.STACK_PIECES),
                 mustMakeMaximalCapture:
-                    new BooleanConfig(true, CheckersLocalizable.MAXIMAL_CAPTURE),
+                    new BooleanConfig(true, CheckersOptionLocalizable.MAXIMAL_CAPTURE),
                 simplePieceCanCaptureBackwards:
-                    new BooleanConfig(true, CheckersLocalizable.SIMPLE_PIECE_CAN_CAPTURE_BACKWARDS),
+                    new BooleanConfig(true, CheckersOptionLocalizable.SIMPLE_PIECE_CAN_CAPTURE_BACKWARDS),
                 promotedPiecesCanFly:
-                    new BooleanConfig(true, CheckersLocalizable.PROMOTED_PIECES_CAN_TRAVEL_LONG_DISTANCES),
+                    new BooleanConfig(true, CheckersOptionLocalizable.PROMOTED_PIECES_CAN_TRAVEL_LONG_DISTANCES),
                 occupyEvenSquare:
-                    new BooleanConfig(false, CheckersLocalizable.OCCUPY_EVEN_SQUARE),
+                    new BooleanConfig(false, CheckersOptionLocalizable.OCCUPY_EVEN_SQUARE),
                 frisianCaptureAllowed:
-                    new BooleanConfig(false, CheckersLocalizable.FRISIAN_CAPTURE_ALLOWED),
+                    new BooleanConfig(false, CheckersOptionLocalizable.FRISIAN_CAPTURE_ALLOWED),
             },
         });
 

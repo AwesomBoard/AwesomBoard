@@ -26,7 +26,7 @@ export type CheckersConfig = {
     frisianCaptureAllowed: boolean;
 }
 
-export class CheckersLocalizable {
+export class CheckersOptionLocalizable {
 
     public static readonly STACK_PIECES: Localized = () => $localize`Stack pieces instead of capturing them`;
 

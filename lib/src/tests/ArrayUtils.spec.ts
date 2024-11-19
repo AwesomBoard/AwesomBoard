@@ -265,31 +265,5 @@ describe('ArrayUtils', () => {
         });
     });
 
-    describe('hasDuplicate', () => {
-
-        it('should return true when there is duplicate', () => {
-            // Given a list of number with duplicates
-            const list: number[] = [1, 2, 3, 1];
-
-            // When calling hasDuplicate
-            const hasDuplicate: boolean = ArrayUtils.hasDuplicates(list);
-
-            // Then the result should be true
-            expect(hasDuplicate).toBeTrue();
-        });
-
-        it('should return false when there is no duplicate', () => {
-            // Given a list of number with no duplicates
-            const list: number[] = [1, 2, 3];
-
-            // When calling hasDuplicate
-            const hasDuplicate: boolean = ArrayUtils.hasDuplicates(list);
-
-            // Then the result should be true
-            expect(hasDuplicate).toBeFalse();
-        });
-
-    });
-
 });
 
