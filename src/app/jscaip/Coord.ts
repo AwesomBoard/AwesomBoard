@@ -151,16 +151,15 @@ export class Coord extends Vector {
 
     public getCoordsToward(c: Coord, includeStart: boolean = false, includeEnd: boolean = false): Coord[] {
         Utils.assert(c.isAlignedWith(this), 'Should only call getCoordsTowards on aligned coords');
+        const coords: Coord[] = [];
+        if (includeStart) {
+            coords.push(this);
+        }
         if (this.equals(c)) {
-            if (includeStart) {
-                return [c];
-            } else {
-                return [];
-            }
+            return coords;
         }
         const dir: Ordinal = this.getDirectionToward(c).get();
         let coord: Coord = this.getNext(dir, 1);
-        const coords: Coord[] = [];
         while (coord.equals(c) === false) {
             coords.push(coord);
             coord = coord.getNext(dir, 1);

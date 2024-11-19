@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+import { comparableEquals, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 
 import { ConfigDescriptionType, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
-import { RulesConfigDescription } from './RulesConfigDescription';
+import { RulesConfigDescription, RulesConfigDescriptionLocalizable } from './RulesConfigDescription';
 import { BaseWrapperComponent } from '../BaseWrapperComponent';
 
 type ConfigFormJSON = {
@@ -159,21 +159,20 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
 
     private setChosenConfig(configName: string): void {
         this.chosenConfigName = configName;
-        let config: RulesConfig;
         if (this.chosenConfigName === 'Custom') {
-            config = this.rulesConfigDescription.getDefaultConfig().config;
-            this.generateForm(config, this.editable);
+            const defaultConfig: RulesConfig = this.rulesConfigDescription.getDefaultConfig().config;
+            this.generateForm(defaultConfig, this.editable);
         } else {
-            config = this.rulesConfigDescription.getConfig(this.chosenConfigName);
-            this.generateForm(config, false);
+            const chosenConfig: RulesConfig = this.rulesConfigDescription.getConfig(this.chosenConfigName);
+            this.generateForm(chosenConfig, false);
             // Emit the config directly because standard config are always legal
-            this.updateCallback.emit(MGPOptional.of(config));
+            this.updateCallback.emit(MGPOptional.of(chosenConfig));
         }
     }
 
     public isCustomisable(): boolean {
         if (this.rulesConfigDescriptionOptional.isAbsent()) {
-            // This game has no configurability, so no need to show  this component
+            // This game has no configurability, so no need to show this component
             return false;
         } else {
             Utils.assert(this.rulesConfigDescriptionOptional.get().getFields().length > 0,
@@ -189,6 +188,34 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
             this.rulesConfigForm.enable();
         } else {
             this.rulesConfigForm.disable();
+        }
+    }
+
+    public isSelectedConfig(configName: string): boolean {
+        if (this.rulesConfigToDisplay == null) { // For creator, who knows the config name
+            return this.chosenConfigName === configName;
+        } else {
+            const defactoConfigName: string = this.getDefactoConfigName();
+            return defactoConfigName === configName;
+        }
+    }
+
+    /*
+     * Checks the config parameter values.
+     * If it matches an existing configuration, returns its name.
+     * Otherwise, returns the custom config name ("Custom")
+     */
+    private getDefactoConfigName(): string {
+        const currentConfig: RulesConfig = this.rulesConfigToDisplay as RulesConfig;
+        const defaultConfigs: NamedRulesConfig<RulesConfig>[] = this.rulesConfigDescription.getStandardConfigs();
+        const matchingConfigs: NamedRulesConfig<RulesConfig>[] = defaultConfigs.filter(
+            (nameConfig: NamedRulesConfig<RulesConfig>) => {
+                return comparableEquals(nameConfig.config, currentConfig);
+            });
+        if (matchingConfigs.length === 1) {
+            return matchingConfigs[0].name();
+        } else {
+            return RulesConfigDescriptionLocalizable.CUSTOM();
         }
     }
 

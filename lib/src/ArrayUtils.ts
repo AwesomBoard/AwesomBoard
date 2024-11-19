@@ -1,5 +1,4 @@
 import { Comparable, comparableEquals } from './Comparable';
-import { Set } from './Set';
 import { Utils } from './Utils';
 
 export class ArrayUtils {

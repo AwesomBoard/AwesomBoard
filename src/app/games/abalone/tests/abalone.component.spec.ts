@@ -197,7 +197,7 @@ describe('AbaloneComponent', () => {
             await testUtils.expectClickSuccess('#piece-0-7');
 
             // When clicking 3 space on the right
-            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
+            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(3));
 
             // Then piece should no longer be selected
             testUtils.expectElementNotToHaveClass('#piece-0-7', 'selected-stroke');
@@ -358,7 +358,7 @@ describe('AbaloneComponent', () => {
 
             // When selecting an aligned piece too far
             // Then move should be cancel for "too-long-line" reason
-            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
+            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(3));
         }));
 
         it('should allow clicking on arrow landing coord as if it was below an arrow (opponent)', fakeAsync(async() => {
