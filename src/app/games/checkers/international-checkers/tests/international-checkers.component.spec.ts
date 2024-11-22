@@ -429,6 +429,29 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectMoveSuccess('#coord-0-0', move);
         }));
 
+        it('should allow long step forward for queen', fakeAsync(async() => {
+            // Given any board with a queen selected
+            const state: CheckersState = CheckersState.of([
+                [V, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, O],
+            ], 0);
+            await testUtils.setupState(state);
+            await testUtils.expectClickSuccess('#coord-9-9');
+
+            // When doing the second click
+            // Then it should succeed
+            const move: CheckersMove = CheckersMove.fromStep(new Coord(9, 9), new Coord(5, 5));
+            await testUtils.expectMoveSuccess('#coord-5-5', move);
+        }));
+
     });
 
     describe('experience as second player (reversed board)', () => {

@@ -28,4 +28,6 @@ export class CheckersFailure {
 
     public static readonly CANNOT_JUMP_OVER_SEVERAL_PIECES: Localized = () => $localize`Cannot jump over several pieces!`;
 
+    public static readonly MOVE_CANNOT_CONTINUE_AFTER_NON_CAPTURE_MOVE: Localized = () => $localize`You have done a step after a capture. A move that start in capture can only contain captures.`;
+
 }

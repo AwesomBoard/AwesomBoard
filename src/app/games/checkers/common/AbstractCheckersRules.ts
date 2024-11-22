@@ -87,7 +87,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         return captures;
     }
 
-    private getPieceCaptures(state: CheckersState, coord: Coord, config: CheckersConfig, flyiedOvers: Coord[] = [])
+    private getPieceCaptures(state: CheckersState, coord: Coord, config: CheckersConfig, flyiedOvers: Coord[])
     : CheckersMove[]
     {
         let pieceMoves: CheckersMove[] = [];
@@ -109,7 +109,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                         .set(landing, moved);
                     // Not needed to do the real capture
                     const startOfMove: CheckersMove = CheckersMove.fromCapture([coord, landing]).get();
-                    const newFlyiedOvers: Coord[] = flyiedOvers.concat(...coord.getCoordsToward(landing, false, true));
+                    const newFlyiedOvers: Coord[] = flyiedOvers.concat(...coord.getCoordsTowards(landing, false, true));
                     const endsOfMoves: CheckersMove[] = this.getPieceCaptures(fakePostCaptureState,
                                                                               landing,
                                                                               config,
@@ -120,11 +120,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                         const mergedMoves: CheckersMove[] = [];
                         for (const endMove of endsOfMoves) {
                             const concatenatedMove: MGPFallible<CheckersMove> = startOfMove.concatenate(endMove);
-                            if (concatenatedMove.isSuccess()) {
-                                mergedMoves.push(concatenatedMove.get());
-                            } else {
-                                mergedMoves.push(startOfMove);
-                            }
+                            mergedMoves.push(concatenatedMove.get());
                         }
                         pieceMoves = pieceMoves.concat(mergedMoves);
                     }
@@ -420,7 +416,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         const flyiedOverPlayer: Player[] = this.getFlyiedOverPlayers(start, end, state);
         let isCapture: boolean;
         if (flyiedOverPlayer.length === 0) { // No Capture
-            const nonCaptureValidity: MGPValidation = this.getNonCaptureValidity(move, state, start, config);
+            const nonCaptureValidity: MGPValidation = this.getNonCaptureValidity(move);
             if (nonCaptureValidity.isFailure()) {
                 return nonCaptureValidity;
             }
@@ -443,21 +439,11 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         return MGPValidation.SUCCESS;
     }
 
-    private getNonCaptureValidity(move: CheckersMove, state: CheckersState, start: Coord, config: CheckersConfig)
+    private getNonCaptureValidity(move: CheckersMove)
     : MGPValidation
     {
         if (this.isMisplacedStep(move)) { // The moves continue illegally
-            const moveStart: Coord = move.getStartingCoord();
-            if (moveStart.equals(start)) {
-                if (state.getPieceAt(moveStart).getCommander().isPromoted) {
-                    if (config.promotedPiecesCanFly === false) {
-                        return MGPValidation.failure(CheckersFailure.NO_PIECE_CAN_DO_LONG_JUMP());
-                    }
-                } else {
-                    return MGPValidation.failure(CheckersFailure.NORMAL_PIECES_CANNOT_MOVE_LIKE_THIS());
-                }
-            }
-            return MGPValidation.failure('Move cannot continue after non-capture move');
+            return MGPValidation.failure(CheckersFailure.MOVE_CANNOT_CONTINUE_AFTER_NON_CAPTURE_MOVE());
         }
         return MGPValidation.SUCCESS;
     }
@@ -492,8 +478,8 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         }
     }
 
-    private getFlyiedOverPlayers(start: Coord, end: Coord, state: CheckersState): Player[] {
-        const flyiedOverCoords: Coord[] = start.getCoordsToward(end);
+    public getFlyiedOverPlayers(start: Coord, end: Coord, state: CheckersState): Player[] {
+        const flyiedOverCoords: Coord[] = start.getCoordsTowards(end);
         const flyiedOverPieces: CheckersStack[] = flyiedOverCoords.map((coord: Coord) => state.getPieceAt(coord));
         const flyiedOverOccupiedStacks: CheckersStack[] =
             flyiedOverPieces.filter((stack: CheckersStack) => stack.isOccupied());

@@ -1022,6 +1022,9 @@
       <trans-unit id="6151712512701871680" datatype="html">
         <source>Cannot jump over several pieces!</source>
       </trans-unit>
+      <trans-unit id="2690787965218168718" datatype="html">
+        <source>You have done a step after a capture. A move that start in capture can only contain captures.</source>
+      </trans-unit>
       <trans-unit id="7318689477424356735" datatype="html">
         <source>Backward captures</source>
       </trans-unit>

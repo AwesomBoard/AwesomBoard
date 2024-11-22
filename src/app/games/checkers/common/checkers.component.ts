@@ -11,6 +11,10 @@ import { CheckersPiece, CheckersStack, CheckersState } from '../common/CheckersS
 import { CheckersMoveGenerator } from '../common/CheckersMoveGenerator';
 import { CoordSet } from 'src/app/jscaip/CoordSet';
 import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
+import { CheckersScoreMinimax } from './CheckersScoreMinimax';
+import { MCTS } from 'src/app/jscaip/AI/MCTS';
+import { CheckersControlPlusDominationMinimax } from './CheckersControlPlusDominationMinimax';
+import { CheckersControlMinimax } from './CheckersControlMinimax';
 
 export abstract class CheckersComponent<R extends AbstractCheckersRules>
     extends ParallelogramGameComponent<R,
@@ -62,6 +66,18 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         this.CX = this.WIDTH / 2;
         this.CY = (this.HEIGHT + this.UP) / 2;
         return new ViewBox(this.LEFT, this.UP, this.WIDTH, this.HEIGHT);
+    }
+
+    protected setEverything(): void {
+        this.moveGenerator = new CheckersMoveGenerator(this.rules);
+        this.availableAIs = [
+            new CheckersScoreMinimax(this.rules, this.moveGenerator),
+            new MCTS($localize`MCTS`, this.moveGenerator, this.rules),
+            new CheckersControlPlusDominationMinimax(this.rules),
+            new CheckersControlMinimax(this.rules),
+        ];
+        this.encoder = CheckersMove.encoder;
+        this.hasAsymmetricBoard = true;
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
@@ -172,7 +188,8 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     }
 
     private async moveClick(clicked: Coord): Promise<MGPValidation> {
-        if (clicked.equals(this.currentMoveClicks[0])) {
+        const start: Coord = this.currentMoveClicks[0];
+        if (clicked.equals(start)) {
             return this.cancelMove();
         }
         const clickedSpace: CheckersStack = this.constructedState.getPieceAt(clicked);
@@ -183,11 +200,15 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         }
         if (this.currentMoveClicks.length === 1) {
             // Doing the second click, either a step or a first capture
-            const delta: Vector = this.currentMoveClicks[0].getVectorToward(clicked);
-            if (delta.isDiagonalOfLength(1)) {
-                // It is indeed a step
-                const step: CheckersMove = CheckersMove.fromStep(this.currentMoveClicks[0], clicked);
-                return this.chooseMove(step);
+            const delta: Vector = start.getVectorToward(clicked);
+            if (delta.isDiagonal()) {
+                const flyiedOverPlayer: Player[] =
+                    this.rules.getFlyiedOverPlayers(start, clicked, this.constructedState);
+                if (flyiedOverPlayer.length === 0) {
+                    // It is indeed a step
+                    const step: CheckersMove = CheckersMove.fromStep(start, clicked);
+                    return this.chooseMove(step);
+                }
             }
         }
         // Continuing to capture
@@ -201,7 +222,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         if (captureValidity.isFailure()) {
             return this.cancelMove(captureValidity.getReason());
         } else {
-            for (const flyiedOver of lastCoord.getCoordsToward(clicked)) {
+            for (const flyiedOver of lastCoord.getCoordsTowards(clicked)) {
                 if (this.constructedState.getPieceAt(flyiedOver).isOccupied()) {
                     this.capturedCoords.push(flyiedOver);
                 } else {
@@ -210,9 +231,6 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
             }
             this.currentMoveClicks.push(clicked);
             const currentMove: MGPFallible<CheckersMove> = CheckersMove.fromCapture(this.currentMoveClicks);
-            if (currentMove.isFailure()) {
-                return this.cancelMove(currentMove.getReason());
-            }
             if (this.legalMoves.some((capture: CheckersMove) => capture.isPrefix(currentMove.get()))) {
                 this.showPossibleClicks();
                 return this.applyPartialCapture();

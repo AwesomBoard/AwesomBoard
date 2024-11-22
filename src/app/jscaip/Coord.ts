@@ -149,7 +149,7 @@ export class Coord extends Vector {
         return new Vector(this.x, this.y);
     }
 
-    public getCoordsToward(c: Coord, includeStart: boolean = false, includeEnd: boolean = false): Coord[] {
+    public getCoordsTowards(c: Coord, includeStart: boolean = false, includeEnd: boolean = false): Coord[] {
         Utils.assert(c.isAlignedWith(this), 'Should only call getCoordsTowards on aligned coords');
         const coords: Coord[] = [];
         if (includeStart) {
@@ -172,7 +172,7 @@ export class Coord extends Vector {
 
     // [this, end]
     public getAllCoordsToward(end: Coord): Coord[] {
-        return this.getCoordsToward(end, true, true);
+        return this.getCoordsTowards(end, true, true);
     }
 
     public override equals(obj: Coord): boolean {

@@ -207,9 +207,9 @@ describe('LascaRules', () => {
             // When doing a move that jump over an empty square after capture
             const capture: Coord[] = [new Coord(2, 2), new Coord(0, 4), new Coord(2, 6)];
             const move: CheckersMove = CheckersMove.fromCapture(capture).get();
-// TODO: Move cannot continue after non-capture move
+
             // Then the move should be illegal
-            const reason: string = 'Move cannot continue after non-capture move'; // not doable with UX, so not i18ned
+            const reason: string = CheckersFailure.MOVE_CANNOT_CONTINUE_AFTER_NON_CAPTURE_MOVE();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 

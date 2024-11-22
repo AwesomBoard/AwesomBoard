@@ -171,7 +171,7 @@ describe('InternationalCheckersRules', () => {
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
-        it('should allow long step for queen', () => {
+        it('should allow long step forward for queen', () => {
             // Given any board with a queen
             const state: CheckersState = CheckersState.of([
                 [V, _, _, _, _, _, _, _, _, _],
@@ -188,6 +188,40 @@ describe('InternationalCheckersRules', () => {
 
             // When doing a simple move
             const move: CheckersMove = CheckersMove.fromStep(new Coord(9, 9), new Coord(5, 5));
+
+            // Then it should succeed
+            const expectedState: CheckersState = CheckersState.of([
+                [V, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, O, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+            ], 1);
+            RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
+        });
+
+        it('should allow long step for backward queen', () => {
+            // Given any board with a queen
+            const state: CheckersState = CheckersState.of([
+                [V, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, O, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+            ], 0);
+
+            // When doing a simple move
+            const move: CheckersMove = CheckersMove.fromStep(new Coord(8, 2), new Coord(5, 5));
 
             // Then it should succeed
             const expectedState: CheckersState = CheckersState.of([
@@ -251,7 +285,7 @@ describe('InternationalCheckersRules', () => {
                 const move: CheckersMove = CheckersMove.fromCapture(capture).get();
 
                 // Then the move should be illegal
-                const reason: string = 'Move cannot continue after non-capture move'; // not doable with UX, so not i18ned
+                const reason: string = CheckersFailure.MOVE_CANNOT_CONTINUE_AFTER_NON_CAPTURE_MOVE();
                 RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
             });
 

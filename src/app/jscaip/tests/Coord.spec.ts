@@ -38,7 +38,7 @@ describe('Coord', () => {
             // Then it should throw
             const reason: string = 'Should only call getCoordsTowards on aligned coords';
             TestUtils.expectToThrowAndLog(() => {
-                coord.getCoordsToward(notAligned);
+                coord.getCoordsTowards(notAligned);
             }, reason);
         });
 
@@ -46,9 +46,9 @@ describe('Coord', () => {
             const coord: Coord = new Coord(0, 0);
             const neighbors: Coord = new Coord(1, 1);
             const alignedFar: Coord = new Coord(2, 2);
-            expect(coord.getCoordsToward(coord)).toEqual([]);
-            expect(coord.getCoordsToward(neighbors)).toEqual([]);
-            expect(coord.getCoordsToward(alignedFar)).toEqual([new Coord(1, 1)]);
+            expect(coord.getCoordsTowards(coord)).toEqual([]);
+            expect(coord.getCoordsTowards(neighbors)).toEqual([]);
+            expect(coord.getCoordsTowards(alignedFar)).toEqual([new Coord(1, 1)]);
         });
 
     });

@@ -242,10 +242,6 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         return c !== FourStatePiece.UNREACHABLE;
     }
 
-    public isPlayer(c: FourStatePiece): boolean {
-        return c.isPlayer();
-    }
-
     private async secondClick(coord: Coord): Promise<MGPValidation> {
         const maxGroup: number = this.getConfig().get().maximumPushingGroupSize;
         const firstPiece: Coord = this.selecteds[0];

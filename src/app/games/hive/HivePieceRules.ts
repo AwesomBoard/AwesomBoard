@@ -119,7 +119,7 @@ export class HiveGrasshopperRules extends HivePieceRules {
         if (direction.isFailure()) {
             return MGPValidation.failure(HiveFailure.GRASSHOPPER_MUST_MOVE_IN_STRAIGHT_LINE());
         }
-        const jumpedCoords: Coord[] = move.getStart().getCoordsToward(move.getEnd());
+        const jumpedCoords: Coord[] = move.getStart().getCoordsTowards(move.getEnd());
         if (jumpedCoords.length === 0) {
             return MGPValidation.failure(HiveFailure.GRASSHOPPER_MUST_JUMP_OVER_PIECES());
         }
