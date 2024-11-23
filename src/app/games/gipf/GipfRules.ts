@@ -133,7 +133,7 @@ export class GipfRules extends Rules<GipfMove, GipfState, GipfLegalityInformatio
                 const curPiece: FourStatePiece = state.getPieceAt(cur);
                 newState = newState.setAt(cur, previousPiece);
                 previousPiece = curPiece;
-                cur = cur.getNext(placement.direction.get())
+                cur = cur.getNext(placement.direction.get());
             }
         }
         const sidePieces: PlayerNumberMap = state.sidePieces.getCopy();

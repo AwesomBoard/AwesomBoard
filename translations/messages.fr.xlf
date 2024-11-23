@@ -2837,7 +2837,7 @@
         <source>Cannot jump over several pieces!</source>
         <target>Vous ne pouvez pas sauter par dessus plusieurs pièces !</target>
       </trans-unit>
-      <trans-unit id="3982614446590211562" datatype="html">
+      <trans-unit id="2690787965218168718" datatype="html">
         <source>You have done a step after a capture. A move that start in capture can only contain captures.</source>
         <target>Vous avez fait un pas après une captures, un mouvement qui commence par une capture ne doit contenir que des captures.</target>
       </trans-unit>
