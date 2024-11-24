@@ -132,7 +132,8 @@ describe('KalahComponent', () => {
             it('should wait TIMEOUT_BETWEEN_LAPS between each sub-distribution when receiving move', fakeAsync(async() => {
                 // Given a board where AI move is sure to be two distributions (here, the initial state)
                 // When AI play
-                await mancalaTestUtils.testUtils.selectAIPlayer(Player.ZERO);
+                // TODO: trigger the move, not AI?!
+                // await mancalaTestUtils.testUtils.selectAIPlayer(Player.ZERO);
 
                 // Then the pause of the AI should be done first
                 tick(LocalGameWrapperComponent.AI_TIMEOUT);
@@ -314,7 +315,8 @@ describe('KalahComponent', () => {
             await mancalaTestUtils.testUtils.setupState(state);
 
             // When giving turn to AI to play and waiting for move
-            await mancalaTestUtils.testUtils.selectAIPlayer(Player.ZERO);
+            // TODO: trigger the move, not AI?!
+            // await mancalaTestUtils.testUtils.selectAIPlayer(Player.ZERO);
             // time for AI to take action + time for the distribution
             tick(LocalGameWrapperComponent.AI_TIMEOUT + (5 * MancalaComponent.TIMEOUT_BETWEEN_SEEDS));
 

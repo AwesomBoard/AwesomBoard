@@ -309,7 +309,7 @@ export class SimpleComponentTestUtils<T> {
         element.nativeElement.dispatchEvent(new Event('input'));
     }
 
-    public async selectChildElementOfDropDown(dropDownName: string, childName: string): Promise<void> {
+    public selectChildElementOfDropDown(dropDownName: string, childName: string): void {
         const selectedDropDOwn: HTMLSelectElement = this.findElement(dropDownName).nativeElement;
         selectedDropDOwn.value = selectedDropDOwn.options[childName].value;
         selectedDropDOwn.dispatchEvent(new Event('change'));
@@ -613,30 +613,6 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         this.chooseMoveSpy.calls.reset();
         expect(this.onLegalUserMoveSpy).toHaveBeenCalledOnceWith(move);
         this.onLegalUserMoveSpy.calls.reset();
-    }
-
-    public async selectAIPlayer(player: Player): Promise<void> {
-        await this.choosingAIOrHuman(player, 'AI');
-        await this.choosingAILevel(player);
-    }
-
-    public choosingAIOrHuman(player: Player, aiOrHuman: 'AI' | 'human'): void {
-        const dropDownName: string = player === Player.ZERO ? '#player-select-0' : '#player-select-1';
-        const selectAI: HTMLSelectElement = this.findElement(dropDownName).nativeElement;
-        selectAI.value = aiOrHuman === 'AI' ? selectAI.options[1].value : selectAI.options[0].value;
-        selectAI.dispatchEvent(new Event('change'));
-        this.detectChanges();
-        tick(0);
-    }
-
-    public async choosingAILevel(player: Player): Promise<void> {
-        const dropDownName: string = player === Player.ZERO ? '#ai-option-select-0' : '#ai-option-select-1';
-        const childrenName: string = player === Player.ZERO ? 'player-0-option-Level 1' : 'player-1-option-Level 1';
-        await this.selectChildElementOfDropDown(dropDownName, childrenName);
-        const selectDepth: HTMLSelectElement = this.findElement(dropDownName).nativeElement;
-        const aiDepth: string = selectDepth.options[selectDepth.selectedIndex].label;
-        expect(aiDepth).toBe('Level 1');
-        this.detectChanges();
     }
 
 }

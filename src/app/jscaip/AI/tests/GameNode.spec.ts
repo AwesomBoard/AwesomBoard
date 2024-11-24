@@ -57,7 +57,7 @@ class RulesMock extends Rules<MoveMock, GameStateMock> {
     }
 }
 
-fdescribe('GameNode', () => {
+describe('GameNode', () => {
 
     let rules: RulesMock;
     let config: NoConfig;
