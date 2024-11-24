@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      class="board"
-     viewBox="-165 0 470 500"
+     viewBox="-217 -19 578 518"
+     [attr.transform]="rotation"
      preserveAspectRatio="xMidYMid meet"
 >
+
     <polygon *ngFor="let invisibleSpace of boardNeighboringCoords"
              id="invisible-space-{{ invisibleSpace.x }}-{{ invisibleSpace.y }}"
              [attr.transform]="getHexaCenterTranslationAt(invisibleSpace)"

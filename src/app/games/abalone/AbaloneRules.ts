@@ -35,13 +35,24 @@ export class AbaloneRules extends ConfigurableRules<AbaloneMove,
     private static singleton: MGPOptional<AbaloneRules> = MGPOptional.empty();
 
     public static readonly RULES_CONFIG_DESCRIPTION: RulesConfigDescription<AbaloneConfig> =
-        new RulesConfigDescription<AbaloneConfig>({
-            name: (): string => $localize`Abalone`,
-            config: {
-                nbToCapture: new NumberConfig(6, () => $localize`Number of pieces to capture in order to win`, MGPValidators.range(1, 14)),
-                maximumPushingGroupSize: new NumberConfig(3, () => $localize`Maximum pushing group size`, MGPValidators.range(1, 9)),
+        new RulesConfigDescription<AbaloneConfig>(
+            {
+                name: (): string => $localize`Abalone`,
+                config: {
+                    nbToCapture: new NumberConfig(6, () => $localize`Number of pieces to capture in order to win`, MGPValidators.range(1, 14)),
+                    maximumPushingGroupSize: new NumberConfig(3, () => $localize`Maximum pushing group size`, MGPValidators.range(1, 9)),
+                },
             },
-        });
+            [
+                {
+                    name: (): string => $localize`Deadly Abalone`,
+                    config: {
+                        nbToCapture: 1,
+                        maximumPushingGroupSize: 9,
+                    },
+                },
+            ],
+        );
 
     public static get(): AbaloneRules {
         if (AbaloneRules.singleton.isAbsent()) {
