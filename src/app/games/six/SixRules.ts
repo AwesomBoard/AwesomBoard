@@ -5,19 +5,26 @@ import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { SixState } from './SixState';
 import { SixMove } from './SixMove';
 import { SixFailure } from './SixFailure';
-import { Rules } from 'src/app/jscaip/Rules';
+import { ConfigurableRules } from 'src/app/jscaip/Rules';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { MGPFallible, MGPOptional, Set, MGPValidation } from '@everyboard/lib';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { Debug } from 'src/app/utils/Debug';
 import { CoordSet } from 'src/app/jscaip/CoordSet';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
+import { NumberConfig, RulesConfigDescription } from 'src/app/components/wrapper-components/rules-configuration/RulesConfigDescription';
+import { MGPValidators } from 'src/app/utils/MGPValidator';
 
 export type SixLegalityInformation = CoordSet;
 
 export class SixNode extends GameNode<SixMove, SixState> {
+}
+
+export type SixConfig = {
+
+    piecePerPlayer: number;
+
 }
 
 export interface SixVictorySource {
@@ -26,17 +33,29 @@ export interface SixVictorySource {
 }
 
 @Debug.log
-export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
+export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, SixLegalityInformation> {
 
     private static singleton: MGPOptional<SixRules> = MGPOptional.empty();
 
     private currentVictorySource: SixVictorySource;
+
+    public static readonly RULES_CONFIG_DESCRIPTION: RulesConfigDescription<SixConfig> =
+        new RulesConfigDescription<SixConfig>({
+            name: (): string => $localize`Six`,
+            config: {
+                piecePerPlayer: new NumberConfig(20, () => $localize`Number of pieces to drop per player`, MGPValidators.range(5, 99)),
+            },
+        });
 
     public static get(): SixRules {
         if (SixRules.singleton.isAbsent()) {
             SixRules.singleton = MGPOptional.of(new SixRules());
         }
         return SixRules.singleton.get();
+    }
+
+    public override getRulesConfigDescription(): MGPOptional<RulesConfigDescription<SixConfig>> {
+        return MGPOptional.of(SixRules.RULES_CONFIG_DESCRIPTION);
     }
 
     public override getInitialState(): SixState {
@@ -46,28 +65,33 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
 
     public override applyLegalMove(move: SixMove,
                                    state: SixState,
-                                   _config: NoConfig,
+                                   config: MGPOptional<SixConfig>,
                                    kept: SixLegalityInformation)
     : SixState
     {
-        if (state.turn < 40) {
+        const totalPieceDroppable: number = 2 * config.get().piecePerPlayer;
+        if (state.turn < totalPieceDroppable) {
             return state.applyLegalDrop(move.landing);
         } else {
             return state.applyLegalDeplacement(move, kept);
         }
     }
 
-    public override isLegal(move: SixMove, state: SixState): MGPFallible<SixLegalityInformation> {
+    public override isLegal(move: SixMove, state: SixState, config: MGPOptional<SixConfig>)
+    : MGPFallible<SixLegalityInformation>
+    {
         const landingLegality: MGPValidation = state.isIllegalLandingZone(move.landing, move.start);
         if (landingLegality.isFailure()) {
             return landingLegality.toOtherFallible();
         }
-        if (state.turn < 40) {
+        const totalPieceDroppable: number = 2 * config.get().piecePerPlayer;
+        if (state.turn < totalPieceDroppable) {
             return this.isLegalDrop(move, state);
         } else {
             return SixRules.isLegalPhaseTwoMove(move, state);
         }
     }
+
     public static getLegalLandings(state: SixState): Coord[] {
         let neighbors: CoordSet = new CoordSet();
         for (const piece of state.getPieceCoords()) {
@@ -80,12 +104,14 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return neighbors.toList();
     }
+
     public isLegalDrop(move: SixMove, state: SixState): MGPFallible<SixLegalityInformation> {
         if (move.isDrop() === false) {
-            return MGPFallible.failure(SixFailure.NO_MOVEMENT_BEFORE_TURN_40());
+            return MGPFallible.failure(SixFailure.CANNOT_DO_DEPLACEMENT_YET());
         }
         return MGPFallible.success(new CoordSet(state.getPieceCoords()));
     }
+
     public static isLegalPhaseTwoMove(move: SixMove, state: SixState): MGPFallible<SixLegalityInformation> {
         if (move.isDrop()) {
             return MGPFallible.failure(SixFailure.CAN_NO_LONGER_DROP());
@@ -113,9 +139,11 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
             return MGPFallible.success(new CoordSet());
         }
     }
+
     public static isSplit(groups: Set<CoordSet>): boolean {
         return groups.size() > 1;
     }
+
     public static getLargestGroups(groups: Set<CoordSet>): Set<CoordSet> {
         let biggerSize: number = 0;
         let biggerGroups: Set<CoordSet> = new Set();
@@ -130,6 +158,7 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return biggerGroups;
     }
+
     public static moveKeepBiggerGroup(keep: MGPOptional<Coord>,
                                       biggerGroups: Set<CoordSet>,
                                       state: SixState)
@@ -149,7 +178,8 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return MGPFallible.failure(SixFailure.MUST_CAPTURE_BIGGEST_GROUPS());
     }
-    public override getGameStatus(node: SixNode): GameStatus {
+
+    public override getGameStatus(node: SixNode, config: MGPOptional<SixConfig>): GameStatus {
         const state: SixState = node.gameState;
         const previousPlayer: Player = state.getPreviousPlayer();
         let shapeVictory: Coord[] = [];
@@ -159,7 +189,8 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         if (shapeVictory.length === 6) {
             return GameStatus.getVictory(previousPlayer);
         }
-        if (state.turn > 39) {
+        const lastDropTurn: number = (2 * config.get().piecePerPlayer) - 1;
+        if (state.turn > lastDropTurn) {
             const pieces: PlayerNumberMap = state.countPieces();
             const zeroPieces: number = pieces.get(Player.ZERO);
             const onePieces: number = pieces.get(Player.ONE);
@@ -181,12 +212,14 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return GameStatus.ONGOING;
     }
+
     private startSearchingVictorySources(): void {
         this.currentVictorySource = {
             typeSource: 'LINE',
             index: -1,
         };
     }
+
     public getShapeVictory(lastMove: SixMove, state: SixState): Coord[] {
         this.startSearchingVictorySources();
         while (this.hasNextVictorySource()) {
@@ -198,10 +231,12 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return [];
     }
+
     private hasNextVictorySource(): boolean {
         return this.currentVictorySource.typeSource !== 'CIRCLE' ||
                this.currentVictorySource.index !== 5;
     }
+
     private getNextVictorySource(): SixVictorySource {
         const source: SixVictorySource = this.currentVictorySource;
         if (source.index === 5) {
@@ -233,6 +268,7 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return this.currentVictorySource;
     }
+
     private searchVictoryOnly(victorySource: SixVictorySource, move: SixMove, state: SixState): Coord[] {
         const lastDrop: Coord = move.landing;
         switch (victorySource.typeSource) {
@@ -246,6 +282,7 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
                 return this.searchVictoryOnlyForTriangleEdge(victorySource.index, lastDrop, state);
         }
     }
+
     private searchVictoryOnlyForCircle(index: number, lastDrop: Coord, state: SixState): Coord[] {
         const previousPlayer: Player = state.getPreviousPlayer();
         const initialDirection: HexaDirection = HexaDirection.factory.all[index];
@@ -263,6 +300,7 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return victory;
     }
+
     private searchVictoryOnlyForLine(index: number, lastDrop: Coord, state: SixState): Coord[] {
         const previousPlayer: Player = state.getPreviousPlayer();
         let dir: HexaDirection = HexaDirection.factory.all[index];
@@ -286,6 +324,7 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return victory;
     }
+
     private searchVictoryOnlyForTriangleCorner(index: number, lastDrop: Coord, state: SixState): Coord[] {
         const previousPlayer: Player = state.getPreviousPlayer();
         let edgeDirection: HexaDirection = HexaDirection.factory.all[index];
@@ -307,6 +346,7 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return victory;
     }
+
     private searchVictoryOnlyForTriangleEdge(index: number, lastDrop: Coord, state: SixState): Coord[] {
         const previousPlayer: Player = state.getPreviousPlayer();
         let edgeDirection: HexaDirection = HexaDirection.factory.all[index];
@@ -328,4 +368,5 @@ export class SixRules extends Rules<SixMove, SixState, SixLegalityInformation> {
         }
         return victory;
     }
+
 }

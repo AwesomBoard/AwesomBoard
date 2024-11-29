@@ -25,10 +25,11 @@
              class="base round"/>
     <!-- LAST MOVE -->
     <polygon *ngFor="let disconnected of disconnectedCoords"
-             id="disconnected_{{ disconnected.x }}_{{ disconnected.y }}"
+             id="disconnected_{{ disconnected.coord.x }}_{{ disconnected.coord.y }}"
              [attr.points]="getHexaPoints()"
-             [attr.transform]="getHexaCenterTranslationAtXY(disconnected.x, disconnected.y)"
-             class="base round captured-fill"/>
+             [attr.transform]="getHexaCenterTranslationAt(disconnected.coord)"
+             class="base round captured-stroke"
+             [ngClass]="disconnected.class"/>
     <polygon *ngIf="leftCoord.isPresent()"
              id="leftCoord_{{ leftCoord.get().x }}_{{ leftCoord.get().y }}"
              (click)="onNeighborClick(leftCoord.get())"

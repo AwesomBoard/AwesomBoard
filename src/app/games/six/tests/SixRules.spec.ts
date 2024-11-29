@@ -5,17 +5,16 @@ import { Table } from 'src/app/jscaip/TableUtils';
 import { SixState } from '../SixState';
 import { SixMove } from '../SixMove';
 import { SixFailure } from '../SixFailure';
-import { SixNode, SixRules } from '../SixRules';
+import { SixConfig, SixNode, SixRules } from '../SixRules';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { RulesUtils } from 'src/app/jscaip/tests/RulesUtils.spec';
 import { MGPOptional } from '@everyboard/lib';
 import { Vector } from 'src/app/jscaip/Vector';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 
 describe('SixRules', () => {
 
     let rules: SixRules;
-    const defaultConfig: NoConfig = SixRules.get().getDefaultRulesConfig();
+    const defaultConfig: MGPOptional<SixConfig> = SixRules.get().getDefaultRulesConfig();
 
     const _: PlayerOrNone = PlayerOrNone.NONE;
     const O: PlayerOrNone = Player.ZERO;
@@ -132,7 +131,7 @@ describe('SixRules', () => {
             const move: SixMove = SixMove.ofMovement(new Coord(1, 2), new Coord(3, 0));
 
             // Then the move should be illegal
-            const reason: string = SixFailure.NO_MOVEMENT_BEFORE_TURN_40();
+            const reason: string = SixFailure.CANNOT_DO_DEPLACEMENT_YET();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
@@ -581,6 +580,43 @@ describe('SixRules', () => {
                 RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
             });
 
+        });
+
+    });
+
+    describe('custom config', () => {
+
+        it('should recognize victory when dropping bellow 6 pieces in shorter game', () => {
+            // Given a custom config where you need to drop less pieces to reach second phase
+            const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                piecePerPlayer: 5,
+            });
+            // And a state in phase two
+            const board: Table<PlayerOrNone> = [
+                [O, O, X, _, _],
+                [_, O, X, _, _],
+                [_, O, X, _, _],
+                [_, O, X, _, _],
+                [_, _, X, X, O],
+            ];
+            const state: SixState = SixState.ofRepresentation(board, 21);
+
+            // When making the opponent pass below 6 pieces
+            const move: SixMove = SixMove.ofMovement(new Coord(3, 4), new Coord(3, 0));
+
+            // Then the move should be a victory
+            const expectedBoard: Table<PlayerOrNone> = [
+                [O, O, X, X],
+                [_, O, X, _],
+                [_, O, X, _],
+                [_, O, X, _],
+                [_, _, X, _],
+            ];
+            const expectedState: SixState = SixState.ofRepresentation(expectedBoard, 22);
+            RulesUtils.expectMoveSuccess(rules, state, move, expectedState, customConfig);
+            const node: SixNode = new SixNode(expectedState, MGPOptional.empty(), MGPOptional.of(move));
+            RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, customConfig);
         });
 
     });

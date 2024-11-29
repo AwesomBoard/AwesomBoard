@@ -3,18 +3,18 @@ import { Player } from 'src/app/jscaip/Player';
 import { MGPMap, MGPOptional, Set } from '@everyboard/lib';
 import { SixState } from './SixState';
 import { SixMove } from './SixMove';
-import { SixNode, SixRules } from './SixRules';
+import { SixConfig, SixNode, SixRules } from './SixRules';
 import { Debug } from 'src/app/utils/Debug';
 import { MoveGenerator } from 'src/app/jscaip/AI/AI';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { CoordSet } from 'src/app/jscaip/CoordSet';
 
 @Debug.log
-export class SixMoveGenerator extends MoveGenerator<SixMove, SixState> {
+export class SixMoveGenerator extends MoveGenerator<SixMove, SixState, SixConfig> {
 
-    public override getListMoves(node: SixNode, _config: NoConfig): SixMove[] {
+    public override getListMoves(node: SixNode, config: MGPOptional<SixConfig>): SixMove[] {
         const legalLandings: Coord[] = SixRules.getLegalLandings(node.gameState);
-        if (node.gameState.turn < 40) {
+        const totalPieceDroppable: number = 2 * config.get().piecePerPlayer;
+        if (node.gameState.turn < totalPieceDroppable) {
             return this.getListDrops(legalLandings);
         } else {
             return this.getMovements(node.gameState, legalLandings);

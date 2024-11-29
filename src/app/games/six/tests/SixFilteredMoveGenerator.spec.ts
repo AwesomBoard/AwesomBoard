@@ -1,12 +1,13 @@
 /* eslint-disable max-lines-per-function */
+import { MGPOptional } from '@everyboard/lib';
+
 import { Coord } from 'src/app/jscaip/Coord';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { SixState } from '../SixState';
 import { SixMove } from '../SixMove';
 import { Table } from 'src/app/jscaip/TableUtils';
-import { SixNode, SixRules } from '../SixRules';
+import { SixConfig, SixNode, SixRules } from '../SixRules';
 import { SixFilteredMoveGenerator } from '../SixFilteredMoveGenerator';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 
 const O: PlayerOrNone = Player.ZERO;
 const X: PlayerOrNone = Player.ONE;
@@ -15,7 +16,7 @@ const _: PlayerOrNone = PlayerOrNone.NONE;
 describe('SixFilteredMoveGenerator', () => {
 
     let moveGenerator: SixFilteredMoveGenerator;
-    const defaultConfig: NoConfig = SixRules.get().getDefaultRulesConfig();
+    const defaultConfig: MGPOptional<SixConfig> = SixRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
         moveGenerator = new SixFilteredMoveGenerator();
@@ -120,6 +121,30 @@ describe('SixFilteredMoveGenerator', () => {
         // Then the list should have all the possible moves and only them
         const cuttingMove: SixMove = SixMove.ofCut(new Coord(4, 0), new Coord(8, 0), new Coord(0, 0));
         expect(listMoves.some((move: SixMove) => move.equals(cuttingMove))).toBeTrue();
+    });
+
+    describe('Custom Config', () => {
+
+        it('should pass possible movement when Phase 2', () => {
+            // Given a game state in phase 2
+            // And in custom config
+            const state: SixState = SixState.ofRepresentation([
+                [O, O, O, X, X, X],
+                [O, O, O, X, X, X],
+            ], 22);
+            const node: SixNode = new SixNode(state);
+            const customCOnfig: MGPOptional<SixConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                piecePerPlayer: 10,
+            });
+
+            // When listing the moves
+            const listMoves: SixMove[] = moveGenerator.getListMoves(node, customCOnfig);
+
+            // Then the list should have all the possible moves and only them
+            expect(listMoves.every((move: SixMove) => move.isDrop())).toBeFalse();
+        });
+
     });
 
 });

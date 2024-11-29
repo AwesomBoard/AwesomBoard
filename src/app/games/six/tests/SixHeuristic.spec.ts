@@ -6,10 +6,9 @@ import { SixState } from '../SixState';
 import { SixMove } from '../SixMove';
 import { MGPOptional } from '@everyboard/lib';
 import { Table } from 'src/app/jscaip/TableUtils';
-import { SixNode, SixRules } from '../SixRules';
+import { SixConfig, SixNode, SixRules } from '../SixRules';
 import { BoardValue } from 'src/app/jscaip/AI/BoardValue';
 import { SixHeuristic } from '../SixHeuristic';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 
 const O: PlayerOrNone = Player.ZERO;
 const X: PlayerOrNone = Player.ONE;
@@ -18,7 +17,7 @@ const _: PlayerOrNone = PlayerOrNone.NONE;
 describe('SixHeuristic', () => {
 
     let heuristic: SixHeuristic;
-    const defaultConfig: NoConfig = SixRules.get().getDefaultRulesConfig();
+    const defaultConfig: MGPOptional<SixConfig> = SixRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
         heuristic = new SixHeuristic();
@@ -163,6 +162,26 @@ describe('SixHeuristic', () => {
         const move: SixMove = SixMove.ofDrop(new Coord(1, 1));
         const node: SixNode = new SixNode(state, MGPOptional.empty(), MGPOptional.of(move));
         expect(heuristic.getBoardValue(node, defaultConfig).metrics).toEqual([2 * Player.ZERO.getScoreModifier()]);
+    });
+
+    describe('Custom Config', () => {
+
+        it('score after N-th turn should be a substraction of the number of piece', () => {
+            // Given a board in second phase
+            // and a config with shorter phase
+            const state: SixState = SixState.ofRepresentation([
+                [X, X, X, X, O, O, O, O, O],
+                [X, X, X, X, O, O, O, O, O],
+            ], 20);
+            const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                piecePerPlayer: 10,
+            });
+            const move: SixMove = SixMove.ofDrop(new Coord(1, 1));
+            const node: SixNode = new SixNode(state, MGPOptional.empty(), MGPOptional.of(move));
+            expect(heuristic.getBoardValue(node, customConfig).metrics).toEqual([2 * Player.ZERO.getScoreModifier()]);
+        });
+
     });
 
 });

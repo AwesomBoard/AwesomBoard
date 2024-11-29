@@ -10,6 +10,7 @@ import { OpenHexagonalGameState } from 'src/app/jscaip/state/OpenHexagonalGameSt
 import { HexagonalUtils } from 'src/app/jscaip/HexagonalUtils';
 import { CoordSet } from 'src/app/jscaip/CoordSet';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
+import { SixConfig } from './SixRules';
 
 export class SixState extends OpenHexagonalGameState<Player> {
 
@@ -107,6 +108,14 @@ export class SixState extends OpenHexagonalGameState<Player> {
         const zeroPieces: Set<Coord> = pieces.get(Player.ZERO).getOrElse(new CoordSet());
         const onePieces: Set<Coord> = pieces.get(Player.ONE).getOrElse(new CoordSet());
         return PlayerNumberMap.of(zeroPieces.size(), onePieces.size());
+    }
+
+    public countRemainingPieces(config: SixConfig): PlayerNumberMap {
+        const total: number = config.piecePerPlayer + 1;
+        const pieces: ReversibleMap<Player, Set<Coord>> = this.pieces.reverse();
+        const zeroPieces: Set<Coord> = pieces.get(Player.ZERO).getOrElse(new CoordSet());
+        const onePieces: Set<Coord> = pieces.get(Player.ONE).getOrElse(new CoordSet());
+        return PlayerNumberMap.of(total - zeroPieces.size(), total - onePieces.size());
     }
 
     public switchPiece(coord: Coord): SixState {
