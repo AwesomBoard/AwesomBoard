@@ -20,6 +20,7 @@ import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Arrow } from 'src/app/components/game-components/arrow-component/Arrow';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { AbaloneScoreMinimax } from './AbaloneScoreMinimax';
+import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 
 type CapturedInfo = {
     coord: Coord,
@@ -75,6 +76,15 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         this.hexaLayout = new HexaLayout(this.SPACE_SIZE,
                                          new Coord(- 8 * this.SPACE_SIZE, 2 * this.SPACE_SIZE),
                                          PointyHexaOrientation.INSTANCE);
+    }
+
+    public getViewBox(): ViewBox {
+        return new ViewBox(
+            -217,
+            -19,
+            578,
+            518,
+        );
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {

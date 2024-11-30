@@ -3,7 +3,12 @@
      [attr.viewBox]="getViewBox().toSVGString()"
      [attr.transform]="rotation"
      preserveAspectRatio="xMidYMid meet">
-
+<rect [attr.x]="getViewBox().left"
+      [attr.y]="getViewBox().up"
+      [attr.width]="getViewBox().width"
+      [attr.height]="getViewBox().height"
+      fill="purple"
+/>
     <defs>
         <marker id="arrowhead" markerWidth="10" markerHeight="7"
                 refX="5" refY="3.5" orient="auto">
