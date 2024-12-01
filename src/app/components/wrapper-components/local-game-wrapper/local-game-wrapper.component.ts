@@ -360,11 +360,11 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         return this.configDemo;
     }
 
-    public openConfig() {
+    public openConfig(): void {
         this.viewConfig = true;
     }
 
-    public closeConfig() {
+    public closeConfig(): void {
         this.viewConfig = false;
     }
 
