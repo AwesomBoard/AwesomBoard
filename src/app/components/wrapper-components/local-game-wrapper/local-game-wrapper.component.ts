@@ -357,8 +357,8 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             if (opponentAI.isPresent() && opponentAI.get() instanceof MCTS) {
                 const mcts: MCTS<Move, GameState, RulesConfig, unknown> =
                     opponentAI.get() as MCTS<Move, GameState, RulesConfig, unknown>;
-                const wins: number = mcts.getCounterFromCache(nodeToLabel, 'wins') as number;
-                const simulations: number = mcts.getCounterFromCache(nodeToLabel, 'simulations') as number;
+                const wins: number = mcts.getCounterFromCache(nodeToLabel, 'wins');
+                const simulations: number = mcts.getCounterFromCache(nodeToLabel, 'simulations');
                 return `${wins}/${simulations} = ${Math.round(wins/simulations * 100)}%`;
             } else {
                 return '';

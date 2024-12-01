@@ -28,6 +28,7 @@ import { NotFoundComponent } from '../../normal-component/not-found/not-found.co
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { AIDepthLimitOptions } from 'src/app/jscaip/AI/AI';
 import { Minimax } from 'src/app/jscaip/AI/Minimax';
+import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { P4Minimax } from 'src/app/games/p4/P4Minimax';
 import { GipfComponent } from 'src/app/games/gipf/gipf.component';
 
@@ -81,6 +82,7 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
 
     let testUtils: ComponentTestUtils<P4Component>;
 
+    // TODO FOR REVIEW: This was in test utils for ALL components, but we only need it for local game, as there is no point in being able to choose AI in tuto/online game.
     function chooseAIOrHuman(player: Player, humanOrAIName: 'human' | string): void {
         const dropDownName: string = player === Player.ZERO ? '#player-select-0' : '#player-select-1';
         const selectAI: HTMLSelectElement = testUtils.findElement(dropDownName).nativeElement;
@@ -92,9 +94,12 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
 
     function chooseFirstAILevel(player: Player): void {
         const dropDownName: string = `#ai-option-select-${player.getValue()}`;
-        const selectDepth: HTMLSelectElement = testUtils.findElement(dropDownName).nativeElement;
-        selectDepth.value = selectDepth.options[0].value;
-        selectDepth.dispatchEvent(new Event('change'));
+        const selectLevel: HTMLSelectElement = testUtils.findElement(dropDownName).nativeElement;
+        // We select the first available level in a way that works for any level name.
+        // Element 0 of the option = 'Pick the level', element 1 = first actual level
+        selectLevel.value = selectLevel.options[1].value;
+        selectLevel.dispatchEvent(new Event('change'));
+        console.log('detecting changes')
         testUtils.detectChanges();
         tick(0);
     }
@@ -564,7 +569,7 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
             expect(testUtils.getGameComponent().updateBoard).toHaveBeenCalledTimes(1);
         }));
 
-        it('should take back two turns when playing against IA', fakeAsync(async() => {
+        it('should take back two turns when playing against AI', fakeAsync(async() => {
             // Given a game component on which you play against IA, at turn N+2, and it's human turn
             await testUtils.expectMoveSuccess('#click-3-0', P4Move.of(3));
             await testUtils.expectMoveSuccess('#click-3-0', P4Move.of(3));
@@ -652,35 +657,43 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
 
     });
 
-    describe('game tree visualisation', () => {
+    fdescribe('game tree visualisation', () => {
+        beforeEach(() => {
+            GameNode.ID = 0; // To start counting at 0 for each test
+        });
 
         it('should show game tree from current node when clicking on the corresponding button', fakeAsync(async() => {
             spyOn(window, 'open').and.returnValue(null);
             // Given the component with AI infos enabled and at least one turn played
-            localStorage.setItem('displayAIInfo', 'true')
+            localStorage.setItem('displayAIInfo', 'true');
             await testUtils.expectMoveSuccess('#click-4-0', P4Move.of(4));
             // When clicking on "view tree from current node"
-            testUtils.clickElement('#viewTreeFromCurrentNode');
+            await testUtils.clickElement('#viewTreeFromCurrentNode');
             // Then it should open an external URL
             const dot: string = `digraph G {
-    node_0 [label="#1: 10 - ", style=filled, fillcolor="white"];
+    node_0 [label="#1: 0 - ", style=filled, fillcolor="white"];
 }`;
             expect(window.open).toHaveBeenCalledOnceWith('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(dot));
         }));
 
         fit('should show MCTS info when playing against MCTS', fakeAsync(async() => {
             spyOn(window, 'open').and.returnValue(null);
+            console.log('1')
             // Given the component with AI infos enabled and MCTS played
             localStorage.setItem('displayAIInfo', 'true')
-            // chooseAIOrHuman(Player.ZERO, 'Minimax');
-            // chooseFirstAILevel(Player.ZERO);
-            selectAIPlayer(Player.ZERO);
-            tick(LocalGameWrapperComponent.AI_TIMEOUT + 5000); // MCTS level 1 = 1 second
+            console.log('2')
+            chooseAIOrHuman(Player.ZERO, 'MCTS');
+            console.log('3')
+            chooseFirstAILevel(Player.ZERO);
+            console.log('4')
+            tick(LocalGameWrapperComponent.AI_TIMEOUT); // MCTS level 1 = 1 second
+            console.log('5')
             // When clicking on "view tree from current node"
-            testUtils.clickElement('#viewTreeFromCurrentNode');
+            await testUtils.clickElement('#viewTreeFromCurrentNode');
+            console.log('6')
             // Then it should open an external URL
             const dot: string = `digraph G {
-    node_0 [label="#1: 10 - ", style=filled, fillcolor="white"];
+    node_0 [label="#1: 0 - ", style=filled, fillcolor="white"];
 }`;
             expect(window.open).toHaveBeenCalledOnceWith('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(dot));
         }));
@@ -692,10 +705,10 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
             await testUtils.expectMoveSuccess('#click-4-0', P4Move.of(4));
             await testUtils.expectMoveSuccess('#click-4-0', P4Move.of(4));
             // When clicking on "view tree from previous node"
-            testUtils.clickElement('#viewTreeFromPreviousNode');
+            await testUtils.clickElement('#viewTreeFromPreviousNode');
             // Then it should open an external URL
             const dot: string = `digraph G {
-    node_0 [label="#1: 10 - ", style=filled, fillcolor="white"];
+    node_0 [label="#1: 0 - ", style=filled, fillcolor="white"];
 }`;
             expect(window.open).toHaveBeenCalledOnceWith('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(dot));
         }));
