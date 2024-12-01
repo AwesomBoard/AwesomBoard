@@ -7,6 +7,8 @@ import { Localized } from 'src/app/utils/LocaleUtils';
 
 export class RulesConfigDescriptionLocalizable {
 
+    public static readonly CUSTOM: () => string = (): string => $localize`Custom`;
+
     public static readonly WIDTH: () => string = (): string => $localize`Width`;
 
     public static readonly HEIGHT: () => string = (): string => $localize`Height`;
@@ -91,8 +93,8 @@ export class RulesConfigDescription<R extends RulesConfig = EmptyRulesConfig> {
     }
 
     public getConfig(configName: string): R {
-        const rulesConfig: NamedRulesConfig<R> =
-            this.getStandardConfigs().filter((v: NamedRulesConfig<R>) => v.name() === configName)[0];
+        const rulesConfig: NamedRulesConfig<R> = this.getStandardConfigs()
+            .filter((v: NamedRulesConfig<R>) => v.name() === configName)[0];
         return rulesConfig.config;
     }
 

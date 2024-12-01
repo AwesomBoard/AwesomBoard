@@ -345,7 +345,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
 
     public canResign(): boolean {
         Utils.assert(this.isPlaying(), 'Non playing should not call canResign');
-        if (this.endGame === true) {
+        if (this.endGame) {
             return false;
         }
         const hasOpponent: boolean = this.opponent != null;
@@ -393,7 +393,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         Utils.assert(this.isPlaying(), 'Non playing should not call canAskTakeBack');
         Utils.assert(this.currentPart != null, 'should not call canAskTakeBack when currentPart is not defined yet');
         // Cannot do a request in end game
-        if (this.endGame === true) return false;
+        if (this.endGame) return false;
         // Cannot do a take back request before we played
         const currentPart: PartDocument = Utils.getNonNullable(this.currentPart);
         if (currentPart.data.turn <= this.role.getValue()) return false;
@@ -574,7 +574,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         if (this.isPlaying() === false && this.userLinkedToThisPart && this.connectedUserService.user.isPresent()) {
             await this.currentGameService.removeCurrentGame();
         }
-        if (this.gameStarted === true) {
+        if (this.gameStarted) {
             this.partSubscription.unsubscribe();
             this.gameEventsSubscription.unsubscribe();
         }

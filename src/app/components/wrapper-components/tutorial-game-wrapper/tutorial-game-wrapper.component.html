@@ -14,7 +14,7 @@
             <div class="block">
                 <button id="retryButton"
                         class="button mr-3"
-                        *ngIf="tutorialOver === false && ((stepFinished && stepFinished[stepIndex] === true) || moveAttemptMade)"
+                        *ngIf="tutorialOver === false && ((stepFinished && stepFinished[stepIndex]) || moveAttemptMade)"
                         (click)="retry()"
                         i18n
                 >Try again</button>

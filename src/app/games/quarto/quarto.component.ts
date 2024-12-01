@@ -53,26 +53,28 @@ export class QuartoComponent extends RectangularGameComponent<QuartoRules,
         this.victoriousCoords = this.rules.getVictoriousCoords(state, config);
     }
 
-    public async clickCoord(x: number, y: number): Promise<MGPValidation> {
+    public async clickCoord(clicked: Coord): Promise<MGPValidation> {
         // called when the user click on the quarto board
-        const clickValidity: MGPValidation = await this.canUserPlay('#click-coord-' + x + '-' + y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#click-coord-' + clicked.x + '-' + clicked.y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
-        if (this.board[y][x] === QuartoPiece.EMPTY) {
+        if (this.chosen.equalsValue(clicked)) {
+            return this.cancelMove();
+        }
+        if (this.board[clicked.y][clicked.x] === QuartoPiece.EMPTY) {
             // if it's a legal place to put the piece
-            // TODO:
-            this.showPieceInHandOnBoard(x, y); // let's show the user their decision
+            this.showPieceInHandOnBoard(clicked); // let's show the user his decision
             if (this.getState().turn === 15) {
                 // on last turn user won't be able to click on a piece to give
-                // thereby we must put their piece in hand and finish the turn
-                const chosenMove: QuartoMove = new QuartoMove(x, y, QuartoPiece.EMPTY);
+                // thereby we must put his piece in hand right
+                const chosenMove: QuartoMove = new QuartoMove(clicked.x, clicked.y, QuartoPiece.EMPTY);
                 return this.chooseMove(chosenMove);
             } else if (this.pieceToGive.isAbsent()) {
                 return MGPValidation.SUCCESS; // the user has just chosen their coord
             } else {
-                // the user has already chosen their piece before their coord
-                const chosenMove: QuartoMove = new QuartoMove(x, y, this.pieceToGive.get());
+                // the user has already chosen his piece before his coord
+                const chosenMove: QuartoMove = new QuartoMove(clicked.x, clicked.y, this.pieceToGive.get());
                 return this.chooseMove(chosenMove);
             }
         } else {
@@ -113,26 +115,15 @@ export class QuartoComponent extends RectangularGameComponent<QuartoRules,
         this.chosen = MGPOptional.empty();
     }
 
-    public async deselectDroppedPiece(): Promise<MGPValidation> {
-        // So it does not throw when there is no chosen piece (used in clickValidity test)
-        const chosen: Coord = this.chosen.getOrElse(new Coord(404, 404));
-        const clickValidity: MGPValidation = await this.canUserPlay(`#dropped-piece-${ chosen.x }-${ chosen.y }`);
-        if (clickValidity.isFailure()) {
-            return this.cancelMove(clickValidity.getReason());
-        }
-        return this.cancelMove();
-    }
-
-    private showPieceInHandOnBoard(x: number, y: number): void {
-        this.chosen = MGPOptional.of(new Coord(x, y));
+    private showPieceInHandOnBoard(coord: Coord): void {
+        this.chosen = MGPOptional.of(coord);
     }
 
     public isRemaining(piece: number): boolean {
         return QuartoState.isGivable(QuartoPiece.ofInt(piece), this.board, this.pieceInHand);
     }
 
-    public getSquareClasses(x: number, y: number): string[] {
-        const coord: Coord = new Coord(x, y);
+    public getSquareClasses(coord: Coord): string[] {
         if (this.lastMove.equalsValue(coord)) {
             return ['moved-fill'];
         } else {

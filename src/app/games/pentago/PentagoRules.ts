@@ -126,14 +126,14 @@ export class PentagoRules extends Rules<PentagoMove, PentagoState> {
         for (let i: number = 0; i < victoryCoords.length; i += 5) {
             victoryFound.put(state.getPieceAt(victoryCoords[i]) as Player, true);
         }
-        if (victoryFound.get(Player.ZERO) === true) {
-            if (victoryFound.get(Player.ONE) === true) {
+        if (victoryFound.get(Player.ZERO)) {
+            if (victoryFound.get(Player.ONE)) {
                 return GameStatus.DRAW;
             } else {
                 return GameStatus.ZERO_WON;
             }
         }
-        if (victoryFound.get(Player.ONE) === true) {
+        if (victoryFound.get(Player.ONE)) {
             return GameStatus.ONE_WON;
         }
         if (state.turn === PentagoState.SIZE * PentagoState.SIZE) {

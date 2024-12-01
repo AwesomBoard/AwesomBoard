@@ -114,7 +114,8 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
     public allDocDeleted: boolean = false;
 
-    protected rulesConfig: MGPOptional<RulesConfig> = MGPOptional.empty(); // Provided by RulesConfigurationComponent
+    // Provided by RulesConfigurationComponent
+    protected rulesConfig: MGPOptional<RulesConfig> = MGPOptional.empty();
 
     public configDemo: DemoNodeInfo;
 
@@ -371,7 +372,9 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
             this.currentConfigRoom = configRoom;
             if (configRoom.rulesConfig !== null) {
                 // Not null means that there was already a rule config saved in the config room
-                this.saveRulesConfig(MGPOptional.of(configRoom.rulesConfig));
+                this.saveRulesConfig(
+                    MGPOptional.of(configRoom.rulesConfig),
+                );
             }
             if (this.chosenOpponentJustLeft(oldConfigRoom, configRoom) &&
                 this.userIsCreator(configRoom))
@@ -580,13 +583,13 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         }
         const authUser: AuthUser = this.connectedUserService.user.get();
 
-        if (this.gameStarted === true) {
+        if (this.gameStarted) {
             // Avoid canceling game creation if part started but user leave
             return;
         }
         if (this.currentConfigRoom === null) {
             Debug.display('PartCreationComponent', 'ngOnDestroy', 'there is no part here');
-        } else if (this.allDocDeleted === true) {
+        } else if (this.allDocDeleted) {
             Debug.display('PartCreationComponent', 'ngOnDestroy', 'part has already been deleted');
         } else if (authUser.id === this.currentConfigRoom.creator.id) {
             Debug.display('PartCreationComponent', 'ngOnDestroy', 'you(creator) about to cancel creation.');
@@ -607,4 +610,9 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         this.navigateThereAfterGameCanceled = ['/local', urlName];
         await this.cancelGameCreation();
     }
+
+    public getRulesConfigToDisplay(): RulesConfig | undefined {
+        return this.currentConfigRoom?.rulesConfig;
+    }
+
 }
