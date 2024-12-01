@@ -1,7 +1,8 @@
 /* eslint-disable max-lines-per-function */
+import { EncoderTestUtils } from '@everyboard/lib';
+
 import { HexodiaMove } from '../HexodiaMove';
 import { Coord } from 'src/app/jscaip/Coord';
-import { EncoderTestUtils } from '@everyboard/lib';
 
 describe('HexodiaMove', () => {
 

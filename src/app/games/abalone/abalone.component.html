@@ -5,12 +5,6 @@
      preserveAspectRatio="xMidYMid meet"
 >
 
-<rect [attr.x]="getViewBox().left"
-      [attr.y]="getViewBox().up"
-      [attr.width]="getViewBox().width"
-      [attr.height]="getViewBox().height"
-      fill="purple"
-/>
     <polygon *ngFor="let invisibleSpace of boardNeighboringCoords"
              id="invisible-space-{{ invisibleSpace.x }}-{{ invisibleSpace.y }}"
              [attr.transform]="getHexaCenterTranslationAt(invisibleSpace)"

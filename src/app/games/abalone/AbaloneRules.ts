@@ -1,10 +1,11 @@
+import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { Coord } from 'src/app/jscaip/Coord';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { ConfigurableRules } from 'src/app/jscaip/Rules';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { AbaloneFailure } from './AbaloneFailure';
 import { AbaloneState } from './AbaloneState';
 import { AbaloneMove } from './AbaloneMove';

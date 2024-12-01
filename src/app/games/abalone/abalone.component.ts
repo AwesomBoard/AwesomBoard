@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { ArrayUtils, MGPFallible, MGPOptional, MGPValidation, Utils, Set } from '@everyboard/lib';
+
 import { HexagonalGameComponent } from 'src/app/components/game-components/game-component/HexagonalGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Direction } from 'src/app/jscaip/Direction';
@@ -72,19 +73,32 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         this.encoder = AbaloneMove.encoder;
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
         this.SPACE_SIZE = 30;
-        this.hasAsymmetricBoard = true;
+        this.setHexaLayout();
+    }
+
+    private setHexaLayout(): void {
+        const halfStroke: number = this.STROKE_WIDTH / 2;
+        const configSize: number = Math.floor(this.getState().getWidth() / 2);
+        const hexaLayoutStartX: number =
+            (- halfStroke * (configSize + 1)) + (Math.sqrt(2) * this.SPACE_SIZE);
+        const hexaLayoutStartY: number = this.SPACE_SIZE + halfStroke;
+        const hexaLayoutStartingCoord: Coord = new Coord(hexaLayoutStartX, hexaLayoutStartY);
         this.hexaLayout = new HexaLayout(this.SPACE_SIZE,
-                                         new Coord(- 8 * this.SPACE_SIZE, 2 * this.SPACE_SIZE),
+                                         hexaLayoutStartingCoord,
                                          PointyHexaOrientation.INSTANCE);
     }
 
     public getViewBox(): ViewBox {
-        return new ViewBox(
-            -217,
-            -19,
-            578,
-            518,
-        );
+        const abstractSize: number = this.getState().getWidth() + 2;
+        const pieceSize: number = this.SPACE_SIZE * 1.5;
+        const size: number = (this.SPACE_SIZE * 0.5) + (abstractSize * pieceSize);
+        const configSize: number = Math.floor(abstractSize / 2);
+        const halfStroke: number = this.STROKE_WIDTH / 2;
+        const left: number = ((configSize - 3) * (this.SPACE_SIZE - halfStroke)) - (this.STROKE_WIDTH);
+        const up: number = (-1 * (this.SPACE_SIZE - halfStroke)) - (2 * 1.25 * this.STROKE_WIDTH);
+        const width: number = size + (1.75 * configSize * this.STROKE_WIDTH);
+        const height: number = size + this.STROKE_WIDTH;
+        return new ViewBox(left, up, width, height);
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {

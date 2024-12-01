@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import { MGPOptional } from '@everyboard/lib';
+
 import { Coord } from 'src/app/jscaip/Coord';
 import { HexodiaMove } from '../HexodiaMove';
 import { HexodiaConfig, HexodiaNode, HexodiaRules } from '../HexodiaRules';

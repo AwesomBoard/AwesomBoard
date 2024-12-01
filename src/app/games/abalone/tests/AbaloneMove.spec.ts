@@ -1,11 +1,12 @@
 /* eslint-disable max-lines-per-function */
 import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
+import { TestUtils } from '@everyboard/lib';
+
 import { HexaDirection } from 'src/app/jscaip/HexaDirection';
 import { AbaloneMove } from '../AbaloneMove';
 import { AbaloneRules } from '../AbaloneRules';
 import { MoveTestUtils } from 'src/app/jscaip/tests/Move.spec';
 import { AbaloneMoveGenerator } from '../AbaloneMoveGenerator';
-import { TestUtils } from '@everyboard/lib';
 
 describe('AbaloneMove', () => {
 
