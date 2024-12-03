@@ -57,11 +57,11 @@ describe('MGPOptional', () => {
 
     describe('orElse', () => {
         it('should preserve the value if there is one', () => {
-            expect(MGPOptional.of(42).orElse(MGPOptional(0)).get()).toBe(42);
+            expect(MGPOptional.of(42).orElse(MGPOptional.of(0)).get()).toBe(42);
         });
 
         it('should return the other value if there is no value inside', () => {
-            expect(MGPOptional.empty().getOrElse(MGPOptional(0)).get()).toBe(0);
+            expect(MGPOptional.empty().orElse(MGPOptional.of(0)).get()).toBe(0);
         });
     });
 

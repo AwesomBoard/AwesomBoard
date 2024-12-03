@@ -18,7 +18,7 @@ import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
 import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
-import { faCog, faQuestion, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-local-game-wrapper',

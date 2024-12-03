@@ -2006,7 +2006,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             // Given a game with default config
             await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER);
             // When clicking on "view config" button
-            await testUtils.clickElement('#show-config'); // TODO: shouldn't clickElement by expectInterfaceClickSuccess?
+            await testUtils.clickElement('#show-config');
             // Then it should rules config, with the default config selected
             testUtils.expectElementToExist('#rules-config-component');
             const selectedConfig: DebugElement = testUtils.findElement('#rules-config-component option:checked');

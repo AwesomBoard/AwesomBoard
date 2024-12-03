@@ -585,11 +585,11 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         return MGPOptional.of(rulesConfig);
     }
 
-    public openConfig() {
+    public openConfig(): void {
         this.viewConfig = true;
     }
 
-    public closeConfig() {
+    public closeConfig(): void {
         this.viewConfig = false;
     }
 
