@@ -789,6 +789,14 @@
         <source>Take back move</source>
         <target>Reprendre un coup</target>
       </trans-unit>
+      <trans-unit id="4780631467843839550" datatype="html">
+        <source>Rules configuration</source>
+        <target>Configuration des règles</target>
+      </trans-unit>
+      <trans-unit id="1781858426685447922" datatype="html">
+        <source>View configuration</source>
+        <target>Voir la configuration</target>
+      </trans-unit>
       <trans-unit id="1944212987695444934" datatype="html">
         <source>Turn n°<x id="INTERPOLATION" equiv-text="{{ gameComponent.node.gameState.turn + 1 }}"/></source>
         <target>Tour n°<x id="INTERPOLATION" equiv-text="{{ gameComponent.node.gameState.turn + 1 }}"/></target>
@@ -1128,10 +1136,6 @@
       <trans-unit id="8893431763975992974" datatype="html">
         <source>Initial board and object of the game</source>
         <target>Plateau initial et but du jeu</target>
-      </trans-unit>
-      <trans-unit id="4780631467843839550" datatype="html">
-        <source>Rules configuration</source>
-        <target>Configuration des règles</target>
       </trans-unit>
       <trans-unit id="5878048397926852057" datatype="html">
         <source>At Abalone, the object of the game is to be the first player to push 6 opponent&apos;s pieces out of the board. Let us see how!</source>
@@ -2809,8 +2813,8 @@
         <source>Lasca is a game based on draughts created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
         <target>Lasca est un jeu basé sur le jeu de dames, créé en 1911 par Emanuel Lasker, champion du monde d'échecs. Lasca se joue sur un plateau de 7x7 cases, chaque joueur a 11 pièces.</target>
       </trans-unit>
-      <trans-unit id="4475600219932113977" datatype="html">
-        <source>The goal of Lasca is, like for draughts, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+      <trans-unit id="7200416983522302425" datatype="html">
+        <source>The goal of Lasca is, like for draughts, to render the opponent unable to move, either by capturing all their pieces, either by blocking them.</source>
         <target>Le but de Lasca est, comme aux dames, de rendre l'adversaire incapable de jouer, soit en capturant toutes ses pièces, soit en les bloquant.</target>
       </trans-unit>
       <trans-unit id="1534367694207535197" datatype="html">
