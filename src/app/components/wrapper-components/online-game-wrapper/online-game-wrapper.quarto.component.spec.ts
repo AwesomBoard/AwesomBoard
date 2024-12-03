@@ -14,6 +14,7 @@ import { PartMocks } from 'src/app/domain/PartMocks.spec';
 import { UserDAO } from 'src/app/dao/UserDAO';
 import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
 import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
+import { QuartoRules, QuartoConfig } from 'src/app/games/quarto/QuartoRules';
 import { Action, GameEvent, MGPResult, Part, Reply, RequestType } from 'src/app/domain/Part';
 import { JSONValue, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
@@ -70,6 +71,7 @@ export type PreparationOptions = {
     shorterGlobalClock: boolean;
     waitForPartToStart: boolean;
     runClocks: boolean;
+    config: MGPOptional<RulesConfig>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -79,6 +81,7 @@ export namespace PreparationOptions {
         shorterGlobalClock: false,
         waitForPartToStart: true,
         runClocks: true,
+        config: MGPOptional.empty(),
     };
 
     export const dontWait: PreparationOptions = {
@@ -114,7 +117,8 @@ export async function prepareStartedGameFor<T extends AbstractGameComponent>(
     preparationOptions: PreparationOptions = PreparationOptions.def)
 : Promise<PreparationResult<T>>
 {
-    const rulesConfig: MGPOptional<RulesConfig> = RulesConfigUtils.getGameDefaultConfig(game);
+    const defaultConfig: MGPOptional<RulesConfig> = RulesConfigUtils.getGameDefaultConfig(game);
+    const rulesConfig: MGPOptional<RulesConfig> = preparationOptions.config.orElse(defaultConfig);
     const testUtils: ComponentTestUtils<T, MinimalUser> = await ComponentTestUtils.basic(game);
     await prepareMockDBContent(ConfigRoomMocks.getInitial(rulesConfig));
     ConnectedUserServiceMock.setUser(user);
@@ -1993,6 +1997,57 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             expect(testUtils.getGameComponent().isInteractive()).toBeFalse();
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+    });
+
+
+    describe('view config button', () => {
+
+        it('should show config when clicking on "view config" (default config)', fakeAsync(async() => {
+            // Given a game with default config
+            await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER);
+            // When clicking on "view config" button
+            await testUtils.clickElement('#show-config'); // TODO: shouldn't clickElement by expectInterfaceClickSuccess?
+            // Then it should rules config, with the default config selected
+            testUtils.expectElementToExist('#rules-config-component');
+            const selectedConfig: DebugElement = testUtils.findElement('#rules-config-component option:checked');
+            const selectedConfigName: string = selectedConfig.nativeElement.value;
+            expect(selectedConfigName).toBe('Quarto');
+
+            tick(wrapper.configRoom.maximalMoveDuration * 1000);
+        }));
+
+        it('should hide config when clicking on close button', fakeAsync(async() => {
+            // Given a game with config shown
+            await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER);
+            await testUtils.clickElement('#show-config');
+            testUtils.expectElementToExist('#rules-config-component');
+            // When clicking on "view config" button
+            await testUtils.clickElement('#close-config');
+            // Then it should close rules config
+            testUtils.expectElementNotToExist('#rules-config-component');
+
+            tick(wrapper.configRoom.maximalMoveDuration * 1000);
+        }));
+
+        it('should show config when clicking on "view config" (custom config)', fakeAsync(async() => {
+            // Given a game with non-default config
+            const rules: QuartoRules = QuartoRules.get();
+            const customConfig: MGPOptional<QuartoConfig> = MGPOptional.of({
+                ...rules.getDefaultRulesConfig().get(),
+                playerZeroLevel: 2,
+            });
+            await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER, { ...PreparationOptions.def, config: customConfig });
+            // When clicking on "view config" button
+            await testUtils.expectInterfaceClickSuccess('#show-config');
+            // Then it should rules config, with the custom config selected
+            const selectedConfig: DebugElement = testUtils.findElement('#rules-config-component option:checked');
+            const selectedConfigName: string = selectedConfig.nativeElement.value;
+            expect(selectedConfigName).toBe('Custom');
+            const selectedLevel: string = testUtils.findElement('#playerZeroLevel_number_config_input').nativeElement.value;
+            expect(selectedLevel).toBe('2');
+            tick(wrapper.configRoom.maximalMoveDuration * 1000);
+        }));
+
     });
 
 });
