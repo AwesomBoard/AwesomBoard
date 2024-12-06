@@ -94,7 +94,6 @@ export const clickableMethods: { [gameName: string]: { [methodName: string]: unk
     Quarto: {
         clickCoord: [0, 0],
         clickPiece: [0],
-        deselectDroppedPiece: [],
     },
     Quixo: {
         onBoardClick: [0, 0],

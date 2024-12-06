@@ -133,8 +133,8 @@ export class ConnectedUserService implements OnDestroy {
                                 const username: string | undefined = doc.username;
                                 Debug.display('ConnectedUserService', 'subscription', `User ${username} is connected, and the verified status is ${this.emailVerified(user)}`);
                                 const userHasFinalizedVerification: boolean =
-                                    this.emailVerified(user) === true && username != null;
-                                if (userHasFinalizedVerification === true && doc.verified === false) {
+                                    this.emailVerified(user) && username != null;
+                                if (userHasFinalizedVerification && doc.verified === false) {
                                     // The user has finalized verification but isn't yet marked as so in the DB.
                                     // So we mark it, and we'll get notified when the user is marked.
                                     return this.userService.markAsVerified(user.uid);
