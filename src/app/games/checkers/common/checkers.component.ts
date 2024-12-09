@@ -68,7 +68,8 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         return new ViewBox(this.LEFT, this.UP, this.WIDTH, this.HEIGHT);
     }
 
-    protected setEverything(): void {
+    public override setRulesAndNode(urlName: string): void {
+        super.setRulesAndNode(urlName);
         this.moveGenerator = new CheckersMoveGenerator(this.rules);
         this.availableAIs = [
             new CheckersScoreMinimax(this.rules, this.moveGenerator),
@@ -222,7 +223,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         if (captureValidity.isFailure()) {
             return this.cancelMove(captureValidity.getReason());
         } else {
-            for (const flyiedOver of lastCoord.getCoordsTowards(clicked)) {
+            for (const flyiedOver of lastCoord.getCoordsToward(clicked)) {
                 if (this.constructedState.getPieceAt(flyiedOver).isOccupied()) {
                     this.capturedCoords.push(flyiedOver);
                 } else {

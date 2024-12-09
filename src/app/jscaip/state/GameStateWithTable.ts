@@ -76,6 +76,16 @@ export abstract class GameStateWithTable<P extends NonNullable<unknown>> extends
         }
     }
 
+    public findMatchingCoord(premise: (coord: Coord, content: P) => boolean): MGPOptional<Coord> {
+        for (const { coord, content } of this.getCoordsAndContents()) {
+            const result: boolean = premise(coord, content);
+            if (result) {
+                return MGPOptional.of(coord);
+            }
+        }
+        return MGPOptional.empty();
+    }
+
     public getCoordsAndContents(): {coord: Coord, content: P}[] {
         const coordsAndContents: {coord: Coord, content: P}[] = [];
         for (let y: number = 0; y < this.getHeight(); y++) {

@@ -13,7 +13,6 @@ export class LascaComponent extends CheckersComponent<LascaRules> {
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
         super(messageDisplayer, cdr);
         this.setRulesAndNode('Lasca');
-        this.setEverything();
     }
 
 }

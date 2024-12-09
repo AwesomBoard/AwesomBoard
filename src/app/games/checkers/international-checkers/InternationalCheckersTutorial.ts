@@ -18,12 +18,12 @@ export class InternationalCheckersTutorial extends Tutorial {
     public tutorial: TutorialStep[] = [
         TutorialStep.informational(
             TutorialStepMessage.OBJECT_OF_THE_GAME(),
-            $localize`The goal of checkers is to render the opponent unable to move, either by capturing all his pieces, either by blocking them.`,
+            $localize`The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, either by blocking them.`,
             InternationalCheckersRules.get().getInitialState(defaultConfig),
         ),
         TutorialStep.anyMove(
             $localize`Steps`,
-            $localize`A simple step is made by one diagonal move forward, left or right. Click on the chosen piece, then on its landing square.<br/><br/>You are playing Dark, do the first move.`,
+            $localize`A simple step is made by one diagonal move forward left or forward right. Click on the chosen piece, then on its landing square.<br/><br/>You are playing Dark, do the first move.`,
             InternationalCheckersRules.get().getInitialState(defaultConfig),
             CheckersMove.fromStep(new Coord(5, 6), new Coord(4, 5)),
             TutorialStepMessage.CONGRATULATIONS(),
@@ -83,8 +83,8 @@ export class InternationalCheckersTutorial extends Tutorial {
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.anyMove(
-            $localize`Maximal captures`,
-            $localize`If at some turn you have several capture choice, you have to capture the maximal number of pieces.<br/><br/>You are playing Dark, do the maximal capture.`,
+            $localize`Maximum capture`,
+            $localize`If at some turn you have several capture choices, you have to capture the maximal number of pieces.<br/><br/>You are playing Dark, do the maximal capture.`,
             CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
@@ -102,7 +102,7 @@ export class InternationalCheckersTutorial extends Tutorial {
         ),
         TutorialStep.fromMove(
             CheckersTutorialStep.PROMOTION_TITLE(),
-            $localize`When a piece reaches the last line, it is promoted and becomes a queen, and gains abilities that will be explained in next step! One of your piece could be promoted now.<br/><br/>You're playing Dark. Do it.`,
+            $localize`When a piece reaches the last line, it is promoted and becomes a king, and gains abilities that will be explained in next step! One of your piece could be promoted now.<br/><br/>You're playing Dark. Do it.`,
             CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, V],
                 [_, _, _, _, _, _, U, _, V, _],
@@ -123,8 +123,8 @@ export class InternationalCheckersTutorial extends Tutorial {
             $localize`You did not choose the correct piece, and got no promotion.`,
         ),
         TutorialStep.fromPredicate(
-            $localize`Queen move`,
-            $localize`Queens can move forward like the others, and capture backward like the others. But they can also move backward without capturing. They are also able to do what we call "flying". This means doing longer steps, without jumping any piece to move, or by jumping exactly one opponent piece to capture it, then land wherever is wanting in the same line.<br/><br/>You're playing Dark, move your queen!`,
+            $localize`King move`,
+            $localize`Kings can, like any other piece, move forward and capture backward. They have extra abilities. First, they can move backward without capturing. Second, they are able to "fly": they can move over multiple squares without jumping over any piece, or by jumping over exactly one opponent piece to capture it, and finally landing wherever in the same line.<br/><br/>You're playing Dark, move your king!`,
             CheckersState.of([
                 [_, _, _, _, _, _, _, O, _, V],
                 [_, _, _, _, _, _, _, _, _, _],
@@ -142,14 +142,14 @@ export class InternationalCheckersTutorial extends Tutorial {
                 if (move.getStartingCoord().equals(new Coord(7, 0))) {
                     return MGPValidation.SUCCESS;
                 } else {
-                    return MGPValidation.failure($localize`You did not move your queen.`);
+                    return MGPValidation.failure($localize`You did not move your king.`);
                 }
             },
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.anyMove(
-            $localize`Jump rule`,
-            $localize`When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.<br/>Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.<br/><br/>You are playing Dark, go ahead.`,
+            $localize`Capture rule`,
+            $localize`When you do multiple jumps, you cannot jump twice over neither the same piece nor the same empty space.<br/>Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.<br/><br/>You are playing Dark, go ahead.`,
             new CheckersState([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],

@@ -21,7 +21,7 @@ export class FourStatePieceGameStateWithTable extends GameStateWithTable<FourSta
             });
     }
 
-    public isPlayer(coord: Coord): boolean {
+    public isPlayerAt(coord: Coord): boolean {
         const piece: FourStatePiece = this.getPieceAt(coord);
         return piece.isPlayer();
     }

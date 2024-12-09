@@ -45,7 +45,7 @@ export class CheckersStack {
 
     public static EMPTY: CheckersStack = new CheckersStack([]);
 
-    // The list of pieces is from top to bottom, hence [commander, its allies, its prisoner, more prisoner]
+    // The list of pieces is from top to bottom, hence [commander, its allies, its prisoners, more prisoners]
     public constructor(public readonly pieces: ReadonlyArray<CheckersPiece>) {}
 
     public isEmpty(): boolean {

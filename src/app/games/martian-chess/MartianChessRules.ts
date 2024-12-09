@@ -156,7 +156,7 @@ export class MartianChessRules extends Rules<MartianChessMove, MartianChessState
                 return MGPValidation.failure(MartianChessMoveFailure.DRONE_MUST_DO_TWO_ORTHOGONAL_STEPS());
             }
         }
-        for (const coord of move.getStart().getCoordsTowards(move.getEnd())) {
+        for (const coord of move.getStart().getCoordsToward(move.getEnd())) {
             if (state.getPieceAt(coord) !== MartianChessPiece.EMPTY) {
                 return MGPValidation.failure(RulesFailure.SOMETHING_IN_THE_WAY());
             }

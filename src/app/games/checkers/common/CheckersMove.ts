@@ -25,7 +25,7 @@ export class CheckersMove extends Move {
         for (const coord of steppedOn) {
             if (lastCoordOpt.isPresent()) {
                 const lastCoord: Coord = lastCoordOpt.get();
-                const subJumpedOverCoords: Coord[] = lastCoord.getCoordsTowards(coord).concat([coord]);
+                const subJumpedOverCoords: Coord[] = lastCoord.getCoordsToward(coord).concat([coord]);
                 for (const jumpedOverCoord of subJumpedOverCoords) {
                     if (jumpedOverCoords.contains(jumpedOverCoord)) {
                         return MGPFallible.failure(CheckersFailure.CANNOT_CAPTURE_TWICE_THE_SAME_COORD());

@@ -63,7 +63,7 @@ for (const rule of rules) {
             // When listing the moves
             const moves: CheckersMove[] = moveGenerator.getListMoves(node, customConfig);
 
-            // Then it should return the list of capture
+            // Then it should return the list of captures
             expect(moves.length).toBe(1);
             const captures: Coord[] = [
                 new Coord(4, 0),
@@ -102,7 +102,7 @@ describe('CheckersMoveGenerator for International Checkers', () => {
         // When listing the moves
         const moves: CheckersMove[] = moveGenerator.getListMoves(node, defaultConfig);
 
-        // Then it should return the list of capture
+        // Then it should return the list of captures
         expect(moves.length).toBe(1);
     });
 
@@ -133,7 +133,7 @@ describe('CheckersMoveGenerator for Lasca', () => {
         // When listing the moves
         const moves: CheckersMove[] = moveGenerator.getListMoves(node, defaultConfig);
 
-        // Then it should return the list of capture
+        // Then it should return the list of captures
         expect(moves.length).toBe(2);
     });
 

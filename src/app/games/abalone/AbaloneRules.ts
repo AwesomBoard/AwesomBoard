@@ -175,7 +175,7 @@ export class AbaloneRules extends ConfigurableRules<AbaloneMove,
             const landing: Coord = tested.getNext(move.dir);
             newBoard[tested.y][tested.x] = FourStatePiece.EMPTY;
             if (state.isOnBoard(landing)) {
-                if (state.isPlayer(landing)) {
+                if (state.isPlayerAt(landing)) {
                     return MGPFallible.failure(AbaloneFailure.TRANSLATION_IMPOSSIBLE());
                 }
                 if (state.getPieceAt(landing) === FourStatePiece.EMPTY) {

@@ -77,7 +77,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
     }
 
     public isThrone(state: TaflState, coord: Coord): boolean {
-        if (state.isExternalThrone(coord) === true) {
+        if (state.isExternalThrone(coord)) {
             return true;
         } else {
             return state.isCentralThrone(coord);

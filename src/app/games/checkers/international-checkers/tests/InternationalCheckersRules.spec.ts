@@ -14,13 +14,13 @@ describe('InternationalCheckersRules', () => {
 
     const zero: CheckersPiece = CheckersPiece.ZERO;
     const one: CheckersPiece = CheckersPiece.ONE;
-    const zeroQueen: CheckersPiece = CheckersPiece.ZERO_PROMOTED;
-    const oneQueen: CheckersPiece = CheckersPiece.ONE_PROMOTED;
+    const zeroKing: CheckersPiece = CheckersPiece.ZERO_PROMOTED;
+    const oneKing: CheckersPiece = CheckersPiece.ONE_PROMOTED;
 
     const U: CheckersStack = new CheckersStack([zero]);
-    const O: CheckersStack = new CheckersStack([zeroQueen]);
+    const O: CheckersStack = new CheckersStack([zeroKing]);
     const V: CheckersStack = new CheckersStack([one]);
-    const X: CheckersStack = new CheckersStack([oneQueen]);
+    const X: CheckersStack = new CheckersStack([oneKing]);
     const _: CheckersStack = CheckersStack.EMPTY;
 
     let rules: InternationalCheckersRules;
@@ -171,8 +171,8 @@ describe('InternationalCheckersRules', () => {
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
-        it('should allow long step forward for queen', () => {
-            // Given any board with a queen
+        it('should allow long step forward for king', () => {
+            // Given any board with a king
             const state: CheckersState = CheckersState.of([
                 [V, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
@@ -205,8 +205,8 @@ describe('InternationalCheckersRules', () => {
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
-        it('should allow long step for backward queen', () => {
-            // Given any board with a queen
+        it('should allow long step for backward king', () => {
+            // Given any board with a king
             const state: CheckersState = CheckersState.of([
                 [V, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
@@ -443,8 +443,8 @@ describe('InternationalCheckersRules', () => {
                 RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
             });
 
-            it('should allow backward complexe capture', () => {
-                // Given a board on which a backward complexe capture is possible
+            it('should allow backward complex capture', () => {
+                // Given a board on which a backward complex capture is possible
                 const state: CheckersState = CheckersState.of([
                     [_, _, _, _, _, _, _, _, _, _],
                     [_, _, _, _, _, _, _, _, _, _],
@@ -592,10 +592,10 @@ describe('InternationalCheckersRules', () => {
 
         });
 
-        describe('Queen', () => {
+        describe('King', () => {
 
-            it('should allow backward capture with queen', () => {
-                // Given a board on which an queen can capture backward
+            it('should allow backward capture with king', () => {
+                // Given a board on which an king can capture backward
                 const state: CheckersState = CheckersState.of([
                     [_, _, _, _, _, _, _],
                     [_, _, _, _, _, V, _],
@@ -668,8 +668,8 @@ describe('InternationalCheckersRules', () => {
                 RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
             });
 
-            it('should allow queen capture to land just after capture', () => {
-                // Given a board where a queen could capture with a longer jump
+            it('should allow king capture to land just after capture', () => {
+                // Given a board where a king could capture with a longer jump
                 const state: CheckersState = CheckersState.of([
                     [_, _, _, _, _, _, _, _, _, _],
                     [_, _, _, U, _, _, _, _, _, _],
@@ -702,8 +702,8 @@ describe('InternationalCheckersRules', () => {
                 RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
             });
 
-            it('should allow queen capture to land far after capture', () => {
-                // Given a board where a queen could capture with a longer jump
+            it('should allow king capture to land far after capture', () => {
+                // Given a board where a king could capture with a longer jump
                 const state: CheckersState = CheckersState.of([
                     [_, _, _, _, _, _, _, _, _, _],
                     [_, _, _, U, _, _, _, _, _, _],
@@ -1061,7 +1061,7 @@ describe('InternationalCheckersRules', () => {
             RulesUtils.expectMoveFailure(rules, state, move, reason, alternateConfig);
         });
 
-        it('Should refuse uneven frisian capture even if config allows frisian capture', () => {
+        it('Should refuse a uneven frisian capture even if config allows frisian capture', () => {
             // Given a board where a frisian capture is possible
             const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
                 ...defaultConfig.get(),

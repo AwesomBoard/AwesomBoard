@@ -2,6 +2,8 @@ import { Localized } from 'src/app/utils/LocaleUtils';
 
 export class CheckersTutorialStep {
 
+    public static readonly SIMPLE_STEPS: Localized = () => $localize`A simple step is made by one diagonal move forward left or forward right. Click on the chosen piece, then on its landing square.<br/><br/>You are playing Dark, do the first move.`;
+
     public static readonly BACKWARD_CAPTURES_TITLE: Localized = () => $localize`Backward captures`;
 
     public static readonly BACKWARD_CAPTURES: Localized = () => $localize`A capture can also be done backward<br/><br/>You're playing Dark, do a capture backward.`;

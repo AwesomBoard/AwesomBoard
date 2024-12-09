@@ -14,7 +14,7 @@ import { InternationalCheckersRules } from '../InternationalCheckersRules';
 import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { DirectionFailure } from 'src/app/jscaip/Direction';
 
-describe('InternationalCheckersComponent', () => {
+fdescribe('InternationalCheckersComponent', () => {
 
     const zero: CheckersPiece = CheckersPiece.ZERO;
     const one: CheckersPiece = CheckersPiece.ONE;
@@ -51,8 +51,8 @@ describe('InternationalCheckersComponent', () => {
             testUtils.expectElementNotToExist('#clickable-highlight-8-5');
         }));
 
-        it('should highlight possible step-landing after selecting queen', fakeAsync(async() => {
-            // Given any board where long steps are possible for a queen
+        it('should highlight possible step-landing after selecting king', fakeAsync(async() => {
+            // Given any board where long steps are possible for a king
             const state: CheckersState = CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],
@@ -312,8 +312,8 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectClickFailure('#coord-0-4', RulesFailure.CANNOT_SELF_CAPTURE());
         }));
 
-        it('should only highlight captured piece when doing flying capture with queen', fakeAsync(async() => {
-            // Given a board with a selected queen and a possible capture
+        it('should only highlight captured piece when doing flying capture with king', fakeAsync(async() => {
+            // Given a board with a selected king and a possible capture
             const state: CheckersState = CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, O, _, _, _, _, _, _, _, _],
@@ -347,8 +347,8 @@ describe('InternationalCheckersComponent', () => {
             testUtils.expectElementToHaveClass('#square-5-5', 'moved-fill');
         }));
 
-        it('should allow doing flying capture with queen with close-landing', fakeAsync(async() => {
-            // Given a board with a selected queen and a possible capture
+        it('should allow doing flying capture with king with close-landing', fakeAsync(async() => {
+            // Given a board with a selected king and a possible capture
             const state: CheckersState = CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, V, _, _, _, _, _, _, _, _],
@@ -403,8 +403,8 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectMoveSuccess('#coord-2-5', move);
         }));
 
-        it('should allow doing flying multiple-capture with queen with far-landing', fakeAsync(async() => {
-            // Given a board with a selected queen and a possible multiple-capture
+        it('should allow doing flying multiple-capture with king with far-landing', fakeAsync(async() => {
+            // Given a board with a selected king and a possible multiple-capture
             const state: CheckersState = CheckersState.of([
                 [_, _, _, _, _, _, _, _, _, _],
                 [_, V, _, _, _, _, _, _, _, _],
@@ -429,8 +429,8 @@ describe('InternationalCheckersComponent', () => {
             await testUtils.expectMoveSuccess('#coord-0-0', move);
         }));
 
-        it('should allow long step forward for queen', fakeAsync(async() => {
-            // Given any board with a queen selected
+        it('should allow long step forward for king', fakeAsync(async() => {
+            // Given any board with a king selected
             const state: CheckersState = CheckersState.of([
                 [V, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _],

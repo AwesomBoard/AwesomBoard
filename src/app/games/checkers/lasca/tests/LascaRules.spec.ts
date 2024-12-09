@@ -307,8 +307,8 @@ describe('LascaRules', () => {
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
-        it('should forbid backward complexe capture', () => {
-            // Given a board on which a backward complexe capture is possible
+        it('should forbid backward complex capture', () => {
+            // Given a board on which a backward complex capture is possible
             const state: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, ___, ___, ___, ___],
@@ -868,7 +868,7 @@ describe('LascaRules', () => {
             RulesUtils.expectMoveFailure(rules, state, move, reason, alternateConfig);
         });
 
-        it('Should refuse uneven frisian capture even if config allows frisian capture', () => {
+        it('Should refuse a uneven frisian capture even if config allows frisian capture', () => {
             // Given a board where a frisian capture is possible
             const alternateConfig: MGPOptional<CheckersConfig> = MGPOptional.of({
                 ...defaultConfig.get(),

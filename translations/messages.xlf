@@ -191,8 +191,8 @@
       <trans-unit id="4865500405661191388" datatype="html">
         <source>You are in charge of a hive full of insects. Use the abilities of your insects to block the opponent&apos;s queen in order to win!</source>
       </trans-unit>
-      <trans-unit id="1265878048705212004" datatype="html">
-        <source>The famous checkers game, in its international version!</source>
+      <trans-unit id="7855356453914220059" datatype="html">
+        <source>The famous checkers game (international version)</source>
       </trans-unit>
       <trans-unit id="3778423604946977624" datatype="html">
         <source>The Viking board game! Invaders must capture the king, defender must make him escape!</source>
@@ -887,8 +887,8 @@
       <trans-unit id="272253201636921624" datatype="html">
         <source>Pushing</source>
       </trans-unit>
-      <trans-unit id="2330775081318125963" datatype="html">
-        <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
+      <trans-unit id="5786541673114174680" datatype="html">
+        <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push toward the right is possible here, find it. (You&apos;re playing Dark).</source>
       </trans-unit>
       <trans-unit id="1578933364998292635" datatype="html">
         <source>To translate a group of pieces, first select the first piece, then the last piece, and finally click on one of the four lateral directions in which the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
@@ -962,11 +962,11 @@
       <trans-unit id="2406587628849019715" datatype="html">
         <source>Stack pieces instead of capturing them</source>
       </trans-unit>
-      <trans-unit id="7021784120606335572" datatype="html">
-        <source>You must capture the highest number of piece</source>
+      <trans-unit id="5703694246153191852" datatype="html">
+        <source>You must capture the highest number of pieces</source>
       </trans-unit>
-      <trans-unit id="1072817438513810472" datatype="html">
-        <source>Simple piece can capture backward</source>
+      <trans-unit id="5513887234495231304" datatype="html">
+        <source>Simple pieces can capture backward</source>
       </trans-unit>
       <trans-unit id="5102353447213251496" datatype="html">
         <source>Promoted pieces can travel long distance</source>
@@ -998,8 +998,8 @@
       <trans-unit id="3726954835052044930" datatype="html">
         <source>Frisian capture must be of even length!</source>
       </trans-unit>
-      <trans-unit id="7018562785463258954" datatype="html">
-        <source>This is an invalid orthogonal move, frisian capture must be at least steps of 4. Look at the indicators to help you!</source>
+      <trans-unit id="3645639684924416367" datatype="html">
+        <source>This is an invalid orthogonal move, a frisian capture must be at least steps of 4. Look at the indicators to help you!</source>
       </trans-unit>
       <trans-unit id="964675748683334375" datatype="html">
         <source>Normal pieces cannot move like this!</source>
@@ -1019,11 +1019,14 @@
       <trans-unit id="8795923620032980614" datatype="html">
         <source>You must do the longest capture possible!</source>
       </trans-unit>
-      <trans-unit id="6151712512701871680" datatype="html">
-        <source>Cannot jump over several pieces!</source>
+      <trans-unit id="4849176470407657635" datatype="html">
+        <source>You cannot jump over several pieces!</source>
       </trans-unit>
-      <trans-unit id="2690787965218168718" datatype="html">
-        <source>You have done a step after a capture. A move that start in capture can only contain captures.</source>
+      <trans-unit id="4596314344113953334" datatype="html">
+        <source>You have done a step after a capture. A move that starts with a capture can only contain captures.</source>
+      </trans-unit>
+      <trans-unit id="8375763259935871100" datatype="html">
+        <source>A simple step is made by one diagonal move forward left or forward right. Click on the chosen piece, then on its landing square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the first move.</source>
       </trans-unit>
       <trans-unit id="7318689477424356735" datatype="html">
         <source>Backward captures</source>
@@ -1043,44 +1046,41 @@
       <trans-unit id="2693455583384082674" datatype="html">
         <source>Promotion</source>
       </trans-unit>
-      <trans-unit id="596239006245525122" datatype="html">
-        <source>The goal of checkers is to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+      <trans-unit id="7516985734969436846" datatype="html">
+        <source>The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, either by blocking them.</source>
       </trans-unit>
       <trans-unit id="1534367694207535197" datatype="html">
         <source>Steps</source>
       </trans-unit>
-      <trans-unit id="5101419651122121441" datatype="html">
-        <source>A simple step is made by one diagonal move forward, left or right. Click on the chosen piece, then on its landing square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the first move.</source>
-      </trans-unit>
       <trans-unit id="5216257512116603462" datatype="html">
         <source>Captures</source>
       </trans-unit>
-      <trans-unit id="248134916259829943" datatype="html">
-        <source>Maximal captures</source>
+      <trans-unit id="7360724816457427020" datatype="html">
+        <source>Maximum capture</source>
       </trans-unit>
-      <trans-unit id="4813997891576786254" datatype="html">
-        <source>If at some turn you have several capture choice, you have to capture the maximal number of pieces.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the maximal capture.</source>
+      <trans-unit id="8944110142689384190" datatype="html">
+        <source>If at some turn you have several capture choices, you have to capture the maximal number of pieces.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the maximal capture.</source>
       </trans-unit>
-      <trans-unit id="5155854598987833227" datatype="html">
-        <source>When a piece reaches the last line, it is promoted and becomes a queen, and gains abilities that will be explained in next step! One of your piece could be promoted now.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark. Do it.</source>
+      <trans-unit id="6705237401508801272" datatype="html">
+        <source>When a piece reaches the last line, it is promoted and becomes a king, and gains abilities that will be explained in next step! One of your piece could be promoted now.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark. Do it.</source>
       </trans-unit>
       <trans-unit id="2350466795039227682" datatype="html">
         <source>You did not choose the correct piece, and got no promotion.</source>
       </trans-unit>
-      <trans-unit id="9030049945272757280" datatype="html">
-        <source>Queen move</source>
+      <trans-unit id="3494718669384677623" datatype="html">
+        <source>King move</source>
       </trans-unit>
-      <trans-unit id="1609034897374459946" datatype="html">
-        <source>Queens can move forward like the others, and capture backward like the others. But they can also move backward without capturing. They are also able to do what we call &quot;flying&quot;. This means doing longer steps, without jumping any piece to move, or by jumping exactly one opponent piece to capture it, then land wherever is wanting in the same line.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, move your queen!</source>
+      <trans-unit id="7943272134877911783" datatype="html">
+        <source>Kings can, like any other piece, move forward and capture backward. They have extra abilities. First, they can move backward without capturing. Second, they are able to &quot;fly&quot;: they can move over multiple squares without jumping over any piece, or by jumping over exactly one opponent piece to capture it, and finally landing wherever in the same line.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, move your king!</source>
       </trans-unit>
-      <trans-unit id="3154252720872976153" datatype="html">
-        <source>You did not move your queen.</source>
+      <trans-unit id="6253946314470341234" datatype="html">
+        <source>You did not move your king.</source>
       </trans-unit>
-      <trans-unit id="7062389198958064827" datatype="html">
-        <source>Jump rule</source>
+      <trans-unit id="2755311753913057003" datatype="html">
+        <source>Capture rule</source>
       </trans-unit>
-      <trans-unit id="6244103507506422969" datatype="html">
-        <source>When you do a multiple jump, you cannot jump twice over neither the same piece nor the same empty space.&lt;br/&gt;Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, go ahead.</source>
+      <trans-unit id="606169029000365891" datatype="html">
+        <source>When you do multiple jumps, you cannot jump twice over neither the same piece nor the same empty space.&lt;br/&gt;Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, go ahead.</source>
       </trans-unit>
       <trans-unit id="8274439231274366704" datatype="html">
         <source>Lasca: origins</source>
@@ -1088,8 +1088,8 @@
       <trans-unit id="3082102783316586508" datatype="html">
         <source>Lasca is a game based on checkers, created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
       </trans-unit>
-      <trans-unit id="7912613915101567284" datatype="html">
-        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+      <trans-unit id="3320726876110064006" datatype="html">
+        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all their pieces, either by blocking them.</source>
       </trans-unit>
       <trans-unit id="3662184238859847370" datatype="html">
         <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>
@@ -2146,8 +2146,8 @@
       <trans-unit id="609421287344629004" datatype="html">
         <source>The attracting lodestone</source>
       </trans-unit>
-      <trans-unit id="1840990354301535750" datatype="html">
-        <source>When the lodestone is on its attracting side it will pull your pieces one square towards it. In case one of your pieces encounters a lodestone on its way or another blocked piece, it is blocked. However, if it encounter an opponent&apos;s piece, it will capture it.</source>
+      <trans-unit id="3752096879908140751" datatype="html">
+        <source>When the lodestone is on its attracting side it will pull your pieces one square toward it. In case one of your pieces encounters a lodestone on its way or another blocked piece, it is blocked. However, if it encounter an opponent&apos;s piece, it will capture it.</source>
       </trans-unit>
       <trans-unit id="5747624424535894902" datatype="html">
         <source>Flipping the lodestone</source>
@@ -2905,8 +2905,8 @@
       <trans-unit id="709861006710076010" datatype="html">
         <source>Congratulations! Note that this move made you lose the game, you will see why in the next step.</source>
       </trans-unit>
-      <trans-unit id="5917097999963707548" datatype="html">
-        <source>The game ends when a mountain is pushed out of the board. If you pushed it and nobody is in front of you, you&apos;re the winner. However, if you were pushing an opponent oriented in the same direction as you, your opponent will win because that piece is closer to the mountain. However, if that opponent is closer to the mountain but not oriented towards it, victory will be yours.&lt;br/&gt;&lt;br/&gt;Here, playing Dark, you can push a mountain off the board and either win, or lose. Choose correctly!</source>
+      <trans-unit id="7894393124871116843" datatype="html">
+        <source>The game ends when a mountain is pushed out of the board. If you pushed it and nobody is in front of you, you&apos;re the winner. However, if you were pushing an opponent oriented in the same direction as you, your opponent will win because that piece is closer to the mountain. However, if that opponent is closer to the mountain but not oriented toward it, victory will be yours.&lt;br/&gt;&lt;br/&gt;Here, playing Dark, you can push a mountain off the board and either win, or lose. Choose correctly!</source>
       </trans-unit>
       <trans-unit id="8309748811457759789" datatype="html">
         <source>Failed, you lost.</source>

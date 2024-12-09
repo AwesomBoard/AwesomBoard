@@ -25,7 +25,7 @@
                  [ngClass]="getSpaceClass(coord)"
                  class="base"
                  stroke-linecap="round"/>
-        <circle *ngIf="isPlayer(coord)"
+        <circle *ngIf="isPlayerAt(coord)"
                 cx="0"
                 cy="0"
                 [attr.r]="SPACE_SIZE"

@@ -37,7 +37,7 @@ describe('CheckersMove', () => {
             expect(move.isSuccess()).toBeTrue();
         });
 
-        it('should allow complexe capture', () => {
+        it('should allow complex capture', () => {
             // When trying to create a simple move
             const captures: Coord[] = [new Coord(0, 0), new Coord(3, 3), new Coord(1, 5)];
             const move: MGPFallible<CheckersMove> = CheckersMove.fromCapture(captures);

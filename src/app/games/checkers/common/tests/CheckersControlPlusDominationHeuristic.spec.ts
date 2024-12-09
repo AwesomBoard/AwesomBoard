@@ -62,7 +62,7 @@ for (const rule of rules) {
         });
 
         it('should count the potential mobility as primary board value', () => {
-            // Given two boards with the same stacks, one with an unique forced capture, the other without
+            // Given two boards with the same stacks, one with a unique forced capture, the other without
             const forcedState: CheckersState = CheckersState.of([
                 [X, _, _, _, _, _, _],
                 [_, O, _, _, _, _, _],

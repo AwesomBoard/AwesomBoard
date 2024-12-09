@@ -14,7 +14,7 @@ import { LascaRules } from '../LascaRules';
 import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { DirectionFailure } from 'src/app/jscaip/Direction';
 
-describe('LascaComponent', () => {
+fdescribe('LascaComponent', () => {
 
     const zero: CheckersPiece = CheckersPiece.ZERO;
     const one: CheckersPiece = CheckersPiece.ONE;

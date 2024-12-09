@@ -49,14 +49,9 @@ export abstract class HexagonalGameState<P extends NonNullable<Comparable>> exte
                 return false;
             }
         }
-        let isEqual: boolean = true;
-        this.forEachCoord((coord: Coord, content: P) => {
-            if (equal(content, other.getPieceAt(coord)) === false) {
-                isEqual = false;
-                return;
-            }
-        });
-        return isEqual;
+        return this.findMatchingCoord((coord: Coord, content: P) => {
+            return equal(content, other.getPieceAt(coord)) === false;
+        }).isAbsent();
     }
 
     public allLines(): ReadonlyArray<HexaLine> {

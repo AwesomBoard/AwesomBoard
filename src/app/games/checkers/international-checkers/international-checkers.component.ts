@@ -13,7 +13,6 @@ export class InternationalCheckersComponent extends CheckersComponent<Internatio
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
         super(messageDisplayer, cdr);
         this.setRulesAndNode('InternationalCheckers');
-        this.setEverything();
     }
 
 }

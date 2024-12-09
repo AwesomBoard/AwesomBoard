@@ -26,12 +26,12 @@ export class LascaTutorial extends Tutorial {
         ),
         TutorialStep.informational(
             TutorialStepMessage.OBJECT_OF_THE_GAME(),
-            $localize`The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.`,
+            $localize`The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all their pieces, either by blocking them.`,
             LascaRules.get().getInitialState(defaultConfig),
         ),
         TutorialStep.anyMove(
             $localize`Steps`,
-            $localize`A simple step is made by one diagonal move forward, left or right. Click on the chosen piece, then on its landing square.<br/><br/>You are playing Dark, do the first move.`,
+            CheckersTutorialStep.SIMPLE_STEPS(),
             LascaRules.get().getInitialState(defaultConfig),
             CheckersMove.fromStep(new Coord(4, 4), new Coord(3, 3)),
             TutorialStepMessage.CONGRATULATIONS(),
