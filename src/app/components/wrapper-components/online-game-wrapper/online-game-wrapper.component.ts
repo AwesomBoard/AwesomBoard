@@ -113,6 +113,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         const urlName: string = this.getGameUrlName();
         const gameExists: boolean = GameInfo.getByUrlName(urlName).isPresent();
         if (gameExists) {
+            console.log('gameExists', gameExists, 'at', urlName, this.currentPartId)
             const partValidity: MGPValidation =
                 await this.gameService.getGameValidity(this.currentPartId, urlName);
             if (partValidity.isFailure()) {

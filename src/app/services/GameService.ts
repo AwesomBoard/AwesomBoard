@@ -46,8 +46,10 @@ export class GameService extends BackendService {
 
     /** Retrieve the name of the game with the given id. If there is no corresponding game, returns an empty option. */
     public async getGameName(gameId: string): Promise<MGPOptional<string>> {
+        console.log('getGameName', gameId)
         const result: MGPFallible<JSONValue> =
             await this.performRequestWithJSONResponse('GET', `game/${gameId}?onlyGameName`);
+        console.log('la jaaj hein ?')
         if (result.isSuccess()) {
             // eslint-disable-next-line dot-notation
             const gameName: string = Utils.getNonNullable(Utils.getNonNullable(result.get())['gameName']) as string;
@@ -192,12 +194,17 @@ export class GameService extends BackendService {
     }
 
     public async getGameValidity(gameId: string, gameName: string): Promise<MGPValidation> {
+        console.log('getGameValidity', gameId, gameName)
         const realGameName: MGPOptional<string> = await this.getGameName(gameId);
+        console.log('getGameValidity >>', realGameName)
         if (realGameName.isAbsent()) {
+            console.log('getGameValidity >> isAbsent')
             return MGPValidation.failure($localize`This game does not exist!`);
         } else if (realGameName.get() !== gameName) {
+            console.log('getGameValidity >> wrong game type')
             return MGPValidation.failure($localize`This is the wrong game type!`);
         } else {
+            console.log('getGameValidity >> success')
             return MGPValidation.SUCCESS;
         }
     }
