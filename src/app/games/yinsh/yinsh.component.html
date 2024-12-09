@@ -14,13 +14,13 @@
                          [ngClass]="getSpaceClasses(x, y)"
                          class="base"
                          stroke-linecap="round"/>
-                <g id="pieceGroup_{{ x }}_{{ y }}"
+                <g id="pieceGroup_{{ x }}_{{ y }}-SPACE_SIZE_IS{{SPACE_SIZE}}"
                    [ngClass]="getPieceGroupClasses(x, y)"
                    [attr.transform]="getTranslationAt(getCenterAtXY(x, y))"
                 >
                     <g *ngIf="isRing(x, y)">
                         <circle [attr.r]="viewInfo.ringOuterSize"
-                                class="base no-fill mid-stroke"/>
+                                class="base-no-fill mid-stroke"/>
                         <circle id="ring_{{ x }}_{{ y }}"
                                 [attr.r]="viewInfo.ringMidSize"
                                 [ngClass]="getRingClasses(x, y)"

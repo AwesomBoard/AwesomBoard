@@ -40,6 +40,10 @@ export class PenteComponent extends GobanGameComponent<PenteRules,
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
     }
 
+    public override getScoreName(): string {
+        return $localize`captures`;
+    }
+
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: PenteState = this.getState();
         this.board = state.board;

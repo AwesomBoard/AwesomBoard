@@ -76,6 +76,10 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
                                          PointyHexaOrientation.INSTANCE);
     }
 
+    public override getScoreName(): string {
+        return $localize`captures`;
+    }
+
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.hexaBoard = this.getState().getCopiedBoard();
         this.scores = MGPOptional.of(this.getState().getScores());

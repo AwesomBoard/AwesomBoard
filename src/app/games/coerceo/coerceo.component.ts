@@ -56,6 +56,10 @@ export class CoerceoComponent extends TriangularGameComponent<CoerceoRules,
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
     }
 
+    public override getScoreName(): string {
+        return $localize`captures`;
+    }
+
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.state = this.getState();
         this.scores = MGPOptional.of(this.state.captures);

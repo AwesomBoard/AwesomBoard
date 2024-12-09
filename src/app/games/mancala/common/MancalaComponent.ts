@@ -54,6 +54,10 @@ export abstract class MancalaComponent<R extends MancalaRules>
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
     }
 
+    public override getScoreName(): string {
+        return $localize`captures`;
+    }
+
     public getMancalaViewBox(): string {
         const left: number = - this.STROKE_WIDTH / 2;
         const up: number = - this.STROKE_WIDTH / 2;

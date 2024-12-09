@@ -65,6 +65,10 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
         this.hasAsymmetricBoard = true;
     }
 
+    public override getScoreName(): string {
+        return $localize`remaining pieces`;
+    }
+
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.board = this.getState().getCopiedBoard();
         this.scores = this.getScores();

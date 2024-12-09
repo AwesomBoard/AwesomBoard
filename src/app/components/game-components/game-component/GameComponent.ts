@@ -103,6 +103,19 @@ export abstract class GameComponent<R extends SuperRules<M, S, C, L>,
         super();
     }
 
+    public hasScores(): boolean {
+        return this.scores.isPresent();
+    }
+
+    public getScore(player: Player): number {
+        return this.scores.get().get(player);
+    }
+
+    public getScoreName(): string {
+        // This can be redefined in games where we don't talk about points
+        return $localize`points`;
+    }
+
     public getPointOfView(): Player {
         return this.pointOfView;
     }

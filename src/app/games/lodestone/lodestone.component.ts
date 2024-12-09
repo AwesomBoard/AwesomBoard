@@ -141,6 +141,10 @@ export class LodestoneComponent
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
     }
 
+    public override getScoreName(): string {
+        return $localize`captures`;
+    }
+
     public getViewBox(): ViewBox {
         const left: number = - this.platesGroupSize;
         const up: number = - (this.platesGroupSize + this.SPACE_SIZE + this.STROKE_WIDTH);

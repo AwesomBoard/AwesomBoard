@@ -49,10 +49,10 @@
                                 >{{ option.name }}</option>
                     </select>
                 </div>
-                <p *ngIf="gameComponent.scores.isPresent()"
+                <p *ngIf="gameComponent.hasScores()"
                    id="score-{{ player.getValue() }}"
                    [ngClass]="player.getHTMLClass('-fg')"
-                   i18n>{{ gameComponent.scores.get().get(player) }} points</p>
+                   >{{ gameComponent.getScore(player) }} {{ gameComponent.getScoreName() }} </p>
             </div>
             <button *ngIf="endGame === false && gameComponent.canPass"
                     id="pass-button"
