@@ -151,7 +151,7 @@ describe('KalahComponent', () => {
                 tick(5 * MancalaComponent.TIMEOUT_BETWEEN_SEEDS);
             }));
 
-            fit('should wait TIMEOUT_BETWEEN_LAPS between each sub-distribution when receiving move', fakeAsync(async() => {
+            it('should wait TIMEOUT_BETWEEN_LAPS between each sub-distribution when receiving move', fakeAsync(async() => {
                 // Given a board where AI move is sure to be two distributions (here, the initial state)
                 // When AI plays
                 const ai: AbstractAI = getAIReturningOnly(MancalaMove.of(MancalaDistribution.of(1)));
@@ -328,7 +328,7 @@ describe('KalahComponent', () => {
             mancalaTestUtils.expectHouseToContain(new Coord(0, 1), ' 4 ');
         }));
 
-        fit('should show number of seed dropped in Kalah after AI move', fakeAsync(async() => {
+        it('should show number of seed dropped in Kalah after AI move', fakeAsync(async() => {
             // Given a move Player.ZERO only choice is dropping a seed in the Kalah
             const state: MancalaState = new MancalaState([
                 [0, 0, 0, 1, 0, 0],

@@ -509,7 +509,7 @@ describe('LocalGameWrapperComponent (game phase)', () => {
                 [_, _, X, X, X, _, _],
             ];
             const state: P4State = new P4State(board, 40);
-            testUtils.setupState(state);
+            await testUtils.setupState(state);
             selectAIPlayer(Player.ZERO);
             tick(LocalGameWrapperComponent.AI_TIMEOUT);
 

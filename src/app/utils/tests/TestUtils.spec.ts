@@ -41,7 +41,6 @@ import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { CurrentGameServiceMock } from 'src/app/services/tests/CurrentGameService.spec';
 import { GameInfo } from 'src/app/components/normal-component/pick-game/pick-game.component';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { Player } from 'src/app/jscaip/Player';
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { TestVars } from 'src/TestVars.spec';
 import { Minimax } from 'src/app/jscaip/AI/Minimax';
