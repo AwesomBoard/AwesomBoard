@@ -33,7 +33,7 @@ export class P4Component extends RectangularGameComponent<P4Rules, P4Move, P4Sta
             new P4Minimax(),
             new Minimax(`Minimax dummy`, P4Rules.get(), new DummyHeuristic(), new P4OrderedMoveGenerator()),
             new MCTS($localize`MCTS`, new P4MoveGenerator(), this.rules),
-            new MCTSWithHeuristic($localize`MCTS Heuristic`, new P4MoveGenerator(), this.rules, new P4Heuristic()),
+            new MCTSWithHeuristic($localize`MCTS with heuristic`, new P4MoveGenerator(), this.rules, new P4Heuristic()),
         ];
         this.encoder = P4Move.encoder;
     }

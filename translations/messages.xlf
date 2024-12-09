@@ -1312,6 +1312,9 @@
       <trans-unit id="8876232297721386956" datatype="html">
         <source>Bad idea, by moving on the source you would have won a point.</source>
       </trans-unit>
+      <trans-unit id="7473544347962465121" datatype="html">
+        <source>MCTS Score</source>
+      </trans-unit>
       <trans-unit id="6059738106874378452" datatype="html">
         <source>You do not have pieces of this type anymore.</source>
       </trans-unit>
@@ -2229,6 +2232,9 @@
       </trans-unit>
       <trans-unit id="2821967115826330186" datatype="html">
         <source>There it is, you captured all remaining seeds.</source>
+      </trans-unit>
+      <trans-unit id="3479650175306903901" datatype="html">
+        <source>MCTS with heuristic</source>
       </trans-unit>
       <trans-unit id="8840015526202664476" datatype="html">
         <source>You must distribute one of your houses.</source>

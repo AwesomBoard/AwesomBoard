@@ -1458,6 +1458,10 @@
         <source>There it is, you captured all remaining seeds.</source>
         <target>Voilà, vous capturez toutes les graines restantes.</target>
       </trans-unit>
+      <trans-unit id="3479650175306903901" datatype="html">
+        <source>MCTS with heuristic</source>
+        <target>MCTS avec heuristique</target>
+      </trans-unit>
       <trans-unit id="8840015526202664476" datatype="html">
         <source>You must distribute one of your houses.</source>
         <target>Vous devez distribuer une de vos maisons.</target>
@@ -1979,6 +1983,10 @@
       <trans-unit id="8876232297721386956" datatype="html">
         <source>Bad idea, by moving on the source you would have won a point.</source>
         <target>Mauvaise idée, en déplaçant votre pile sur la source, vous auriez gagné votre pièce et gagné un point.</target>
+      </trans-unit>
+      <trans-unit id="7473544347962465121" datatype="html">
+        <source>MCTS Score</source>
+        <target>Score MCTS</target>
       </trans-unit>
       <trans-unit id="5456673610183497320" datatype="html">
         <source>Stacks</source>
