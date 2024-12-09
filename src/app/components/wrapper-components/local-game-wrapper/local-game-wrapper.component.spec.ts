@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { DebugElement } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import { JSONValue, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+import { ArrayUtils, JSONValue, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { ComponentTestUtils, expectValidRouting } from 'src/app/utils/tests/TestUtils.spec';
 
 import { UserMocks } from 'src/app/domain/UserMocks.spec';
@@ -78,7 +78,7 @@ describe('LocalGameWrapperComponent (game without config)', () => {
 });
 
 
-fdescribe('LocalGameWrapperComponent (game phase)', () => {
+describe('LocalGameWrapperComponent (game phase)', () => {
 
     let testUtils: ComponentTestUtils<P4Component>;
 
@@ -99,7 +99,6 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
         // Element 0 of the option = 'Pick the level', element 1 = first actual level
         selectLevel.value = selectLevel.options[1].value;
         selectLevel.dispatchEvent(new Event('change'));
-        console.log('detecting changes')
         testUtils.detectChanges();
         tick(0);
     }
@@ -657,7 +656,7 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
 
     });
 
-    fdescribe('game tree visualisation', () => {
+    describe('game tree visualisation', () => {
         beforeEach(() => {
             GameNode.ID = 0; // To start counting at 0 for each test
         });
@@ -676,24 +675,30 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
             expect(window.open).toHaveBeenCalledOnceWith('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(dot));
         }));
 
-        fit('should show MCTS info when playing against MCTS', fakeAsync(async() => {
+        it('should show MCTS info when playing against MCTS', fakeAsync(async() => {
+            // We need to mock time because MCTS relies on Date.now increasing
+            let time: number = Date.now();
+            function increaseAndReturnTime(): number {
+                time += 10; // increase time by 10ms each time
+                return time;
+            }
+            spyOn(Date, 'now').and.callFake(increaseAndReturnTime);
+            // We need to mock randomness because MCTS relies on randomness
+            function getFirstElement<T>(array: T[]): T {
+                return array[0];
+            }
+            spyOn(ArrayUtils, 'getRandomElement').and.callFake(getFirstElement);
             spyOn(window, 'open').and.returnValue(null);
-            console.log('1')
             // Given the component with AI infos enabled and MCTS played
-            localStorage.setItem('displayAIInfo', 'true')
-            console.log('2')
+            localStorage.setItem('displayAIInfo', 'true');
             chooseAIOrHuman(Player.ZERO, 'MCTS');
-            console.log('3')
             chooseFirstAILevel(Player.ZERO);
-            console.log('4')
-            tick(LocalGameWrapperComponent.AI_TIMEOUT); // MCTS level 1 = 1 second
-            console.log('5')
+            tick(LocalGameWrapperComponent.AI_TIMEOUT);
             // When clicking on "view tree from current node"
             await testUtils.clickElement('#viewTreeFromCurrentNode');
-            console.log('6')
             // Then it should open an external URL
             const dot: string = `digraph G {
-    node_0 [label="#1: 0 - ", style=filled, fillcolor="white"];
+    node_0 [label="#1: 0 - 1/1 = 100%", style=filled, fillcolor="white"];
 }`;
             expect(window.open).toHaveBeenCalledOnceWith('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(dot));
         }));
@@ -701,7 +706,7 @@ fdescribe('LocalGameWrapperComponent (game phase)', () => {
         it('should show game tree from previous node when clicking on the corresponding button', fakeAsync(async() => {
             spyOn(window, 'open').and.returnValue(null);
             // Given the component with AI infos enabled and at least one turn played
-            localStorage.setItem('displayAIInfo', 'true')
+            localStorage.setItem('displayAIInfo', 'true');
             await testUtils.expectMoveSuccess('#click-4-0', P4Move.of(4));
             await testUtils.expectMoveSuccess('#click-4-0', P4Move.of(4));
             // When clicking on "view tree from previous node"
