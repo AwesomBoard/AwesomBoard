@@ -4,41 +4,39 @@
      preserveAspectRatio="xMidYMid meet"
 >
     <g transform="translate(5 5)">
-        <g *ngFor="let line of board; index as y" >
-            <g *ngFor="let spaceContent of line; index as x"
-               [attr.transform]="getTranslationAtXY(x, y)">
-                <rect id="click-coord-{{ x }}-{{ y }}"
-                      (click)="clickCoord(x, y)"
-                      x="0"
-                      y="0"
-                      [attr.width]="SPACE_SIZE"
-                      [attr.height]="SPACE_SIZE"
-                      [ngClass]="getSquareClasses(x, y)"
+        <g *ngFor="let coordAndContent of getState().getCoordsAndContents()"
+           [attr.transform]="getTranslationAt(coordAndContent.coord)">
+            <rect id="click-coord-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
+                  (click)="clickCoord(coordAndContent.coord)"
+                  x="0"
+                  y="0"
+                  [attr.width]="SPACE_SIZE"
+                  [attr.height]="SPACE_SIZE"
+                  [ngClass]="getSquareClasses(coordAndContent.coord)"
+                  class="base"
+            />
+            <g *ngIf="coordAndContent.content !== EMPTY">
+                <rect *ngIf="coordAndContent.content.isRectangle() else circle"
+                      [attr.x]="SPACE_SIZE/2 - getPieceSize(coordAndContent.content.value)"
+                      [attr.y]="SPACE_SIZE/2 - getPieceSize(coordAndContent.content.value)"
+                      [attr.width]="getPieceSize(coordAndContent.content.value) * 2"
+                      [attr.height]="getPieceSize(coordAndContent.content.value) * 2"
+                      [ngClass]="getPieceClasses(coordAndContent.content.value)"
                       class="base"
                 />
-                <g *ngIf="spaceContent !== EMPTY">
-                    <rect *ngIf="spaceContent.isRectangle() else circle"
-                          [attr.x]="SPACE_SIZE/2 - getPieceSize(spaceContent.value)"
-                          [attr.y]="SPACE_SIZE/2 - getPieceSize(spaceContent.value)"
-                          [attr.width]="getPieceSize(spaceContent.value) * 2"
-                          [attr.height]="getPieceSize(spaceContent.value) * 2"
-                          [ngClass]="getPieceClasses(spaceContent.value)"
-                          class="base"
-                    />
-                    <ng-template #circle>
-                        <circle [attr.cx]="SPACE_SIZE / 2"
-                                [attr.cy]="SPACE_SIZE / 2"
-                                [attr.r]="getPieceSize(spaceContent.value)"
-                                [ngClass]="getPieceClasses(spaceContent.value)"
-                                class="base"
-                        />
-                    </ng-template>
-                    <circle *ngIf="pieceHasDot(spaceContent.value)"
-                            [attr.cx]="SPACE_SIZE / 2"
+                <ng-template #circle>
+                    <circle [attr.cx]="SPACE_SIZE / 2"
                             [attr.cy]="SPACE_SIZE / 2"
-                            [attr.r]="10"
+                            [attr.r]="getPieceSize(coordAndContent.content.value)"
+                            [ngClass]="getPieceClasses(coordAndContent.content.value)"
+                            class="base"
                     />
-                </g>
+                </ng-template>
+                <circle *ngIf="pieceHasDot(coordAndContent.content.value)"
+                        [attr.cx]="SPACE_SIZE / 2"
+                        [attr.cy]="SPACE_SIZE / 2"
+                        [attr.r]="10"
+                />
             </g>
         </g>
         <rect *ngIf="lastMove.isPresent()"
@@ -51,21 +49,23 @@
 
         <g *ngIf="chosen.isPresent()"
            id="dropped-piece-{{ chosen.get().x }}-{{ chosen.get().y }}"
-           (click)="deselectDroppedPiece()"
+           (click)="clickCoord(chosen.get())"
            [attr.transform]="getTranslationAt(chosen.get())"
         >
             <rect id="dropped-piece-highlight"
-                  x="0" y="0"
+                  x="0"
+                  y="0"
                   [attr.width]="SPACE_SIZE"
                   [attr.height]="SPACE_SIZE"
                   class="base no-fill selected-stroke mid-stroke"
             />
             <rect *ngIf="pieceInHand.isRectangle() else circle"
-                  x="0" y="0"
+                  x="0"
+                  y="0"
                   [attr.x]="(SPACE_SIZE / 2) - getPieceSize(pieceInHand.value)"
                   [attr.y]="(SPACE_SIZE / 2) - getPieceSize(pieceInHand.value)"
-                  [attr.width]="getPieceSize(pieceInHand.value)*2"
-                  [attr.height]="getPieceSize(pieceInHand.value)*2"
+                  [attr.width]="getPieceSize(pieceInHand.value) * 2"
+                  [attr.height]="getPieceSize(pieceInHand.value) * 2"
                   [ngClass]="getPieceClasses(pieceInHand.value)"
                   class="base"
             />
@@ -83,17 +83,21 @@
                     [attr.r]="10"
             />
         </g>
+
         <g *ngFor="let coord of victoriousCoords" >
             <rect id="victory-{{ coord.x }}-{{ coord.y }}"
-                  x="0" y="0"
+                  x="0"
+                  y="0"
                   [attr.width]="SPACE_SIZE"
                   [attr.height]="SPACE_SIZE"
                   [attr.transform]="getTranslationAt(coord)"
                   class="base no-fill victory-stroke"
             />
         </g>
+
         <g [attr.transform]="getTranslationAtXY(2, 4.5)" >
-            <rect x="0" y="0"
+            <rect x="0"
+                  y="0"
                   [attr.width]="1.5 * SPACE_SIZE"
                   [attr.height]="1.5 * SPACE_SIZE"
                   [attr.transform]="getTranslationAtXY(-0.75, 0)"

@@ -116,7 +116,7 @@ export abstract class MancalaComponent<R extends MancalaRules>
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
-        if (this.animationOngoing === true) {
+        if (this.animationOngoing) {
             return MGPValidation.SUCCESS;
         } else {
             this.animationOngoing = true;
@@ -377,7 +377,7 @@ export abstract class MancalaComponent<R extends MancalaRules>
             Utils.assert(this.getTurn() > 0, 'Kalah: Should not animate move at turn 0');
             return this.node.parent.get().gameState;
         } else {
-            if (this.constructedState.equals(this.getState()) === true) {
+            if (this.constructedState.equals(this.getState())) {
                 if (this.node.parent.isPresent()) {
                     return this.node.parent.get().gameState;
                 } else {
