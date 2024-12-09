@@ -151,7 +151,6 @@ module Make
     (** End the game by a timeout from one player. Perform 4 read and 4 writes. *)
     let notify_timeout = fun (request : Dream.request) (game_id : string) (winner : MinimalUser.t) (loser : MinimalUser.t) ->
         Stats.end_game ();
-        (* Read 1: TODO FOR REVIEW : ça fait quoi ça ? j'crois que ça retrieve pas le game non non *)
         let update : Game.Updates.End.t = Game.Updates.End.get ~winner ~loser Game.GameResult.Timeout in
         (* Write 1: end the game *)
         let* _ = Firestore.Game.update ~request ~id:game_id ~update:(Game.Updates.End.to_yojson update) in
@@ -160,7 +159,7 @@ module Make
         let game_end : GameEvent.t = GameEvent.Action (GameEvent.Action.end_game requester now) in
         (* Write 2: add the end action *)
         let* _ = Firestore.Game.add_event ~request ~id:game_id ~event:game_end in
-        (* Read 2: retrieve the game *)
+        (* Read 1: retrieve the game *)
         let* game : Domain.Game.t = Firestore.Game.get ~request ~id:game_id in
         (* Read 3 & 4: reads the elos *)
         (* Write 3 & 4: update the elos *)
