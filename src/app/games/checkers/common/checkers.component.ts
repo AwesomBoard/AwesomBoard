@@ -29,8 +29,8 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         offsetRatio: 0.4,
         pieceHeightRatio: 1,
         parallelogramHeight: 100,
-        abstractBoardWidth: CheckersState.SIZE,
-        abstractBoardHeight: CheckersState.SIZE,
+        abstractBoardWidth: 0, // Will be overriden in updateBoard
+        abstractBoardHeight: 0, // Will be overriden in updateBoard
     };
 
     private LEFT: number;

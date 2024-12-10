@@ -47,16 +47,16 @@ export class TrexoComponent extends ParallelogramGameComponent<TrexoRules, Trexo
             horizontalWidthRatio: 1,
             pieceHeightRatio: 0,
             parallelogramHeight: 100,
-            abstractBoardWidth: 10,
-            abstractBoardHeight: 10,
+            abstractBoardWidth: 0, // Will be overriden in updateBoard
+            abstractBoardHeight: 0, // Will be overriden in updateBoard
         },
         '3D': {
             offsetRatio: 0.4,
             horizontalWidthRatio: 1.2,
             pieceHeightRatio: 0.2,
             parallelogramHeight: 100,
-            abstractBoardWidth: 10,
-            abstractBoardHeight: 10,
+            abstractBoardWidth: 0, // Will be overriden in updateBoard
+            abstractBoardHeight: 0, // Will be overriden in updateBoard
         },
     };
 
