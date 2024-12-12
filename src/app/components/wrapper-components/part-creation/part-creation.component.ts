@@ -583,13 +583,13 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         }
         const authUser: AuthUser = this.connectedUserService.user.get();
 
-        if (this.gameStarted === true) {
+        if (this.gameStarted) {
             // Avoid canceling game creation if part started but user leave
             return;
         }
         if (this.currentConfigRoom === null) {
             Debug.display('PartCreationComponent', 'ngOnDestroy', 'there is no part here');
-        } else if (this.allDocDeleted === true) {
+        } else if (this.allDocDeleted) {
             Debug.display('PartCreationComponent', 'ngOnDestroy', 'part has already been deleted');
         } else if (authUser.id === this.currentConfigRoom.creator.id) {
             Debug.display('PartCreationComponent', 'ngOnDestroy', 'you(creator) about to cancel creation.');

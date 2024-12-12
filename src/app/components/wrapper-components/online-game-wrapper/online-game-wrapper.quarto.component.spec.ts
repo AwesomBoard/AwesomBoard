@@ -141,7 +141,7 @@ export async function prepareStartedGameFor<T extends AbstractGameComponent>(
     let configRoom: ConfigRoom = ConfigRoomMocks.withProposedConfig(rulesConfig);
     await configRoomDAO.update('configRoomId', configRoom);
     testUtils.detectChanges();
-    if (preparationOptions.shorterGlobalClock === true) {
+    if (preparationOptions.shorterGlobalClock) {
         configRoom = { ...configRoom, totalPartDuration: 10 };
         await configRoomDAO.update('configRoomId', {
             totalPartDuration: 10,
@@ -150,7 +150,7 @@ export async function prepareStartedGameFor<T extends AbstractGameComponent>(
     const gameService: GameService = TestBed.inject(GameService);
     await gameService.acceptConfig('configRoomId');
     testUtils.detectChanges();
-    if (preparationOptions.waitForPartToStart === true) {
+    if (preparationOptions.waitForPartToStart) {
         tick(2);
         testUtils.detectChanges();
         testUtils.bindGameComponent();
