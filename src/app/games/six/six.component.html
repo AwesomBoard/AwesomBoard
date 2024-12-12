@@ -24,18 +24,18 @@
              [ngClass]="getPlayerClass(state.getCurrentPlayer())"
              class="base round"/>
     <!-- LAST MOVE -->
-    <polygon *ngFor="let disconnected of disconnectedCoords"
-             id="disconnected_{{ disconnected.coord.x }}_{{ disconnected.coord.y }}"
-             [attr.points]="getHexaPoints()"
-             [attr.transform]="getHexaCenterTranslationAt(disconnected.coord)"
-             class="base round captured-stroke"
-             [ngClass]="disconnected.class"/>
     <polygon *ngIf="leftCoord.isPresent()"
              id="leftCoord_{{ leftCoord.get().x }}_{{ leftCoord.get().y }}"
              (click)="onNeighborClick(leftCoord.get())"
              [attr.points]="getHexaPoints()"
              [attr.transform]="getHexaCenterTranslationAtXY(leftCoord.get().x, leftCoord.get().y)"
              class="base round moved-fill mid-stroke"/>
+    <polygon *ngFor="let disconnected of disconnectedCoords"
+             id="disconnected_{{ disconnected.coord.x }}_{{ disconnected.coord.y }}"
+             [attr.points]="getHexaPoints()"
+             [attr.transform]="getHexaCenterTranslationAt(disconnected.coord)"
+             class="base round captured-stroke"
+             [ngClass]="disconnected.class"/>
     <polygon *ngIf="lastDrop.isPresent()"
              id="lastDrop_{{ lastDrop.get().x }}_{{ lastDrop.get().y }}"
              (click)="onPieceClick(lastDrop.get())"

@@ -107,7 +107,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
 
     public isLegalDrop(move: SixMove, state: SixState): MGPFallible<SixLegalityInformation> {
         if (move.isDrop() === false) {
-            return MGPFallible.failure(SixFailure.CANNOT_DO_DEPLACEMENT_YET());
+            return MGPFallible.failure(SixFailure.CANNOT_MOVE_YET());
         }
         return MGPFallible.success(new CoordSet(state.getPieceCoords()));
     }

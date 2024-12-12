@@ -172,7 +172,7 @@ export class SixComponent
             return this.cancelMove(clickValidity.getReason());
         }
         if (this.state.turn < maxPiece) {
-            return this.cancelMove(SixFailure.CANNOT_DO_DEPLACEMENT_YET());
+            return this.cancelMove(SixFailure.CANNOT_MOVE_YET());
         } else if (this.chosenLanding.isAbsent()) {
             if (this.state.getPieceAt(piece) === this.state.getCurrentOpponent()) {
                 return this.cancelMove(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());

@@ -63,7 +63,7 @@ describe('SixComponent', () => {
         }));
 
         it('should cancel move when clicking on piece before 40th turn', fakeAsync(async() => {
-            await testUtils.expectClickFailure('#piece_0_0', SixFailure.CANNOT_DO_DEPLACEMENT_YET());
+            await testUtils.expectClickFailure('#piece_0_0', SixFailure.CANNOT_MOVE_YET());
         }));
 
         it('should select piece when clicking on it (in moving phase)', fakeAsync(async() => {

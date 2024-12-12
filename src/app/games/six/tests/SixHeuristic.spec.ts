@@ -179,7 +179,12 @@ describe('SixHeuristic', () => {
             });
             const move: SixMove = SixMove.ofDrop(new Coord(1, 1));
             const node: SixNode = new SixNode(state, MGPOptional.empty(), MGPOptional.of(move));
-            expect(heuristic.getBoardValue(node, customConfig).metrics).toEqual([2 * Player.ZERO.getScoreModifier()]);
+
+            // When evaluating its board value
+            const boardValue: BoardValue = heuristic.getBoardValue(node, customConfig);
+
+            // Then it should should be the difference of piece between two player
+            expect(boardValue.metrics).toEqual([2 * Player.ZERO.getScoreModifier()]);
         });
 
     });

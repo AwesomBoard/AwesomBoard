@@ -131,7 +131,7 @@ describe('SixRules', () => {
             const move: SixMove = SixMove.ofMovement(new Coord(1, 2), new Coord(3, 0));
 
             // Then the move should be illegal
-            const reason: string = SixFailure.CANNOT_DO_DEPLACEMENT_YET();
+            const reason: string = SixFailure.CANNOT_MOVE_YET();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
