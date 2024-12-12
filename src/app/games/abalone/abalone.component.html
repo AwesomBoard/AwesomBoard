@@ -38,13 +38,13 @@
 
     <g *ngFor="let captured of captureds"
        [attr.transform]="getHexaCenterTranslationAt(captured.coord)">
-        <polygon id="space-{{ captured.coord.x }}-{{ captured.coord.y }}"
+        <polygon id="captured-space-{{ captured.coord.x }}-{{ captured.coord.y }}"
                  [ngClass]="getSquareClassesAt(captured.coord)"
                  class="base captured-fill"
                  [attr.points]="getHexaPoints()"
                  stroke-linecap="round"
         />
-        <circle id="piece-{{ captured.coord.x }}-{{ captured.coord.y }}"
+        <circle id="captured-piece-{{ captured.coord.x }}-{{ captured.coord.y }}"
                 cx="0"
                 cy="0"
                 [attr.r]="SPACE_SIZE * 0.5"
