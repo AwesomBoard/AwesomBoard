@@ -463,8 +463,8 @@ describe('AbaloneComponent', () => {
             await testUtils.setupState(state, { previousState, previousMove });
 
             // Then a "captured" square with the pushed-out piece should be shown
-            testUtils.expectElementToHaveClass('#space--1-4', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece--1-4', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space--1-4', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece--1-4', 'player1-fill');
         }));
 
         it('should show suicidal-translation fallen pieces', fakeAsync(async() => {
@@ -500,12 +500,12 @@ describe('AbaloneComponent', () => {
             await testUtils.setupState(state, { previousState, previousMove });
 
             // Then a "captured" square with the pushed-out piece should be shown
-            testUtils.expectElementToHaveClass('#space-1-9', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece-1-9', 'player1-fill');
-            testUtils.expectElementToHaveClass('#space-2-9', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece-2-9', 'player1-fill');
-            testUtils.expectElementToHaveClass('#space-3-9', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece-3-9', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space-1-9', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece-1-9', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space-2-9', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece-2-9', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space-3-9', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece-3-9', 'player1-fill');
         }));
 
     });

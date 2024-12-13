@@ -52,7 +52,7 @@ export class HexodiaComponent extends HexagonalGameComponent<HexodiaRules,
         const halfStroke: number = this.STROKE_WIDTH / 2;
         const configSize: number = Math.floor(this.getState().getWidth() / 2);
         const hexaLayoutStartX: number =
-            (- halfStroke * 0.5 * (configSize + 1)) + (Math.sqrt(2) * this.SPACE_SIZE);
+            (- halfStroke * (configSize + 1)) + (Math.sqrt(2) * this.SPACE_SIZE);
         const hexaLayoutStartY: number = this.SPACE_SIZE + halfStroke;
         const hexaLayoutStartingCoord: Coord = new Coord(hexaLayoutStartX, hexaLayoutStartY);
         this.hexaLayout = new HexaLayout(this.SPACE_SIZE,
