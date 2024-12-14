@@ -16,11 +16,11 @@
                          stroke-linecap="round"/>
                 <g id="pieceGroup_{{ x }}_{{ y }}-SPACE_SIZE_IS{{SPACE_SIZE}}"
                    [ngClass]="getPieceGroupClasses(x, y)"
-                   [attr.transform]="getTranslationAt(getCenterAtXY(x, y))"
+                   [attr.transform]="'translate(' + getCenterAtXY(x, y).x + ' ' + getCenterAtXY(x, y).y + ')'"
                 >
                     <g *ngIf="isRing(x, y)">
                         <circle [attr.r]="viewInfo.ringOuterSize"
-                                class="base-no-fill mid-stroke"/>
+                                class="base no-fill mid-stroke"/>
                         <circle id="ring_{{ x }}_{{ y }}"
                                 [attr.r]="viewInfo.ringMidSize"
                                 [ngClass]="getRingClasses(x, y)"
@@ -57,7 +57,7 @@
     </g>
     <rect *ngFor="let coord of viewInfo.targets"
           id="indicator_{{ coord.x }}_{{ coord.y }}"
-          [attr.transform]="getTranslationAt(getCenterAt(coord))"
+          [attr.transform]="'translate(' + getCenterAt(coord).x + ' ' + getCenterAt(coord).y + ')'"
           [attr.x]=" - viewInfo.indicatorSize/2"
           [attr.y]=" - viewInfo.indicatorSize/2"
           [attr.width]="viewInfo.indicatorSize"
