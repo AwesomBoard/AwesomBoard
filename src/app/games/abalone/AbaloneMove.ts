@@ -1,6 +1,7 @@
+import { ArrayUtils, Encoder, MGPFallible, MGPOptional, Utils } from '@everyboard/lib';
+
 import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
-import { ArrayUtils, Encoder, MGPFallible, MGPOptional, Utils } from '@everyboard/lib';
 import { HexaDirection } from 'src/app/jscaip/HexaDirection';
 import { MoveCoord } from 'src/app/jscaip/MoveCoord';
 

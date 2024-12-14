@@ -1,3 +1,5 @@
+import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { DvonnState } from './DvonnState';
 import { DvonnPieceStack } from './DvonnPieceStack';
@@ -8,7 +10,6 @@ import { TableUtils } from 'src/app/jscaip/TableUtils';
 import { Player } from 'src/app/jscaip/Player';
 import { DvonnFailure } from './DvonnFailure';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { HexagonalUtils } from 'src/app/jscaip/HexagonalUtils';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';

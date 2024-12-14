@@ -1125,6 +1125,10 @@
         <source>Maximum pushing group size</source>
         <target>Taille maximale d'un groupe poussant</target>
       </trans-unit>
+      <trans-unit id="1280308994802128299" datatype="html">
+        <source>Deadly Abalone</source>
+        <target>Abalone Mortel</target>
+      </trans-unit>
       <trans-unit id="8893431763975992974" datatype="html">
         <source>Initial board and object of the game</source>
         <target>Plateau initial et but du jeu</target>
