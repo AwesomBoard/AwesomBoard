@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      class="board"
-     viewBox="-165 0 470 500"
+     [attr.viewBox]="getViewBox().toSVGString()"
+     [attr.transform]="rotation"
      preserveAspectRatio="xMidYMid meet"
 >
+
     <polygon *ngFor="let invisibleSpace of boardNeighboringCoords"
              id="invisible-space-{{ invisibleSpace.x }}-{{ invisibleSpace.y }}"
              [attr.transform]="getHexaCenterTranslationAt(invisibleSpace)"
@@ -36,13 +38,13 @@
 
     <g *ngFor="let captured of captureds"
        [attr.transform]="getHexaCenterTranslationAt(captured.coord)">
-        <polygon id="space-{{ captured.coord.x }}-{{ captured.coord.y }}"
+        <polygon id="captured-space-{{ captured.coord.x }}-{{ captured.coord.y }}"
                  [ngClass]="getSquareClassesAt(captured.coord)"
                  class="base captured-fill"
                  [attr.points]="getHexaPoints()"
                  stroke-linecap="round"
         />
-        <circle id="piece-{{ captured.coord.x }}-{{ captured.coord.y }}"
+        <circle id="captured-piece-{{ captured.coord.x }}-{{ captured.coord.y }}"
                 cx="0"
                 cy="0"
                 [attr.r]="SPACE_SIZE * 0.5"
