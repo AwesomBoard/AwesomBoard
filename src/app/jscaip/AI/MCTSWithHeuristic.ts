@@ -9,7 +9,7 @@ import { MoveGenerator } from './AI';
 import { BoardValue } from './BoardValue';
 import { GameNode } from './GameNode';
 import { MCTS } from './MCTS';
-import { Heuristic, HeuristicBounds } from './Minimax';
+import { HeuristicWithBounds, HeuristicBounds } from './Minimax';
 
 /**
  * Like MCTS, but uses a heuristic function to evaluate non-terminated states.
@@ -25,10 +25,9 @@ export class MCTSWithHeuristic<M extends Move,
     public constructor(name: string,
                        moveGenerator: MoveGenerator<M, S, C>,
                        rules: SuperRules<M, S, C, L>,
-                       private readonly heuristic: Heuristic<M, S, B, C>)
+                       private readonly heuristic: HeuristicWithBounds<M, S, B, C>)
     {
         super(name, moveGenerator, rules);
-        // this.maxGameLength = 10; // no need to go further since we have a heuristic
     }
 
     /**
@@ -37,13 +36,11 @@ export class MCTSWithHeuristic<M extends Move,
     protected override winScore(node: GameNode<M, S>,
                                 config: MGPOptional<C>,
                                 gameStatus: GameStatus,
-                                player: Player): number {
+                                player: Player)
+    : number {
         if (gameStatus === GameStatus.ONGOING) {
             const boardValue: B = this.heuristic.getBoardValue(node, config);
-            const optionalBounds: MGPOptional<HeuristicBounds<B>> = this.heuristic.getBounds(config);
-            Utils.assert(optionalBounds.isPresent(),
-                         'MCTSWithHeuristic used with a heuristic that has no max value, please define getBounds');
-            const bounds: HeuristicBounds<B> = optionalBounds.get();
+            const bounds: HeuristicBounds<B> = this.heuristic.getBounds(config);
             Utils.assert(boardValue.metrics.length === bounds.player0Max.metrics.length &&
                          boardValue.metrics.length === bounds.player1Max.metrics.length,
                          'Metrics and bound values should have the same shape');

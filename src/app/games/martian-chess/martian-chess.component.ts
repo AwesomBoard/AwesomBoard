@@ -15,8 +15,6 @@ import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { MartianChessMoveGenerator } from './MartianChessMoveGenerator';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { MartianChessScoreMinimax } from './MartianChessScoreMinimax';
-import { MartianChessScoreHeuristic } from './MartianChessScoreHeuristic';
-import { MCTSWithHeuristic } from 'src/app/jscaip/AI/MCTSWithHeuristic';
 
 type SelectedPieceInfo = {
     selectedPiece: Coord,
@@ -167,7 +165,6 @@ export class MartianChessComponent extends RectangularGameComponent<MartianChess
         this.availableAIs = [
             new MartianChessScoreMinimax(),
             new MCTS($localize`MCTS`, new MartianChessMoveGenerator(), this.rules),
-            new MCTSWithHeuristic($localize`MCTS Score`, new MartianChessMoveGenerator(), this.rules, new MartianChessScoreHeuristic()),
         ];
         this.encoder = MartianChessMove.encoder;
         this.hasAsymmetricBoard = true;

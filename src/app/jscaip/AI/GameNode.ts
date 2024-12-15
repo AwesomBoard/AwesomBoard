@@ -44,14 +44,6 @@ export class GameNode<M extends Move, S extends GameState> {
         GameNodeStats.createdNodes++;
     }
 
-    public root(): GameNode<M, S> {
-        if (this.parent.isPresent()) {
-            return this.parent.get().root();
-        } else {
-            return this;
-        }
-    }
-
     /**
      * Returns the child corresponding to applying the given move to the current state,
      * or empty if it has not yet been calculated.
@@ -127,11 +119,12 @@ export class GameNode<M extends Move, S extends GameState> {
                     onlyLosses = false;
                 }
             }
-            if (onlyLosses && gameStatus === GameStatus.ONGOING && children.length === 0) {
-                // This means we aren't at an end game, but at not fully-explored node
-                onlyLosses = false;
-            }
         }
+        if (onlyLosses && gameStatus === GameStatus.ONGOING) {
+            // This means we aren't at an end game, but at not fully-explored node
+            onlyLosses = false;
+        }
+        console.log({id, onlyLosses, winner, currentPlayer})
         if (gameStatus === GameStatus.ONGOING && onlyLosses) {
             winner = currentPlayer.getOpponent();
         }

@@ -26,11 +26,18 @@ export abstract class Heuristic<M extends Move,
                                 C extends RulesConfig = EmptyRulesConfig>
 {
     public abstract getBoardValue(node: GameNode<M, S>, config: MGPOptional<C>): B;
+}
 
-    // When there exists a minimal/maximal value for a heuristic, it is useful to know it.
-    public getBounds(_config: MGPOptional<C>): MGPOptional<HeuristicBounds<B>> {
-        return MGPOptional.empty();
-    }
+/**
+ * A heuristic that defines its upper and lower bounds
+ */
+export abstract class HeuristicWithBounds<M extends Move,
+                                          S extends GameState,
+                                          B extends BoardValue = BoardValue,
+                                          C extends RulesConfig = EmptyRulesConfig>
+    extends Heuristic<M, S, B, C>
+{
+    public abstract getBounds(config: MGPOptional<C>): HeuristicBounds<B>
 }
 
 export abstract class PlayerMetricHeuristic<M extends Move,
@@ -40,6 +47,25 @@ export abstract class PlayerMetricHeuristic<M extends Move,
 {
     public abstract getMetrics(node: GameNode<M, S>, config: MGPOptional<C>): PlayerNumberTable;
 
+    public getBoardValue(node: GameNode<M, S>, config: MGPOptional<C>): BoardValue {
+        const metrics: PlayerNumberTable = this.getMetrics(node, config);
+        return BoardValue.ofMultiple(
+            metrics.get(Player.ZERO).get(),
+            metrics.get(Player.ONE).get(),
+        );
+    }
+
+}
+
+export abstract class PlayerMetricHeuristicWithBounds<M extends Move,
+                                                      S extends GameState,
+                                                      C extends RulesConfig = EmptyRulesConfig>
+    extends HeuristicWithBounds<M, S, BoardValue, C>
+{
+    public abstract getMetrics(node: GameNode<M, S>, config: MGPOptional<C>): PlayerNumberTable;
+
+    // Yes, this is duplicated from PlayerMetricHeuristic, because we don't have multiple inheritance
+    // and probably don't want to use mixins!
     public getBoardValue(node: GameNode<M, S>, config: MGPOptional<C>): BoardValue {
         const metrics: PlayerNumberTable = this.getMetrics(node, config);
         return BoardValue.ofMultiple(

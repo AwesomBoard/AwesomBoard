@@ -1,4 +1,4 @@
-import { Heuristic, HeuristicBounds } from 'src/app/jscaip/AI/Minimax';
+import { HeuristicWithBounds, HeuristicBounds } from 'src/app/jscaip/AI/Minimax';
 import { BoardValue } from 'src/app/jscaip/AI/BoardValue';
 import { P4Move } from './P4Move';
 import { P4State } from './P4State';
@@ -6,7 +6,7 @@ import { P4Config, P4Node, P4Rules } from './P4Rules';
 import { Coord } from 'src/app/jscaip/Coord';
 import { MGPOptional } from '@everyboard/lib';
 
-export class P4Heuristic extends Heuristic<P4Move, P4State, BoardValue, P4Config> {
+export class P4Heuristic extends HeuristicWithBounds<P4Move, P4State, BoardValue, P4Config> {
 
     public getBoardValue(node: P4Node, _config: MGPOptional<P4Config>): BoardValue {
         const state: P4State = node.gameState;
@@ -23,14 +23,14 @@ export class P4Heuristic extends Heuristic<P4Move, P4State, BoardValue, P4Config
     }
 
     // When there exists a minimal/maximal value for a heuristic, it is useful to know it.
-    public override getBounds(config: MGPOptional<P4Config>): MGPOptional<HeuristicBounds<BoardValue>> {
+    public override getBounds(config: MGPOptional<P4Config>): HeuristicBounds<BoardValue> {
         // Experimentally, we hardly find a board with value >20 on a regular board.
-        // So we'll count 1 per square
-        const max: number = config.get().width * config.get().height;
-        return MGPOptional.of({
+        // So we'll count 2 per square to be safe
+        const max: number = 2 * config.get().width * config.get().height;
+        return {
             player0Max: BoardValue.ofSingle(max, 0),
             player1Max: BoardValue.ofSingle(0, max),
-        });
+        };
     }
 
 }

@@ -82,7 +82,6 @@ describe('LocalGameWrapperComponent (game phase)', () => {
 
     let testUtils: ComponentTestUtils<P4Component>;
 
-    // TODO FOR REVIEW: This was in test utils for ALL components, but we only need it for local game, as there is no point in being able to choose AI in tuto/online game, nor when testing e.g. the login component
     function chooseAIOrHuman(player: Player, humanOrAIName: 'human' | string): void {
         const dropDownName: string = player === Player.ZERO ? '#player-select-0' : '#player-select-1';
         const selectAI: HTMLSelectElement = testUtils.findElement(dropDownName).nativeElement;
