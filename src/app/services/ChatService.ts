@@ -8,6 +8,8 @@ import { FirestoreCollectionObserver } from '../dao/FirestoreCollectionObserver'
 import { MinimalUser } from '../domain/MinimalUser';
 import { Localized } from '../utils/LocaleUtils';
 import { Debug } from '../utils/Debug';
+import { BackendService, WebSocketManagerService } from './BackendService';
+import { ConnectedUserService } from './ConnectedUserService';
 
 export class ChatMessages {
     public static readonly CANNOT_SEND_MESSAGE: Localized = () => $localize`You're not allowed to send a message here.`;
@@ -19,12 +21,19 @@ export class ChatMessages {
     providedIn: 'root',
 })
 @Debug.log
-export class ChatService {
+export class ChatService extends BackendService {
 
-    public constructor(private readonly chatDAO: ChatDAO) {}
+    public constructor(private readonly chatDAO: ChatDAO,
+                       private readonly webSocketManager: WebSocketManagerService,
+                       connectedUserService: ConnectedUserService) {
+        super(connectedUserService);
+    }
 
     public async addMessage(chatId: string, message: Message): Promise<string> {
-        return this.chatDAO.subCollectionDAO(chatId, 'messages').create(message);
+        // return this.chatDAO.subCollectionDAO(chatId, 'messages').create(message);
+        console.log('trying to send')
+        await this.webSocketManager.send({ type: 'chat', chatId, message });
+        return 'TODO';
     }
     public async getLastMessages(chatId: string, limit: number): Promise<MessageDocument[]> {
         const ordering: string = 'postedTime';

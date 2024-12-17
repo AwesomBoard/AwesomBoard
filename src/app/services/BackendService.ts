@@ -1,8 +1,57 @@
 import { ConnectedUserService } from './ConnectedUserService';
 import { environment } from 'src/environments/environment';
-import { JSONValue, MGPFallible, Utils } from '@everyboard/lib';
+import { JSONValue, MGPFallible, MGPOptional, Utils } from '@everyboard/lib';
+import { Injectable, OnInit } from '@angular/core';
 
 type HTTPMethod = 'POST' | 'GET' | 'PATCH' | 'HEAD' | 'DELETE';
+
+@Injectable({
+    providedIn: 'root', // This ensures that this is a singleton service
+})
+export class WebSocketManagerService {
+
+    private webSocket: MGPOptional<WebSocket> = MGPOptional.empty();
+
+    public constructor(private readonly connectedUserService: ConnectedUserService) {
+        console.log('WebSocketManagerService created (should happen only once');
+    }
+
+    public async connect(): Promise<void> {
+        // TODO: let user know we're trying to connect to the server somehow?
+        Utils.assert(this.webSocket.isAbsent(), 'Should not connect twice to WebSocket!');
+        const token: string = await this.connectedUserService.getIdToken();
+
+        return new Promise((resolve: () => void, reject) => {
+            const ws: WebSocket = new WebSocket(environment.backendURL + '/ws', ['Authorization', token]);
+
+            ws.onopen = (): void => {
+                console.log('WS: connected');
+                ws.send('HELLO');
+                this.webSocket = MGPOptional.of(ws);
+                resolve();
+            };
+            ws.onerror = (error: Event): void => {
+                console.log('WS: connection failed');
+                reject(error);
+            };
+            ws.onclose = (): void => {
+                console.log('WS: closed');
+            };
+            ws.onmessage = (ev: MessageEvent<unknown>): void => {
+                console.log('WS: message: ');
+                console.log(ev);
+            };
+        });
+    }
+
+    public async send(message: any): Promise<void> {
+        // TODO: get rid of the any
+        if (this.webSocket.isAbsent()) {
+            await this.connect();
+        }
+        this.webSocket.get().send(message);
+    }
+}
 
 export abstract class BackendService {
     public constructor(protected readonly connectedUserService: ConnectedUserService) {

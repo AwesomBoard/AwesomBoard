@@ -54,10 +54,21 @@ module Make
     let middleware = fun (handler : Dream.handler) (request : Dream.request) ->
         let check_everything_and_process_request = fun () ->
             (* Extract the Authorization header *)
+            Dream.log "%s" (Dream.all_headers request |> List.map (fun (x, y) -> x ^ ":" ^ y) |> String.concat ", ");
             let authorization_header : string =
-                match Dream.header request "Authorization" with
-                | None -> raise (AuthError "Authorization token is missing")
-                | Some authorization -> authorization in
+                (* The header is passed in Authorization in HTTP(S),
+                   but in a special field Sec-WebSocket-Protocol for WebSocket connections *)
+                match (Dream.header request "Authorization", Dream.header request "Sec-WebSocket-Protocol") with
+                | None, None -> raise (AuthError "Authorization token is missing")
+                | Some authorization, _ -> authorization
+                | None, Some ws_header -> match String.split_on_char ',' ws_header with
+                    | ["Authorization"; authorization] ->
+                        (* Need to add Bearer in front of the token, which already contains a first space.
+                           This way, we can treat it just like a normal HTTP header *)
+                        "Bearer" ^ authorization
+                    | _ -> raise (AuthError "Authorization token is missing")
+            in
+            Dream.log "%s" authorization_header;
             (* Parse the token *)
             let user_token : string =
                 match String.split_on_char ' ' authorization_header with
