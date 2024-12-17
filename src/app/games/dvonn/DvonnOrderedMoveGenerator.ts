@@ -1,9 +1,10 @@
+import { ArrayUtils, Utils } from '@everyboard/lib';
+
 import { DvonnState } from './DvonnState';
 import { DvonnNode } from './DvonnRules';
 import { DvonnPieceStack } from './DvonnPieceStack';
 import { Player } from 'src/app/jscaip/Player';
 import { DvonnMove } from './DvonnMove';
-import { ArrayUtils, Utils } from '@everyboard/lib';
 import { DvonnMoveGenerator } from './DvonnMoveGenerator';
 import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 

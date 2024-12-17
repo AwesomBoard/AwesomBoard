@@ -860,6 +860,9 @@
       <trans-unit id="1103013531201615772" datatype="html">
         <source>Maximum pushing group size</source>
       </trans-unit>
+      <trans-unit id="1280308994802128299" datatype="html">
+        <source>Deadly Abalone</source>
+      </trans-unit>
       <trans-unit id="7123653594948067002" datatype="html">
         <source>Score</source>
       </trans-unit>
