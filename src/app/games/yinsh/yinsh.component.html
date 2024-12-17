@@ -14,9 +14,9 @@
                          [ngClass]="getSpaceClasses(x, y)"
                          class="base"
                          stroke-linecap="round"/>
-                <g id="pieceGroup_{{ x }}_{{ y }}-SPACE_SIZE_IS{{SPACE_SIZE}}"
+                <g id="pieceGroup_{{ x }}_{{ y }}"
                    [ngClass]="getPieceGroupClasses(x, y)"
-                   [attr.transform]="'translate(' + getCenterAtXY(x, y).x + ' ' + getCenterAtXY(x, y).y + ')'"
+                   [attr.transform]="getSVGTranslationAt(getCenterAtXY(x, y))"
                 >
                     <g *ngIf="isRing(x, y)">
                         <circle [attr.r]="viewInfo.ringOuterSize"
@@ -57,7 +57,7 @@
     </g>
     <rect *ngFor="let coord of viewInfo.targets"
           id="indicator_{{ coord.x }}_{{ coord.y }}"
-          [attr.transform]="'translate(' + getCenterAt(coord).x + ' ' + getCenterAt(coord).y + ')'"
+          [attr.transform]="getSVGTranslationAt(getCenterAt(coord))"
           [attr.x]=" - viewInfo.indicatorSize/2"
           [attr.y]=" - viewInfo.indicatorSize/2"
           [attr.width]="viewInfo.indicatorSize"
