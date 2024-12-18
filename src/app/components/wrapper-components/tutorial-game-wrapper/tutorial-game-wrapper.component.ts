@@ -213,7 +213,7 @@ export class TutorialGameWrapperComponent extends GameWrapper<TutorialPlayer> im
             this.tutorialOver = true;
         } else {
             let indexUndone: number = (this.stepIndex + 1) % this.steps.length;
-            while (this.stepFinished[indexUndone] === true) {
+            while (this.stepFinished[indexUndone]) {
                 indexUndone = (indexUndone + 1) % this.steps.length;
             }
             await this.showStep(indexUndone);

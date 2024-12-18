@@ -15,13 +15,13 @@ import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { AbaloneFailure } from './AbaloneFailure';
 import { AbaloneState } from './AbaloneState';
 import { AbaloneMove } from './AbaloneMove';
-import { AbaloneLegalityInformation, AbaloneRules } from './AbaloneRules';
-import { EmptyRulesConfig } from 'src/app/jscaip/RulesConfigUtil';
+import { AbaloneConfig, AbaloneLegalityInformation, AbaloneRules } from './AbaloneRules';
 import { AbaloneMoveGenerator } from './AbaloneMoveGenerator';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Arrow } from 'src/app/components/game-components/arrow-component/Arrow';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { AbaloneScoreMinimax } from './AbaloneScoreMinimax';
+import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 
 type CapturedInfo = {
     coord: Coord,
@@ -46,7 +46,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
                                                              AbaloneMove,
                                                              AbaloneState,
                                                              FourStatePiece,
-                                                             EmptyRulesConfig,
+                                                             AbaloneConfig,
                                                              AbaloneLegalityInformation>
 {
     public moveds: Coord[] = [];
@@ -73,9 +73,32 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         this.encoder = AbaloneMove.encoder;
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
         this.SPACE_SIZE = 30;
+        this.setHexaLayout();
+    }
+
+    private setHexaLayout(): void {
+        const halfStroke: number = this.STROKE_WIDTH / 2;
+        const configSize: number = Math.floor(this.getState().getWidth() / 2);
+        const hexaLayoutStartX: number =
+            (- halfStroke * (configSize + 1)) + (Math.sqrt(2) * this.SPACE_SIZE);
+        const hexaLayoutStartY: number = this.SPACE_SIZE + halfStroke;
+        const hexaLayoutStartingCoord: Coord = new Coord(hexaLayoutStartX, hexaLayoutStartY);
         this.hexaLayout = new HexaLayout(this.SPACE_SIZE,
-                                         new Coord(- 8 * this.SPACE_SIZE, 2 * this.SPACE_SIZE),
+                                         hexaLayoutStartingCoord,
                                          PointyHexaOrientation.INSTANCE);
+    }
+
+    public getViewBox(): ViewBox {
+        const abstractSize: number = this.getState().getWidth() + 2;
+        const pieceSize: number = this.SPACE_SIZE * 1.5;
+        const size: number = (this.SPACE_SIZE * 0.5) + (abstractSize * pieceSize);
+        const configSize: number = Math.floor(abstractSize / 2);
+        const halfStroke: number = this.STROKE_WIDTH / 2;
+        const left: number = ((configSize - 3) * (this.SPACE_SIZE - halfStroke)) - (this.STROKE_WIDTH);
+        const up: number = (-1 * (this.SPACE_SIZE - halfStroke)) - (2 * 1.25 * this.STROKE_WIDTH);
+        const width: number = size + (1.75 * configSize * this.STROKE_WIDTH);
+        const height: number = size + this.STROKE_WIDTH;
+        return new ViewBox(left, up, width, height);
     }
 
     public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
@@ -188,6 +211,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
 
     private showDirection(): void {
         const state: AbaloneState = this.getState();
+        const config: MGPOptional<AbaloneConfig> = this.getConfig();
         for (const dir of HexaDirection.factory.all) {
             const startToEnd: AbaloneArrowInfo = this.getArrowPath(dir);
             let theoretical: AbaloneMove;
@@ -196,7 +220,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
             } else {
                 theoretical = AbaloneMove.ofDoubleCoord(startToEnd.start, startToEnd.end, dir);
             }
-            const isLegal: MGPFallible<AbaloneLegalityInformation> = this.rules.isLegal(theoretical, state);
+            const isLegal: MGPFallible<AbaloneLegalityInformation> = this.rules.isLegal(theoretical, state, config);
             if (isLegal.isSuccess()) {
                 const arrow: Arrow<HexaDirection> =
                     new Arrow<HexaDirection>(startToEnd.start,
@@ -247,6 +271,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
     }
 
     private async secondClick(coord: Coord): Promise<MGPValidation> {
+        const maxGroup: number = this.getConfig().get().maximumPushingGroupSize;
         const firstPiece: Coord = this.selecteds[0];
         if (coord.equals(firstPiece)) {
             return this.cancelMove();
@@ -255,20 +280,18 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
             return this.firstClick(coord);
         }
         const distance: number = coord.getLinearDistanceToward(firstPiece);
-        if (distance > 2) {
-            return this.cancelMove(AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
+        if (maxGroup <= distance) {
+            return this.cancelMove(AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(maxGroup));
         }
         const alignment: Direction = firstPiece.getDirectionToward(coord).get();
         this.selecteds = [firstPiece];
         for (let i: number = 0; i < distance; i++) {
-            this.selecteds.push(firstPiece.getNext(alignment, i + 1));
-        }
-        if (this.selecteds.length === 3) {
-            const middle: Coord = this.selecteds[1];
+            const testedCoord: Coord = firstPiece.getNext(alignment, i + 1);
             const player: Player = this.getState().getCurrentPlayer();
-            if (this.hexaBoard[middle.y][middle.x].is(player) === false) {
+            if (this.hexaBoard[testedCoord.y][testedCoord.x].is(player) === false) {
                 return this.firstClick(coord);
             }
+            this.selecteds.push(testedCoord);
         }
         this.showPossibleDirections();
         return MGPValidation.SUCCESS;
@@ -285,10 +308,15 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
             return this.deselectExtremity(false);
             // move lastPiece one step closer to firstPiece if possible
         }
-        if (this.selecteds.length === 3 && clicked.equals(this.selecteds[1])) {
+        if (this.selecteds.length > 2 && this.isClickedCoordSelected(clicked)) {
             return this.cancelMove();
         }
         return this.tryExtension(clicked, firstPiece, lastPiece);
+    }
+
+    private isClickedCoordSelected(clicked: Coord): boolean {
+        return this.selecteds.length > 2 &&
+               this.selecteds.some((coord: Coord) => coord.equals(clicked));
     }
 
     private async tryExtension(clicked: Coord, firstPiece: Coord, lastPiece: Coord): Promise<MGPValidation> {
@@ -299,13 +327,15 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
                 // Then it's an extension of the line
                 const firstDistance: number = firstPiece.getLinearDistanceToward(clicked);
                 const secondDistance: number = lastPiece.getLinearDistanceToward(clicked);
-                if (Math.max(firstDistance, secondDistance) === 2) {
+                const config: AbaloneConfig = this.getConfig().get();
+                const maxSizeGroup: number = config.maximumPushingGroupSize;
+                if (Math.max(firstDistance, secondDistance) === maxSizeGroup - 1) {
                     this.selecteds.push(clicked);
                     ArrayUtils.sortByDescending(this.selecteds, AbaloneMove.sortCoord);
                     this.showPossibleDirections();
                     return MGPValidation.SUCCESS;
                 } else {
-                    return this.cancelMove(AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
+                    return this.cancelMove(AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(maxSizeGroup));
                 }
             }
         }

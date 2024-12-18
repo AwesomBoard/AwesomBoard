@@ -105,7 +105,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     private async updateWrapper(): Promise<void> {
         const config: MGPOptional<RulesConfig> = await this.getConfig();
         const gameStatus: GameStatus = this.gameComponent.rules.getGameStatus(this.gameComponent.node, config);
-        if (gameStatus.isEndGame === true) {
+        if (gameStatus.isEndGame) {
             this.endGame = true;
             if (gameStatus.winner.isPlayer()) {
                 const winner: string = $localize`Player ${gameStatus.winner.getValue() + 1}`;

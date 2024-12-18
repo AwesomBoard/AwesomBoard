@@ -1,5 +1,6 @@
-import { Coord } from 'src/app/jscaip/Coord';
 import { Encoder, MGPFallible } from '@everyboard/lib';
+
+import { Coord } from 'src/app/jscaip/Coord';
 import { MoveCoordToCoord } from 'src/app/jscaip/MoveCoordToCoord';
 import { DvonnState } from './DvonnState';
 import { MoveWithTwoCoords } from 'src/app/jscaip/MoveWithTwoCoords';

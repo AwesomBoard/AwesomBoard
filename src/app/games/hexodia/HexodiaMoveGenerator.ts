@@ -1,9 +1,10 @@
+import { MGPOptional, Set } from '@everyboard/lib';
+
 import { HexodiaState } from './HexodiaState';
 import { HexodiaConfig, HexodiaNode } from './HexodiaRules';
 import { HexodiaMove } from './HexodiaMove';
 import { Coord } from 'src/app/jscaip/Coord';
 import { TableUtils } from 'src/app/jscaip/TableUtils';
-import { MGPOptional, Set } from '@everyboard/lib';
 import { MoveGenerator } from 'src/app/jscaip/AI/AI';
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
 
@@ -50,7 +51,7 @@ export class HexodiaMoveGenerator extends MoveGenerator<HexodiaMove, HexodiaStat
         const availableCoords: Coord[] = [];
         for (const coordAndContent of state.getCoordsAndContents()) {
             const coord: Coord = coordAndContent.coord;
-            if (usefulCoordTable[coord.y][coord.x] === true && coordAndContent.content === FourStatePiece.EMPTY) {
+            if (usefulCoordTable[coord.y][coord.x] && coordAndContent.content === FourStatePiece.EMPTY) {
                 availableCoords.push(coord);
             }
         }
@@ -58,7 +59,7 @@ export class HexodiaMoveGenerator extends MoveGenerator<HexodiaMove, HexodiaStat
     }
 
     /**
-     * This function returns a table on which table[y][x] === true only if:
+     * This function returns a table on which table[y][x] is true only if:
      *     (x, y) is empty but has occupied neighbors
      */
     private getUsefulCoordsTable(state: HexodiaState): boolean[][] {

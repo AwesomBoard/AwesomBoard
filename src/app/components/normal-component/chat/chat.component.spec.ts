@@ -270,7 +270,7 @@ describe('ChatComponent', () => {
             await chatDAO.subCollectionDAO('fauxChat', 'messages').delete(messageId);
 
             // Then no error must have been encountered
-            expect(() =>testUtils.detectChanges()).not.toThrowError();
+            expect(() => testUtils.detectChanges()).not.toThrowError();
         }));
         it('should unsubscribe from the chat when destroying component', fakeAsync(async() => {
             // Given a chat

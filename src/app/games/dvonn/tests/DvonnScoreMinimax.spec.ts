@@ -1,8 +1,9 @@
 /* eslint-disable max-lines-per-function */
+import { MGPOptional } from '@everyboard/lib';
+
 import { AIDepthLimitOptions } from 'src/app/jscaip/AI/AI';
 import { DvonnRules } from '../DvonnRules';
 import { minimaxTest, SlowTest } from 'src/app/utils/tests/TestUtils.spec';
-import { MGPOptional } from '@everyboard/lib';
 import { DvonnScoreMinimax } from '../DvonnScoreMinimax';
 import { EmptyRulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 

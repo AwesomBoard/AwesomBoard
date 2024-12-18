@@ -139,7 +139,7 @@ export class SaharaRules extends Rules<SaharaMove, SaharaState> {
         };
         const landings: CoordSet =
             new CoordSet(TriangularCheckerBoard.getNeighbors(coord).filter(isOnBoardAndEmpty));
-        if (TriangularCheckerBoard.isSpaceDark(coord) === true) {
+        if (TriangularCheckerBoard.isSpaceDark(coord)) {
             return landings.toList();
         } else {
             let farLandings: CoordSet = new CoordSet(landings.toList()); // Deep copy

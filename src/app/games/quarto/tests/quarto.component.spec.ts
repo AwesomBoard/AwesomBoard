@@ -125,7 +125,7 @@ describe('QuartoComponent', () => {
             await testUtils.expectClickSuccess('#click-coord-0-0');
 
             // When clicking on the dropped piece's coord again (hence, on the dropped piece)
-            await testUtils.expectClickFailure('#dropped-piece-0-0');
+            await testUtils.expectClickFailure('#click-coord-0-0');
 
             // Then the space should contain the piece to put on the board
             testUtils.expectElementNotToExist('#dropped-piece-0-0');

@@ -1093,9 +1093,9 @@
         <source>See solution</source>
         <target>Voir la solution</target>
       </trans-unit>
-      <trans-unit id="6050846802280051862" datatype="html">
-        <source>You cannot move more than 3 of your pieces!</source>
-        <target>Vous ne pouvez pas déplacer plus de 3 de vos pièces !</target>
+      <trans-unit id="2467835697178117742" datatype="html">
+        <source>You cannot move more than <x id="PH" equiv-text="n"/> of your pieces!</source>
+        <target>Vous ne pouvez pas déplacer plus de <x id="PH" equiv-text="n"/> de vos pièces !</target>
       </trans-unit>
       <trans-unit id="4278049889323552316" datatype="html">
         <source>You don&apos;t have enough pieces to push that group!</source>
@@ -1117,6 +1117,18 @@
         <source>This space is not aligned with the current line.</source>
         <target>Cette case n&apos;est pas alignée avec la ligne actuellement formée.</target>
       </trans-unit>
+      <trans-unit id="7060616157443124451" datatype="html">
+        <source>Number of pieces to capture in order to win</source>
+        <target>Nombre de pièces à capturer pour gagner</target>
+      </trans-unit>
+      <trans-unit id="1103013531201615772" datatype="html">
+        <source>Maximum pushing group size</source>
+        <target>Taille maximale d'un groupe poussant</target>
+      </trans-unit>
+      <trans-unit id="1280308994802128299" datatype="html">
+        <source>Deadly Abalone</source>
+        <target>Abalone Mortel</target>
+      </trans-unit>
       <trans-unit id="8893431763975992974" datatype="html">
         <source>Initial board and object of the game</source>
         <target>Plateau initial et but du jeu</target>
@@ -1133,17 +1145,9 @@
         <source>Moving a piece</source>
         <target>Déplacer une pièce</target>
       </trans-unit>
-      <trans-unit id="980251877705717270" datatype="html">
-        <source>At each turn, move one, two, or three pieces either along their line, or on their side.
-        For your moves you can therefore choose between up to 6 directions.
-        The pieces you move must be aligned and consecutive, and the move should land on an empty space (except to push, we will see that later).
-        To make a move, click on one of your pieces, then click on an arrow to choose the move direction.&lt;br/&gt;&lt;br/&gt;
-        You&apos;re playing Dark, make any move!</source>
-        <target>Chaque tour, déplacez une, deux ou trois pièces, soit le long de leur alignement, soit par un pas de côté.
-        Pour vos déplacement vous avez donc au maximum à choisir parmi 6 directions.
-        Les trois pièces à déplacer doivent être alignées et immédiatement voisines et atterrir sur des cases vides (sauf pour pousser, ce que nous verrons plus tard).
-        Pour effectuer un déplacement, cliquez sur une de vos pièces, puis cliquez sur une flèche pour choisir sa direction.&lt;br/&gt;&lt;br/&gt;
-        Vous jouez Foncé, faites n&apos;importe quel mouvement !</target>
+      <trans-unit id="5190193689067477069" datatype="html">
+        <source>At each turn, move one, two, or three pieces either along their line, or on their side. For your moves you can therefore choose between up to 6 directions. The pieces you move must be aligned and consecutive, and the move should land on an empty space (except to push, we will see that later). To make a move, click on one of your pieces, then click on an arrow to choose the move direction.&lt;br/&gt;&lt;br/&gt; You&apos;re playing Dark, make any move!</source>
+        <target>Chaque tour, déplacez une, deux ou trois pièces, soit le long de leur alignement, soit par un pas de côté. Pour vos déplacement vous avez donc au maximum à choisir parmi 6 directions. Les trois pièces à déplacer doivent être alignées et immédiatement voisines et atterrir sur des cases vides (sauf pour pousser, ce que nous verrons plus tard). Pour effectuer un déplacement, cliquez sur une de vos pièces, puis cliquez sur une flèche pour choisir sa direction.&lt;br/&gt;&lt;br/&gt; Vous jouez Foncé, faites n&apos;importe quel mouvement !</target>
       </trans-unit>
       <trans-unit id="3762527362373672599" datatype="html">
         <source>Congratulations!</source>
@@ -1153,21 +1157,25 @@
         <source>Pushing</source>
         <target>Pousser</target>
       </trans-unit>
-      <trans-unit id="718434962091480596" datatype="html">
-        <source>To push one opponent piece, you must move at least two of your pieces.
-        To push two opponent pieces, you must move three of your pieces.
-        If one of your pieces is in the way, it will be impossible to push.
-        You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt;
-        Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
-        <target>Pour pousser une pièce de l'adversaire, vous devez déplacer au moins deux de vos pièces.
-        Pour pousser deux pièces, vous devez déplacer trois de vos pièces.
-        Si une de vos pièces est placée juste après une pièce adverse que vous poussez, pousser sera alors interdit.
-        Vous ne pouvez pas déplacer plus de trois pièces.&lt;br/&gt;&lt;br/&gt;
-        Une seule &quot;poussée&quot; vers la droite est possible ici, trouvez la (vous jouez Foncé).</target>
+      <trans-unit id="2330775081318125963" datatype="html">
+        <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
+        <target>Pour pousser une pièce de l'adversaire, vous devez déplacer au moins deux de vos pièces. Pour pousser deux pièces, vous devez déplacer trois de vos pièces. Si une de vos pièces est placée juste après une pièce adverse que vous poussez, pousser sera alors interdit. Vous ne pouvez pas déplacer plus de trois pièces.&lt;br/&gt;&lt;br/&gt; Une seule &quot;poussée&quot; vers la droite est possible ici, trouvez la (vous jouez Foncé).</target>
+      </trans-unit>
+      <trans-unit id="1578933364998292635" datatype="html">
+        <source>To translate a group of pieces, first select the first piece, then the last piece, and finally click on one of the four lateral directions in which the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
+        <target>Pour faire une translation d'un groupe de pièces, vous devez sélectionner la première pièce, puis sélectionner la dernière, puis cliquer sur une des 4 directions latérales dans laquelle le groupe peut bouger sans toucher de pièces adverses.&lt;br/&gt;&lt;br/&gt;Allez-y, faites une translation.</target>
+      </trans-unit>
+      <trans-unit id="3110387991397245428" datatype="html">
+        <source>This is not a translation, this is a &quot;pushing move&quot;, try a translation.</source>
+        <target>Ceci n'est pas une translation, c'est une poussée, essayez une translation.</target>
       </trans-unit>
       <trans-unit id="4948237861189298097" datatype="html">
         <source>Congratulations! You know everything you need to start a game!</source>
         <target>Bravo ! Vous savez tout ce qu&apos;il faut pour commencer une partie !</target>
+      </trans-unit>
+      <trans-unit id="2565981183757255753" datatype="html">
+        <source>You will see when creating a game that you can configure two things.&lt;br/&gt;&lt;ul&gt;&lt;li&gt;First, the number of captures needed to win. The default is 6, changing it will help changing the game&apos;s duration if wanted.&lt;/li&gt;&lt;li&gt;Last, the maximum size of a moved group. The default is 3 but if you want a more chaotic and fun game, you could increase that limit and play a more powerful alternative version of the game!&lt;/li&gt;&lt;/ul&gt;</source>
+        <target>Vous verrez en créant votre première partie, que vous pouvez configurer deux choses.&lt;br/&gt;&lt;br/&gt;&lt;ul&gt;&lt;li&gt;Premièrement, le nombre de captures nécessaires pour gagner. La valeur par défaut est 6, la changer permet de changer la durée des parties.&lt;/li&gt;&lt;li&gt;Dernièrement, la taille maximale d'un groupe déplacé. Cette valeur et à 3 par défaut, mais si vous voulez une partie plus chaotique et amusante, vous pouvez augmenter ce nombre et jouer une version alternative plus &quot;puissante&quot; !&lt;/li&gt;&lt;/ul&gt;</target>
       </trans-unit>
       <trans-unit id="4382056880714150954" datatype="html">
         <source>Pieces should only move downward!</source>
@@ -2000,6 +2008,14 @@
         <source>You are performing a move, you must select a landing square.</source>
         <target>Vous effectuez un déplacement, choisissez votre case de destination.</target>
       </trans-unit>
+      <trans-unit id="3734443501087651549" datatype="html">
+        <source>Number of different piece sizes</source>
+        <target>Nombre de différentes tailles de pièces</target>
+      </trans-unit>
+      <trans-unit id="893013149323570447" datatype="html">
+        <source>Number of pieces for each size</source>
+        <target>Nombre de pièces pour chaque taille</target>
+      </trans-unit>
       <trans-unit id="7821413127222759201" datatype="html">
         <source>The goal of Encapsule is to align three of your pieces. Here, Dark wins.</source>
         <target>Le but du jeu à Encapsule est d&apos;aligner trois de vos pièces. Ici, Foncé gagne.</target>
@@ -2024,23 +2040,9 @@
         <source>Particularity</source>
         <target>Spécificité</target>
       </trans-unit>
-      <trans-unit id="5705047859470313792" datatype="html">
-        <source>At Encapsule, pieces encapsulate each other.
-        It is therefore possible to have up to three pieces per square!
-        However, only the biggest piece of each square counts:
-        you cannot win with a piece that is &quot;hidden&quot; by a bigger piece.
-        Similarly, you cannot move a piece if it is encapsulated by a bigger piece.
-        Finally, you cannot encapsulate a piece with a smaller piece.
-        Here, Dark can win now in various ways.&lt;br/&gt;&lt;br/&gt;
-        You&apos;re playing Dark, try to win by making a move, and not by putting a new piece on the board.</source>
-        <target>À Encapsule, les pièces s&apos;encapsulent les unes sur les autres.
-        Il est donc possible d&apos;avoir jusqu&apos;à trois pièces par case !
-        Cependant, seulement la plus grosse pièce de chaque case compte :
-        il n&apos;est pas possible de gagner avec une pièce « cachée » par une pièce plus grande.
-        De même, il n&apos;est pas possible de déplacer une pièce qui est recouverte par une autre pièce plus grande.
-        Finalement, il est interdit de recouvrir une pièce avec une autre pièce plus petite.
-        Ici, Foncé peut gagner à ce tour de plusieurs façons.&lt;br/&gt;&lt;br/&gt;
-        Vous jouez Foncé, essayez de gagner en effectuant un déplacement, et non un placement (c&apos;est à dire en déposant une nouvelle pièce).</target>
+      <trans-unit id="3463587376927829861" datatype="html">
+        <source>At Encapsule, pieces encapsulate each other. It is therefore possible to have up to three pieces per square! However, only the biggest piece of each square counts: you cannot win with a piece that is &quot;hidden&quot; by a bigger piece. Similarly, you cannot move a piece if it is encapsulated by a bigger piece. Finally, you cannot encapsulate a piece with a smaller piece. Here, Dark can win now in various ways.&lt;br/&gt;&lt;br/&gt; You&apos;re playing Dark, try to win by making a move, and not by putting a new piece on the board.</source>
+        <target>À Encapsule, les pièces s&apos;encapsulent les unes sur les autres. Il est donc possible d&apos;avoir jusqu&apos;à trois pièces par case ! Cependant, seulement la plus grosse pièce de chaque case compte : il n&apos;est pas possible de gagner avec une pièce « cachée » par une pièce plus grande. De même, il n&apos;est pas possible de déplacer une pièce qui est recouverte par une autre pièce plus grande. Finalement, il est interdit de recouvrir une pièce avec une autre pièce plus petite. Ici, Foncé peut gagner à ce tour de plusieurs façons.&lt;br/&gt;&lt;br/&gt; Vous jouez Foncé, essayez de gagner en effectuant un déplacement, et non un placement (c&apos;est à dire en déposant une nouvelle pièce).</target>
       </trans-unit>
       <trans-unit id="6204412729347708092" datatype="html">
         <source>You won, but the exercise is to win while moving a piece!</source>
@@ -3323,7 +3325,7 @@
       </trans-unit>
       <trans-unit id="25408930270688683" datatype="html">
         <source>But an unusual kind of diagonal also exist in Hexodia. Here, Dark has made alignment in each of those three direction, in only one a victory is still possible.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do the winning move.</source>
-        <target>Mais un genre original de diagonales existe aussi à Hexodia. Ici, Foncé a fait un alignement dans chacunes de ces trois directions, la victoire ne reste possible que dans une seule.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faite le coup gagnant.</target>
+        <target>Mais un genre original de diagonales existe aussi à Hexodia. Ici, Foncé a fait un alignement dans chacunes de ces trois directions, la victoire ne reste possible que dans une seule.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites le coup gagnant.</target>
       </trans-unit>
       <trans-unit id="5880375817695791500" datatype="html">
         <source>You&apos;re playing Dark.

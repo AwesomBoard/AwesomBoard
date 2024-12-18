@@ -752,6 +752,9 @@
       <trans-unit id="3852843717175527075" datatype="html">
         <source>The game has been canceled!</source>
       </trans-unit>
+      <trans-unit id="7590013429208346303" datatype="html">
+        <source>Custom</source>
+      </trans-unit>
       <trans-unit id="2018922024247045709" datatype="html">
         <source>Width</source>
       </trans-unit>
@@ -772,9 +775,6 @@
       </trans-unit>
       <trans-unit id="3008420115644088420" datatype="html">
         <source>Configuration</source>
-      </trans-unit>
-      <trans-unit id="7590013429208346303" datatype="html">
-        <source>Custom</source>
       </trans-unit>
       <trans-unit id="6594123400599013490" datatype="html">
         <source>Step finished!</source>
@@ -802,6 +802,9 @@
       </trans-unit>
       <trans-unit id="8893431763975992974" datatype="html">
         <source>Initial board and object of the game</source>
+      </trans-unit>
+      <trans-unit id="488799603315113699" datatype="html">
+        <source>Translations</source>
       </trans-unit>
       <trans-unit id="4780631467843839550" datatype="html">
         <source>Rules configuration</source>
@@ -833,8 +836,8 @@
       <trans-unit id="1930146585049479552" datatype="html">
         <source>You cannot click, this is a demo.</source>
       </trans-unit>
-      <trans-unit id="6050846802280051862" datatype="html">
-        <source>You cannot move more than 3 of your pieces!</source>
+      <trans-unit id="2467835697178117742" datatype="html">
+        <source>You cannot move more than <x id="PH" equiv-text="n"/> of your pieces!</source>
       </trans-unit>
       <trans-unit id="4278049889323552316" datatype="html">
         <source>You don&apos;t have enough pieces to push that group!</source>
@@ -851,6 +854,15 @@
       <trans-unit id="6088417909306773667" datatype="html">
         <source>This space is not aligned with the current line.</source>
       </trans-unit>
+      <trans-unit id="7060616157443124451" datatype="html">
+        <source>Number of pieces to capture in order to win</source>
+      </trans-unit>
+      <trans-unit id="1103013531201615772" datatype="html">
+        <source>Maximum pushing group size</source>
+      </trans-unit>
+      <trans-unit id="1280308994802128299" datatype="html">
+        <source>Deadly Abalone</source>
+      </trans-unit>
       <trans-unit id="7123653594948067002" datatype="html">
         <source>Score</source>
       </trans-unit>
@@ -860,25 +872,26 @@
       <trans-unit id="4612562967450553112" datatype="html">
         <source>Moving a piece</source>
       </trans-unit>
-      <trans-unit id="980251877705717270" datatype="html">
-        <source>At each turn, move one, two, or three pieces either along their line, or on their side.
-        For your moves you can therefore choose between up to 6 directions.
-        The pieces you move must be aligned and consecutive, and the move should land on an empty space (except to push, we will see that later).
-        To make a move, click on one of your pieces, then click on an arrow to choose the move direction.&lt;br/&gt;&lt;br/&gt;
-        You&apos;re playing Dark, make any move!</source>
+      <trans-unit id="5190193689067477069" datatype="html">
+        <source>At each turn, move one, two, or three pieces either along their line, or on their side. For your moves you can therefore choose between up to 6 directions. The pieces you move must be aligned and consecutive, and the move should land on an empty space (except to push, we will see that later). To make a move, click on one of your pieces, then click on an arrow to choose the move direction.&lt;br/&gt;&lt;br/&gt; You&apos;re playing Dark, make any move!</source>
       </trans-unit>
       <trans-unit id="272253201636921624" datatype="html">
         <source>Pushing</source>
       </trans-unit>
-      <trans-unit id="718434962091480596" datatype="html">
-        <source>To push one opponent piece, you must move at least two of your pieces.
-        To push two opponent pieces, you must move three of your pieces.
-        If one of your pieces is in the way, it will be impossible to push.
-        You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt;
-        Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
+      <trans-unit id="2330775081318125963" datatype="html">
+        <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
+      </trans-unit>
+      <trans-unit id="1578933364998292635" datatype="html">
+        <source>To translate a group of pieces, first select the first piece, then the last piece, and finally click on one of the four lateral directions in which the group can move without touching opponent pieces.&lt;br/&gt;&lt;br/&gt;Go ahead, translate some pieces.</source>
+      </trans-unit>
+      <trans-unit id="3110387991397245428" datatype="html">
+        <source>This is not a translation, this is a &quot;pushing move&quot;, try a translation.</source>
       </trans-unit>
       <trans-unit id="4948237861189298097" datatype="html">
         <source>Congratulations! You know everything you need to start a game!</source>
+      </trans-unit>
+      <trans-unit id="2565981183757255753" datatype="html">
+        <source>You will see when creating a game that you can configure two things.&lt;br/&gt;&lt;ul&gt;&lt;li&gt;First, the number of captures needed to win. The default is 6, changing it will help changing the game&apos;s duration if wanted.&lt;/li&gt;&lt;li&gt;Last, the maximum size of a moved group. The default is 3 but if you want a more chaotic and fun game, you could increase that limit and play a more powerful alternative version of the game!&lt;/li&gt;&lt;/ul&gt;</source>
       </trans-unit>
       <trans-unit id="7183112140529419891" datatype="html">
         <source>MCTS</source>
@@ -1136,9 +1149,6 @@
       <trans-unit id="6598638598311685089" datatype="html">
         <source>The goal of Diaballik is to bring your ball, represented by the small circle, into the home line of the opponent (i.e, its starting position). The ball is currently being held by your center piece.</source>
       </trans-unit>
-      <trans-unit id="488799603315113699" datatype="html">
-        <source>Translations</source>
-      </trans-unit>
       <trans-unit id="1549947696122814495" datatype="html">
         <source>During a turn, you are allowed up to three actions, including at most two translations. A translation is an orthogonal step of any piece that does not hold the ball.&lt;br/&gt;&lt;br/&gt;Move your leftmost piece by one step. Once you are done, click on the green button that will appear on the bottom right of the board to indicate that you are done with your turn.</source>
       </trans-unit>
@@ -1320,6 +1330,12 @@
       <trans-unit id="2209428336874697936" datatype="html">
         <source>You are performing a move, you must select a landing square.</source>
       </trans-unit>
+      <trans-unit id="3734443501087651549" datatype="html">
+        <source>Number of different piece sizes</source>
+      </trans-unit>
+      <trans-unit id="893013149323570447" datatype="html">
+        <source>Number of pieces for each size</source>
+      </trans-unit>
       <trans-unit id="7821413127222759201" datatype="html">
         <source>The goal of Encapsule is to align three of your pieces. Here, Dark wins.</source>
       </trans-unit>
@@ -1337,15 +1353,8 @@
       <trans-unit id="7502910762990406647" datatype="html">
         <source>Particularity</source>
       </trans-unit>
-      <trans-unit id="5705047859470313792" datatype="html">
-        <source>At Encapsule, pieces encapsulate each other.
-        It is therefore possible to have up to three pieces per square!
-        However, only the biggest piece of each square counts:
-        you cannot win with a piece that is &quot;hidden&quot; by a bigger piece.
-        Similarly, you cannot move a piece if it is encapsulated by a bigger piece.
-        Finally, you cannot encapsulate a piece with a smaller piece.
-        Here, Dark can win now in various ways.&lt;br/&gt;&lt;br/&gt;
-        You&apos;re playing Dark, try to win by making a move, and not by putting a new piece on the board.</source>
+      <trans-unit id="3463587376927829861" datatype="html">
+        <source>At Encapsule, pieces encapsulate each other. It is therefore possible to have up to three pieces per square! However, only the biggest piece of each square counts: you cannot win with a piece that is &quot;hidden&quot; by a bigger piece. Similarly, you cannot move a piece if it is encapsulated by a bigger piece. Finally, you cannot encapsulate a piece with a smaller piece. Here, Dark can win now in various ways.&lt;br/&gt;&lt;br/&gt; You&apos;re playing Dark, try to win by making a move, and not by putting a new piece on the board.</source>
       </trans-unit>
       <trans-unit id="6204412729347708092" datatype="html">
         <source>You won, but the exercise is to win while moving a piece!</source>

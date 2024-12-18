@@ -171,8 +171,7 @@
     stroke-width: 12;
 }
 .semi-transparent {
-    fill-opacity: 0.5;
-    stroke-opacity: 0.5;
+    opacity: 0.5;
 }
 .round {
     stroke-linecap: round;
@@ -185,6 +184,9 @@
 }
 .text-big {
     font: 50px sans-serif;
+}
+.backgrounded-text {
+    fill: var(--backgrounded-text-color);
 }
 .text-medium-plus {
     font: 38px sans-serif;

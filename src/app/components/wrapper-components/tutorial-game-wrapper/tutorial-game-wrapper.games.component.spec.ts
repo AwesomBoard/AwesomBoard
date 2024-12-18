@@ -1,102 +1,124 @@
 /* eslint-disable max-lines-per-function */
+import { fakeAsync } from '@angular/core/testing';
+import { Comparable, MGPFallible, MGPOptional, MGPValidation, MGPValidationTestUtils, Utils } from '@everyboard/lib';
+
 import { TutorialGameWrapperComponent } from './tutorial-game-wrapper.component';
+import { Click, TutorialPredicate, TutorialStep } from './TutorialStep';
+import { TutorialStepMessage } from './TutorialStepMessage';
+
 import { ComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
-import { fakeAsync } from '@angular/core/testing';
 import { GameWrapper } from '../GameWrapper';
-import { Click, TutorialPredicate, TutorialStep } from './TutorialStep';
-import { Comparable, MGPFallible, MGPOptional, MGPValidation, MGPValidationTestUtils, Utils } from '@everyboard/lib';
 import { Move } from 'src/app/jscaip/Move';
 import { Coord } from 'src/app/jscaip/Coord';
 import { AbstractRules, SuperRules } from 'src/app/jscaip/Rules';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { AbstractGameComponent } from '../../game-components/game-component/GameComponent';
 import { GameState } from 'src/app/jscaip/state/GameState';
-import { Player } from 'src/app/jscaip/Player';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
-import { TutorialStepMessage } from './TutorialStepMessage';
+import { HexaDirection } from 'src/app/jscaip/HexaDirection';
 
-import { ApagosTutorial } from 'src/app/games/apagos/ApagosTutorial';
-import { ApagosRules } from 'src/app/games/apagos/ApagosRules';
+import { AbaloneMove } from 'src/app/games/abalone/AbaloneMove';
+import { AbaloneRules } from 'src/app/games/abalone/AbaloneRules';
+import { AbaloneTutorial } from 'src/app/games/abalone/AbaloneTutorial';
 import { ApagosMove } from 'src/app/games/apagos/ApagosMove';
-import { ConspirateursTutorial } from 'src/app/games/conspirateurs/ConspirateursTutorial';
-import { ConspirateursRules } from 'src/app/games/conspirateurs/ConspirateursRules';
+import { ApagosRules } from 'src/app/games/apagos/ApagosRules';
+import { ApagosTutorial } from 'src/app/games/apagos/ApagosTutorial';
+
 import { ConspirateursMoveSimple, ConspirateursMoveJump } from 'src/app/games/conspirateurs/ConspirateursMove';
+import { ConspirateursRules } from 'src/app/games/conspirateurs/ConspirateursRules';
+import { ConspirateursTutorial } from 'src/app/games/conspirateurs/ConspirateursTutorial';
+
+import { DvonnMove } from 'src/app/games/dvonn/DvonnMove';
 import { DvonnRules } from 'src/app/games/dvonn/DvonnRules';
 import { DvonnTutorial } from 'src/app/games/dvonn/DvonnTutorial';
-import { DvonnMove } from 'src/app/games/dvonn/DvonnMove';
-import { EncapsuleRules } from 'src/app/games/encapsule/EncapsuleRules';
-import { EncapsuleTutorial } from 'src/app/games/encapsule/EncapsuleTutorial';
+
 import { EncapsuleMove } from 'src/app/games/encapsule/EncapsuleMove';
 import { EncapsulePiece } from 'src/app/games/encapsule/EncapsulePiece';
+import { EncapsuleRules } from 'src/app/games/encapsule/EncapsuleRules';
+import { EncapsuleTutorial } from 'src/app/games/encapsule/EncapsuleTutorial';
+import { EpaminondasMove } from 'src/app/games/epaminondas/EpaminondasMove';
 import { EpaminondasRules } from 'src/app/games/epaminondas/EpaminondasRules';
 import { EpaminondasTutorial } from '../../../games/epaminondas/EpaminondasTutorial';
-import { EpaminondasMove } from 'src/app/games/epaminondas/EpaminondasMove';
 
+import { GipfCapture } from 'src/app/jscaip/GipfProjectHelper';
+import { GipfMove, GipfPlacement } from 'src/app/games/gipf/GipfMove';
 import { GipfRules } from 'src/app/games/gipf/GipfRules';
 import { GipfTutorial } from 'src/app/games/gipf/GipfTutorial';
-import { GipfMove, GipfPlacement } from 'src/app/games/gipf/GipfMove';
-import { GipfCapture } from 'src/app/jscaip/GipfProjectHelper';
-import { HiveTutorial } from 'src/app/games/hive/HiveTutorial';
-import { HiveRules } from 'src/app/games/hive/HiveRules';
+
 import { HiveMove } from 'src/app/games/hive/HiveMove';
+import { HiveRules } from 'src/app/games/hive/HiveRules';
+import { HiveTutorial } from 'src/app/games/hive/HiveTutorial';
 
 import { KalahRules } from 'src/app/games/mancala/kalah/KalahRules';
 import { KalahTutorial } from 'src/app/games/mancala/kalah/KalahTutorial';
-import { MancalaMove } from 'src/app/games/mancala/common/MancalaMove';
+
+import { LinesOfActionMove } from 'src/app/games/lines-of-action/LinesOfActionMove';
 import { LinesOfActionRules } from 'src/app/games/lines-of-action/LinesOfActionRules';
 import { LinesOfActionTutorial } from 'src/app/games/lines-of-action/LinesOfActionTutorial';
-import { LinesOfActionMove } from 'src/app/games/lines-of-action/LinesOfActionMove';
-import { LodestoneTutorial } from 'src/app/games/lodestone/LodestoneTutorial';
-import { LodestoneRules } from 'src/app/games/lodestone/LodestoneRules';
 import { LodestoneMove } from 'src/app/games/lodestone/LodestoneMove';
-import { MancalaDistribution } from 'src/app/games/mancala/common/MancalaMove';
-import { MartianChessTutorial } from 'src/app/games/martian-chess/MartianChessTutorial';
-import { MartianChessRules } from 'src/app/games/martian-chess/MartianChessRules';
-import { MartianChessMove } from 'src/app/games/martian-chess/MartianChessMove';
+import { LodestoneRules } from 'src/app/games/lodestone/LodestoneRules';
+import { LodestoneTutorial } from 'src/app/games/lodestone/LodestoneTutorial';
 
+import { MancalaDistribution } from 'src/app/games/mancala/common/MancalaMove';
+import { MancalaMove } from 'src/app/games/mancala/common/MancalaMove';
+import { MartianChessMove } from 'src/app/games/martian-chess/MartianChessMove';
+import { MartianChessRules } from 'src/app/games/martian-chess/MartianChessRules';
+import { MartianChessTutorial } from 'src/app/games/martian-chess/MartianChessTutorial';
+
+import { PentagoMove } from 'src/app/games/pentago/PentagoMove';
 import { PentagoRules } from 'src/app/games/pentago/PentagoRules';
 import { PentagoTutorial } from 'src/app/games/pentago/PentagoTutorial';
-import { PentagoMove } from 'src/app/games/pentago/PentagoMove';
+import { PylosCoord } from 'src/app/games/pylos/PylosCoord';
+import { PylosMove } from 'src/app/games/pylos/PylosMove';
 import { PylosRules } from 'src/app/games/pylos/PylosRules';
 import { PylosTutorial } from 'src/app/games/pylos/PylosTutorial';
-import { PylosMove } from 'src/app/games/pylos/PylosMove';
-import { PylosCoord } from 'src/app/games/pylos/PylosCoord';
+
+import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
+import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
+import { QuartoRules } from 'src/app/games/quarto/QuartoRules';
 import { QuartoTutorial } from 'src/app/games/quarto/QuartoTutorial';
-import { SaharaTutorial } from '../../../games/sahara/SaharaTutorial';
-import { SaharaRules } from 'src/app/games/sahara/SaharaRules';
+
 import { SaharaMove } from 'src/app/games/sahara/SaharaMove';
+import { SaharaRules } from 'src/app/games/sahara/SaharaRules';
+import { SaharaTutorial } from '../../../games/sahara/SaharaTutorial';
 import { SixMove } from 'src/app/games/six/SixMove';
 import { SixRules } from 'src/app/games/six/SixRules';
 import { SixTutorial, SixTutorialMessages } from '../../../games/six/SixTutorial';
-import { SquarzTutorial } from 'src/app/games/squarz/SquarzTutorial';
-import { SquarzRules } from 'src/app/games/squarz/SquarzRules';
 import { SquarzMove } from 'src/app/games/squarz/SquarzMove';
-import { TrexoTutorial } from 'src/app/games/trexo/TrexoTutorial';
-import { TrexoRules } from 'src/app/games/trexo/TrexoRules';
-import { TrexoMove } from 'src/app/games/trexo/TrexoMove';
+import { SquarzRules } from 'src/app/games/squarz/SquarzRules';
+import { SquarzTutorial } from 'src/app/games/squarz/SquarzTutorial';
 
+import { TrexoMove } from 'src/app/games/trexo/TrexoMove';
+import { TrexoRules } from 'src/app/games/trexo/TrexoRules';
+import { TrexoTutorial } from 'src/app/games/trexo/TrexoTutorial';
+
+import { YinshCapture, YinshMove } from 'src/app/games/yinsh/YinshMove';
 import { YinshRules } from 'src/app/games/yinsh/YinshRules';
 import { YinshTutorial, YinshTutorialMessages } from 'src/app/games/yinsh/YinshTutorial';
-import { YinshCapture, YinshMove } from 'src/app/games/yinsh/YinshMove';
-import { QuartoRules } from 'src/app/games/quarto/QuartoRules';
-import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
-import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
 
 describe('TutorialGameWrapperComponent (games)', () => {
+
     describe('Game should load correctly', () => {
+
         for (const gameInfo of GameInfo.getAllGames()) {
+
             it(gameInfo.urlName, fakeAsync(async() => {
                 const wrapper: GameWrapper<Comparable> =
                     (await ComponentTestUtils.forGameWithWrapper(gameInfo.urlName, TutorialGameWrapperComponent))
                         .getWrapper();
                 expect(wrapper).toBeTruthy();
             }));
+
         }
+
     });
 
     describe('Tutorials', () => {
+
         it('should have healthy behavior for predicate steps', fakeAsync(async() => {
+            const abaloneTutorial: TutorialStep[] = new AbaloneTutorial().tutorial;
             const apagosTutorial: TutorialStep[] = new ApagosTutorial().tutorial;
             const conspirateursTutorial: TutorialStep[] = new ConspirateursTutorial().tutorial;
             const dvonnTutorial: TutorialStep[] = new DvonnTutorial().tutorial;
@@ -118,6 +140,11 @@ describe('TutorialGameWrapperComponent (games)', () => {
             const yinshTutorial: TutorialStep[] = new YinshTutorial().tutorial;
             const stepExpectations: [AbstractRules, TutorialStep, Move, MGPValidation][] = [
                 [
+                    AbaloneRules.get(),
+                    abaloneTutorial[3],
+                    AbaloneMove.ofSingleCoord(new Coord(2, 6), HexaDirection.UP),
+                    MGPValidation.failure(`This is not a translation, this is a "pushing move", try a translation.`),
+                ], [
                     ApagosRules.get(),
                     apagosTutorial[2],
                     ApagosMove.drop(0, Player.ZERO),
@@ -155,7 +182,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
                 ], [
                     EncapsuleRules.get(),
                     encapsuleTutorial[3],
-                    EncapsuleMove.ofDrop(EncapsulePiece.BIG_DARK, new Coord(0, 2)),
+                    EncapsuleMove.ofDrop(EncapsulePiece.ofSizeAndPlayer(3, PlayerOrNone.ZERO), new Coord(0, 2)),
                     MGPValidation.failure(`You won, but the exercise is to win while moving a piece!`),
                 ], [
                     EncapsuleRules.get(),
@@ -367,8 +394,10 @@ describe('TutorialGameWrapperComponent (games)', () => {
                             .withContext(move.toString() + ' for step ' + i + '(' + step.title + ')')
                             .toEqual(validation);
                     } else {
-                        const context: string = 'Move should be legal to reach predicate but failed in "' + step.title+ '" because';
-                        MGPValidationTestUtils.expectToBeSuccess(MGPValidation.ofFallible(moveResult), context);
+                        const failure: MGPValidation = MGPValidation.ofFallible(moveResult);
+                        const context: string = 'Move should be legal to reach predicate but failed in "' + step.title +
+                                                '" because "' + failure.getReason() + '"';
+                        MGPValidationTestUtils.expectToBeSuccess(failure, context);
                     }
                 } else {
                     throw new Error('This test expects only predicate steps, remove "' + step.title + '"');
@@ -376,7 +405,9 @@ describe('TutorialGameWrapperComponent (games)', () => {
                 i++;
             }
         }));
+
         for (const gameInfo of GameInfo.getAllGames()) {
+
             it('should make sure all solution moves are legal for ' + gameInfo.name, fakeAsync(async() => {
                 const gameComponent: AbstractGameComponent =
                     (await ComponentTestUtils.forGameWithWrapper(gameInfo.urlName,
@@ -406,6 +437,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     }
                 }
             }));
+
             it('should display the step and solution move without error for ' + gameInfo.name, fakeAsync(async() => {
                 const testUtils: ComponentTestUtils<AbstractGameComponent, Comparable> =
                     await ComponentTestUtils.forGameWithWrapper(gameInfo.urlName, TutorialGameWrapperComponent);
@@ -430,7 +462,9 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     }
                 }
             }));
+
         }
+
     });
 
 });

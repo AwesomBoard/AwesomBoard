@@ -48,11 +48,11 @@ export class VerifyAccountComponent implements OnInit, OnDestroy {
                 } else {
                     // Otherwise, it means the user needs to verify its email
                     this.verificationType = 'send-email';
-                    if (this.triedToFinalize === true && user.verified === false) {
+                    if (this.triedToFinalize && user.verified === false) {
                         // The user already clicked on the "finalize" button but hasn't verified the email!
                         this.errorMessage = $localize`You have not verified your email! Click on the link in the verification email.`;
                     }
-                    if (user.verified === true) {
+                    if (user.verified) {
                         // The user is now verified
                         await this.router.navigate(['/lobby']);
                     }

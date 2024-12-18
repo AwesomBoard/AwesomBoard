@@ -197,7 +197,7 @@ describe('AbaloneComponent', () => {
             await testUtils.expectClickSuccess('#piece-0-7');
 
             // When clicking 3 space on the right
-            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
+            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(3));
 
             // Then piece should no longer be selected
             testUtils.expectElementNotToHaveClass('#piece-0-7', 'selected-stroke');
@@ -358,7 +358,7 @@ describe('AbaloneComponent', () => {
 
             // When selecting an aligned piece too far
             // Then move should be cancel for "too-long-line" reason
-            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_THREE_PIECES());
+            await testUtils.expectClickFailure('#piece-3-7', AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(3));
         }));
 
         it('should allow clicking on arrow landing coord as if it was below an arrow (opponent)', fakeAsync(async() => {
@@ -463,8 +463,8 @@ describe('AbaloneComponent', () => {
             await testUtils.setupState(state, { previousState, previousMove });
 
             // Then a "captured" square with the pushed-out piece should be shown
-            testUtils.expectElementToHaveClass('#space--1-4', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece--1-4', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space--1-4', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece--1-4', 'player1-fill');
         }));
 
         it('should show suicidal-translation fallen pieces', fakeAsync(async() => {
@@ -500,12 +500,12 @@ describe('AbaloneComponent', () => {
             await testUtils.setupState(state, { previousState, previousMove });
 
             // Then a "captured" square with the pushed-out piece should be shown
-            testUtils.expectElementToHaveClass('#space-1-9', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece-1-9', 'player1-fill');
-            testUtils.expectElementToHaveClass('#space-2-9', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece-2-9', 'player1-fill');
-            testUtils.expectElementToHaveClass('#space-3-9', 'captured-fill');
-            testUtils.expectElementToHaveClass('#piece-3-9', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space-1-9', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece-1-9', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space-2-9', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece-2-9', 'player1-fill');
+            testUtils.expectElementToHaveClass('#captured-space-3-9', 'captured-fill');
+            testUtils.expectElementToHaveClass('#captured-piece-3-9', 'player1-fill');
         }));
 
     });
