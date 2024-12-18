@@ -1,13 +1,14 @@
+import { ChangeDetectorRef } from '@angular/core';
+import { MGPOptional, Set, MGPValidation, TimeUtils, Utils } from '@everyboard/lib';
+
 import { MancalaState } from './MancalaState';
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
-import { MGPOptional, Set, MGPValidation, TimeUtils, Utils } from '@everyboard/lib';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Table, TableUtils } from 'src/app/jscaip/TableUtils';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { MancalaDistribution, MancalaMove } from './MancalaMove';
 import { Player } from 'src/app/jscaip/Player';
 import { MancalaCaptureResult, MancalaDistributionResult, MancalaDropResult, MancalaRules } from './MancalaRules';
-import { ChangeDetectorRef } from '@angular/core';
 import { MancalaFailure } from './MancalaFailure';
 import { MancalaScoreMinimax } from './MancalaScoreMinimax';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
@@ -85,7 +86,7 @@ export abstract class MancalaComponent<R extends MancalaRules>
         this.changeVisibleState(this.getState());
     }
 
-    public async updateBoard(triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(triggerAnimation: boolean): Promise<void> {
         const state: MancalaState = this.getState();
         if (triggerAnimation) {
             this.opponentMoveIsBeingAnimated = true;

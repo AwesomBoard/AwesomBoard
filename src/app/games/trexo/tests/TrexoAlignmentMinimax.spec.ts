@@ -22,4 +22,5 @@ describe('TrexoAlignmentMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

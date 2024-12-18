@@ -22,4 +22,5 @@ describe('KamisadoMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

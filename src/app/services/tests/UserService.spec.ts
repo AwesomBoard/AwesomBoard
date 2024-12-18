@@ -49,4 +49,5 @@ describe('UserService', () => {
             expect(userDAO.update).toHaveBeenCalledOnceWith('userId', { lastUpdateTime: serverTimestamp() });
         });
     });
+
 });

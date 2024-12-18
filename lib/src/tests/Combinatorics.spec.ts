@@ -51,4 +51,5 @@ describe('Combinatorics', () => {
             expect(seen).toEqual([4, 4, 4]);
         });
     });
+
 });

@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { DefeatCoords, DiaballikRules, VictoryCoord, VictoryOrDefeatCoords } from './DiaballikRules';
 import { DiaballikMove, DiaballikBallPass, DiaballikSubMove, DiaballikTranslation } from './DiaballikMove';
 import { DiaballikPiece, DiaballikState } from './DiaballikState';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { Coord } from 'src/app/jscaip/Coord';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { DiaballikDistanceMinimax } from './DiaballikDistanceMinimax';
@@ -74,7 +75,7 @@ export class DiaballikComponent extends RectangularGameComponent<DiaballikRules,
         }
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: DiaballikState = this.node.gameState;
         this.board = state.board; // Needed by RectangularGameComponent
         this.stateInConstruction = state;

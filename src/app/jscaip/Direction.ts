@@ -25,6 +25,10 @@ export abstract class Direction extends Vector {
         return this.x === 1;
     }
 
+    public isHorizontal(): boolean {
+        return this.y === 0 && this.x !== 0;
+    }
+
     public toInt(): number {
         if (this.x === 0 && this.y === -1) return 0;
         if (this.x === 1 && this.y === 0) return 1;

@@ -81,6 +81,7 @@ describe('SixComponent', () => {
             // Then the piece should be selected
             testUtils.expectElementToExist('#selectedPiece_0_0');
         }));
+
     });
 
     describe('Second click (landing)', () => {

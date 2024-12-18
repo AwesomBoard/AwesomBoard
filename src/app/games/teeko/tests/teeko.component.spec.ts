@@ -64,6 +64,7 @@ describe('TeekoComponent', () => {
             // Then the last move should be highlighted
             testUtils.expectElementToHaveClasses('#piece_2_2', ['base', 'player0-fill', 'last-move-stroke']);
         }));
+
     });
 
     describe('translation phase', () => {
@@ -124,6 +125,7 @@ describe('TeekoComponent', () => {
                 // Then it should be shown as selected
                 testUtils.expectElementToHaveClasses('#piece_0_0', ['base', 'player0-fill', 'selected-stroke']);
             }));
+
         });
 
         describe('second click', () => {
@@ -140,9 +142,10 @@ describe('TeekoComponent', () => {
                 const state: TeekoState = new TeekoState(board, 8);
                 await testUtils.setupState(state);
                 await testUtils.expectClickSuccess('#click_0_0');
+                testUtils.expectElementToHaveClass('#piece_0_0', 'selected-stroke');
 
                 // When clicking on it again
-                await testUtils.expectClickSuccess('#click_0_0');
+                await testUtils.expectClickFailure('#click_0_0');
 
                 // Then it should no longer be selected
                 testUtils.expectElementNotToHaveClass('#piece_0_0', 'selected-stroke');
@@ -259,6 +262,7 @@ describe('TeekoComponent', () => {
                 testUtils.expectElementToHaveClasses('#piece_1_0', ['base', 'player0-fill', 'victory-stroke']);
                 testUtils.expectElementToHaveClasses('#piece_1_1', ['base', 'player0-fill', 'victory-stroke']);
             }));
+
         });
 
     });

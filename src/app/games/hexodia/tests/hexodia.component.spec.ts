@@ -372,6 +372,7 @@ describe('HexodiaComponent', () => {
             ]);
             await testUtils.expectMoveSuccess('#click-7-7', move);
         }));
+
     });
 
 });

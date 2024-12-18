@@ -1,10 +1,11 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation, Set } from '@everyboard/lib';
+
 import { QuartoMove } from './QuartoMove';
 import { QuartoState } from './QuartoState';
 import { QuartoConfig, QuartoRules } from './QuartoRules';
 import { QuartoPiece } from './QuartoPiece';
 import { Coord } from 'src/app/jscaip/Coord';
-import { MGPOptional, MGPValidation, Set } from '@everyboard/lib';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
@@ -45,7 +46,7 @@ export class QuartoComponent extends RectangularGameComponent<QuartoRules,
         this.pieceInHand = this.getState().pieceInHand;
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: QuartoState = this.getState();
         this.board = state.getCopiedBoard();
         this.pieceInHand = state.pieceInHand;

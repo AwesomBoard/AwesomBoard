@@ -22,4 +22,5 @@ describe('HiveMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

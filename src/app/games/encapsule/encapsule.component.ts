@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPMap, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { RectangularGameComponent } from '../../components/game-components/rectangular-game-component/RectangularGameComponent';
 import { EncapsuleLegalityInformation, EncapsuleRules } from 'src/app/games/encapsule/EncapsuleRules';
 import { EncapsuleState, EncapsuleSpace } from 'src/app/games/encapsule/EncapsuleState';
@@ -8,7 +10,6 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { EncapsuleFailure } from './EncapsuleFailure';
-import { MGPMap, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { EmptyRulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { EncapsuleMoveGenerator } from './EncapsuleMoveGenerator';
@@ -63,7 +64,7 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
         this.lastStartingCoord = MGPOptional.empty();
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: EncapsuleState = this.getState();
         this.board = state.getCopiedBoard();
         this.calculateLeftPieceCoords();

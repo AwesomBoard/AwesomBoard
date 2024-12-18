@@ -40,4 +40,5 @@ describe('Coord3D', () => {
         const upperCoord: Coord3D = new Coord3D(0, 0, 1);
         expect(coord.isHigherThan(upperCoord)).toBeFalse();
     });
+
 });

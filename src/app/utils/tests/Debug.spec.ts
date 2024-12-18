@@ -154,4 +154,5 @@ describe('Debug', () => {
         // We need to forget our debug settings after each test
         localStorage.clear();
     });
+
 });

@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { HexagonalGameComponent } from 'src/app/components/game-components/game-component/HexagonalGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
@@ -73,7 +74,7 @@ export class HexodiaComponent extends HexagonalGameComponent<HexodiaRules,
         );
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: HexodiaState = this.getState();
         this.hexaBoard = state.getCopiedBoard();
         const config: MGPOptional<HexodiaConfig> = this.getConfig();

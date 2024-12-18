@@ -13,17 +13,19 @@ import { TaflRules } from '../TaflRules';
 import { TaflState } from '../TaflState';
 import { RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
 import { TaflConfig } from '../TaflConfig';
+import { TaflPawn } from '../TaflPawn';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 
 export class TaflTestEntries<C extends TaflComponent<R, M>,
                              R extends TaflRules<M>,
                              M extends TaflMove>
 {
-    component: Type<C>; // TablutComponent, BrandhubComponent, etc
-    gameName: string; // 'Tablut', 'Brandhub', etc
+    component: Type<C>; // TablutComponent | BrandhubComponent | HnefataflComponent
+    gameName: string; // 'Tablut' | 'Brandhub' | 'Hnefatafl'
     secondPlayerPiece: Coord; // The coord of a piece belonging to Player.ONE
     validFirstCoord: Coord; // The coord of a piece belonging to Player.ZERO that could move this turn (in initialState)
     moveProvider: (start: Coord, end: Coord) => MGPFallible<M>;
-    validSecondCoord: Coord; // The coord of an empty space that could be the landing coord of validFirstCoord
+    validSecondCoords: Coord[]; // The coords of empty spaces that could be the landing coord of validFirstCoord
     diagonalSecondCoord: Coord; // An empty space coord in diagonal of validFirstCoord
     stateReadyForCapture: TaflState; // A state in which a capture is possible for current player
     capture: M; // The capture possible in stateReadyForCapture
@@ -53,6 +55,18 @@ export function DoTaflTests<C extends TaflComponent<R, M>,
 
         describe('First click', () => {
 
+            function expectPiecesNotToBeHighlighted(): void {
+                const component: C = testUtils.getGameComponent();
+                const rules: R = component.rules;
+                const defaultConfig: MGPOptional<TaflConfig> = rules.getDefaultRulesConfig();
+                rules.getInitialState(defaultConfig)
+                    .getCoordsAndContents()
+                    .forEach((value: { coord: Coord, content: TaflPawn }) => {
+                        if (value.content.getOwner().isPlayer()) {
+                            testUtils.expectElementNotToExist(`#stroke-${ value.coord.x }-${ value.coord.y}`);
+                        }
+                    });
+            }
             it('should cancel move when clicking on opponent piece', fakeAsync( async() => {
                 // Given any state
                 // When clicking on an opponent piece
@@ -62,6 +76,22 @@ export function DoTaflTests<C extends TaflComponent<R, M>,
                 await testUtils.expectClickFailure(opponentPiece, reason);
             }));
 
+            it('should highlight second clicks', fakeAsync(async() => {
+                // Given any board
+                // When selecting a piece
+                const playersCoord: string = entries.validFirstCoord.x + '-' + entries.validFirstCoord.y;
+                await testUtils.expectClickSuccess('#click-' + playersCoord);
+
+                // Then the other player pieces should not be highlighted
+                expectPiecesNotToBeHighlighted();
+                // And the possible landing should be highlighted
+                for (const secondClick of entries.validSecondCoords) {
+                    const x: number = secondClick.x;
+                    const y: number = secondClick.y;
+                    testUtils.expectElementToExist(`#stroke-${ x }-${ y }`);
+                }
+            }));
+
             it('should cancel move when first click on empty space', fakeAsync( async() => {
                 // Given any state
                 // When clicking on an empty space
@@ -69,7 +99,7 @@ export function DoTaflTests<C extends TaflComponent<R, M>,
                 await testUtils.expectClickFailure('#click-0-0', RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_EMPTY());
             }));
 
-            it('should highlight selected piece', fakeAsync(async() => {
+            it('should highlight selected piece and change possible clicks', fakeAsync(async() => {
                 // Given any state
                 // When clicking on one of your piece
                 const playersCoord: string = entries.validFirstCoord.x + '-' + entries.validFirstCoord.y;
@@ -86,7 +116,7 @@ export function DoTaflTests<C extends TaflComponent<R, M>,
             it('should allow simple move', fakeAsync(async() => {
                 // Given a state where first click selected one of your pieces
                 const start: Coord = entries.validFirstCoord;
-                const end: Coord = entries.validSecondCoord;
+                const end: Coord = entries.validSecondCoords[0];
                 const playersCoord: string = start.x + '-' + start.y;
                 await testUtils.expectClickSuccess('#click-' + playersCoord);
 
@@ -143,7 +173,7 @@ export function DoTaflTests<C extends TaflComponent<R, M>,
                 const otherCoord: string = entries.otherPlayerPiece.x + '-' + entries.otherPlayerPiece.y;
                 await testUtils.expectClickSuccess('#click-' + otherCoord);
 
-                // Then that piece should be selected and the previous unselected
+                // // Then that piece should be selected and the previous unselected
                 testUtils.expectElementToHaveClass('#piece-' + otherCoord, 'selected-stroke');
                 testUtils.expectElementNotToHaveClass('#piece-' + playersCoord, 'selected-stroke');
             }));
@@ -201,8 +231,8 @@ export function DoTaflTests<C extends TaflComponent<R, M>,
             // Given a state with a first move done
             const playersCoord: string = entries.validFirstCoord.x + '-' + entries.validFirstCoord.y;
             await testUtils.expectClickSuccess('#click-' + playersCoord);
-            const move: M = entries.moveProvider(entries.validFirstCoord, entries.validSecondCoord).get();
-            const landingCoord: string = entries.validSecondCoord.x + '-' + entries.validSecondCoord.y;
+            const move: M = entries.moveProvider(entries.validFirstCoord, entries.validSecondCoords[0]).get();
+            const landingCoord: string = entries.validSecondCoords[0].x + '-' + entries.validSecondCoords[0].y;
             const landingSpace: string = '#click-' + landingCoord;
             await testUtils.expectMoveSuccess(landingSpace, move);
 

@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { RectangularGameComponent } from '../../components/game-components/rectangular-game-component/RectangularGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Orthogonal } from 'src/app/jscaip/Orthogonal';
 import { QuixoMove } from 'src/app/games/quixo/QuixoMove';
 import { QuixoConfig, QuixoState } from 'src/app/games/quixo/QuixoState';
 import { QuixoRules } from 'src/app/games/quixo/QuixoRules';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { PlayerOrNone } from 'src/app/jscaip/Player';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
@@ -27,13 +28,13 @@ export class QuixoComponent extends RectangularGameComponent<QuixoRules,
 
     public QuixoState: typeof QuixoState = QuixoState;
 
-    public lastMoveCoord: MGPOptional<Coord> = MGPOptional.empty();
+    private lastMoveCoords: Coord[] = [];
 
     public chosenCoord: MGPOptional<Coord> = MGPOptional.empty();
 
-    public chosenDirection: Orthogonal;
+    private chosenDirection: Orthogonal;
 
-    public victoriousCoords: Coord[] = [];
+    private victoriousCoords: Coord[] = [];
 
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
         super(messageDisplayer, cdr);
@@ -46,14 +47,18 @@ export class QuixoComponent extends RectangularGameComponent<QuixoRules,
     }
 
     public override async showLastMove(move: QuixoMove): Promise<void> {
-        this.lastMoveCoord = MGPOptional.of(move.coord);
+        let coord: Coord = move.coord;
+        while (this.state.isOnBoard(coord)) {
+            this.lastMoveCoords.push(coord);
+            coord = coord.getNext(move.direction);
+        }
     }
 
     public override hideLastMove(): void {
-        this.lastMoveCoord = MGPOptional.empty();
+        this.lastMoveCoords = [];
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.state = this.getState();
         this.board = this.state.board;
         this.victoriousCoords = QuixoRules.getVictoriousCoords(this.state);
@@ -69,9 +74,14 @@ export class QuixoComponent extends RectangularGameComponent<QuixoRules,
         const classes: string[] = [];
 
         classes.push(this.getPlayerClass(player));
-        if (this.chosenCoord.equalsValue(coord)) classes.push('selected-stroke');
-        else if (this.lastMoveCoord.equalsValue(coord)) classes.push('last-move-stroke');
-        if (this.victoriousCoords.some((c: Coord): boolean => c.equals(coord))) classes.push('victory-stroke');
+        if (this.chosenCoord.equalsValue(coord)) {
+            classes.push('selected-stroke');
+        } else if (this.lastMoveCoords.some((c: Coord) => c.equals(coord))) {
+            classes.push('last-move-stroke');
+        }
+        if (this.victoriousCoords.some((c: Coord): boolean => c.equals(coord))) {
+            classes.push('victory-stroke');
+        }
         return classes;
     }
 

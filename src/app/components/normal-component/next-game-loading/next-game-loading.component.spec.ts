@@ -19,4 +19,5 @@ describe('NextGameLoadingComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
 });

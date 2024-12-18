@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { TrexoPiece, TrexoPieceStack, TrexoState } from './TrexoState';
 import { TrexoRules } from './TrexoRules';
 import { ModeConfig, ParallelogramGameComponent } from 'src/app/components/game-components/parallelogram-game-component/ParallelogramGameComponent';
 import { TrexoMove } from 'src/app/games/trexo/TrexoMove';
 import { Coord } from 'src/app/jscaip/Coord';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { Table3DUtils, TableUtils } from 'src/app/jscaip/TableUtils';
 import { Coord3D } from 'src/app/jscaip/Coord3D';
@@ -138,7 +139,7 @@ export class TrexoComponent extends ParallelogramGameComponent<TrexoRules, Trexo
         return pieceBonus;
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: TrexoState = this.getState();
         this.board = state.getCopiedBoard();
         this.currentOpponentClass = this.getPlayerClass(state.getCurrentOpponent());

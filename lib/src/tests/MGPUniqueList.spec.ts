@@ -61,4 +61,5 @@ describe('MGPUniqueList', () => {
             expect(Utils.logError).toHaveBeenCalledWith('Assertion failure', 'MGPUniqueList: index (from end) out of bounds: 2', undefined);
         });
     });
+
 });

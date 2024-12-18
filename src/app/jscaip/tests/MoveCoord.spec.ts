@@ -16,4 +16,5 @@ describe('MoveCoord', () => {
             EncoderTestUtils.expectToBeBijective(encoder, new MyMoveCoord(2, 2));
         });
     });
+
 });

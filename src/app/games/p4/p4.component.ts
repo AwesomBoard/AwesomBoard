@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { P4State } from './P4State';
 import { P4Config, P4Rules } from './P4Rules';
 import { RectangularGameComponent } from '../../components/game-components/rectangular-game-component/RectangularGameComponent';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
 import { P4Move } from 'src/app/games/p4/P4Move';
 import { PlayerOrNone } from 'src/app/jscaip/Player';
 import { Coord } from 'src/app/jscaip/Coord';
@@ -41,7 +42,7 @@ export class P4Component extends RectangularGameComponent<P4Rules, P4Move, P4Sta
         return await this.chooseMove(chosenMove);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: P4State = this.getState();
 
         this.victoryCoords = P4Rules.get().getVictoriousCoords(state);

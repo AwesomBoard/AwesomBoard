@@ -70,5 +70,7 @@ describe('ChatService', () => {
             // Then the chat should be updated with the new message
             expect(chatService.addMessage).toHaveBeenCalledWith('id', MESSAGE);
         }));
+
     });
+
 });

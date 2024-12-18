@@ -116,6 +116,7 @@ describe('BaAwaComponent', () => {
                 mancalaTestUtils.expectToBeCaptured([{ x: 0, y: 1, content: { mainContent: ' 0 ', secondaryContent: ' -4 ' } }]);
                 tick(MancalaComponent.TIMEOUT_BETWEEN_SEEDS); // Dropping last seed
             }));
+
         });
     });
 

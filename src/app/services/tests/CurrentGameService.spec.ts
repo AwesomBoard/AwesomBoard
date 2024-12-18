@@ -170,6 +170,7 @@ describe('CurrentGameService', () => {
 
             subscription.unsubscribe();
         }));
+
     });
     describe('observed part', () => {
         it('should update currentGame observable when UserDAO touches it', fakeAsync(async() => {
@@ -273,6 +274,7 @@ describe('CurrentGameService', () => {
                 };
                 expect(() => currentGameService.updateCurrentGame(updatedPart)).toThrowError(expectedError);
             }));
+
         });
         describe('removeCurrentGame', () => {
             it('should throw when asking to remove whilst no user is logged', fakeAsync(async() => {
@@ -296,6 +298,7 @@ describe('CurrentGameService', () => {
                 expect(userDAO.update).toHaveBeenCalledOnceWith(UserMocks.CREATOR_MINIMAL_USER.id,
                                                                 { currentGame: null });
             }));
+
         });
     });
     describe('canUserCreate', () => {
@@ -362,6 +365,7 @@ describe('CurrentGameService', () => {
             // Then it's should be refused
             expect(validation.getReason()).toBe(GameActionFailure.YOU_ARE_ALREADY_OBSERVING());
         }));
+
     });
     describe('canUserJoin', () => {
 
@@ -481,6 +485,7 @@ describe('CurrentGameService', () => {
             // When asking if you can join some started part
             await shouldAllowJoinPart(currentGame, 'some-id', true);
         }));
+
     });
     describe('unsubscriptions', () => {
         it('should unsubscribe from userService when destroying service', fakeAsync(async() => {
@@ -510,6 +515,7 @@ describe('CurrentGameService', () => {
             // Then it should have unsubscribed from active users
             expectUnsubscribeToHaveBeenCalled();
         }));
+
     });
 
     afterEach(async() => {
@@ -517,4 +523,5 @@ describe('CurrentGameService', () => {
             currentGameService.ngOnDestroy();
         }
     });
+
 });

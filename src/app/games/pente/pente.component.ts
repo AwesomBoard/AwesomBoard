@@ -1,9 +1,10 @@
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { PenteRules } from './PenteRules';
 import { PenteMove } from './PenteMove';
 import { PenteState } from './PenteState';
-import { ChangeDetectorRef, Component } from '@angular/core';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { GobanGameComponent } from 'src/app/components/game-components/goban-game-component/GobanGameComponent';
@@ -40,7 +41,7 @@ export class PenteComponent extends GobanGameComponent<PenteRules,
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: PenteState = this.getState();
         this.board = state.board;
         this.scores = MGPOptional.of(this.getState().captures);

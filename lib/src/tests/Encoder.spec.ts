@@ -91,4 +91,5 @@ describe('Encoder', () => {
             EncoderTestUtils.expectToBeBijective(encoder, [1, 2, 3]);
         });
     });
+
 });

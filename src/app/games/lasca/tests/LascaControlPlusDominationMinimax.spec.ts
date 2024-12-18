@@ -22,4 +22,5 @@ describe('LascaControlPlusDominationMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

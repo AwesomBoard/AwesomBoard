@@ -22,4 +22,5 @@ describe('LascaControlMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

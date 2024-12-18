@@ -347,6 +347,7 @@ describe('TrexoComponent', () => {
             testUtils.expectElementToHaveClass('#tile_4_4_0', 'player0-fill');
             testUtils.expectElementToHaveClass('#tile_4_4_1', 'player1-fill');
         }));
+
     });
 
 });

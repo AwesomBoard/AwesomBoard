@@ -21,4 +21,5 @@ describe('TeekoMinimax', () => {
             shouldFinish: false, // not always a finisher
         });
     });
+
 });

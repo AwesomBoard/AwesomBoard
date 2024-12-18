@@ -84,4 +84,5 @@ describe('App module', () => {
             expect(matchingRoute.get().component).toEqual(expectedComponent);
         }
     });
+
 });

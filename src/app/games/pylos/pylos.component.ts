@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { Set, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { GameComponent } from '../../components/game-components/game-component/GameComponent';
 import { PylosMove, PylosMoveFailure } from 'src/app/games/pylos/PylosMove';
 import { PylosState } from 'src/app/games/pylos/PylosState';
 import { PylosRules } from 'src/app/games/pylos/PylosRules';
 import { PylosCoord } from 'src/app/games/pylos/PylosCoord';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
-import { Set, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { PylosFailure } from './PylosFailure';
@@ -309,7 +310,7 @@ export class PylosComponent extends GameComponent<PylosRules, PylosMove, PylosSt
         return pieces;
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.state = this.getState();
         this.constructedState = this.state;
         const repartition: PlayerNumberMap = this.state.getPiecesRepartition();

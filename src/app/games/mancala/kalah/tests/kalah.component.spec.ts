@@ -184,6 +184,7 @@ describe('KalahComponent', () => {
                 mancalaTestUtils.expectStoreContentToBe(Player.ZERO, ' 1 '); // no longer +1
                 tick(6 * MancalaComponent.TIMEOUT_BETWEEN_SEEDS);
             }));
+
         });
 
         it('should show constructed move during multi-distribution move', fakeAsync(async() => {
@@ -349,6 +350,7 @@ describe('KalahComponent', () => {
             // Then the capture of last turn should be hidden
             mancalaTestUtils.expectStoreContentToBe(Player.ZERO, ' 1 '); // no longer +1
         }));
+
     });
 
 });

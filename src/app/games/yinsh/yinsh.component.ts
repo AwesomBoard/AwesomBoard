@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { HexagonalGameComponent } from 'src/app/components/game-components/game-component/HexagonalGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { HexaLayout } from 'src/app/jscaip/HexaLayout';
@@ -10,7 +12,6 @@ import { YinshState } from './YinshState';
 import { YinshCapture, YinshMove } from './YinshMove';
 import { YinshPiece } from './YinshPiece';
 import { YinshLegalityInformation, YinshRules } from './YinshRules';
-import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { YinshMoveGenerator } from './YinshMoveGenerator';
 import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
@@ -104,7 +105,7 @@ export class YinshComponent extends HexagonalGameComponent<YinshRules,
         this.constructedState = this.getState();
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: YinshState = this.getState();
         this.constructedState = state;
         this.hexaBoard = this.constructedState.board;
@@ -196,6 +197,7 @@ export class YinshComponent extends HexagonalGameComponent<YinshRules,
 
     public isMarker(x: number, y: number): boolean {
         const coord: Coord = new Coord(x, y);
+        if (x === 5 && y ===5) console.log(this.constructedState.getPieceAt(coord))
         return this.constructedState.getPieceAt(coord).isMarker() ||
                this.moveStart.equalsValue(coord) ||
                this.isCapturedMarker(coord, this.lastCaptures) ||
@@ -225,6 +227,7 @@ export class YinshComponent extends HexagonalGameComponent<YinshRules,
 
     public isRing(x: number, y: number): boolean {
         const coord: Coord = new Coord(x, y);
+        if (x === 5 && y ===5) console.log('isRing', this.constructedState.getPieceAt(coord).isRing)
         return this.constructedState.getPieceAt(coord).isRing ||
                this.moveEnd.equalsValue(coord) ||
                this.isInitialCaptureRing(coord) ||
@@ -447,6 +450,7 @@ export class YinshComponent extends HexagonalGameComponent<YinshRules,
 
     private async selectMoveStart(coord: Coord): Promise<MGPValidation> {
         if (this.constructedState.isInitialPlacementPhase()) {
+            console.log('selectMoveStart > isInitialPlacementPhase')
             const validity: MGPFallible<YinshLegalityInformation> =
                 this.rules.initialPlacementValidity(this.constructedState, coord);
             if (validity.isFailure()) {
@@ -455,6 +459,7 @@ export class YinshComponent extends HexagonalGameComponent<YinshRules,
             this.moveStart = MGPOptional.of(coord);
             return this.tryMove();
         } else {
+            console.log('selectMoveStart > NOT isInitialPlacementPhase')
             const validity: MGPValidation = this.rules.moveStartValidity(this.constructedState, coord);
             if (validity.isFailure()) {
                 return this.cancelMove(validity.getReason());

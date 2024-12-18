@@ -43,4 +43,5 @@ describe('ToggleVisibilityDirective', () => {
         // Then the input is again a password
         expect(testUtils.findElement('#password').nativeElement.getAttribute('type')).toBe('password');
     });
+
 });

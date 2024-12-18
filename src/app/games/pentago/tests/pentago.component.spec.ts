@@ -87,6 +87,7 @@ describe('PentagoComponent', () => {
             // Then the last rotation should be hidden
             testUtils.expectElementNotToExist('#last-rotation-3-counterclockwise');
         }));
+
     });
 
     describe('second click', () => {
@@ -164,6 +165,28 @@ describe('PentagoComponent', () => {
             testUtils.expectElementToHaveClasses('#block-1-0', ['base', 'no-fill', 'last-move-stroke']);
             testUtils.expectElementToHaveClasses('#click-0-1', ['base', 'player1-fill', 'last-move-stroke']);
         }));
+
+        it('should undrop dropped piece when clicking on it again', fakeAsync(async() => {
+            // Given a board on which a piece has been drop and we ask for rotation
+            const board: Table<PlayerOrNone> = [
+                [_, _, _, _, _, _],
+                [_, _, _, _, _, _],
+                [_, _, _, _, _, _],
+                [_, _, _, _, _, _],
+                [_, _, _, _, _, _],
+                [_, _, _, _, _, O],
+            ];
+            const state: PentagoState = new PentagoState(board, 1);
+            const previousMove: PentagoMove = PentagoMove.rotationless(5, 5);
+            const previousState: PentagoState = PentagoRules.get().getInitialState();
+            await testUtils.setupState(state, { previousState, previousMove });
+            await testUtils.expectClickSuccess('#click-0-0');
+
+            // When clicking on dropped piece again
+            // Then it should cancel move
+            await testUtils.expectClickFailureWithAsymmetricNaming('#current-drop-0-0', '#click-0-0');
+        }));
+
     });
 
     it('should hide first move when taking back', fakeAsync(async() => {

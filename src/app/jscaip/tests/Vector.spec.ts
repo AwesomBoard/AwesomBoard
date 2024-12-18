@@ -11,4 +11,5 @@ describe('Vector', () => {
         const c1: Vector = new Vector(-3, -9);
         expect(c1.toMinimalVector()).toEqual(new Vector(-1, -3));
     });
+
 });

@@ -78,5 +78,6 @@ describe('HexaLine', () => {
             expect(HexaLine.constantQ(3).equals(HexaLine.constantR(3))).toBeFalse();
         });
     });
+
 });
 

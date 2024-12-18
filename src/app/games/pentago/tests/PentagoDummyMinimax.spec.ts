@@ -22,4 +22,5 @@ describe('PentagoDummyMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

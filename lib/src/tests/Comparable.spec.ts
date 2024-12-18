@@ -80,4 +80,5 @@ describe('Comparable', () => {
             expect(isComparableValue({ 'foo': { 'bar': { 'baz': new DummyNonComparableObject(5) } } })).toBeFalse();
         });
     });
+
 });

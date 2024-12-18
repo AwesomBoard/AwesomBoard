@@ -432,4 +432,5 @@ describe('TutorialGameWrapperComponent (games)', () => {
             }));
         }
     });
+
 });

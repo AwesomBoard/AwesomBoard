@@ -208,6 +208,7 @@ describe('MGPMap', () => {
             expect(map.equals(map)).toBeTrue();
         });
     });
+
 });
 
 describe('ReversibleMap', () => {
@@ -225,4 +226,5 @@ describe('ReversibleMap', () => {
             expect(reversed).toEqual(expectedReversed);
         });
     });
+
 });

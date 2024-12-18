@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { PlayerOrNone } from 'src/app/jscaip/Player';
-import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { LinesOfActionMove } from './LinesOfActionMove';
 import { LinesOfActionRules } from './LinesOfActionRules';
 import { LinesOfActionFailure } from './LinesOfActionFailure';
@@ -85,7 +86,7 @@ export class LinesOfActionComponent extends RectangularGameComponent<LinesOfActi
         return MGPValidation.SUCCESS;
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.board = this.getState().board;
     }
 

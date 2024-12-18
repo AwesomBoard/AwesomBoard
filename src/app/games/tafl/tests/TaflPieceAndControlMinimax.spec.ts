@@ -22,4 +22,5 @@ describe('TaflPieceAndControlMinimax', () => {
             shouldFinish: false, // not a finisher
         });
     });
+
 });

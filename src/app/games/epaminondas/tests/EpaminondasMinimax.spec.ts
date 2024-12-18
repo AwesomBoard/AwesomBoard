@@ -57,4 +57,5 @@ describe('EpaminondasMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

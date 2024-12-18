@@ -11,4 +11,5 @@ describe('Player', () => {
         expect(Player.ONE.getOpponent()).toBe(Player.ZERO);
         expect(Player.ZERO.getOpponent()).toBe(Player.ONE);
     });
+
 });

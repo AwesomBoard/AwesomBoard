@@ -22,4 +22,5 @@ describe('AbaloneScoreMinimax', () => {
             shouldFinish: false, // not a finisher
         });
     });
+
 });

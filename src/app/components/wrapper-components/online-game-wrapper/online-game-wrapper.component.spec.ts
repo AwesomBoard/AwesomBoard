@@ -232,6 +232,7 @@ describe('OnlineGameWrapperComponent Lifecycle', () => {
             expect(p4Tag).withContext('p4Tag id should still be absent after startGame call').toBeNull();
             tick(0);
         }));
+
     });
 
     it('should redirect to /notFound if part does not exist', fakeAsync(async() => {

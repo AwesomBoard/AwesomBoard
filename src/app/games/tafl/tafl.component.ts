@@ -1,3 +1,6 @@
+import { ChangeDetectorRef } from '@angular/core';
+import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Orthogonal } from 'src/app/jscaip/Orthogonal';
@@ -5,7 +8,6 @@ import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { RelativePlayer } from 'src/app/jscaip/RelativePlayer';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { TaflMove } from './TaflMove';
 import { TaflPawn } from './TaflPawn';
 import { TaflRules } from './TaflRules';
@@ -18,7 +20,6 @@ import { TaflPieceAndInfluenceMinimax } from './TaflPieceAndInfluenceMinimax';
 import { TaflPieceMinimax } from './TaflPieceMinimax';
 import { TaflPieceAndControlMinimax } from './TaflPieceAndControlMinimax';
 import { TaflEscapeThenPieceThenControlMinimax } from './TaflEscapeThenPieceThenControlMinimax';
-import { ChangeDetectorRef } from '@angular/core';
 
 export abstract class TaflComponent<R extends TaflRules<M>, M extends TaflMove>
     extends RectangularGameComponent<R, M, TaflState, TaflPawn, TaflConfig>
@@ -41,7 +42,7 @@ export abstract class TaflComponent<R extends TaflRules<M>, M extends TaflMove>
         super(messageDisplayer, cdr);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.board = this.getState().getCopiedBoard();
         this.updateViewInfo();
     }
@@ -177,21 +178,30 @@ export abstract class TaflComponent<R extends TaflRules<M>, M extends TaflMove>
     }
 
     public getClickables(): Coord[] {
+        if (this.chosen.isPresent()) {
+            const coord: Coord = this.chosen.get();
+            const state: TaflState = this.getState();
+            const config: TaflConfig = this.config.get();
+            return this.rules.getPossibleDestinations(coord, state, config);
+        } else {
+            return this.getInteractivePlayerPieces();
+        }
+    }
+
+    private getInteractivePlayerPieces(): Coord[] {
+        if (this.interactive === false) {
+            return [];
+        }
         const coords: Coord[] = [];
         for (let y: number = 0; y < this.getHeight(); y++) {
             for (let x: number = 0; x < this.board[y].length; x++) {
                 const coord: Coord = new Coord(x, y);
-                if (this.isClickable(coord)) {
+                if (this.pieceBelongsToCurrentPlayer(coord)) {
                     coords.push(coord);
                 }
             }
         }
         return coords;
-    }
-
-    private isClickable(coord: Coord): boolean {
-        // Show if the piece can be clicked
-        return this.interactive && this.pieceBelongsToCurrentPlayer(coord);
     }
 
     public isInvader(x: number, y: number): boolean {

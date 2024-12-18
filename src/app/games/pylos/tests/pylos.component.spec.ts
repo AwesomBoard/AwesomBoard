@@ -135,6 +135,7 @@ describe('PylosComponent', () => {
             // Then it should be selected
             testUtils.expectElementToHaveClass('#piece_0_0_0', 'selected-stroke');
         }));
+
     });
 
     describe('Second click', () => {
@@ -290,6 +291,7 @@ describe('PylosComponent', () => {
             testUtils.expectElementNotToExist('#drop_3_3_0');
             testUtils.expectElementToExist('#drop_0_0_1');
         }));
+
     });
 
     describe('capture', () => {
@@ -599,6 +601,7 @@ describe('PylosComponent', () => {
             testUtils.expectElementNotToExist('#drop_0_0_2');
             testUtils.expectElementNotToExist('#drop_2_2_1');
         }));
+
     });
 
 });

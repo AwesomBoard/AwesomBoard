@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPMap, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { GameComponent } from 'src/app/components/game-components/game-component/GameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { TableUtils } from 'src/app/jscaip/TableUtils';
-import { MGPMap, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { LodestoneFailure } from './LodestoneFailure';
 import { LodestoneCaptures, LodestoneMove } from './LodestoneMove';
 import { LodestoneOrientation, LodestoneDirection, LodestonePiece, LodestonePieceNone, LodestonePieceLodestone, LodestoneDescription } from './LodestonePiece';
@@ -297,7 +298,7 @@ export class LodestoneComponent
         return MGPValidation.SUCCESS;
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.displayedState = this.getState();
         this.removePlayerLodestoneFromDisplayedState();
         this.scores = MGPOptional.of(this.getState().getScores());

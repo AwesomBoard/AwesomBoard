@@ -23,4 +23,5 @@ describe('ConspirateursJumpMinimax', () => {
             shouldFinish: false, // not a finisher
         });
     });
+
 });

@@ -1,5 +1,6 @@
-import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { GoMove } from 'src/app/games/gos/GoMove';
 import { GoConfig, GoRules } from 'src/app/games/gos/go/GoRules';
 import { GoLegalityInformation } from '../AbstractGoRules';
@@ -73,7 +74,7 @@ export class GoComponent extends GobanGameComponent<GoRules,
         return this.chooseMove(resultlessMove);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: GoState = this.getState();
         const phase: GoPhase = state.phase;
 

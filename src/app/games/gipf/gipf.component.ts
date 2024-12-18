@@ -307,6 +307,7 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
 
     public override hideLastMove(): void {
         this.arrows = [];
+        this.moved = [];
         this.inserted = MGPOptional.empty();
     }
 

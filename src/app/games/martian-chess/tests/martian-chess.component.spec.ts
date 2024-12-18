@@ -278,6 +278,7 @@ describe('MartianChessComponent', () => {
             // Then the clock should not have been selected
             testUtils.expectElementNotToHaveClass('#clock-or-count-down-circle', 'selected-stroke');
         }));
+
     });
 
     describe('Visual Modes', () => {
@@ -315,6 +316,7 @@ describe('MartianChessComponent', () => {
                 expect(currentStyle).toBe(styleAndName.style);
             }
         }));
+
     });
 
 });

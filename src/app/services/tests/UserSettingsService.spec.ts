@@ -51,4 +51,5 @@ describe('UserSettingsService', () => {
             expect(language).toBe('fr');
         });
     });
+
 });
