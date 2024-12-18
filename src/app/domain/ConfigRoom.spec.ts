@@ -12,6 +12,7 @@ describe('FirstPlayer', () => {
     it('should throw when creating an invalid first player', () => {
         expect(() => FirstPlayer.of('BLI')).toThrow();
     });
+
 });
 
 describe('PartType', () => {
@@ -22,4 +23,5 @@ describe('PartType', () => {
         expect(PartType.of('CUSTOM').value).toBe('CUSTOM');
         expect(() => PartType.of('unknown')).toThrowError('Invalid part type: unknown.');
     });
+
 });

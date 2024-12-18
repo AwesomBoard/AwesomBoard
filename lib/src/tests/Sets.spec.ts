@@ -20,4 +20,5 @@ describe('Sets', () => {
 
         expect(asSet).toEqual([1, 2]);
     });
+
 });

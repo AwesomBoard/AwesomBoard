@@ -66,6 +66,7 @@ describe('LoginComponent', () => {
             // Then there is no redirection
             expect(router.navigate).not.toHaveBeenCalled();
         }));
+
     });
     describe('doEmailLogin', () => {
         const email: string = 'jean@jaja.europe';
@@ -99,6 +100,7 @@ describe('LoginComponent', () => {
             // Then the error message is shown
             expect(getShownError()).toEqual('Error message');
         }));
+
     });
     describe('doGoogleLogin', () => {
         async function login(): Promise<void> {
@@ -124,6 +126,7 @@ describe('LoginComponent', () => {
             // Then the error message is shown
             expect(getShownError()).toEqual('Error message');
         }));
+
     });
     it('should unsubscribe from user upon destruction', fakeAsync(async() => {
         // Given the login component

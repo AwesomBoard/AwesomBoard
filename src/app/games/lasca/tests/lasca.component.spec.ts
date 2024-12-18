@@ -290,6 +290,7 @@ describe('LascaComponent', () => {
             // Then the move should be illegal
             await testUtils.expectMoveFailure('#coord-0-4', RulesFailure.CANNOT_SELF_CAPTURE(), move);
         }));
+
     });
 
     describe('experience as second player (reversed board)', () => {
@@ -336,6 +337,7 @@ describe('LascaComponent', () => {
             // Then the last move should be shown at the expected place
             testUtils.expectTranslationYToBe('#coord-2-2', 400);
         }));
+
     });
 
     describe('multiple capture', () => {
@@ -365,6 +367,7 @@ describe('LascaComponent', () => {
             testUtils.expectElementToExist('#square-6-6-piece-1');
             testUtils.expectElementToExist('#square-6-6-piece-2');
         }));
+
     });
 
     describe('interactivity', () => {

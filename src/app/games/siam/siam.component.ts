@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { RectangularGameComponent } from '../../components/game-components/rectangular-game-component/RectangularGameComponent';
 import { SiamMove } from 'src/app/games/siam/SiamMove';
 import { SiamState } from 'src/app/games/siam/SiamState';
@@ -6,7 +8,6 @@ import { SiamConfig, SiamLegalityInformation, SiamRules } from 'src/app/games/si
 import { SiamPiece } from 'src/app/games/siam/SiamPiece';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Orthogonal } from 'src/app/jscaip/Orthogonal';
-import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { Player } from 'src/app/jscaip/Player';
@@ -64,7 +65,7 @@ export class SiamComponent extends RectangularGameComponent<SiamRules,
             .expand(0, 0, this.SPACE_SIZE, this.SPACE_SIZE);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: SiamState = this.getState();
         this.board = state.board;
     }

@@ -153,5 +153,6 @@ describe('Ordinal', () => {
             expect(dir.getAngle()).toBe(i * 45);
         }
     });
+
 });
 

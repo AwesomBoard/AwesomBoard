@@ -13,4 +13,5 @@ describe('ConfigRoomDAO', () => {
     it('should be created', () => {
         expect(configRoomDAO).toBeTruthy();
     });
+
 });

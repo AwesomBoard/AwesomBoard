@@ -331,6 +331,7 @@ describe('ApagosComponent', () => {
             testUtils.expectElementToHaveClass('#square_1_piece_4_out_of_5', 'player1-fill');
             testUtils.expectElementToHaveClass('#square_1_piece_4_out_of_5', 'last-move-stroke');
         }));
+
     });
 
     describe('visuals', () => {

@@ -58,6 +58,7 @@
             class="base"
             [ngClass]="getPlayerClass(getCurrentPlayer())"
             [attr.transform]="getPieceTranslate(currentDrop.get())"
+            (click)="onClick(currentDrop.get())"
             [attr.cx]="0.5 * SPACE_SIZE"
             [attr.cy]="0.5 * SPACE_SIZE"
             [attr.r]="(SPACE_SIZE - STROKE_WIDTH) / 2"

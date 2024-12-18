@@ -50,4 +50,5 @@ describe('TaflPieceMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

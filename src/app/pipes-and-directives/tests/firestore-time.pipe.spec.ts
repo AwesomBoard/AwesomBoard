@@ -34,4 +34,5 @@ describe('FirestoreTimePipe', () => {
 
         expect(actual).toBe(expected);
     });
+
 });

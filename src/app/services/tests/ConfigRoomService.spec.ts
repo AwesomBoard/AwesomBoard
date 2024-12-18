@@ -170,6 +170,7 @@ describe('ConfigRoomService', () => {
             const expectedEndpoint: string = endpoint(`/config-room/${gameId}?action=review`);
             expect(window.fetch).toHaveBeenCalledOnceWith(expectedEndpoint, expectedParams('POST'));
         }));
+
     });
 
     describe('reviewConfigAndRemoveChosenOpponent', () => {
@@ -185,6 +186,7 @@ describe('ConfigRoomService', () => {
             const expectedEndpoint: string = endpoint(`/config-room/${gameId}?action=reviewConfigAndRemoveOpponent`);
             expect(window.fetch).toHaveBeenCalledOnceWith(expectedEndpoint, expectedParams('POST'));
         }));
+
     });
 
     describe('subscribeToCandidates', () => {
@@ -229,5 +231,7 @@ describe('ConfigRoomService', () => {
             expect(candidates).toEqual([{ ...UserMocks.CANDIDATE_MINIMAL_USER, name: 'foo' }, UserMocks.OPPONENT_MINIMAL_USER]);
 
         }));
+
     });
+
 });

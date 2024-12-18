@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { PlayerOrNone } from 'src/app/jscaip/Player';
-import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { PentagoMove } from './PentagoMove';
 import { PentagoRules } from './PentagoRules';
 import { PentagoState } from './PentagoState';
@@ -83,7 +84,7 @@ export class PentagoComponent extends RectangularGameComponent<PentagoRules,
         return this.getSVGTranslation(xTranslate, yTranslate);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.state = this.getState();
         this.victoryCoords = this.rules.getVictoryCoords(this.getState());
     }
@@ -191,6 +192,9 @@ export class PentagoComponent extends RectangularGameComponent<PentagoRules,
         }
         if (this.state.board[y][x].isPlayer()) {
             return this.cancelMove(RulesFailure.MUST_LAND_ON_EMPTY_SPACE());
+        }
+        if (this.currentDrop.equalsValue(coord)) {
+            return this.cancelMove();
         }
         const drop: PentagoMove = PentagoMove.rotationless(x, y);
         const state: PentagoState = this.getState();

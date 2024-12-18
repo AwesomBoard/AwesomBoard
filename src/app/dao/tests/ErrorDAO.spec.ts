@@ -14,4 +14,5 @@ describe('ErrorDAO', () => {
     it('should be created', () => {
         expect(errorDAO).toBeTruthy();
     });
+
 });

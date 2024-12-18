@@ -498,6 +498,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             // Finish the part (the real Then is in the callback of onReceivedMove)
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+
     });
 
     it('should allow sending and receiving moves (opponent)', fakeAsync(async() => {
@@ -541,6 +542,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             expect(testUtils.getWrapper().gameComponent.getState().turn).toBe(3);
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+
     });
 
     describe('Component initialization', () => {
@@ -604,6 +606,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
 
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+
     });
 
     it('should trigger part change and send the move upon second move', fakeAsync(async() => {
@@ -818,6 +821,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             expect(currentGameService.removeCurrentGame).toHaveBeenCalledOnceWith();
             expectGameToBeOver();
         }));
+
     });
 
     describe('Take Back', () => {
@@ -1297,6 +1301,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
 
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+
     });
 
     describe('End Game Time Management', () => {
@@ -1368,6 +1373,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
                 result: MGPResult.TIMEOUT.value,
             });
         }));
+
     });
 
     describe('Add time feature', () => {
@@ -1487,6 +1493,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
                 tick(30 * 1000);
                 expectGameToBeOver();
             }));
+
         });
         describe('opponent', () => {
             it('should allow to add global time to opponent (as Player.ONE)', fakeAsync(async() => {
@@ -1503,6 +1510,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
                 const msUntilTimeout: number = wrapper.configRoom.maximalMoveDuration * 1000;
                 tick(msUntilTimeout);
             }));
+
         });
     });
 
@@ -1524,6 +1532,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             testUtils.expectElementToHaveClass('#playerOneIndicator', 'has-text-grey-light');
             tick(wrapper.configRoom.maximalMoveDuration * 1000 + 1);
         }));
+
     });
 
     describe('Resign', () => {
@@ -1601,6 +1610,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             expect(currentGameService.removeCurrentGame).toHaveBeenCalledOnceWith();
             expectGameToBeOver();
         }));
+
     });
 
     describe('rematch', () => {
@@ -1735,6 +1745,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             expectValidRouting(router, ['/nextGameLoading'], NextGameLoadingComponent, { otherRoutes: true });
             expectValidRouting(router, ['/play', 'Quarto', 'nextPartId'], OnlineGameWrapperComponent, { otherRoutes: true });
         }));
+
     });
 
     describe('Non Player Experience', () => {
@@ -1863,6 +1874,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
                 expect(testUtils.getGameComponent().updateBoard).toHaveBeenCalledOnceWith(true);
                 tick(wrapper.configRoom.maximalMoveDuration * 1000);
             }));
+
         });
     });
 
@@ -1920,6 +1932,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             testUtils.expectElementNotToHaveClass('#board-highlight', 'player1-bg');
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+
     });
 
     describe('onCancelMove', () => {
@@ -1950,6 +1963,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             expect(component.showLastMove).not.toHaveBeenCalled();
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+
     });
 
     describe('interactivity', () => {
@@ -1993,6 +2007,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             expect(testUtils.getGameComponent().isInteractive()).toBeFalse();
             tick(wrapper.configRoom.maximalMoveDuration * 1000);
         }));
+
     });
 
 });

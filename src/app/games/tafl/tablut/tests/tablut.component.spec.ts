@@ -22,7 +22,16 @@ const tablutEntries: TaflTestEntries<TablutComponent, TablutRules, TablutMove> =
     secondPlayerPiece: new Coord(4, 4),
     validFirstCoord: new Coord(4, 1),
     moveProvider: TablutMove.from,
-    validSecondCoord: new Coord(1, 1),
+    validSecondCoords: [
+        new Coord(0, 1),
+        new Coord(1, 1),
+        new Coord(2, 1),
+        new Coord(3, 1),
+        new Coord(5, 1),
+        new Coord(6, 1),
+        new Coord(7, 1),
+        new Coord(8, 1),
+    ],
     diagonalSecondCoord: new Coord(5, 2),
     stateReadyForCapture: new TaflState([
         [_, A, _, _, _, _, _, _, _],

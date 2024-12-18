@@ -21,4 +21,5 @@ describe('ApagosFullBoardMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

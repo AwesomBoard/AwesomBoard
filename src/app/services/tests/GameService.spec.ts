@@ -153,6 +153,7 @@ describe('GameService', () => {
             // Then it should have delegated to the backend and failed
             MGPValidationTestUtils.expectToBeFailure(result, 'This is the wrong game type!');
         }));
+
     });
 
     describe('createGame', () => {

@@ -34,6 +34,7 @@ describe('BackendService', () => {
             expect(window.fetch).toHaveBeenCalledOnceWith(endpoint('/time'), expectedParams('GET'));
             expect(time).toEqual(42);
         }));
+
     });
 
 });

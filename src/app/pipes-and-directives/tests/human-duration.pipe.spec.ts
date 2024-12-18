@@ -21,4 +21,5 @@ describe('HumanDurationPipe', () => {
         expect(pipe.transform(15)).toBe('15 seconds');
         expect(pipe.transform(3615)).toBe('1 hour and 15 seconds');
     });
+
 });

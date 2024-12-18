@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { MGPMap, MGPOptional, MGPValidation, Utils, Set } from '@everyboard/lib';
+
 import { RectangularGameComponent } from '../../components/game-components/rectangular-game-component/RectangularGameComponent';
 import { EncapsuleConfig, EncapsuleLegalityInformation, EncapsuleRules } from 'src/app/games/encapsule/EncapsuleRules';
 import { EncapsuleState, EncapsuleSpace, EncapsuleSizeToNumberMap } from 'src/app/games/encapsule/EncapsuleState';
@@ -61,7 +62,7 @@ export class EncapsuleComponent extends RectangularGameComponent<EncapsuleRules,
         this.lastStartingCoord = MGPOptional.empty();
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.state = this.getState();
         const config: MGPOptional<EncapsuleConfig> = this.getConfig();
         this.board = this.state.getCopiedBoard();

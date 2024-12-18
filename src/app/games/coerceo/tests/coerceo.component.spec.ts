@@ -144,6 +144,7 @@ describe('CoerceoComponent', () => {
             expectCoordToBeOfCapturedFill(8, 6);
             expectCoordToBeOfRemovedFill(10, 7);
         }));
+
     });
 
     describe('First click', () => {

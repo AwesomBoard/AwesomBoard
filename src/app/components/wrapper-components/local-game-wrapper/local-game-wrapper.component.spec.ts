@@ -232,6 +232,7 @@ describe('LocalGameWrapperComponent (game phase)', () => {
             expect(testUtils.getGameComponent().hideLastMove).toHaveBeenCalledOnceWith();
             expect(testUtils.getGameComponent().cancelMoveAttempt).toHaveBeenCalledOnceWith();
         }));
+
     });
 
     describe('Using AI', () => {
@@ -493,6 +494,7 @@ describe('LocalGameWrapperComponent (game phase)', () => {
             const winnerTag: string = testUtils.findElement('#winner').nativeElement.innerHTML;
             expect(winnerTag).toBe('Minimax (Player 2) won');
         }));
+
     });
 
     describe('onCancelMove', () => {
@@ -520,6 +522,7 @@ describe('LocalGameWrapperComponent (game phase)', () => {
             // Then showLastMove should not have been called
             expect(component.showLastMove).not.toHaveBeenCalled();
         }));
+
     });
 
     describe('Take Back', () => {
@@ -605,6 +608,7 @@ describe('LocalGameWrapperComponent (game phase)', () => {
             // disactivate AI to stop timeout generation
             tick(40 * LocalGameWrapperComponent.AI_TIMEOUT);
         }));
+
     });
 
     describe('view', () => {
@@ -627,4 +631,5 @@ describe('LocalGameWrapperComponent (game phase)', () => {
         }));
 
     });
+
 });

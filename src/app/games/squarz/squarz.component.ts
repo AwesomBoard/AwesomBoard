@@ -1,8 +1,9 @@
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { SquarzConfig, SquarzRules } from './SquarzRules';
 import { SquarzMove as SquarzMove } from './SquarzMove';
 import { SquarzState } from './SquarzState';
-import { ChangeDetectorRef, Component } from '@angular/core';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { SquarzMoveGenerator } from './SquarzMoveGenerator';
@@ -47,7 +48,7 @@ export class SquarzComponent extends RectangularGameComponent<SquarzRules,
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: SquarzState = this.getState();
         this.board = state.getCopiedBoard();
         this.scores = MGPOptional.of(this.getState().getScores());

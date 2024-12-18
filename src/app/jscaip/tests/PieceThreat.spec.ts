@@ -16,6 +16,7 @@ describe('PieceThreat', () => {
         expect(threat.equals(differentThreat)).toBeFalse();
         expect(threat.equals(otherDifferentThreat)).toBeFalse();
     });
+
 });
 
 describe('SandwichThreat', () => {
@@ -33,4 +34,5 @@ describe('SandwichThreat', () => {
         expect(threat.equals(differentThreat)).toBeFalse();
         expect(threat.equals(otherDifferentThreat)).toBeFalse();
     });
+
 });

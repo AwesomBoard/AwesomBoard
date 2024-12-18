@@ -21,4 +21,5 @@ describe('CoerceoPiecesTilesFreedomMinimax', () => {
             shouldFinish: false, // not a finisher
         });
     });
+
 });

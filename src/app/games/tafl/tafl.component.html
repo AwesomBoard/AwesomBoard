@@ -34,7 +34,7 @@
                         class="base"
                 />
                 <g *ngIf="isInvader(x, y) else defender">
-                    <line [attr.x1]="SPACE_SIZE * 0.50" [attr.y1]="0.04 * SPACE_SIZE"
+                    <line [attr.x1]="SPACE_SIZE * 0.50" [attr.y1]="SPACE_SIZE * 0.04"
                           [attr.x2]="SPACE_SIZE * 0.50" [attr.y2]="SPACE_SIZE * 0.96"
                           [ngClass]="viewInfo.pieceClasses[y][x]"
                           class="base"
@@ -63,8 +63,8 @@
                 <ng-template #defender>
                     <polyline *ngIf="isKing(x, y) else soldierDefender"
                               points="80 85, 32.5 37.5, 50 20, 67.5 37.5, 20 85"
-                              class="base no-fill"
                               [ngClass]="viewInfo.pieceClasses[y][x]"
+                              class="base no-fill"
                     />
                     <ng-template #soldierDefender>
                         <line [attr.x1]="SPACE_SIZE * 0.50" [attr.y1]="SPACE_SIZE * 0.04"

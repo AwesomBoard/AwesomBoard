@@ -108,4 +108,5 @@ describe('MGPOptional', () => {
             expect(optional.map(addOne)).toEqual(MGPOptional.of(42));
         });
     });
+
 });

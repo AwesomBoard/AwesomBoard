@@ -123,6 +123,7 @@ describe('SaharaComponent', () => {
             const reason: string = SaharaFailure.THOSE_TWO_SPACES_ARE_NOT_NEIGHBORS();
             await testUtils.expectClickFailure('#click_7_1', reason);
         }));
+
     });
 
     it('should play correctly shortest victory', fakeAsync(async() => {

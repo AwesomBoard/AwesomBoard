@@ -66,6 +66,7 @@ describe('QuartoComponent', () => {
             testUtils.expectElementToExist('#dropped-piece-0-0');
             testUtils.expectElementToHaveClasses('#dropped-piece-highlight', ['base', 'no-fill', 'selected-stroke', 'mid-stroke']);
         }));
+
     });
 
     describe('Second click', () => {
@@ -129,6 +130,7 @@ describe('QuartoComponent', () => {
             // Then the space should contain the piece to put on the board
             testUtils.expectElementNotToExist('#dropped-piece-0-0');
         }));
+
     });
 
     describe('View', () => {

@@ -72,7 +72,7 @@ export class HexodiaComponent extends HexagonalGameComponent<HexodiaRules,
         return new ViewBox(left, 0, width, height);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: HexodiaState = this.getState();
         this.hexaBoard = state.getCopiedBoard();
         const config: MGPOptional<HexodiaConfig> = this.getConfig();

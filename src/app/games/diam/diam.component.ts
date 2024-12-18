@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPMap, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { GameComponent } from 'src/app/components/game-components/game-component/GameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Vector } from 'src/app/jscaip/Vector';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPMap, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { DiamFailure } from './DiamFailure';
 import { DiamMove, DiamMoveDrop, DiamMoveEncoder, DiamMoveShift } from './DiamMove';
 import { DiamPiece } from './DiamPiece';
@@ -63,7 +64,7 @@ export class DiamComponent extends GameComponent<DiamRules, DiamMove, DiamState>
         new Coord(100, 270),
     ];
 
-    public static PIECE_HEIGHT: number = 36;
+    private static readonly PIECE_HEIGHT: number = 36;
 
     public BOARD_PATHS: string[] = [
         'M 2.8324855,277.57643 164.46619,228.81694 170.57257,148.42756 32.571357,104.19835 Z',
@@ -87,7 +88,7 @@ export class DiamComponent extends GameComponent<DiamRules, DiamMove, DiamState>
         'm 2.8324855,277.57297 v 40.08636 L 166.97969,466.94782 v -40.08636 z',
     ];
 
-    public selected: MGPOptional<Selected> = MGPOptional.empty();
+    private selected: MGPOptional<Selected> = MGPOptional.empty();
 
     public viewInfo: ViewInfo = {
         boardInfo: [],
@@ -108,7 +109,7 @@ export class DiamComponent extends GameComponent<DiamRules, DiamMove, DiamState>
     }
 
     public async onSpaceClick(x: number): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#click_' + x);
+        const clickValidity: MGPValidation = await this.canUserPlay('#click-' + x);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
@@ -138,7 +139,7 @@ export class DiamComponent extends GameComponent<DiamRules, DiamMove, DiamState>
     }
 
     public async onPieceInGameClick(x: number, y: number): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#click_' + x + '_' + y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#click-' + x + '-' + y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
@@ -169,7 +170,7 @@ export class DiamComponent extends GameComponent<DiamRules, DiamMove, DiamState>
             return this.cancelMove(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
         }
         if (this.isSelected(piece)) {
-            this.selected = MGPOptional.empty();
+            return this.cancelMove();
         } else {
             this.selected = MGPOptional.of({ type: 'pieceFromReserve', piece });
         }
@@ -179,7 +180,7 @@ export class DiamComponent extends GameComponent<DiamRules, DiamMove, DiamState>
 
     private getPieceId(piece: DiamPiece, z: number): string {
         const owner: Player = piece.owner as Player;
-        return '#piece_' + owner.toString() + '_' + (piece.otherPieceType ? 1 : 0) + '_' + z;
+        return '#piece-' + owner.toString() + '-' + (piece.otherPieceType ? 1 : 0) + '-' + z;
     }
 
     private isSelected(piece: DiamPiece | null, position?: Coord): boolean {
@@ -195,7 +196,7 @@ export class DiamComponent extends GameComponent<DiamRules, DiamMove, DiamState>
         }
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.updateViewInfo();
     }
 

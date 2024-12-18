@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { GameComponent } from 'src/app/components/game-components/game-component/GameComponent';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
 import { ApagosFailure } from './ApagosFailure';
 import { ApagosMove } from './ApagosMove';
 import { ApagosMoveGenerator } from './ApagosMoveGenerator';
@@ -95,7 +96,7 @@ export class ApagosComponent extends GameComponent<ApagosRules, ApagosMove, Apag
         this.showPossibleDrops();
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: ApagosState = this.getState();
         this.board = state.board;
         const width: number = this.board.length;

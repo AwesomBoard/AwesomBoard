@@ -61,4 +61,5 @@ describe('CoerceoPiecesTilesFreedomHeuristic', () => {
                                                                Player.ONE,
                                                                defaultConfig);
     });
+
 });

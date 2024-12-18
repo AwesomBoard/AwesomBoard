@@ -23,4 +23,5 @@ describe('TaflEscapeThenPieceThenControlMinimax', () => {
             shouldFinish: false, // not always a finisher
         });
     });
+
 });

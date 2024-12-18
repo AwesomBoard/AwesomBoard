@@ -33,6 +33,7 @@ describe('MGPValidation', () => {
             expect(MGPValidation.failure('error').isFailure()).toBeTrue();
         });
     });
+
 });
 
 describe('MGPValidationTestUtils', () => {
@@ -48,4 +49,5 @@ describe('MGPValidationTestUtils', () => {
         const failure: MGPValidation = MGPValidation.failure('I am a failure!');
         MGPValidationTestUtils.expectToBeFailure(failure, 'I am a failure!');
     });
+
 });

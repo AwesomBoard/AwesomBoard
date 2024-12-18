@@ -149,5 +149,7 @@ describe('WelcomeComponent', () => {
             });
             expect(router.navigate).not.toHaveBeenCalled();
         }));
+
     });
+
 });

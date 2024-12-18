@@ -1,5 +1,6 @@
-import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { GoMove } from 'src/app/games/gos/GoMove';
 import { TrigoConfig, TrigoRules } from './TrigoRules';
 import { GoState } from 'src/app/games/gos/GoState';
@@ -92,7 +93,7 @@ export class TrigoComponent extends TriangularGameComponent<TrigoRules,
         return this.chooseMove(resultlessMove);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: GoState = this.getState();
         const phase: GoPhase = state.phase;
 

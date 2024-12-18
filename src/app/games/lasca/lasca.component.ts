@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { MGPFallible, MGPOptional, MGPValidation, Utils, Set } from '@everyboard/lib';
+
 import { ModeConfig, ParallelogramGameComponent } from 'src/app/components/game-components/parallelogram-game-component/ParallelogramGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Vector } from 'src/app/jscaip/Vector';
@@ -66,7 +67,7 @@ export class LascaComponent extends ParallelogramGameComponent<LascaRules,
         this.hasAsymmetricBoard = true;
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         this.constructedState = this.getState(); // AND SWITCH IT
         this.legalMoves = this.moveGenerator.getListMoves(this.node, this.config);
         this.showPossibleMoves();

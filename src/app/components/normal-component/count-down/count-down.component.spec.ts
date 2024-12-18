@@ -162,6 +162,7 @@ describe('CountDownComponent', () => {
             // Then the component should not have that button
             testUtils.expectElementNotToExist('.data-add-time');
         }));
+
     });
     describe('Style depending of remaining time', () => {
         it('should be safe style when upper than limit', () => {
@@ -190,4 +191,5 @@ describe('CountDownComponent', () => {
             expect(component.getTimeClass()).toEqual(CountDownComponent.PASSIVE_STYLE);
         });
     });
+
 });

@@ -21,4 +21,5 @@ describe('ApagosRightmostMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

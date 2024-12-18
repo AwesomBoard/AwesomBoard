@@ -62,6 +62,7 @@ describe('LinesOfActionComponent', () => {
             // Then the piece should be shown as selected
             testUtils.expectElementToHaveClass('#piece_2_0', 'selected-stroke');
         }));
+
     });
 
     describe('Second click', () => {
@@ -132,6 +133,7 @@ describe('LinesOfActionComponent', () => {
             // Then it should no longer be selected
             testUtils.expectElementNotToHaveClass('#piece_2_0', 'selected-stroke');
         }));
+
     });
 
     it('should hide first move when taking back', fakeAsync(async() => {

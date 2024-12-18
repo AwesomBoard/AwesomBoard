@@ -21,4 +21,5 @@ describe('SquarzMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

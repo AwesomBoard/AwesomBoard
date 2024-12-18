@@ -18,4 +18,5 @@ describe('ApagosState', () => {
             expect(stringified).toEqual('[(0, 0, 7), (0, 0, 5), (2, 1, 3), (0, 1, 1)]');
         });
     });
+
 });

@@ -21,4 +21,5 @@ describe('DiamPiece', () => {
             expect(DiamPiece.ZERO_FIRST.equals(DiamPiece.ZERO_SECOND)).toBeFalse();
         });
     });
+
 });

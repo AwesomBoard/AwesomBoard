@@ -52,4 +52,5 @@ describe('TaflPieceAndInfluenceMinimax', () => {
             shouldFinish: false, // not always a finisher
         });
     });
+
 });

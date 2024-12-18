@@ -104,4 +104,5 @@ describe('DvonnPieceStack', () => {
             expect(DvonnPieceStack.PLAYER_ZERO.equals(stack4)).toBeFalse();
         });
     });
+
 });

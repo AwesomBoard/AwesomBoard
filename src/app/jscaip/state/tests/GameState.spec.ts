@@ -8,4 +8,5 @@ describe('GameState', () => {
     it('should successfuly be constructed', () => {
         expect(new MyGameState(3)).toBeTruthy();
     });
+
 });

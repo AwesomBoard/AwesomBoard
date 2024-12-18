@@ -22,4 +22,5 @@ describe('MartianChessScoreMinimax', () => {
             shouldFinish: false, // not a finisher
         });
     });
+
 });

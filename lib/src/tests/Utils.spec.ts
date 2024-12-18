@@ -80,4 +80,5 @@ describe('Utils', () => {
             expect(Utils.identity(5)).toBe(5);
         });
     });
+
 });

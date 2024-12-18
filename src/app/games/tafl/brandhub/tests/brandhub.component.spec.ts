@@ -27,7 +27,7 @@ const brandhubEntries: TaflTestEntries<BrandhubComponent, BrandhubRules, Brandhu
     secondPlayerPiece: new Coord(3, 2),
     validFirstCoord: new Coord(3, 0),
     moveProvider: BrandhubMove.from,
-    validSecondCoord: new Coord(2, 0),
+    validSecondCoords: [new Coord(1, 0), new Coord(2, 0), new Coord(4, 0), new Coord(5, 0)], // TODO use all elements
     diagonalSecondCoord: new Coord(2, 1),
     stateReadyForCapture,
     capture: BrandhubMove.from(new Coord(1, 0), new Coord(2, 0)).get(),

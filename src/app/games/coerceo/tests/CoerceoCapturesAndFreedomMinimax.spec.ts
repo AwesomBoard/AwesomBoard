@@ -21,4 +21,5 @@ describe('CoerceoCapturesAndFreedomMinimax', () => {
             shouldFinish: false, // not a finisher
         });
     });
+
 });

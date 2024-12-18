@@ -22,4 +22,5 @@ describe('QuixoMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

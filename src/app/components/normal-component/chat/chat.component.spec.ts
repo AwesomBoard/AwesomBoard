@@ -286,5 +286,7 @@ describe('ChatComponent', () => {
         afterEach(fakeAsync(async() => {
             component.ngOnDestroy();
         }));
+
     });
+
 });

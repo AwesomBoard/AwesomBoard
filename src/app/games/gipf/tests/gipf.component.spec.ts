@@ -14,6 +14,7 @@ import { Player } from 'src/app/jscaip/Player';
 import { GipfCapture } from 'src/app/jscaip/GipfProjectHelper';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Arrow } from 'src/app/components/game-components/arrow-component/Arrow';
+import { GipfRules } from '../GipfRules';
 
 describe('GipfComponent', () => {
 
@@ -120,6 +121,32 @@ describe('GipfComponent', () => {
             testUtils.expectElementToHaveClasses('#dead-piece-3-3', ['base', 'semi-transparent', 'player0-fill']);
             testUtils.expectElementToHaveClasses('#dead-piece-3-4', ['base', 'semi-transparent', 'player0-fill']);
             testUtils.expectElementToHaveClasses('#dead-piece-3-5', ['base', 'semi-transparent', 'player0-fill']);
+        }));
+
+        it('should hide last move', fakeAsync(async() => {
+            // Given a board on which last move has been done
+            const board: Table<FourStatePiece> = [
+                [N, N, N, B, _, _, _],
+                [N, N, _, B, _, _, _],
+                [N, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _],
+                [_, _, _, _, _, _, N],
+                [_, _, _, _, _, N, N],
+                [_, _, _, A, N, N, N],
+            ];
+            const state: GipfState = new GipfState(board, P0Turn, PlayerNumberMap.of(5, 5), PlayerNumberMap.of(0, 0));
+            const previousState: GipfState = GipfRules.get().getInitialState();
+            const previousPlacement: GipfPlacement =
+                new GipfPlacement(new Coord(3, 0), MGPOptional.of(HexaDirection.DOWN));
+            const previousMove: GipfMove = new GipfMove(previousPlacement, [], []);
+            await testUtils.setupState(state, { previousMove, previousState });
+
+            // When clicking a piece
+            await testUtils.expectClickSuccess('#click-3-6');
+
+            // Then the previous move should be hidden
+            testUtils.expectElementNotToHaveClass('#space-3-0', 'moved-fill');
+            testUtils.expectElementNotToHaveClass('#space-3-1', 'moved-fill');
         }));
 
         it('should make pieces disappear upon selection of a capture', fakeAsync(async() => {

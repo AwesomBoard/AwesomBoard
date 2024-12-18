@@ -21,4 +21,5 @@ describe('EncapsuleDummyMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

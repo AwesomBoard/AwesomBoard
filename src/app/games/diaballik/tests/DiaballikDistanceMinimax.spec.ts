@@ -24,4 +24,5 @@ describe('DiaballikDistanceMinimax', () => {
             shouldFinish: true,
         });
     });
+
 });

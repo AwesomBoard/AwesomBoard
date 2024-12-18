@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { ReversiConfig, ReversiLegalityInformation, ReversiRules } from './ReversiRules';
 import { ReversiState } from './ReversiState';
 import { ReversiMove } from 'src/app/games/reversi/ReversiMove';
@@ -7,7 +9,6 @@ import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
-import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { ReversiMoveGenerator } from './ReversiMoveGenerator';
 import { ReversiMinimax } from './ReversiMinimax';
@@ -50,7 +51,7 @@ export class ReversiComponent extends RectangularGameComponent<ReversiRules,
         return await this.chooseMove(chosenMove);
     }
 
-    public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+    public override async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: ReversiState = this.getState();
 
         this.board = state.getCopiedBoard();

@@ -23,4 +23,5 @@ describe('DiamDummyMinimax', () => {
             shouldFinish: false, // not a finisher
         });
     });
+
 });
