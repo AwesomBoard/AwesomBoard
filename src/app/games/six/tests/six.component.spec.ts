@@ -263,7 +263,7 @@ describe('SixComponent', () => {
     describe('Custom Config', () => {
 
         it('should cancel move when clicking on empty space as first click after 10th turn on shorter configs', fakeAsync(async() => {
-            // Given a part with shorter config, on second phrase
+            // Given a part with shorter config, on second phase
             const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
                 piecePerPlayer: 5,
