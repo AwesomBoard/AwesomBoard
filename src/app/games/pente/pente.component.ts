@@ -12,6 +12,7 @@ import { PenteMoveGenerator } from './PenteMoveGenerator';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { PenteConfig } from './PenteConfig';
 import { PenteAlignmentMinimax } from './PenteAlignmentMinimax';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-new-game',
@@ -41,7 +42,7 @@ export class PenteComponent extends GobanGameComponent<PenteRules,
     }
 
     public override getScoreName(): string {
-        return $localize`captures`;
+        return ScoreName.CAPTURES();
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {

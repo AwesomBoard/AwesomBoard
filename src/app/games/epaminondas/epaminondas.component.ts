@@ -17,6 +17,7 @@ import { EpaminondasPositionalMinimax } from './EpaminondasPositionalMinimax';
 import { EpaminondasMinimax } from './EpaminondasMinimax';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Arrow } from 'src/app/components/game-components/arrow-component/Arrow';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 export type PossibleMove = {
 
@@ -66,7 +67,7 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
     }
 
     public override getScoreName(): string {
-        return $localize`remaining pieces`;
+        return ScoreName.REMAINING_PIECES();
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {

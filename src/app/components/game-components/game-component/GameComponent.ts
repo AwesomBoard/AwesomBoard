@@ -15,6 +15,17 @@ import { Debug } from 'src/app/utils/Debug';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { BaseComponent } from '../../BaseComponent';
 import { Orthogonal } from 'src/app/jscaip/Orthogonal';
+import { Localized } from 'src/app/utils/LocaleUtils';
+
+export class ScoreName {
+
+    public static readonly POINTS: Localized = () => $localize`points`;
+
+    public static readonly CAPTURES: Localized = () => $localize`captures`;
+
+    public static readonly REMAINING_PIECES: Localized = () => $localize`remaining pieces`;
+
+}
 
 /**
  * Define some methods that are useful to have in game components.
@@ -113,7 +124,7 @@ export abstract class GameComponent<R extends SuperRules<M, S, C, L>,
 
     public getScoreName(): string {
         // This can be redefined in games where we don't talk about points
-        return $localize`points`;
+        return ScoreName.POINTS();
     }
 
     public getPointOfView(): Player {
