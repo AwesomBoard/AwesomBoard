@@ -643,14 +643,14 @@ describe('LocalGameWrapperComponent (game phase)', () => {
                 // Given a game with config shown
                 await testUtils.expectInterfaceClickSuccess('#show-config');
                 testUtils.expectElementToExist('#rules-config-component');
-                // When clicking on "view config" button
+                // When clicking on "close config" button
                 await testUtils.expectInterfaceClickSuccess('#close-config');
                 // Then it should close rules config
                 testUtils.expectElementNotToExist('#rules-config-component');
             }));
 
             it('should show config when clicking on "view config" (custom config)', fakeAsync(async() => {
-                // Given a game with non-default config
+                // Given a game with custom config
                 const rules: P4Rules = P4Rules.get();
                 const customConfig: MGPOptional<P4Config> = MGPOptional.of({
                     ...rules.getDefaultRulesConfig().get(),

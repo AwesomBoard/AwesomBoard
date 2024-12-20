@@ -1517,7 +1517,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER);
 
             // When the opponent token become too old
-            // Creator updatetheir last presence token
+            // Creator update their last presence token
             const userService: UserService = TestBed.inject(UserService);
             await userService.updatePresenceToken(UserMocks.CREATOR_AUTH_USER.id);
             // but chosenOpponent don't update their last presence token
@@ -2007,7 +2007,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER);
             // When clicking on "view config" button
             await testUtils.clickElement('#show-config');
-            // Then it should rules config, with the default config selected
+            // Then it should show rules config, with the default config selected
             testUtils.expectElementToExist('#rules-config-component');
             const selectedConfig: DebugElement = testUtils.findElement('#rules-config-component option:checked');
             const selectedConfigName: string = selectedConfig.nativeElement.value;
@@ -2021,7 +2021,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER);
             await testUtils.clickElement('#show-config');
             testUtils.expectElementToExist('#rules-config-component');
-            // When clicking on "view config" button
+            // When clicking on "close config" button
             await testUtils.clickElement('#close-config');
             // Then it should close rules config
             testUtils.expectElementNotToExist('#rules-config-component');
@@ -2030,7 +2030,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
         }));
 
         it('should show config when clicking on "view config" (custom config)', fakeAsync(async() => {
-            // Given a game with non-default config
+            // Given a game with custom config
             const rules: QuartoRules = QuartoRules.get();
             const customConfig: MGPOptional<QuartoConfig> = MGPOptional.of({
                 ...rules.getDefaultRulesConfig().get(),
@@ -2039,7 +2039,7 @@ describe('OnlineGameWrapperComponent of Quarto:', () => {
             await prepareTestUtilsFor(UserMocks.CREATOR_AUTH_USER, { ...PreparationOptions.def, config: customConfig });
             // When clicking on "view config" button
             await testUtils.expectInterfaceClickSuccess('#show-config');
-            // Then it should rules config, with the custom config selected
+            // Then it should show rules config, with the custom config selected
             const selectedConfig: DebugElement = testUtils.findElement('#rules-config-component option:checked');
             const selectedConfigName: string = selectedConfig.nativeElement.value;
             expect(selectedConfigName).toBe('Custom');
