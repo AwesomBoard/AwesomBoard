@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { HexagonalGameComponent } from 'src/app/components/game-components/game-component/HexagonalGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { FourStatePiece } from 'src/app/jscaip/FourStatePiece';
@@ -51,7 +52,7 @@ export class HexodiaComponent extends HexagonalGameComponent<HexodiaRules,
         const halfStroke: number = this.STROKE_WIDTH / 2;
         const configSize: number = Math.floor(this.getState().getWidth() / 2);
         const hexaLayoutStartX: number =
-            (- this.STROKE_WIDTH * 0.5 * (configSize + 1)) + (Math.sqrt(2) * this.SPACE_SIZE);
+            (- halfStroke * (configSize + 1)) + (Math.sqrt(2) * this.SPACE_SIZE);
         const hexaLayoutStartY: number = this.SPACE_SIZE + halfStroke;
         const hexaLayoutStartingCoord: Coord = new Coord(hexaLayoutStartX, hexaLayoutStartY);
         this.hexaLayout = new HexaLayout(this.SPACE_SIZE,
@@ -65,12 +66,10 @@ export class HexodiaComponent extends HexagonalGameComponent<HexodiaRules,
         const size: number = (this.SPACE_SIZE * 0.5) + (abstractSize * pieceSize);
         const configSize: number = Math.floor(abstractSize / 2);
         const halfStroke: number = this.STROKE_WIDTH / 2;
-        return new ViewBox(
-            ((configSize - 1) * (this.SPACE_SIZE - halfStroke)) - (1.25 * this.STROKE_WIDTH),
-            0,
-            size + (1.75 * configSize * this.STROKE_WIDTH),
-            size + this.STROKE_WIDTH,
-        );
+        const left: number = ((configSize - 1) * (this.SPACE_SIZE - halfStroke)) - (1.25 * this.STROKE_WIDTH);
+        const width: number = size + (1.75 * configSize * this.STROKE_WIDTH);
+        const height: number = size + this.STROKE_WIDTH;
+        return new ViewBox(left, 0, width, height);
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {

@@ -35,12 +35,12 @@ describe('SixComponent', () => {
             const state: SixState = SixState.ofRepresentation(board, 41);
             await testUtils.setupState(state);
 
-            await testUtils.expectClickFailure('#piece_0_0', RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
+            await testUtils.expectClickFailure('#piece-0-0', RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
         }));
 
         it('should drop before 40th turn', fakeAsync(async() => {
             const move: SixMove = SixMove.ofDrop(new Coord(0, 2));
-            await testUtils.expectMoveSuccess('#neighbor_0_2', move);
+            await testUtils.expectMoveSuccess('#neighbor-0-2', move);
         }));
 
         it('should cancel move when clicking on empty space as first click after 40th turn', fakeAsync(async() => {
@@ -55,11 +55,11 @@ describe('SixComponent', () => {
             const state: SixState = SixState.ofRepresentation(board, 40);
             await testUtils.setupState(state);
 
-            await testUtils.expectClickFailure('#neighbor_1_1', SixFailure.CAN_NO_LONGER_DROP());
+            await testUtils.expectClickFailure('#neighbor-1-1', SixFailure.CAN_NO_LONGER_DROP());
         }));
 
         it('should cancel move when clicking on piece before 40th turn', fakeAsync(async() => {
-            await testUtils.expectClickFailure('#piece_0_0', SixFailure.NO_MOVEMENT_BEFORE_TURN_40());
+            await testUtils.expectClickFailure('#piece-0-0', SixFailure.NO_MOVEMENT_BEFORE_TURN_40());
         }));
 
         it('should select piece when clicking on it (in moving phase)', fakeAsync(async() => {
@@ -76,10 +76,10 @@ describe('SixComponent', () => {
             await testUtils.setupState(state);
 
             // When clicking on one of the user's pieces
-            await testUtils.expectClickSuccess('#piece_0_0');
+            await testUtils.expectClickSuccess('#piece-0-0');
 
             // Then the piece should be selected
-            testUtils.expectElementToExist('#selectedPiece_0_0');
+            testUtils.expectElementToExist('#selected-piece-0-0');
         }));
     });
 
@@ -98,12 +98,12 @@ describe('SixComponent', () => {
             await testUtils.setupState(state);
 
             const gameComponent: SixComponent = testUtils.getGameComponent();
-            await testUtils.expectClickSuccess('#piece_0_0');
-            testUtils.expectElementToExist('#selectedPiece_0_0');
+            await testUtils.expectClickSuccess('#piece-0-0');
+            testUtils.expectElementToExist('#selected-piece-0-0');
             const move: SixMove = SixMove.ofMovement(new Coord(0, 0), new Coord(0, 6));
-            await testUtils.expectMoveSuccess('#neighbor_0_6', move);
-            testUtils.expectElementToExist('#leftCoord_0_0');
-            testUtils.expectElementToExist('#lastDrop_0_6');
+            await testUtils.expectMoveSuccess('#neighbor-0-6', move);
+            testUtils.expectElementToExist('#left-coord-0-0');
+            testUtils.expectElementToExist('#last-drop-0-6');
             expect(gameComponent.getPieceClass(new Coord(0, 6))).toBe('player0-fill');
         }));
 
@@ -119,13 +119,13 @@ describe('SixComponent', () => {
             ];
             const state: SixState = SixState.ofRepresentation(board, 40);
             await testUtils.setupState(state);
-            await testUtils.expectClickSuccess('#piece_0_0');
+            await testUtils.expectClickSuccess('#piece-0-0');
 
             // When clicking on it again
-            await testUtils.expectClickFailure('#piece_0_0');
+            await testUtils.expectClickFailure('#piece-0-0');
 
             // Then the piece should no longer be selected
-            testUtils.expectElementNotToExist('#selectedPiece_0_0');
+            testUtils.expectElementNotToExist('#selected-piece-0-0');
         }));
 
     });
@@ -144,32 +144,32 @@ describe('SixComponent', () => {
             await testUtils.setupState(state);
 
             // Choosing piece
-            await testUtils.expectClickSuccess('#piece_1_2');
+            await testUtils.expectClickSuccess('#piece-1-2');
 
             // Choosing landing space
-            await testUtils.expectClickSuccess('#neighbor_2_3');
-            testUtils.expectElementNotToExist('#piece_2_3'); // Landing coord should be filled
-            testUtils.expectElementToExist('#chosenLanding_2_3'); // Landing coord should be filled
-            testUtils.expectElementNotToExist('#neighbor_2_3'); // And no longer an empty coord
+            await testUtils.expectClickSuccess('#neighbor-2-3');
+            testUtils.expectElementNotToExist('#piece-2-3'); // Landing coord should be filled
+            testUtils.expectElementToExist('#chosen-landing-2-3'); // Landing coord should be filled
+            testUtils.expectElementNotToExist('#neighbor-2-3'); // And no longer an empty coord
 
-            testUtils.expectElementNotToExist('#piece_1_2'); // Piece should be moved
-            testUtils.expectElementToExist('#selectedPiece_1_2'); // Piece should not be highlighted anymore
+            testUtils.expectElementNotToExist('#piece-1-2'); // Piece should be moved
+            testUtils.expectElementToExist('#selected-piece-1-2'); // Piece should not be highlighted anymore
 
             // Expect to choosable cut to be showed
-            testUtils.expectElementToExist('#cuttable_0_0');
-            testUtils.expectElementToExist('#cuttable_0_1');
-            testUtils.expectElementToExist('#cuttable_0_2');
-            testUtils.expectElementToExist('#cuttable_0_3');
-            testUtils.expectElementToExist('#cuttable_2_0');
-            testUtils.expectElementToExist('#cuttable_2_1');
-            testUtils.expectElementToExist('#cuttable_2_2');
-            testUtils.expectElementToExist('#cuttable_2_3');
+            testUtils.expectElementToExist('#cuttable-0-0');
+            testUtils.expectElementToExist('#cuttable-0-1');
+            testUtils.expectElementToExist('#cuttable-0-2');
+            testUtils.expectElementToExist('#cuttable-0-3');
+            testUtils.expectElementToExist('#cuttable-2-0');
+            testUtils.expectElementToExist('#cuttable-2-1');
+            testUtils.expectElementToExist('#cuttable-2-2');
+            testUtils.expectElementToExist('#cuttable-2-3');
             const move: SixMove = SixMove.ofCut(new Coord(1, 2), new Coord(2, 3), new Coord(2, 0));
-            await testUtils.expectMoveSuccess('#piece_2_0', move);
-            testUtils.expectElementToExist('#disconnected_0_0');
-            testUtils.expectElementToExist('#disconnected_0_1');
-            testUtils.expectElementToExist('#disconnected_0_2');
-            testUtils.expectElementToExist('#disconnected_0_3');
+            await testUtils.expectMoveSuccess('#piece-2-0', move);
+            testUtils.expectElementToExist('#disconnected-0-0');
+            testUtils.expectElementToExist('#disconnected-0-1');
+            testUtils.expectElementToExist('#disconnected-0-2');
+            testUtils.expectElementToExist('#disconnected-0-3');
         }));
 
         it('should show as disconnected opponent lastDrop if he is dumb enough to do that', fakeAsync(async() => {
@@ -183,16 +183,16 @@ describe('SixComponent', () => {
             await testUtils.setupState(state);
 
             // Choosing piece
-            await testUtils.expectClickSuccess('#piece_1_2');
+            await testUtils.expectClickSuccess('#piece-1-2');
 
             // Choosing landing space
-            await testUtils.expectClickSuccess('#neighbor_2_3');
+            await testUtils.expectClickSuccess('#neighbor-2-3');
             const move: SixMove = SixMove.ofCut(new Coord(1, 2), new Coord(2, 3), new Coord(0, 0));
-            await testUtils.expectMoveSuccess('#piece_0_0', move);
-            testUtils.expectElementToExist('#disconnected_2_0');
-            testUtils.expectElementToExist('#disconnected_2_1');
-            testUtils.expectElementToExist('#disconnected_2_2');
-            testUtils.expectElementToExist('#disconnected_2_3');
+            await testUtils.expectMoveSuccess('#piece-0-0', move);
+            testUtils.expectElementToExist('#disconnected-2-0');
+            testUtils.expectElementToExist('#disconnected-2-1');
+            testUtils.expectElementToExist('#disconnected-2-2');
+            testUtils.expectElementToExist('#disconnected-2-3');
         }));
 
         it('should cancel the move if player clicks on an empty space instead of chosing a group for cutting', fakeAsync(async() => {
@@ -207,13 +207,13 @@ describe('SixComponent', () => {
             ];
             const state: SixState = SixState.ofRepresentation(board, 40);
             await testUtils.setupState(state);
-            await testUtils.expectClickSuccess('#piece_0_2');
-            await testUtils.expectClickSuccess('#neighbor_0_-1');
+            await testUtils.expectClickSuccess('#piece-0-2');
+            await testUtils.expectClickSuccess('#neighbor-0--1');
 
             // When the user clicks on an empty space instead of selecting a group
             // Then it should fail
-            await testUtils.expectClickFailure('#neighbor_1_-1', SixFailure.MUST_CUT());
-            testUtils.expectElementToExist('#piece_0_2');
+            await testUtils.expectClickFailure('#neighbor-1--1', SixFailure.MUST_CUT());
+            testUtils.expectElementToExist('#piece-0-2');
         }));
 
         it('should still allow to click on opponent piece after 40th as a third click', fakeAsync(async() => {
@@ -228,10 +228,10 @@ describe('SixComponent', () => {
             const state: SixState = SixState.ofRepresentation(board, 40);
             await testUtils.setupState(state);
 
-            await testUtils.expectClickSuccess('#piece_0_2');
-            await testUtils.expectClickSuccess('#neighbor_0_-1');
+            await testUtils.expectClickSuccess('#piece-0-2');
+            await testUtils.expectClickSuccess('#neighbor-0--1');
             const move: SixMove = SixMove.ofCut(new Coord(0, 2), new Coord(0, -1), new Coord(0, 1));
-            await testUtils.expectMoveSuccess('#piece_0_1', move);
+            await testUtils.expectMoveSuccess('#piece-0-1', move);
         }));
 
     });
@@ -247,11 +247,11 @@ describe('SixComponent', () => {
             const state: SixState = SixState.ofRepresentation(board, 42);
             await testUtils.setupState(state);
 
-            await testUtils.expectClickSuccess('#piece_0_0');
+            await testUtils.expectClickSuccess('#piece-0-0');
             const move: SixMove = SixMove.ofMovement(new Coord(0, 0), new Coord(-1, 1));
-            await testUtils.expectMoveSuccess('#neighbor_-1_1', move);
-            testUtils.expectElementToHaveClass('#victoryCoord_-1_1', 'victory-stroke');
-            testUtils.expectElementToHaveClass('#victoryCoord_4_1', 'victory-stroke');
+            await testUtils.expectMoveSuccess('#neighbor--1-1', move);
+            testUtils.expectElementToHaveClass('#victory-coord--1-1', 'victory-stroke');
+            testUtils.expectElementToHaveClass('#victory-coord-4-1', 'victory-stroke');
         }));
 
     });

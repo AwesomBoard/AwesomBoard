@@ -140,7 +140,7 @@ export class SixComponent
     }
 
     public async onPieceClick(piece: Coord): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#piece_' + piece.x + '_' + piece.y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#piece-' + piece.x + '-' + piece.y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
@@ -164,7 +164,7 @@ export class SixComponent
     }
 
     public async onNeighborClick(neighbor: Coord): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#neighbor_' + neighbor.x + '_' + neighbor.y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#neighbor-' + neighbor.x + '-' + neighbor.y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
