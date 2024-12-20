@@ -6,6 +6,18 @@
         <source>If you like <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>EveryBoard<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>, follow us!</source>
         <target>Si vous aimez <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>EveryBoard<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>, suivez-nous !</target>
       </trans-unit>
+      <trans-unit id="3020302862287038294" datatype="html">
+        <source>points</source>
+        <target>points</target>
+      </trans-unit>
+      <trans-unit id="2504106190626996440" datatype="html">
+        <source>captures</source>
+        <target>captures</target>
+      </trans-unit>
+      <trans-unit id="2092541830819738222" datatype="html">
+        <source>remaining pieces</source>
+        <target>pièces restantes</target>
+      </trans-unit>
       <trans-unit id="6153797048311741939" datatype="html">
         <source>User settings</source>
         <target>Paramètres utilisateurs</target>
@@ -748,10 +760,6 @@
       <trans-unit id="3795472118461355324" datatype="html">
         <source>Pick the options</source>
         <target>Choisissez les options</target>
-      </trans-unit>
-      <trans-unit id="3272612818120648715" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ gameComponent.scores[0] }}"/> points</source>
-        <target><x id="INTERPOLATION" equiv-text="{{ gameComponent.scores[0] }}"/> points</target>
       </trans-unit>
       <trans-unit id="8647687729200262691" datatype="html">
         <source>Draw</source>

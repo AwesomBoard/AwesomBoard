@@ -5,6 +5,15 @@
       <trans-unit id="4894728399261164928" datatype="html">
         <source>If you like <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>EveryBoard<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>, follow us!</source>
       </trans-unit>
+      <trans-unit id="3020302862287038294" datatype="html">
+        <source>points</source>
+      </trans-unit>
+      <trans-unit id="2504106190626996440" datatype="html">
+        <source>captures</source>
+      </trans-unit>
+      <trans-unit id="2092541830819738222" datatype="html">
+        <source>remaining pieces</source>
+      </trans-unit>
       <trans-unit id="6153797048311741939" datatype="html">
         <source>User settings</source>
       </trans-unit>
@@ -502,9 +511,6 @@
       </trans-unit>
       <trans-unit id="3795472118461355324" datatype="html">
         <source>Pick the options</source>
-      </trans-unit>
-      <trans-unit id="3272612818120648715" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="gameComponent.scores.get().get(player) }}"/> points</source>
       </trans-unit>
       <trans-unit id="6267418979719843573" datatype="html">
         <source>Pass a turn</source>
