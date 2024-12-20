@@ -48,11 +48,10 @@ describe('DvonnScoreHeuristic', () => {
     it('should define heuristic bounds', () => {
         // Given the heuristic
         // When computing its bounds on the default config
-        const bounds: MGPOptional<HeuristicBounds<BoardValue>> = heuristic.getBounds(defaultConfig);
+        const bounds: HeuristicBounds<BoardValue> = heuristic.getBounds(defaultConfig);
         // Then it should be the maximal score (49) for each player
-        expect(bounds.isPresent()).toBeTrue();
-        expect(bounds.get().player0Best).toEqual(BoardValue.ofSingle(49, 0));
-        expect(bounds.get().player1Best).toEqual(BoardValue.ofSingle(0, 49));
+        expect(bounds.player0Best).toEqual(BoardValue.ofSingle(49, 0));
+        expect(bounds.player1Best).toEqual(BoardValue.ofSingle(0, 49));
     });
 
 });
