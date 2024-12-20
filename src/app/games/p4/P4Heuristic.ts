@@ -28,8 +28,8 @@ export class P4Heuristic extends HeuristicWithBounds<P4Move, P4State, BoardValue
         // So we'll count 2 per square to be safe
         const max: number = 2 * config.get().width * config.get().height;
         return {
-            player0Max: BoardValue.ofSingle(max, 0),
-            player1Max: BoardValue.ofSingle(0, max),
+            player0Best: BoardValue.ofSingle(max, 0),
+            player1Best: BoardValue.ofSingle(0, max),
         };
     }
 

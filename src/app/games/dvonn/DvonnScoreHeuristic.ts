@@ -17,8 +17,8 @@ export class DvonnScoreHeuristic extends PlayerMetricHeuristicWithBounds<DvonnMo
     public override getBounds(_config: NoConfig): HeuristicBounds<BoardValue> {
         const numberOfPieces: number = 49;
         return {
-            player0Max: BoardValue.ofSingle(numberOfPieces, 0),
-            player1Max: BoardValue.ofSingle(0, numberOfPieces),
+            player0Best: BoardValue.ofSingle(numberOfPieces, 0),
+            player1Best: BoardValue.ofSingle(0, numberOfPieces),
         };
     }
 }

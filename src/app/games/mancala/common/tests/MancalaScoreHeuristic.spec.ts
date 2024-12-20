@@ -48,8 +48,8 @@ describe('MancalaScoreHeuristic', () => {
             const bounds: MGPOptional<HeuristicBounds<BoardValue>> = heuristic.getBounds(defaultConfig);
             // Then it should be the maximal score (48) for each player
             expect(bounds.isPresent()).toBeTrue();
-            expect(bounds.get().player0Max).toEqual(BoardValue.ofSingle(48, 0));
-            expect(bounds.get().player1Max).toEqual(BoardValue.ofSingle(0, 48));
+            expect(bounds.get().player0Best).toEqual(BoardValue.ofSingle(48, 0));
+            expect(bounds.get().player1Best).toEqual(BoardValue.ofSingle(0, 48));
         });
 
     }

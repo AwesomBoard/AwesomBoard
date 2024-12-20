@@ -41,16 +41,16 @@ export class MCTSWithHeuristic<M extends Move,
         if (gameStatus === GameStatus.ONGOING) {
             const boardValue: B = this.heuristic.getBoardValue(node, config);
             const bounds: HeuristicBounds<B> = this.heuristic.getBounds(config);
-            Utils.assert(boardValue.metrics.length === bounds.player0Max.metrics.length &&
-                         boardValue.metrics.length === bounds.player1Max.metrics.length,
+            Utils.assert(boardValue.metrics.length === bounds.player0Best.metrics.length &&
+                         boardValue.metrics.length === bounds.player1Best.metrics.length,
                          'Metrics and bound values should have the same shape');
             let value: number = 0;
             for (let i: number = 0; i < boardValue.metrics.length; i++) {
-                Utils.assert(bounds.player0Max.metrics[i] <= boardValue.metrics[i] &&
-                             boardValue.metrics[i] <= bounds.player1Max.metrics[i],
+                Utils.assert(bounds.player0Best.metrics[i] <= boardValue.metrics[i] &&
+                             boardValue.metrics[i] <= bounds.player1Best.metrics[i],
                              'MCTS got a metric outside of its bounds!');
-                value += (boardValue.metrics[i] - bounds.player0Max.metrics[i]) /
-                    (bounds.player1Max.metrics[i] - bounds.player0Max.metrics[i]);
+                value += (boardValue.metrics[i] - bounds.player0Best.metrics[i]) /
+                    (bounds.player1Best.metrics[i] - bounds.player0Best.metrics[i]);
             }
             value = value / boardValue.metrics.length;
             Utils.assert(0 <= value && value <= 1, 'MCTSWithHeuristic got a value outside of [0,1]');

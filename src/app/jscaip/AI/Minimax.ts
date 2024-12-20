@@ -11,8 +11,8 @@ import { GameNode } from './GameNode';
 import { PlayerNumberTable } from '../PlayerNumberTable';
 
 export type HeuristicBounds<B> = {
-    player0Max: B,
-    player1Max: B,
+    player0Best: B,
+    player1Best: B,
 }
 
 /**
