@@ -12,36 +12,10 @@
     <div class="column is-one-quarter has-text-centered">
         <div class="box is-fullheight">
             <div class="block" *ngIf="currentPart !== null">
-                <div id="config-modal"
-                     *ngIf="viewConfig"
-                     class="modal is-active" >
-                    <div id="close-config"
-                         class="modal-background"
-                         (click)="closeConfig()"></div>
-                    <div class="modal-card">
-                        <header class="modal-card-head is-primary">
-                            <p class="modal-card-title" i18n>Rules configuration</p>
-                            <button class="delete"
-                                    aria-label="close"
-                                    (click)="closeConfig()"></button>
-                        </header>
-                        <section class="modal-card-body">
-                          <app-rules-configuration id="rules-config-component"
-                                                   [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
-                                                   [rulesConfigToDisplay]="configRoom.rulesConfig"
-                                                   [editable]="false">
-                          </app-rules-configuration>
-                        </section>
-                    </div>
-                </div>
-                <p class="title">
-                    {{ getGameName().getOrElse('') }}
-                    <a id="show-config"
-                       *ngIf="configRoom.rulesConfig != {}"
-                       (click)="openConfig()"
-                       i18n-data-tooltip
-                       data-tooltip="View configuration"><fa-icon [icon]="faCog"></fa-icon></a>
-                </p>
+                <app-view-config [rulesConfig]="getConfig()"
+                                 [rulesConfigDescription]="getRulesConfigDescription()"
+                                 [gameName]="getGameName().getOrElse('')">
+                </app-view-config>
                 <p class="subtitle mb-2" id="turn-number" i18n>Turn n°{{ currentPart.getTurn() + 1 }}</p>
                 <p class="subtitle mb-2" id="currentPlayerIndicator" *ngIf="endGame === false">
                     <ng-container *ngIf="currentUser?.name === getPlayer().name else opponentsTurn"><span id="playerTurn" i18n>It is your turn.</span></ng-container>

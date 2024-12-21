@@ -53,6 +53,7 @@ import { ConfigRoomService } from 'src/app/services/ConfigRoomService';
 import { ServerTimeService } from 'src/app/services/ServerTimeService';
 import { ServerTimeServiceMock } from 'src/app/services/tests/ServerTimeServiceMock.spec';
 import { ConfigRoomServiceMock } from 'src/app/services/tests/ConfigRoomServiceMock.spec';
+import { RulesConfigurationComponent } from 'src/app/components/wrapper-components/rules-configuration/rules-configuration.component';
 
 @Component({})
 export class BlankComponent {}
@@ -687,6 +688,7 @@ export class ConfigureTestingModuleUtils {
                 FirestoreTimePipe,
                 HumanDurationPipe,
                 ToggleVisibilityDirective,
+                RulesConfigurationComponent,
             ],
             schemas: [
                 CUSTOM_ELEMENTS_SCHEMA,

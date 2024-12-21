@@ -18,7 +18,6 @@ import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
 import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
-import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -46,9 +45,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     private readonly configBS: BehaviorSubject<MGPOptional<RulesConfig>> = new BehaviorSubject(MGPOptional.empty());
     private readonly configObs: Observable<MGPOptional<RulesConfig>> = this.configBS.asObservable();
-
-    public faCog: IconDefinition = faCog;
-    public viewConfig: boolean = false;
 
     public constructor(activatedRoute: ActivatedRoute,
                        connectedUserService: ConnectedUserService,
@@ -101,13 +97,13 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     }
 
     public async onLegalUserMove(move: Move): Promise<void> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         this.gameComponent.node = this.gameComponent.rules.choose(this.gameComponent.node, move, config).get();
         await this.applyNewMove();
     }
 
     private async updateWrapper(): Promise<void> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const gameStatus: GameStatus = this.gameComponent.rules.getGameStatus(this.gameComponent.node, config);
         if (gameStatus.isEndGame) {
             this.endGame = true;
@@ -143,7 +139,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             const playingAI: MGPOptional<{ ai: AbstractAI, options: AIOptions }> = this.getPlayingAI();
             if (playingAI.isPresent()) {
                 window.setTimeout(async() => {
-                    const config: MGPOptional<RulesConfig> = await this.getConfig();
+                    const config: MGPOptional<RulesConfig> = this.getConfig();
                     const gameIsOngoing: boolean =
                         this.gameComponent.rules.getGameStatus(this.gameComponent.node, config) === GameStatus.ONGOING;
                     if (gameIsOngoing) {
@@ -162,7 +158,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
      *          true if an AI is selected even if its option is not selected yet
      */
     private async hasSelectedAI(): Promise<boolean> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         if (this.gameComponent.rules.getGameStatus(this.gameComponent.node, config).isEndGame) {
             // No AI is playing when the game is finished
             return false;
@@ -217,7 +213,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     public async doAIMove(playingAI: AbstractAI, options: AIOptions): Promise<MGPValidation> {
         // called only when it's AI's Turn
         const ruler: SuperRules<Move, GameState, RulesConfig, unknown> = this.gameComponent.rules;
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const gameStatus: GameStatus = ruler.getGameStatus(this.gameComponent.node, config);
         Utils.assert(gameStatus === GameStatus.ONGOING, 'AI should not try to play when game is over!');
         const aiMove: Move = playingAI.chooseNextMove(this.gameComponent.node, options, config);
@@ -279,7 +275,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     }
 
     public async restartGame(): Promise<void> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         this.gameComponent.node = this.gameComponent.rules.getInitialNode(config);
         this.gameComponent.cancelMoveAttempt();
         this.gameComponent.hideLastMove();
@@ -301,24 +297,27 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         }
     }
 
-    public override async getConfig(): Promise<MGPOptional<RulesConfig>> {
+    public override getConfig(): MGPOptional<RulesConfig> {
+        return this.rulesConfig;
+    }
+
+    public override async waitForConfig(): Promise<void> {
         let subcription: MGPOptional<Subscription> = MGPOptional.empty();
-        const rulesConfigPromise: Promise<RulesConfig> =
-            new Promise((resolve: (value: RulesConfig) => void) => {
+        const rulesConfigPromise: Promise<void> =
+            new Promise((resolve: () => void) => {
                 subcription = MGPOptional.of(
                     this.configObs.subscribe((response: MGPOptional<RulesConfig>) => {
                         if (response.isPresent()) {
-                            resolve(response.get());
+                            resolve();
                         }
                     }),
                 );
             });
-        const rulesConfig: RulesConfig = await rulesConfigPromise;
+        await rulesConfigPromise;
         // Subscription will never be empty at this point
         // but this is needed to prevent linter from complaining that:
         // "subscription is used before it is set"
         subcription.get().unsubscribe();
-        return MGPOptional.of(rulesConfig);
     }
 
     public updateConfig(rulesConfig: MGPOptional<RulesConfig>): void {
@@ -358,14 +357,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public getConfigDemo(): DemoNodeInfo {
         return this.configDemo;
-    }
-
-    public openConfig(): void {
-        this.viewConfig = true;
-    }
-
-    public closeConfig(): void {
-        this.viewConfig = false;
     }
 
 }

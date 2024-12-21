@@ -11,7 +11,7 @@ import { UserMocks } from 'src/app/domain/UserMocks.spec';
 import { P4State } from 'src/app/games/p4/P4State';
 import { P4Move } from 'src/app/games/p4/P4Move';
 import { P4Component } from 'src/app/games/p4/p4.component';
-import { P4Config, P4Rules } from 'src/app/games/p4/P4Rules';
+import { P4Config } from 'src/app/games/p4/P4Rules';
 
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
@@ -625,50 +625,6 @@ describe('LocalGameWrapperComponent (game phase)', () => {
             // Then the game should have background for player 1
             testUtils.expectElementToHaveClass('#board-highlight', 'player1-bg');
         }));
-
-        describe('view config button', () => {
-
-            it('should show config when clicking on "view config" (default config)', fakeAsync(async() => {
-                // Given a game with default config
-                // When clicking on "view config" button
-                await testUtils.expectInterfaceClickSuccess('#show-config');
-                // Then it should rules config, with the default config selected
-                testUtils.expectElementToExist('#rules-config-component');
-                const selectedConfig: DebugElement = testUtils.findElement('#rules-config-component option:checked');
-                const selectedConfigName: string = selectedConfig.nativeElement.value;
-                expect(selectedConfigName).toBe('Four in a Row');
-            }));
-
-            it('should hide config when clicking on close button', fakeAsync(async() => {
-                // Given a game with config shown
-                await testUtils.expectInterfaceClickSuccess('#show-config');
-                testUtils.expectElementToExist('#rules-config-component');
-                // When clicking on "close config" button
-                await testUtils.expectInterfaceClickSuccess('#close-config');
-                // Then it should close rules config
-                testUtils.expectElementNotToExist('#rules-config-component');
-            }));
-
-            it('should show config when clicking on "view config" (custom config)', fakeAsync(async() => {
-                // Given a game with custom config
-                const rules: P4Rules = P4Rules.get();
-                const customConfig: MGPOptional<P4Config> = MGPOptional.of({
-                    ...rules.getDefaultRulesConfig().get(),
-                    width: 2,
-                });
-                const state: P4State = rules.getInitialState(customConfig);
-                await testUtils.setupState(state, { config: customConfig });
-                // When clicking on "view config" button
-                await testUtils.expectInterfaceClickSuccess('#show-config');
-                // Then it should rules config, with the custom config selected
-                const selectedConfig: DebugElement = testUtils.findElement('#rules-config-component option:checked');
-                const selectedConfigName: string = selectedConfig.nativeElement.value;
-                expect(selectedConfigName).toBe('Custom');
-                const selectedWidth: string = testUtils.findElement('#width_number_config_input').nativeElement.value;
-                expect(selectedWidth).toBe('2');
-            }));
-
-        });
 
     });
 });

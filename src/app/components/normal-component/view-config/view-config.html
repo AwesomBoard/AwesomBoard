@@ -1,0 +1,30 @@
+<div id="config-modal"
+     *ngIf="viewConfig"
+     class="modal is-active" >
+    <div id="close-config"
+         class="modal-background"
+         (click)="closeConfig()"></div>
+    <div class="modal-card">
+        <header class="modal-card-head is-primary">
+            <p class="modal-card-title" i18n>Rules configuration</p>
+            <button class="delete"
+                    aria-label="close"
+                    (click)="closeConfig()"></button>
+        </header>
+        <section class="modal-card-body">
+          <app-rules-configuration id="rules-config-component"
+                                   [rulesConfigDescriptionOptional]="rulesConfigDescription"
+                                   [rulesConfigToDisplay]="rulesConfig.get()"
+                                   [editable]="false">
+          </app-rules-configuration>
+        </section>
+    </div>
+</div>
+<p class="title">
+    {{ gameName }}
+    <a id="show-config"
+       *ngIf="rulesConfig.isPresent()"
+       (click)="openConfig()"
+       i18n-data-tooltip
+       data-tooltip="View configuration"><fa-icon [icon]="faCog"></fa-icon></a>
+</p>

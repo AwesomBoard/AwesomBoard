@@ -135,6 +135,7 @@ import { ToggleVisibilityDirective } from './pipes-and-directives/toggle-visibil
 import { RulesConfigurationComponent } from './components/wrapper-components/rules-configuration/rules-configuration.component';
 import { BlankGobanComponent } from './components/game-components/goban-game-component/blank-goban/blank-goban.component';
 import { LocaleUtils } from './utils/LocaleUtils';
+import { ViewConfigComponent } from './components/normal-component/view-config/view-config.component';
 
 registerLocaleData(localeFr);
 
@@ -186,6 +187,8 @@ export const routes: Route[] = [
         AccountComponent,
         DemoCardWrapperComponent,
         DemoPageComponent,
+        RulesConfigurationComponent,
+        ViewConfigComponent,
 
         DirArrowComponent,
         HexArrowComponent,
@@ -193,10 +196,8 @@ export const routes: Route[] = [
         AbaloneComponent,
         ApagosComponent,
         AwaleComponent, NumberedCircleComponent,
-
         BrandhubComponent,
         BaAwaComponent,
-
         CoerceoComponent,
         ConnectSixComponent,
         ConspirateursComponent,
@@ -238,7 +239,6 @@ export const routes: Route[] = [
         FirestoreTimePipe,
         AutofocusDirective,
         ToggleVisibilityDirective,
-        RulesConfigurationComponent,
     ],
     imports: [
         BrowserModule,

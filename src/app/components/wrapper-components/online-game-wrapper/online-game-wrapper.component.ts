@@ -580,17 +580,9 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         }
     }
 
-    public override async getConfig(): Promise<MGPOptional<RulesConfig>> {
+    public override getConfig(): MGPOptional<RulesConfig> {
         const rulesConfig: RulesConfig = this.configRoom.rulesConfig;
         return MGPOptional.of(rulesConfig);
-    }
-
-    public openConfig(): void {
-        this.viewConfig = true;
-    }
-
-    public closeConfig(): void {
-        this.viewConfig = false;
     }
 
 }

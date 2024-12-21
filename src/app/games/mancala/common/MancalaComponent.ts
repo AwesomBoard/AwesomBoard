@@ -30,8 +30,6 @@ export abstract class MancalaComponent<R extends MancalaRules>
     // The awaited time between two laps or distributions
     public static readonly TIMEOUT_BETWEEN_LAPS: number = 1000;
 
-    public MGPOptional: typeof MGPOptional = MGPOptional;
-
     public lastDistributedHouses: Coord[] = [];
 
     public currentMove: MGPOptional<MancalaMove> = MGPOptional.empty();

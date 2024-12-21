@@ -3,38 +3,10 @@
         <div *ngIf="gameComponent"
              id="info"
              class="box is-fullheight">
-            <div id="config-modal"
-                 *ngIf="viewConfig"
-                 class="modal is-active" >
-                <div class="modal-background"
-                     (click)="closeConfig()"></div>
-                <div class="modal-card">
-                    <header class="modal-card-head is-primary">
-                        <p class="modal-card-title" i18n>Rules configuration</p>
-                        <button id="close-config"
-                                class="delete"
-                                aria-label="close"
-                                (click)="closeConfig()"></button>
-                    </header>
-                    <section class="modal-card-body">
-                      <app-rules-configuration id="rules-config-component"
-                                               [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
-                                               [rulesConfigToDisplay]="rulesConfig.get()"
-                                               [editable]="false">
-                      </app-rules-configuration>
-                    </section>
-                </div>
-            </div>
-            <div class="mb-5">
-                <p class="title">
-                    {{ getGameName().getOrElse('') }}
-                    <a id="show-config"
-                       *ngIf="rulesConfig.isPresent()"
-                       (click)="openConfig()"
-                       i18n-data-tooltip
-                       data-tooltip="View configuration"><fa-icon [icon]="faCog"></fa-icon></a>
-                </p>
-            </div>
+            <app-view-config [rulesConfig]="rulesConfig"
+                             [rulesConfigDescription]="getRulesConfigDescription()"
+                             [gameName]="getGameName().getOrElse('')">
+            </app-view-config>
             <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
             <div *ngIf="endGame"
                  id="game-result"

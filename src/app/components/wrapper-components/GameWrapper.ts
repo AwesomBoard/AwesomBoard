@@ -74,9 +74,9 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
         const componentType: MGPOptional<Type<AbstractGameComponent>> =
             await this.getMatchingComponentAndNavigateOutIfAbsent();
         if (componentType.isPresent()) {
-            // This waits for the config to be chosen
-            const config: MGPOptional<RulesConfig> = await this.getConfig();
+            await this.waitForConfig();
             await this.createGameComponent(componentType.get());
+            const config: MGPOptional<RulesConfig> = this.getConfig();
             this.gameComponent.config = config;
             this.gameComponent.node = this.gameComponent.rules.getInitialNode(config);
             await this.setRole(this.role);
@@ -144,7 +144,7 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
     }
 
     public async receiveValidMove(move: Move): Promise<MGPValidation> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const legality: MGPFallible<unknown> =
             this.gameComponent.rules.isLegal(move, this.gameComponent.node.gameState, config);
         if (legality.isFailure()) {
@@ -161,9 +161,15 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
         this.isMoveAttemptOngoing = false;
     }
 
-    public async getConfig(): Promise<MGPOptional<RulesConfig>> {
+    public getConfig(): MGPOptional<RulesConfig> {
         const urlName: string = this.getGameUrlName();
         return RulesConfigUtils.getGameDefaultConfig(urlName);
+    }
+
+    // Wait for the config to be set, if needed
+    // (Components that need to change this are badly designed and should be refactored)
+    protected async waitForConfig(): Promise<void> {
+        return;
     }
 
     public async canUserPlay(_clickedElementName: string): Promise<MGPValidation> {
