@@ -1,4 +1,5 @@
 import { Encoder } from '@everyboard/lib';
+
 import { Coord } from 'src/app/jscaip/Coord';
 import { CoordSet } from 'src/app/jscaip/CoordSet';
 import { Move } from 'src/app/jscaip/Move';

@@ -1,5 +1,6 @@
-import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { Encoder } from '@everyboard/lib';
+
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 
 export class DvonnPieceStack {
 
