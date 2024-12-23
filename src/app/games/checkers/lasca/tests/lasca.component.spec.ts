@@ -166,7 +166,7 @@ fdescribe('LascaComponent', () => {
 
             // When clicking on an empty square in (+0; -2) of selected piece
             // Then it should fail
-            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
+            const reason: string = CheckersFailure.CANNOT_MOVE_ORTHOGONALLY();
             await testUtils.expectClickFailure('#coord-5-3', reason);
         }));
 

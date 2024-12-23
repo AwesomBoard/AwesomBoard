@@ -20,7 +20,7 @@ export class CheckersFailure {
 
     public static readonly NO_PIECE_CAN_DO_LONG_JUMP: Localized = () => $localize`No piece is allowed to do a long jump`;
 
-    public static readonly CANNOT_DO_ORTHOGONAL_MOVE: Localized = () => $localize`You cannot do orthogonal move!`;
+    public static readonly CANNOT_MOVE_ORTHOGONALLY: Localized = () => $localize`You cannot move orthogonally!`;
 
     public static readonly CANNOT_CAPTURE_TWICE_THE_SAME_COORD: Localized = () => $localize`You cannot jump over the same square several times!`;
 

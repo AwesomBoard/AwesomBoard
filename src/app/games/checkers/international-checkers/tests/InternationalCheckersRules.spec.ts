@@ -96,7 +96,7 @@ describe('InternationalCheckersRules', () => {
             const move: CheckersMove = CheckersMove.fromStep(new Coord(5, 6), new Coord(5, 4));
 
             // Then the move should be illegal
-            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
+            const reason: string = CheckersFailure.CANNOT_MOVE_ORTHOGONALLY();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
@@ -841,40 +841,6 @@ describe('InternationalCheckersRules', () => {
             ], 2);
             const node: CheckersNode = new CheckersNode(expectedState);
             RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
-        });
-
-    });
-
-    describe('getLegalCaptures', () => {
-
-        it('should forbid to pass over the same coord several times', () => {
-            // Given a board with only one possible capture
-            const state: CheckersState = new CheckersState([
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-                [_, _, _, _, _, V, _, _, _, _],
-                [_, _, _, _, _, _, V, _, V, _],
-                [_, _, _, _, _, _, _, _, _, O],
-                [_, _, _, _, V, _, V, _, _, _],
-                [_, _, _, _, _, _, _, _, _, _],
-            ], 20);
-
-            // When checking the legal list of captures
-            const legalCaptures: CheckersMove[] = rules.getLegalCaptures(state, defaultConfig.get());
-
-            // Then it should be this one, the bigger not to fly over same coord twice
-            const coords: Coord[] = [
-                new Coord(9, 7),
-                new Coord(6, 4),
-                new Coord(3, 7),
-                new Coord(5, 9),
-                new Coord(7, 7),
-            ];
-            const move: CheckersMove = CheckersMove.fromCapture(coords).get();
-            expect(legalCaptures).toEqual([move]);
         });
 
     });

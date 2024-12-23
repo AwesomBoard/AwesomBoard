@@ -16,7 +16,7 @@ export class MyTaflRules extends TaflRules<MyTaflMove> {
         new RulesConfigDescription<TaflConfig>({
             name: (): string => `MyTafl`,
             config: {
-                canReturnInCastle: new BooleanConfig(false, () => $localize`Central throne is left for good`),
+                canReturnToCastle: new BooleanConfig(false, () => $localize`Central throne is left for good`),
                 edgesAreKingsEnnemy: new BooleanConfig(true, () => $localize`Edges are king's ennemy`),
                 centralThroneCanSurroundKing: new BooleanConfig(true, () => $localize`Central throne can surround king`),
                 kingFarFromHomeCanBeSandwiched: new BooleanConfig(true, () => $localize`King far from home can be sandwiched`),

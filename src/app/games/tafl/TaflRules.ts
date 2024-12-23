@@ -57,7 +57,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
         }
         if (this.isThrone(state, move.getEnd())) {
             if (state.getPieceAt(move.getStart()).isKing()) {
-                if (state.isCentralThrone(move.getEnd()) && config.canReturnInCastle === false) {
+                if (state.isCentralThrone(move.getEnd()) && config.canReturnToCastle === false) {
                     return MGPValidation.failure(TaflFailure.THRONE_IS_LEFT_FOR_GOOD());
                 }
             } else {
@@ -401,7 +401,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
                         destinations.push(foundDestination);
                     }
                 } else if (state.isCentralThrone(foundDestination)) {
-                    if (pieceIsKing && config.canReturnInCastle) {
+                    if (pieceIsKing && config.canReturnToCastle) {
                         destinations.push(foundDestination);
                     }
                 } else {

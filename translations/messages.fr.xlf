@@ -2821,8 +2821,8 @@
         <source>No piece is allowed to do a long jump</source>
         <target>Aucune pièce ne peut se déplacer de plus d'un pas !</target>
       </trans-unit>
-      <trans-unit id="5106342617745818229" datatype="html">
-        <source>You cannot do orthogonal move!</source>
+      <trans-unit id="7678886963795480068" datatype="html">
+        <source>You cannot move orthogonally!</source>
         <target>Vous ne pouvez pas faire de déplacements orthogonaux !</target>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
@@ -2841,8 +2841,8 @@
         <source>You have done a step after a capture. A move that starts with a capture can only contain captures.</source>
         <target>Vous avez fait un pas après une captures, un mouvement qui commence par une capture ne doit contenir que des captures.</target>
       </trans-unit>
-      <trans-unit id="7516985734969436846" datatype="html">
-        <source>The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, either by blocking them.</source>
+      <trans-unit id="1163551794419030546" datatype="html">
+        <source>The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, or by blocking them.</source>
         <target>Le but aux Dames est de rendre l'adversaire incapable de jouer, soit en capturant toutes ses pièces, soit en les bloquant.</target>
       </trans-unit>
       <trans-unit id="3581037377692107358" datatype="html">
@@ -2865,8 +2865,8 @@
         <source>Lasca is a game based on checkers, created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
         <target>Lasca est un jeu basé sur le jeu de dames, créé en 1911 par Emanuel Lasker, champion du monde d'échecs. Lasca se joue sur un plateau de 7x7 cases, chaque joueur a 11 pièces.</target>
       </trans-unit>
-      <trans-unit id="3320726876110064006" datatype="html">
-        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all their pieces, either by blocking them.</source>
+      <trans-unit id="383124132464771052" datatype="html">
+        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all their pieces, or by blocking them.</source>
         <target>Le but de Lasca est, comme aux dames, de rendre l'adversaire incapable de jouer, soit en capturant toutes ses pièces, soit en les bloquant.</target>
       </trans-unit>
       <trans-unit id="1534367694207535197" datatype="html">
@@ -3384,9 +3384,9 @@
         <source>Promoted pieces can travel long distance</source>
         <target>Les pièces promies peuvent de déplacer sur de longues distances</target>
       </trans-unit>
-      <trans-unit id="6664648362913409853" datatype="html">
-        <source>Occupy even square</source>
-        <target>Occuper les cases paires</target>
+      <trans-unit id="2785965642347214758" datatype="html">
+        <source>Occupy upper-left corner</source>
+        <target>Occuper le coin haut gauche</target>
       </trans-unit>
       <trans-unit id="3072414657519570345" datatype="html">
         <source>Can do frisian captures</source>

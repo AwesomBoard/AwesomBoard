@@ -18,7 +18,7 @@ export class InternationalCheckersTutorial extends Tutorial {
     public tutorial: TutorialStep[] = [
         TutorialStep.informational(
             TutorialStepMessage.OBJECT_OF_THE_GAME(),
-            $localize`The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, either by blocking them.`,
+            $localize`The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, or by blocking them.`,
             InternationalCheckersRules.get().getInitialState(defaultConfig),
         ),
         TutorialStep.anyMove(

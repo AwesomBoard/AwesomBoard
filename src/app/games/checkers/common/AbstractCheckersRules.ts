@@ -36,7 +36,7 @@ export class CheckersOptionLocalizable {
 
     public static readonly PROMOTED_PIECES_CAN_TRAVEL_LONG_DISTANCES: Localized = () => $localize`Promoted pieces can travel long distance`;
 
-    public static readonly OCCUPY_EVEN_SQUARE: Localized = () => $localize`Occupy even square`;
+    public static readonly OCCUPY_EVEN_SQUARE: Localized = () => $localize`Occupy upper-left corner`;
 
     public static readonly FRISIAN_CAPTURE_ALLOWED: Localized = () => $localize`Can do frisian captures`;
 
@@ -233,8 +233,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
     {
         const piece: CheckersStack = state.getPieceAt(coord);
         const pieceOwner: Player = piece.getCommander().player;
-        // Since player zero must go up (-1) and player one go down (+1)
-        // Then we can use the score modifier that happens to match to the "vertical direction" of each player
+        // Since player zero must go up and player one go down
         const verticalDirection: number = pieceOwner.getYDirection();
         const directions: Vector[] = [
             Ordinal.factory.fromDelta(-1, verticalDirection).get(), // left diagonal
@@ -342,7 +341,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
     public override isLegal(move: CheckersMove, state: CheckersState, config: MGPOptional<CheckersConfig>)
     : MGPValidation
     {
-        const moveOwnershipValidity: MGPValidation = this.getMoveOwnerShipValidity(move, state, config.get());
+        const moveOwnershipValidity: MGPValidation = this.getMoveOwnershipValidity(move, state, config.get());
         if (moveOwnershipValidity.isFailure()) { // out of range, opponent, empty spaces
             return moveOwnershipValidity;
         }
@@ -358,7 +357,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         }
     }
 
-    private getMoveOwnerShipValidity(move: CheckersMove, state: CheckersState, config: CheckersConfig): MGPValidation {
+    private getMoveOwnershipValidity(move: CheckersMove, state: CheckersState, config: CheckersConfig): MGPValidation {
         const outOfRangeCoord: MGPOptional<Coord> = this.getMoveOutOfRangeCoord(move, config);
         if (outOfRangeCoord.isPresent()) {
             return MGPValidation.failure(CoordFailure.OUT_OF_RANGE(outOfRangeCoord.get()));
@@ -462,7 +461,7 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
                     return MGPValidation.failure(CheckersFailure.INVALID_FRISIAN_MOVE());
                 }
             } else {
-                return MGPValidation.failure(CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE());
+                return MGPValidation.failure(CheckersFailure.CANNOT_MOVE_ORTHOGONALLY());
             }
         }
         return MGPValidation.SUCCESS;

@@ -971,8 +971,8 @@
       <trans-unit id="5102353447213251496" datatype="html">
         <source>Promoted pieces can travel long distance</source>
       </trans-unit>
-      <trans-unit id="6664648362913409853" datatype="html">
-        <source>Occupy even square</source>
+      <trans-unit id="2785965642347214758" datatype="html">
+        <source>Occupy upper-left corner</source>
       </trans-unit>
       <trans-unit id="3072414657519570345" datatype="html">
         <source>Can do frisian captures</source>
@@ -1010,8 +1010,8 @@
       <trans-unit id="5556528437720213364" datatype="html">
         <source>No piece is allowed to do a long jump</source>
       </trans-unit>
-      <trans-unit id="5106342617745818229" datatype="html">
-        <source>You cannot do orthogonal move!</source>
+      <trans-unit id="7678886963795480068" datatype="html">
+        <source>You cannot move orthogonally!</source>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
         <source>You cannot jump over the same square several times!</source>
@@ -1046,8 +1046,8 @@
       <trans-unit id="2693455583384082674" datatype="html">
         <source>Promotion</source>
       </trans-unit>
-      <trans-unit id="7516985734969436846" datatype="html">
-        <source>The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, either by blocking them.</source>
+      <trans-unit id="1163551794419030546" datatype="html">
+        <source>The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, or by blocking them.</source>
       </trans-unit>
       <trans-unit id="1534367694207535197" datatype="html">
         <source>Steps</source>
@@ -1088,8 +1088,8 @@
       <trans-unit id="3082102783316586508" datatype="html">
         <source>Lasca is a game based on checkers, created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
       </trans-unit>
-      <trans-unit id="3320726876110064006" datatype="html">
-        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all their pieces, either by blocking them.</source>
+      <trans-unit id="383124132464771052" datatype="html">
+        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all their pieces, or by blocking them.</source>
       </trans-unit>
       <trans-unit id="3662184238859847370" datatype="html">
         <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>

@@ -99,7 +99,7 @@ describe('LascaRules', () => {
             const move: CheckersMove = CheckersMove.fromStep(new Coord(1, 5), new Coord(1, 3));
 
             // Then the move should be illegal
-            const reason: string = CheckersFailure.CANNOT_DO_ORTHOGONAL_MOVE();
+            const reason: string = CheckersFailure.CANNOT_MOVE_ORTHOGONALLY();
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 
@@ -648,43 +648,6 @@ describe('LascaRules', () => {
             ], 2);
             const node: CheckersNode = new CheckersNode(expectedState);
             RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
-        });
-
-    });
-
-    describe('getLegalCaptures', () => {
-
-        it('should forbid to pass over the same coord several times', () => {
-            // Given a board with only one possible capture
-            const state: CheckersState = new CheckersState([
-                [___, ___, ___, ___, ___, ___, ___],
-                [___, ___, ___, ___, ___, ___, ___],
-                [___, ___, ___, ___, ___, ___, ___],
-                [___, ___, ___, __V, ___, __V, ___],
-                [___, ___, ___, ___, ___, ___, __O],
-                [___, ___, ___, __V, ___, __V, ___],
-                [___, ___, ___, ___, ___, ___, ___],
-            ], 20);
-
-            // When checking the legal list of captures
-            const legalCaptures: CheckersMove[] = rules.getLegalCaptures(state, defaultConfig.get());
-
-            // Then it should be this one, the bigger not to fly over same coord twice
-            const coordsClockwise: Coord[] = [
-                new Coord(6, 4),
-                new Coord(4, 2),
-                new Coord(2, 4),
-                new Coord(4, 6),
-            ];
-            const moveClockwise: CheckersMove = CheckersMove.fromCapture(coordsClockwise).get();
-            const coordsCounterClockwise: Coord[] = [
-                new Coord(6, 4),
-                new Coord(4, 6),
-                new Coord(2, 4),
-                new Coord(4, 2),
-            ];
-            const moveCounterClockwise: CheckersMove = CheckersMove.fromCapture(coordsCounterClockwise).get();
-            expect(legalCaptures).toEqual([moveClockwise, moveCounterClockwise]);
         });
 
     });

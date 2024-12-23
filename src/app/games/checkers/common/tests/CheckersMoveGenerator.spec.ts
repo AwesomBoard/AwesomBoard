@@ -8,8 +8,9 @@ import { InternationalCheckersRules } from '../../international-checkers/Interna
 import { LascaRules } from '../../lasca/LascaRules';
 import { Coord } from 'src/app/jscaip/Coord';
 
-const u: CheckersStack = new CheckersStack([CheckersPiece.ZERO]);
-const v: CheckersStack = new CheckersStack([CheckersPiece.ONE]);
+const U: CheckersStack = new CheckersStack([CheckersPiece.ZERO]);
+const V: CheckersStack = new CheckersStack([CheckersPiece.ONE]);
+const O: CheckersStack = new CheckersStack([CheckersPiece.ZERO_PROMOTED]);
 const X: CheckersStack = new CheckersStack([CheckersPiece.ONE_PROMOTED]);
 const _: CheckersStack = CheckersStack.EMPTY;
 
@@ -50,13 +51,13 @@ for (const rule of rules) {
                 mustMakeMaximalCapture: true,
             });
             const state: CheckersState = CheckersState.of([
-                [u, _, u, _, X, _, u],
-                [_, _, _, u, _, _, _],
-                [u, _, u, _, u, _, _],
+                [U, _, U, _, X, _, U],
+                [_, _, _, U, _, _, _],
+                [U, _, U, _, U, _, _],
                 [_, _, _, _, _, _, _],
-                [v, _, v, _, _, _, v],
-                [_, v, _, v, _, _, _],
-                [v, _, v, _, v, _, v],
+                [V, _, V, _, _, _, V],
+                [_, V, _, V, _, _, _],
+                [V, _, V, _, V, _, V],
             ], 1);
             const node: CheckersNode = new CheckersNode(state);
 
@@ -91,10 +92,10 @@ describe('CheckersMoveGenerator for International Checkers', () => {
         const state: CheckersState = CheckersState.of([
             [_, _, _, _, _, _, _],
             [_, _, _, _, _, _, _],
-            [_, _, v, _, _, _, _],
-            [_, u, _, u, _, _, _],
+            [_, _, V, _, _, _, _],
+            [_, U, _, U, _, _, _],
             [_, _, _, _, _, _, _],
-            [_, _, _, _, _, u, _],
+            [_, _, _, _, _, U, _],
             [_, _, _, _, _, _, _],
         ], 1);
         const node: CheckersNode = new CheckersNode(state);
@@ -106,6 +107,39 @@ describe('CheckersMoveGenerator for International Checkers', () => {
         expect(moves.length).toBe(1);
     });
 
+    describe('getLegalCaptures', () => {
+
+        it('should forbid to pass over the same coord several times', () => {
+            // Given a board with only one possible capture
+            const state: CheckersState = new CheckersState([
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, V, _, _, _, _],
+                [_, _, _, _, _, _, V, _, V, _],
+                [_, _, _, _, _, _, _, _, _, O],
+                [_, _, _, _, V, _, V, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _],
+            ], 20);
+
+            // When checking the legal list of captures
+            const legalCaptures: CheckersMove[] = moveGenerator.getLegalCaptures(state, defaultConfig.get());
+
+            // Then it should be this one, the bigger not to fly over same coord twice
+            const coords: Coord[] = [
+                new Coord(9, 7),
+                new Coord(6, 4),
+                new Coord(3, 7),
+                new Coord(5, 9),
+                new Coord(7, 7),
+            ];
+            const move: CheckersMove = CheckersMove.fromCapture(coords).get();
+            expect(legalCaptures).toEqual([move]);
+        });
+
+    });
 });
 
 describe('CheckersMoveGenerator for Lasca', () => {
@@ -122,10 +156,10 @@ describe('CheckersMoveGenerator for Lasca', () => {
         const state: CheckersState = CheckersState.of([
             [_, _, _, _, _, _, _],
             [_, _, _, _, _, _, _],
-            [_, _, v, _, _, _, _],
-            [_, u, _, u, _, _, _],
+            [_, _, V, _, _, _, _],
+            [_, U, _, U, _, _, _],
             [_, _, _, _, _, _, _],
-            [_, _, _, _, _, u, _],
+            [_, _, _, _, _, U, _],
             [_, _, _, _, _, _, _],
         ], 1);
         const node: CheckersNode = new CheckersNode(state);
@@ -135,6 +169,43 @@ describe('CheckersMoveGenerator for Lasca', () => {
 
         // Then it should return the list of captures
         expect(moves.length).toBe(2);
+    });
+
+    describe('getLegalCaptures', () => {
+
+        it('should forbid to pass over the same coord several times', () => {
+            // Given a board with only one possible capture
+            const state: CheckersState = new CheckersState([
+                [_, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _],
+                [_, _, _, V, _, V, _],
+                [_, _, _, _, _, _, O],
+                [_, _, _, V, _, V, _],
+                [_, _, _, _, _, _, _],
+            ], 20);
+
+            // When checking the legal list of captures
+            const legalCaptures: CheckersMove[] = moveGenerator.getLegalCaptures(state, defaultConfig.get());
+
+            // Then it should be this one, the bigger not to fly over same coord twice
+            const coordsClockwise: Coord[] = [
+                new Coord(6, 4),
+                new Coord(4, 2),
+                new Coord(2, 4),
+                new Coord(4, 6),
+            ];
+            const moveClockwise: CheckersMove = CheckersMove.fromCapture(coordsClockwise).get();
+            const coordsCounterClockwise: Coord[] = [
+                new Coord(6, 4),
+                new Coord(4, 6),
+                new Coord(2, 4),
+                new Coord(4, 2),
+            ];
+            const moveCounterClockwise: CheckersMove = CheckersMove.fromCapture(coordsCounterClockwise).get();
+            expect(legalCaptures).toEqual([moveClockwise, moveCounterClockwise]);
+        });
+
     });
 
 });

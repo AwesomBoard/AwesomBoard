@@ -15,7 +15,7 @@ import { TaflConfig } from '../TaflConfig';
 
 export const myTaflConfig: TaflConfig = {
 
-    canReturnInCastle: false,
+    canReturnToCastle: false,
 
     invaderStarts: true,
 
