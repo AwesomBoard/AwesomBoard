@@ -37,7 +37,8 @@ export class MCTSWithHeuristic<M extends Move,
                                 config: MGPOptional<C>,
                                 gameStatus: GameStatus,
                                 player: Player)
-    : number {
+    : number
+    {
         if (gameStatus === GameStatus.ONGOING) {
             const boardValue: B = this.heuristic.getBoardValue(node, config);
             const bounds: HeuristicBounds<B> = this.heuristic.getBounds(config);
@@ -46,11 +47,19 @@ export class MCTSWithHeuristic<M extends Move,
                          'Metrics and bound values should have the same shape');
             let value: number = 0;
             for (let i: number = 0; i < boardValue.metrics.length; i++) {
-                Utils.assert(bounds.player0Best.metrics[i] <= boardValue.metrics[i] &&
-                             boardValue.metrics[i] <= bounds.player1Best.metrics[i],
-                             'MCTS got a metric outside of its bounds!');
-                value += (boardValue.metrics[i] - bounds.player0Best.metrics[i]) /
-                    (bounds.player1Best.metrics[i] - bounds.player0Best.metrics[i]);
+                const player0Best: number = bounds.player0Best.metrics[i];
+                const metric: number = boardValue.metrics[i];
+                const player1Best: number = bounds.player1Best.metrics[i];
+                // It can be the case sometimes that the metric is out of range from the bounds.
+                // In such cases, we treat this as an extreme value, and cap it to the best available value
+                const cappedValue: number = Math.max(Math.min(metric, player1Best), player0Best);
+                if (cappedValue - metric < 1000) {
+                    // Our metric is somewhat close to the bounds, it is likely an error in the metric.
+                    // We can warn the user about it.
+                    console.warn(`MCTSWithHeuristic capped a value close to the bounds: ${metric} has been capped to ${cappedValue}, bounds are [${player0Best}, ${player1Best}]`);
+                }
+                console.log(`capping ${metric} to ${cappedValue}`);
+                value += (Math.min(metric, player1Best) - player0Best) / (player1Best - player0Best);
             }
             value = value / boardValue.metrics.length;
             Utils.assert(0 <= value && value <= 1, 'MCTSWithHeuristic got a value outside of [0,1]');

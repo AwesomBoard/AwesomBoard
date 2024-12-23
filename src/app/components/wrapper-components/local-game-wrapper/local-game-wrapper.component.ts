@@ -364,7 +364,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
                 return '';
             }
         }
-        const maxDepth: number = 2; // Change it to a lower/higher value for more tree depth
+        const maxDepth: number = Number(localStorage.getItem('tree-depth') ?? '2'); // Change it to a lower/higher value for more tree depth
         const result: { dot: string, nextId: number, winner: PlayerOrNone } =
             node.showDot(this.gameComponent.rules, this.rulesConfig, mctsLabel, maxDepth);
         // Shows the graph on an online tool by opening a new tab
