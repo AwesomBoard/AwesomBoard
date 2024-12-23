@@ -10,7 +10,7 @@ import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { EpaminondasFailure } from '../EpaminondasFailure';
 import { Table } from 'src/app/jscaip/TableUtils';
 
-describe('EpaminondasComponent', () => {
+fdescribe('EpaminondasComponent', () => {
 
     let testUtils: ComponentTestUtils<EpaminondasComponent>;
 
@@ -29,6 +29,13 @@ describe('EpaminondasComponent', () => {
         testUtils.expectElementToHaveClasses(
             '#space-' + x + '-' + y,
             ['base', 'captured-fill'],
+        );
+    }
+
+    function expectNotToBeCaptured(x: number, y: number): void {
+        testUtils.expectElementNotToHaveClass(
+            '#space-' + x + '-' + y,
+            'captured-fill',
         );
     }
 
@@ -215,6 +222,54 @@ describe('EpaminondasComponent', () => {
         // When displaying the state
         // Then no coordinate should be clickable
         testUtils.expectElementNotToExist('#clickable-0-11');
+    }));
+
+    fit('should hide last move, when last move had captures', fakeAsync(async() => {
+        // Given a board on which you captured last turn
+        const previousBoard: Table<PlayerOrNone> = [
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, X, X, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [X, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [X, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [O, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [O, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [O, _, _, _, _, _, _, _, _, _, _, _, _, _],
+        ];
+        const previousState: EpaminondasState = new EpaminondasState(previousBoard, 0);
+
+        const board: Table<PlayerOrNone> = [
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, X, X, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [O, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [O, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [O, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
+        ];
+        const state: EpaminondasState = new EpaminondasState(board, 1);
+        const previousMove: EpaminondasMove = new EpaminondasMove(0, 11, 3, 1, Ordinal.UP);
+        await testUtils.setupState(state, { previousState, previousMove });
+
+        // When receiving a move
+        const move: EpaminondasMove = new EpaminondasMove(7, 3, 2, 1, Ordinal.RIGHT);
+        await testUtils.getWrapper().receiveValidMove(move);
+
+        // Then there should no longer be captures
+        expectToBeMoved(7, 3);
+        expectToBeMoved(8, 3);
+        expectToBeMoved(9, 3);
+        expectNotToBeCaptured(0, 7);
+        expectNotToBeCaptured(0, 8);
     }));
 
 });

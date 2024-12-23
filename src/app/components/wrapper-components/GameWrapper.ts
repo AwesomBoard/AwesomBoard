@@ -80,6 +80,7 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
             this.gameComponent.config = config;
             this.gameComponent.node = this.gameComponent.rules.getInitialNode(config);
             await this.setRole(this.role);
+            // console.log('GW.createMatchingGameComponent -> GC.updateBoardAndRedraw -> updateBoard')
             await this.gameComponent.updateBoardAndRedraw(false);
             return true;
         } else {
@@ -138,6 +139,7 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
         if (interactivityChanged) {
             this.gameComponent.setInteractive(interactive);
             if (updateBoard) {
+                // console.log('GW.setInteractive -> GC.updateBoardAndRedraw -> updateBoard')
                 await this.gameComponent.updateBoardAndRedraw(false);
             }
         }
@@ -225,6 +227,7 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
             await this.showNewMove(triggerAnimation);
         } else {
             // We have no previous move to animate
+            // console.log('GW.showCurrentState -> GC.updateBoardAndRedraw -> updateBoard')
             await this.gameComponent.updateBoardAndRedraw(false);
         }
     }

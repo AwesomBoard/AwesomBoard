@@ -91,7 +91,6 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
                        private readonly timeManager: OGWCTimeManagerService,
                        private readonly requestManager: OGWCRequestManagerService,
                        private readonly serverTimeService: ServerTimeService,
-                       private readonly userService: UserService,
                        private readonly cdr: ChangeDetectorRef)
     {
         super(activatedRoute, connectedUserService, router, messageDisplayer);
@@ -231,6 +230,12 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         const mutex: Mutex = new Mutex(); // Need to ensure we receive events one at a time
         const callback: (events: GameEvent[]) => Promise<void> = async(events: GameEvent[]): Promise<void> => {
             if (events.length === 0) return; // Only happens in the test suite
+            const moves = events
+                    .map((value: GameEvent, index: number) => { return { v: value.eventType, i: index }; })
+                    .filter(value => value.v === 'Move');
+            console.log('jean jajdur moves:', moves.length)
+            const lastMove = moves[moves.length - 1];
+            console.log('jean jajnage', lastMove, 'is das last movez')
             await mutex.runExclusive(async() => {
                 const numberOfMoves: number = events.filter((g: GameEvent) => g.eventType === 'Move').length;
                 let numberOfMovesDone: number = 0;
@@ -239,6 +244,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
                     switch (event.eventType) {
                         case 'Move':
                             const isLastMove: boolean = (numberOfMovesDone + 1 === numberOfMoves);
+                            // console.log('subscribe to events -> ogwc.onReceivedMove -> OGWC.applyMove -> OGWC.showNewMove -> component.updateBoard')
                             await this.onReceivedMove(event, isLastMove);
                             numberOfMovesDone += 1;
                             break;
@@ -451,6 +457,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     public async onLegalUserMove(move: Move): Promise<void> {
+        // console.log('OGWC.onLegalUserMove -> OGWC.applyMove')
         // First, show the move in the component
         await this.applyMove(move, false); // Move was already animated by its game component, no need to animate again
         // Then, send the move
