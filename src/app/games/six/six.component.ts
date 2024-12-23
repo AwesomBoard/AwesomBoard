@@ -165,12 +165,12 @@ export class SixComponent
     }
 
     public async onPieceClick(piece: Coord): Promise<MGPValidation> {
-        const config: SixConfig = this.getConfig().get();
-        const maxPiece: number = 2 * config.piecePerPlayer;
-        const clickValidity: MGPValidation = await this.canUserPlay('#piece_' + piece.x + '_' + piece.y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#piece-' + piece.x + '-' + piece.y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
+        const config: SixConfig = this.getConfig().get();
+        const maxPiece: number = 2 * config.piecePerPlayer;
         if (this.state.turn < maxPiece) {
             return this.cancelMove(SixFailure.CANNOT_MOVE_YET());
         } else if (this.chosenLanding.isAbsent()) {
@@ -191,7 +191,7 @@ export class SixComponent
     }
 
     public async onNeighborClick(neighbor: Coord): Promise<MGPValidation> {
-        const clickValidity: MGPValidation = await this.canUserPlay('#neighbor_' + neighbor.x + '_' + neighbor.y);
+        const clickValidity: MGPValidation = await this.canUserPlay('#neighbor-' + neighbor.x + '-' + neighbor.y);
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
