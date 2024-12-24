@@ -26,6 +26,8 @@ import { ApagosMove } from 'src/app/games/apagos/ApagosMove';
 import { ApagosRules } from 'src/app/games/apagos/ApagosRules';
 import { ApagosTutorial } from 'src/app/games/apagos/ApagosTutorial';
 
+import { CheckersMove } from 'src/app/games/checkers/common/CheckersMove';
+
 import { ConspirateursMoveSimple, ConspirateursMoveJump } from 'src/app/games/conspirateurs/ConspirateursMove';
 import { ConspirateursRules } from 'src/app/games/conspirateurs/ConspirateursRules';
 import { ConspirateursTutorial } from 'src/app/games/conspirateurs/ConspirateursTutorial';
@@ -51,6 +53,7 @@ import { HiveMove } from 'src/app/games/hive/HiveMove';
 import { HiveRules } from 'src/app/games/hive/HiveRules';
 import { HiveTutorial } from 'src/app/games/hive/HiveTutorial';
 
+import { InternationalCheckersRules } from 'src/app/games/checkers/international-checkers/InternationalCheckersRules';
 import { InternationalCheckersTutorial } from 'src/app/games/checkers/international-checkers/InternationalCheckersTutorial';
 
 import { KalahRules } from 'src/app/games/mancala/kalah/KalahRules';
@@ -99,8 +102,6 @@ import { TrexoTutorial } from 'src/app/games/trexo/TrexoTutorial';
 import { YinshCapture, YinshMove } from 'src/app/games/yinsh/YinshMove';
 import { YinshRules } from 'src/app/games/yinsh/YinshRules';
 import { YinshTutorial, YinshTutorialMessages } from 'src/app/games/yinsh/YinshTutorial';
-import { InternationalCheckersRules } from 'src/app/games/checkers/international-checkers/InternationalCheckersRules';
-import { CheckersMove } from 'src/app/games/checkers/common/CheckersMove';
 
 describe('TutorialGameWrapperComponent (games)', () => {
 

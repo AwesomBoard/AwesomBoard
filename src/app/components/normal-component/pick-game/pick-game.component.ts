@@ -63,6 +63,7 @@ import { HiveTutorial } from 'src/app/games/hive/HiveTutorial';
 import { HnefataflComponent } from 'src/app/games/tafl/hnefatafl/hnefatafl.component';
 import { HnefataflRules } from 'src/app/games/tafl/hnefatafl/HnefataflRules';
 import { HnefataflTutorial } from 'src/app/games/tafl/hnefatafl/HnefataflTutorial';
+
 import { InternationalCheckersComponent } from 'src/app/games/checkers/international-checkers/international-checkers.component';
 import { InternationalCheckersRules } from 'src/app/games/checkers/international-checkers/InternationalCheckersRules';
 import { InternationalCheckersTutorial } from 'src/app/games/checkers/international-checkers/InternationalCheckersTutorial';
