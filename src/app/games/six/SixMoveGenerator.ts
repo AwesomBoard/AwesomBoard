@@ -17,20 +17,22 @@ export class SixMoveGenerator extends MoveGenerator<SixMove, SixState, SixConfig
         if (node.gameState.turn < totalDroppablePieces) {
             return this.getListDrops(legalLandings);
         } else {
-            return this.getMovements(node.gameState, legalLandings);
+            return this.getTranslations(node.gameState, legalLandings);
         }
     }
-    protected getMovements(state: SixState, legalLandings: Coord[]): SixMove[] {
+
+    protected getTranslations(state: SixState, legalLandings: Coord[]): SixMove[] {
         const allPieces: MGPMap<Player, Set<Coord>> = state.getPieces().reverse();
         const currentPlayer: Player = state.getCurrentPlayer();
         const playerPieces: Set<Coord> = allPieces.get(currentPlayer).get();
-        return this.getMovementsFrom(state, playerPieces, legalLandings);
+        return this.getTranslationsFrom(state, playerPieces, legalLandings);
     }
-    protected getMovementsFrom(state: SixState, starts: Set<Coord>, landings: Coord[]): SixMove[] {
-        const deplacements: SixMove[] = [];
+
+    protected getTranslationsFrom(state: SixState, starts: Set<Coord>, landings: Coord[]): SixMove[] {
+        const translations: SixMove[] = [];
         for (const start of starts) {
             for (const landing of landings) {
-                const move: SixMove = SixMove.ofMovement(start, landing);
+                const move: SixMove = SixMove.ofTranslation(start, landing);
                 if (state.isCoordConnected(landing, MGPOptional.of(start))) {
                     const stateAfterMove: SixState = state.movePiece(move);
                     const groupsAfterMove: Set<CoordSet> = stateAfterMove.getGroups();
@@ -38,22 +40,23 @@ export class SixMoveGenerator extends MoveGenerator<SixMove, SixState, SixConfig
                         const largestGroups: Set<CoordSet> =
                             SixRules.getLargestGroups(groupsAfterMove);
                         if (largestGroups.size() === 1) {
-                            deplacements.push(SixMove.ofMovement(start, landing));
+                            translations.push(SixMove.ofTranslation(start, landing));
                         } else {
                             for (const group of largestGroups) {
                                 const subGroup: Coord = group.getAnyElement().get();
                                 const cut: SixMove = SixMove.ofCut(start, landing, subGroup);
-                                deplacements.push(cut);
+                                translations.push(cut);
                             }
                         }
                     } else {
-                        deplacements.push(move);
+                        translations.push(move);
                     }
                 }
             }
         }
-        return deplacements;
+        return translations;
     }
+
     private getListDrops(legalLandings: Coord[]): SixMove[] {
         const drops: SixMove[] = [];
         for (const landing of legalLandings) {
@@ -62,4 +65,5 @@ export class SixMoveGenerator extends MoveGenerator<SixMove, SixState, SixConfig
         }
         return drops;
     }
+
 }

@@ -88,7 +88,7 @@ export class SixState extends OpenHexagonalGameState<Player> {
         return new SixState(pieces, this.turn + 1);
     }
 
-    public applyLegalDeplacement(move: SixMove, kept: CoordSet): SixState {
+    public applyLegalTranslation(move: SixMove, kept: CoordSet): SixState {
         const stateAfterMove: SixState = this.movePiece(move);
 
         if (kept.size() > 0) {

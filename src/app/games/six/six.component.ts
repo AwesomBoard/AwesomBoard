@@ -206,7 +206,7 @@ export class SixComponent
             if (this.selectedPiece.isAbsent()) {
                 return this.cancelMove(SixFailure.CAN_NO_LONGER_DROP());
             } else {
-                const movement: SixMove = SixMove.ofMovement(this.selectedPiece.get(), neighbor);
+                const movement: SixMove = SixMove.ofTranslation(this.selectedPiece.get(), neighbor);
                 const legality: MGPFallible<SixLegalityInformation> =
                     SixRules.isLegalPhaseTwoMove(movement, this.state);
                 if (this.neededCutting(legality)) {
@@ -233,7 +233,7 @@ export class SixComponent
     }
 
     private showCuttable(): void {
-        const movement: SixMove = SixMove.ofMovement(this.selectedPiece.get(), this.chosenLanding.get());
+        const movement: SixMove = SixMove.ofTranslation(this.selectedPiece.get(), this.chosenLanding.get());
         const stateAfterMove: SixState = this.state.movePiece(movement);
         const groupsAfterMove: Set<CoordSet> = stateAfterMove.getGroups();
         const biggerGroups: Set<CoordSet> = SixRules.getLargestGroups(groupsAfterMove);

@@ -69,11 +69,11 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
                                    kept: SixLegalityInformation)
     : SixState
     {
-        const totalPieceDroppable: number = 2 * config.get().piecePerPlayer;
-        if (state.turn < totalPieceDroppable) {
+        const totalDroppablePieces: number = 2 * config.get().piecePerPlayer;
+        if (state.turn < totalDroppablePieces) {
             return state.applyLegalDrop(move.landing);
         } else {
-            return state.applyLegalDeplacement(move, kept);
+            return state.applyLegalTranslation(move, kept);
         }
     }
 
@@ -84,8 +84,8 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         if (landingLegality.isFailure()) {
             return landingLegality.toOtherFallible();
         }
-        const totalPieceDroppable: number = 2 * config.get().piecePerPlayer;
-        if (state.turn < totalPieceDroppable) {
+        const totalDroppablePieces: number = 2 * config.get().piecePerPlayer;
+        if (state.turn < totalDroppablePieces) {
             return this.isLegalDrop(move, state);
         } else {
             return SixRules.isLegalPhaseTwoMove(move, state);

@@ -104,7 +104,7 @@ describe('SixComponent', () => {
             const gameComponent: SixComponent = testUtils.getGameComponent();
             await testUtils.expectClickSuccess('#piece-0-0');
             testUtils.expectElementToExist('#selected-piece-0-0');
-            const move: SixMove = SixMove.ofMovement(new Coord(0, 0), new Coord(0, 6));
+            const move: SixMove = SixMove.ofTranslation(new Coord(0, 0), new Coord(0, 6));
             await testUtils.expectMoveSuccess('#neighbor-0-6', move);
             testUtils.expectElementToExist('#left-coord-0-0');
             testUtils.expectElementToExist('#last-drop-0-6');
@@ -252,7 +252,7 @@ describe('SixComponent', () => {
             await testUtils.setupState(state);
 
             await testUtils.expectClickSuccess('#piece-0-0');
-            const move: SixMove = SixMove.ofMovement(new Coord(0, 0), new Coord(-1, 1));
+            const move: SixMove = SixMove.ofTranslation(new Coord(0, 0), new Coord(-1, 1));
             await testUtils.expectMoveSuccess('#neighbor--1-1', move);
             testUtils.expectElementToHaveClass('#victory-coord--1-1', 'victory-stroke');
             testUtils.expectElementToHaveClass('#victory-coord-4-1', 'victory-stroke');
@@ -279,7 +279,7 @@ describe('SixComponent', () => {
             const state: SixState = SixState.ofRepresentation(board, 10);
             await testUtils.setupState(state, { config: customConfig });
 
-            await testUtils.expectClickFailure('#neighbor_1_1', SixFailure.CAN_NO_LONGER_DROP());
+            await testUtils.expectClickFailure('#neighbor-1-1', SixFailure.CAN_NO_LONGER_DROP());
         }));
 
         it('should do movement after the 9th turn on shorter configs', fakeAsync(async() => {
@@ -300,10 +300,10 @@ describe('SixComponent', () => {
             const state: SixState = SixState.ofRepresentation(board, 10);
             await testUtils.setupState(state, { config: customConfig });
 
-            await testUtils.expectClickSuccess('#piece_0_0');
-            testUtils.expectElementToExist('#selectedPiece_0_0');
-            const move: SixMove = SixMove.ofMovement(new Coord(0, 0), new Coord(0, 6));
-            await testUtils.expectMoveSuccess('#neighbor_0_6', move);
+            await testUtils.expectClickSuccess('#piece-0-0');
+            testUtils.expectElementToExist('#selected-piece-0-0');
+            const move: SixMove = SixMove.ofTranslation(new Coord(0, 0), new Coord(0, 6));
+            await testUtils.expectMoveSuccess('#neighbor-0-6', move);
         }));
 
     });
