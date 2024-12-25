@@ -14,6 +14,9 @@
       <trans-unit id="2092541830819738222" datatype="html">
         <source>remaining pieces</source>
       </trans-unit>
+      <trans-unit id="3417852595158891776" datatype="html">
+        <source>protected pieces</source>
+      </trans-unit>
       <trans-unit id="6153797048311741939" datatype="html">
         <source>User settings</source>
       </trans-unit>
