@@ -18,6 +18,7 @@ import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 import { TriangularCheckerBoard } from 'src/app/jscaip/state/TriangularCheckerBoard';
 import { TrigoMinimax } from './TrigoMinimax';
 import { TableUtils } from 'src/app/jscaip/TableUtils';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-trigo',
@@ -97,10 +98,22 @@ export class TrigoComponent extends TriangularGameComponent<TrigoRules,
         const phase: GoPhase = state.phase;
 
         this.board = state.getCopiedBoard();
-        this.scores = MGPOptional.of(state.getCapturedCopy());
+        this.updateScores();
 
         this.ko = state.koCoord;
         this.canPass = phase !== 'FINISHED';
+    }
+
+    private updateScores(): void {
+        this.scores = MGPOptional.of(this.getState().captured);
+    }
+
+    public override getScoreName(): string {
+        if (this.getState().phase === 'PLAYING') {
+            return ScoreName.CAPTURES();
+        } else {
+            return ScoreName.POINTS();
+        }
     }
 
     private showCaptures(): void {

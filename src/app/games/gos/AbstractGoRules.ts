@@ -113,24 +113,6 @@ export abstract class AbstractGoRules<C extends RulesConfig>
         return groups;
     }
 
-    public addDeadToScore(state: GoState): number[] {
-        const captured: PlayerNumberMap = state.getCapturedCopy();
-        let playerOneScore: number = captured.get(Player.ONE);
-        let playerZeroScore: number = captured.get(Player.ZERO);
-        let currentSpace: GoPiece;
-        for (let y: number = 0; y < state.getHeight(); y++) {
-            for (let x: number = 0; x < state.getWidth(); x++) {
-                currentSpace = state.getPieceAtXY(x, y);
-                if (currentSpace === GoPiece.DEAD_DARK) {
-                    playerOneScore++;
-                } else if (currentSpace === GoPiece.DEAD_LIGHT) {
-                    playerZeroScore++;
-                }
-            }
-        }
-        return [playerZeroScore, playerOneScore];
-    }
-
     public switchAliveness(groupCoord: Coord, switchedState: GoState): GoState {
         const switchedBoard: GoPiece[][] = switchedState.getCopiedBoard();
         const switchedPiece: GoPiece = switchedBoard[groupCoord.y][groupCoord.x];

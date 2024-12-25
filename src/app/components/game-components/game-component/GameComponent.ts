@@ -25,6 +25,8 @@ export class ScoreName {
 
     public static readonly REMAINING_PIECES: Localized = () => $localize`remaining pieces`;
 
+    public static readonly PROTECTED_PIECES: Localized = () => $localize`protected pieces`;
+
 }
 
 /**

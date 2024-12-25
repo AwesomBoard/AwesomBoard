@@ -1,7 +1,7 @@
 import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
-import { PlayerOrNone } from 'src/app/jscaip/Player';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { Rules } from 'src/app/jscaip/Rules';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
@@ -165,18 +165,24 @@ export class ConspirateursRules extends Rules<ConspirateursMove, ConspirateursSt
     }
 
     public override getGameStatus(node: ConspirateursNode): GameStatus {
-        const state: ConspirateursState = node.gameState;
+        const protectedPawns: PlayerNumberMap = this.getProtectedPawns(node.gameState);
+        for (const player of Player.PLAYERS) {
+            if (protectedPawns.get(player) === 20) {
+                return GameStatus.getVictory(player);
+            }
+        }
+        return GameStatus.ONGOING;
+    }
+
+    public getProtectedPawns(state: ConspirateursState): PlayerNumberMap {
         const protectedPawns: PlayerNumberMap = PlayerNumberMap.of(0, 0);
         for (const shelter of ConspirateursState.ALL_SHELTERS) {
             const content: PlayerOrNone = state.getPieceAt(shelter);
             if (content.isPlayer()) {
                 protectedPawns.add(content, 1);
-                if (protectedPawns.get(content) === 20) {
-                    return GameStatus.getVictory(content);
-                }
             }
         }
-        return GameStatus.ONGOING;
+        return protectedPawns;
     }
 
 }

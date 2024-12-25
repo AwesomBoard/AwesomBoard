@@ -15,6 +15,7 @@ import { Debug } from 'src/app/utils/Debug';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { GoPhase } from '../GoPhase';
 import { GoMinimax } from './GoMinimax';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-go',
@@ -78,11 +79,23 @@ export class GoComponent extends GobanGameComponent<GoRules,
         const phase: GoPhase = state.phase;
 
         this.board = state.getCopiedBoard();
-        this.scores = MGPOptional.of(state.getCapturedCopy());
+        this.updateScores();
 
         this.ko = state.koCoord;
         this.canPass = phase !== 'FINISHED';
         this.createHoshis();
+    }
+
+    private updateScores(): void {
+        this.scores = MGPOptional.of(this.getState().captured);
+    }
+
+    public override getScoreName(): string {
+        if (this.getState().phase === 'PLAYING') {
+            return ScoreName.CAPTURES();
+        } else {
+            return ScoreName.POINTS();
+        }
     }
 
     private showCaptures(): void {

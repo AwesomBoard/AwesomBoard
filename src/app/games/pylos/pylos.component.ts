@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { GameComponent } from '../../components/game-components/game-component/GameComponent';
+import { GameComponent, ScoreName } from '../../components/game-components/game-component/GameComponent';
 import { PylosMove, PylosMoveFailure } from 'src/app/games/pylos/PylosMove';
 import { PylosState } from 'src/app/games/pylos/PylosState';
 import { PylosRules } from 'src/app/games/pylos/PylosRules';
@@ -317,6 +317,15 @@ export class PylosComponent extends GameComponent<PylosRules, PylosMove, PylosSt
             15 - repartition.get(Player.ZERO),
             15 - repartition.get(Player.ONE),
         );
+        this.updateScores();
+    }
+
+    private updateScores(): void {
+        this.scores = MGPOptional.of(this.remainingPieces);
+    }
+
+    public override getScoreName(): string {
+        return ScoreName.REMAINING_PIECES();
     }
 
     public override async showLastMove(move: PylosMove): Promise<void> {

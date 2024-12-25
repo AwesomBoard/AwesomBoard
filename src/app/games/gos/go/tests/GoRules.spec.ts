@@ -685,26 +685,6 @@ describe('GoRules', () => {
 
     });
 
-    it('AddDeadToScore should be a simple counting method', () => {
-        // Given a board with dead not counted as score yet
-        const board: Table<GoPiece> = [
-            [u, _, _, _, _],
-            [_, u, _, _, _],
-            [_, _, k, _, _],
-            [_, _, _, _, _],
-            [_, _, _, _, _],
-        ];
-        const captured: PlayerNumberMap = PlayerNumberMap.of(6, 1);
-        const stateWithDead: GoState = new GoState(board, captured, 0, MGPOptional.empty(), 'PLAYING');
-
-        // When calling addDeadToScore
-        const score: number[] = GoRules.get().addDeadToScore(stateWithDead);
-
-        // Then the function should count normally
-        const expectedScore: number[] = [7, 3];
-        expect(score).withContext('Score should be 7 vs 3').toEqual(expectedScore);
-    });
-
     it('should calculate correctly board with dead stones', () => {
         // Given a board where the territory and capture is simply and equally divided
         const board: Table<GoPiece> = [

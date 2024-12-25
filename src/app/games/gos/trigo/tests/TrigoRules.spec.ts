@@ -761,27 +761,6 @@ describe('TrigoRules', () => {
 
     });
 
-    it('AddDeadToScore should be a simple counting method', () => {
-        // Given a board with dead not counted as score yet
-        const board: Table<GoPiece> = [
-            [N, N, N, N, N, N, _, N, N, N, N, N, N],
-            [N, N, N, N, N, _, _, _, N, N, N, N, N],
-            [N, N, N, N, _, _, _, _, _, N, N, N, N],
-            [N, N, N, _, _, _, u, _, _, _, N, N, N],
-            [N, N, _, _, _, _, u, _, _, _, _, N, N],
-            [N, _, _, _, _, _, u, _, _, _, k, _, N],
-            [_, _, _, _, _, _, u, _, _, _, k, _, _],
-        ];
-        const stateWithDead: GoState = new GoState(board, noCaptures, 0, MGPOptional.empty(), 'PLAYING');
-
-        // When calling addDeadToScore
-        const score: number[] = TrigoRules.get().addDeadToScore(stateWithDead);
-
-        // Then the function should count normally
-        const expectedScore: number[] = [2, 4];
-        expect(score).withContext('Score should be 2 vs 4').toEqual(expectedScore);
-    });
-
     describe('alternative configs', () => {
 
         it('should make valid shape on hexagonal mode (size 1)', () => {
