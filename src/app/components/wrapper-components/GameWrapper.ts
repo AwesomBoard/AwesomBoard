@@ -9,7 +9,6 @@ import { Localized } from 'src/app/utils/LocaleUtils';
 import { AbstractGameComponent } from '../game-components/game-component/GameComponent';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
-import { RulesConfigDescription } from './rules-configuration/RulesConfigDescription';
 import { BaseWrapperComponent } from './BaseWrapperComponent';
 
 export class GameWrapperMessages {

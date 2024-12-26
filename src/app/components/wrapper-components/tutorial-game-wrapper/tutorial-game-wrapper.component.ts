@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GameWrapper } from 'src/app/components/wrapper-components/GameWrapper';
 import { AbstractNode, GameNode } from 'src/app/jscaip/AI/GameNode';
 import { Move } from 'src/app/jscaip/Move';
-import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
 import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { Click, TutorialStep, TutorialStepClick, TutorialStepMove, TutorialStepWithSolution } from './TutorialStep';
 import { TutorialFailure } from './TutorialFailure';
@@ -242,7 +241,7 @@ export class TutorialGameWrapperComponent extends GameWrapper<TutorialPlayer> im
 
     public async playLocally(): Promise<void> {
         const urlName: string = this.getGameUrlName();
-        await this.router.navigate(['/local', urlName]);
+        await this.router.navigate(['/local', urlName, 'config']);
     }
 
     public async createGame(): Promise<void> {

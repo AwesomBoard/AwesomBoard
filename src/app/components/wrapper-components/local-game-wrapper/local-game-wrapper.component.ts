@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { AbstractNode, GameNodeStats } from 'src/app/jscaip/AI/GameNode';
@@ -10,9 +10,10 @@ import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { Player } from 'src/app/jscaip/Player';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { Debug } from 'src/app/utils/Debug';
-import { RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
+import { ConfigDescriptionType, RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
 import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { SuperRules } from 'src/app/jscaip/Rules';
+import { RulesConfigDescription } from '../rules-configuration/RulesConfigDescription';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -30,8 +31,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public winnerMessage: MGPOptional<string> = MGPOptional.empty();
 
-    // TODO: why is it an optional?
-    public rulesConfig: MGPOptional<RulesConfig> = MGPOptional.empty(); // Set in ngAfterViewInit
+    public rulesConfig: MGPOptional<RulesConfig>; // Set in constructor and in ngAfterViewInit
 
     public constructor(activatedRoute: ActivatedRoute,
                        router: Router,
@@ -77,21 +77,24 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
      */
     private async setConfigFromParams(): Promise<void> {
         const params: ParamMap = this.activatedRoute.snapshot.queryParamMap;
-        const defaultConfig: RulesConfig = RulesConfigUtils.getGameDefaultConfig(this.getGameUrlName()).get();
+        const noConfigIsProvided: boolean = params.keys.length === 0;
 
-        if (params.keys.length === 0) {
-            // Use the default configuration
-            this.rulesConfig = MGPOptional.of(defaultConfig);
+        const defaultConfig: MGPOptional<RulesConfig> = RulesConfigUtils.getGameDefaultConfig(this.getGameUrlName());
+        const gameIsNotConfigurable: boolean = defaultConfig.isAbsent();
+
+        console.log({gameIsNotConfigurable, noConfigIsProvided})
+        if (noConfigIsProvided || gameIsNotConfigurable) {
+            this.rulesConfig = defaultConfig;
         } else {
-            // Extract the configuration from the query parameters
+            // Extract the configuration from the query parameters and validate it
+            const rulesConfigDescription: RulesConfigDescription<RulesConfig> = this.getRulesConfigDescription().get();
             const config: RulesConfig = {};
-            params.keys.forEach((key: string) => {
-                config[key] = JSON.parse(params.get(key) ?? '');
-            });
-            // Check that the config is valid, otherwise send back to configuration page
-            for (const configLine of Object.entries(defaultConfig)) {
-                const key: string = configLine[0];
-                if (key in config === false) {
+            for (const key of params.keys) {
+                const value: unknown = JSON.parse(Utils.getNonNullable(params.get(key)));
+                if (rulesConfigDescription.isValid(key, value)) {
+                    config[key] = value as ConfigDescriptionType;
+                } else {
+                    // If anything is invalid, go back to configuration page
                     return this.redirectToConfiguration();
                 }
             }

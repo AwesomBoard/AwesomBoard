@@ -19,7 +19,6 @@ import { Subscription } from 'rxjs';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { RulesConfigurationComponent } from '../rules-configuration/rules-configuration.component';
-import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { GameState } from 'src/app/jscaip/state/GameState';
 import { RulesConfigDescription } from '../rules-configuration/RulesConfigDescription';
 import { Debug } from 'src/app/utils/Debug';
@@ -603,7 +602,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
     public async playLocally(): Promise<void> {
         const urlName: string = this.getGameUrlName();
-        this.navigateThereAfterGameCanceled = ['/local', urlName];
+        this.navigateThereAfterGameCanceled = ['/local', urlName, 'config'];
         await this.cancelGameCreation();
     }
 
