@@ -1,7 +1,7 @@
 import { MGPValidator, MGPValidators } from 'src/app/utils/MGPValidator';
 
 import { ConfigDescriptionType, DefaultConfigDescription, EmptyRulesConfig, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
-import { Set, Utils } from '@everyboard/lib';
+import { MGPValidation, Set, Utils } from '@everyboard/lib';
 import { GobanConfig } from 'src/app/jscaip/GobanConfig';
 import { Localized } from 'src/app/utils/LocaleUtils';
 
@@ -21,22 +21,30 @@ export class RulesConfigDescriptionLocalizable {
 
 }
 
-export class ConfigLine {
+export abstract class ConfigLine {
 
     protected constructor(public readonly value: ConfigDescriptionType,
-                          public readonly title: Localized,
-                          public readonly validator?: MGPValidator)
+                          public readonly title: Localized)
     {
     }
+
+    // Should check if the value is valid
+    public abstract checkValidity(value: unknown): MGPValidation;
+
 }
 
 export class NumberConfig extends ConfigLine {
 
     public constructor(value: number,
                        title: Localized,
-                       validator: MGPValidator)
+                       private readonly validator: MGPValidator)
     {
-        super(value, title, validator);
+        super(value, title);
+    }
+
+    public checkValidity(value: unknown): MGPValidation {
+        Utils.assert(typeof value === 'number', 'NumberConfig expects a number value');
+        return this.validator(value);
     }
 
 }
@@ -46,6 +54,11 @@ export class BooleanConfig extends ConfigLine {
     public constructor(value: boolean, title: Localized)
     {
         super(value, title);
+    }
+
+    public checkValidity(value: unknown): MGPValidation {
+        Utils.assert(typeof value === 'boolean', 'BooleanConfig expects a boolean value');
+        return MGPValidation.SUCCESS;
     }
 
 }
@@ -98,9 +111,12 @@ export class RulesConfigDescription<R extends RulesConfig = EmptyRulesConfig> {
         return rulesConfig.config;
     }
 
-    public getValidator(fieldName: string): MGPValidator {
-        Utils.assert(fieldName in this.defaultConfigDescription.config, fieldName + ' is not a validator!');
-        return this.defaultConfigDescription.config[fieldName].validator as MGPValidator;
+    public isValid(fieldName: string, value: unknown): boolean {
+        return this.defaultConfigDescription.config[fieldName].checkValidity(value).isSuccess();
+    }
+
+    public getValidityError(fieldName: string, value: unknown): string {
+        return this.defaultConfigDescription.config[fieldName].checkValidity(value).getReason();
     }
 
 }

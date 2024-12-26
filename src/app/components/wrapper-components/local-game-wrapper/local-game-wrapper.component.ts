@@ -97,13 +97,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             }
             this.rulesConfig = MGPOptional.of(config);
         }
-        window.setTimeout(async() => {
-            const createdSuccessfully: boolean = await this.createMatchingGameComponent();
-            if (createdSuccessfully) {
-                await this.restartGame();
-                this.cdr.detectChanges();
-            }
-        }, 1);
     }
 
     private async redirectToConfiguration(): Promise<void> {

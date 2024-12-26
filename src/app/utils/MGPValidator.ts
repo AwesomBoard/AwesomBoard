@@ -1,6 +1,6 @@
 import { MGPValidation } from '@everyboard/lib';
 
-export type MGPValidator = (v: number | null) => MGPValidation;
+export type MGPValidator = (v: unknown) => MGPValidation;
 
 export class MGPValidators {
 
