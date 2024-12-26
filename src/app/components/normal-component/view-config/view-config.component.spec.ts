@@ -42,7 +42,7 @@ describe('ViewConfigComponent', () => {
         // Given a game with default config
         component.rulesConfig = MGPOptional.of(defaultConfig);
         testUtils.expectElementNotToExist('#rules-config-component');
-        // When clicking on "view config" button
+        // When clicking on "show config" button
         await testUtils.clickElement('#show-config');
         // Then it should show rules config, with the default config selected
         testUtils.expectElementToExist('#rules-config-component');

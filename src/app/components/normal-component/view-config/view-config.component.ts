@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { MGPOptional } from '@everyboard/lib';
 import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+
+import { MGPOptional } from '@everyboard/lib';
+
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { RulesConfigDescription } from '../../wrapper-components/rules-configuration/RulesConfigDescription';
 
