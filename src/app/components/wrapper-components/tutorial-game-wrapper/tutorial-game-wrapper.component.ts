@@ -41,10 +41,9 @@ export class TutorialGameWrapperComponent extends GameWrapper<TutorialPlayer> im
     public constructor(activatedRoute: ActivatedRoute,
                        router: Router,
                        messageDisplayer: MessageDisplayer,
-                       public cdr: ChangeDetectorRef,
-                       connectedUserService: ConnectedUserService)
+                       public cdr: ChangeDetectorRef)
     {
-        super(activatedRoute, connectedUserService, router, messageDisplayer);
+        super(activatedRoute, router, messageDisplayer);
     }
 
     public override async canUserPlay(elementName: string): Promise<MGPValidation> {
@@ -80,7 +79,7 @@ export class TutorialGameWrapperComponent extends GameWrapper<TutorialPlayer> im
 
     public override async onLegalUserMove(move: Move): Promise<void> {
         const currentStep: TutorialStep = this.steps[this.stepIndex];
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const node: MGPFallible<AbstractNode> = this.gameComponent.rules.choose(this.gameComponent.node, move, config);
         Utils.assert(node.isSuccess(), 'It should be impossible to call onLegalUserMove with an illegal move, but got ' + node.getReasonOr(''));
         this.gameComponent.node = node.get();

@@ -86,9 +86,9 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     public viewConfig: boolean = false;
 
     public constructor(activatedRoute: ActivatedRoute,
-                       connectedUserService: ConnectedUserService,
                        router: Router,
                        messageDisplayer: MessageDisplayer,
+                       private readonly connectedUserService: ConnectedUserService,
                        private readonly currentGameService: CurrentGameService,
                        private readonly gameService: GameService,
                        private readonly gameEventService: GameEventService,
@@ -97,7 +97,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
                        private readonly serverTimeService: ServerTimeService,
                        private readonly cdr: ChangeDetectorRef)
     {
-        super(activatedRoute, connectedUserService, router, messageDisplayer);
+        super(activatedRoute, router, messageDisplayer);
     }
 
     private extractPartIdFromURL(): string {

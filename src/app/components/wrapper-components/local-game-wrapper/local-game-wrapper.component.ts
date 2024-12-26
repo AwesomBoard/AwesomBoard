@@ -1,10 +1,7 @@
-import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Input } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-
-import { AbstractNode, GameNode, GameNodeStats } from 'src/app/jscaip/AI/GameNode';
-import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
+import { AbstractNode, GameNodeStats } from 'src/app/jscaip/AI/GameNode';
 import { GameWrapper } from 'src/app/components/wrapper-components/GameWrapper';
 import { Move } from 'src/app/jscaip/Move';
 import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
@@ -15,9 +12,7 @@ import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { Debug } from 'src/app/utils/Debug';
 import { RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
 import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
-import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
-import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -35,24 +30,15 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public winnerMessage: MGPOptional<string> = MGPOptional.empty();
 
-    public displayAIMetrics: boolean = false;
-
-    public configIsSet: boolean = false;
-
-    public configDemo: DemoNodeInfo;
-
-    public rulesConfig: MGPOptional<RulesConfig> = MGPOptional.empty();
-
-    private readonly configBS: BehaviorSubject<MGPOptional<RulesConfig>> = new BehaviorSubject(MGPOptional.empty());
-    private readonly configObs: Observable<MGPOptional<RulesConfig>> = this.configBS.asObservable();
+    // TODO: why is it an optional?
+    public rulesConfig: MGPOptional<RulesConfig> = MGPOptional.empty(); // Set in ngAfterViewInit
 
     public constructor(activatedRoute: ActivatedRoute,
-                       connectedUserService: ConnectedUserService,
                        router: Router,
                        messageDisplayer: MessageDisplayer,
                        private readonly cdr: ChangeDetectorRef)
     {
-        super(activatedRoute, connectedUserService, router, messageDisplayer);
+        super(activatedRoute, router, messageDisplayer);
         this.players = [MGPOptional.of(this.playerSelection[0]), MGPOptional.of(this.playerSelection[1])];
         this.role = Player.ZERO; // The user is playing, not observing
         this.setDefaultRulesConfig();
@@ -74,7 +60,8 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         return AIStats.aiTime;
     }
 
-    public ngAfterViewInit(): void {
+    public async ngAfterViewInit(): Promise<void> {
+        await this.setConfigFromParams();
         window.setTimeout(async() => {
             const createdSuccessfully: boolean = await this.createMatchingGameComponent();
             if (createdSuccessfully) {
@@ -82,6 +69,45 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
                 this.cdr.detectChanges();
             }
         }, 1);
+    }
+
+    /**
+     * Reads the URL to get the config from query parameters (e.g., /P4?width=5&height=5)
+     * If the config is invalid, redirect to page that lets the user select the config
+     */
+    private async setConfigFromParams(): Promise<void> {
+        const params: ParamMap = this.activatedRoute.snapshot.queryParamMap;
+        const defaultConfig: RulesConfig = RulesConfigUtils.getGameDefaultConfig(this.getGameUrlName()).get();
+
+        if (params.keys.length === 0) {
+            // Use the default configuration
+            this.rulesConfig = MGPOptional.of(defaultConfig);
+        } else {
+            // Extract the configuration from the query parameters
+            const config: RulesConfig = {};
+            params.keys.forEach((key: string) => {
+                config[key] = JSON.parse(params.get(key) ?? '');
+            });
+            // Check that the config is valid, otherwise send back to configuration page
+            for (const configLine of Object.entries(defaultConfig)) {
+                const key: string = configLine[0];
+                if (key in config === false) {
+                    return this.redirectToConfiguration();
+                }
+            }
+            this.rulesConfig = MGPOptional.of(config);
+        }
+        window.setTimeout(async() => {
+            const createdSuccessfully: boolean = await this.createMatchingGameComponent();
+            if (createdSuccessfully) {
+                await this.restartGame();
+                this.cdr.detectChanges();
+            }
+        }, 1);
+    }
+
+    private async redirectToConfiguration(): Promise<void> {
+        await this.router.navigate(['/local', this.getGameUrlName(), 'config']);
     }
 
     public async updatePlayer(player: Player): Promise<void> {
@@ -206,10 +232,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             }));
     }
 
-    public getStateProvider(): MGPOptional<(config: MGPOptional<RulesConfig>) => GameState> {
-        return GameInfo.getStateProvider(this.getGameUrlName());
-    }
-
     public async doAIMove(playingAI: AbstractAI, options: AIOptions): Promise<MGPValidation> {
         // called only when it's AI's Turn
         const ruler: SuperRules<Move, GameState, RulesConfig, unknown> = this.gameComponent.rules;
@@ -301,62 +323,8 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         return this.rulesConfig;
     }
 
-    public override async waitForConfig(): Promise<void> {
-        let subcription: MGPOptional<Subscription> = MGPOptional.empty();
-        const rulesConfigPromise: Promise<void> =
-            new Promise((resolve: () => void) => {
-                subcription = MGPOptional.of(
-                    this.configObs.subscribe((response: MGPOptional<RulesConfig>) => {
-                        if (response.isPresent()) {
-                            resolve();
-                        }
-                    }),
-                );
-            });
-        await rulesConfigPromise;
-        // Subscription will never be empty at this point
-        // but this is needed to prevent linter from complaining that:
-        // "subscription is used before it is set"
-        subcription.get().unsubscribe();
-    }
-
-    public updateConfig(rulesConfig: MGPOptional<RulesConfig>): void {
-        this.rulesConfig = rulesConfig;
-        // If there is no config for this game, then rulesConfig value will be MGPOptional.empty()
-        if (rulesConfig.isPresent()) {
-            this.setConfigDemo(rulesConfig.get());
-            if (Object.keys(rulesConfig.get()).length === 0) {
-                // There is nothing to configure for this game!
-                this.markConfigAsFilled();
-            }
-        }
-    }
-
-    public markConfigAsFilled(): void {
-        this.configIsSet = true;
-        this.configBS.next(this.rulesConfig);
-        this.cdr.detectChanges();
-    }
-
     public displayAIInfo(): boolean {
         return localStorage.getItem('displayAIInfo') === 'true';
-    }
-
-    private setConfigDemo(config: RulesConfig): void {
-        const stateProvider: MGPOptional<(config: MGPOptional<RulesConfig>) => GameState> = this.getStateProvider();
-        if (stateProvider.isPresent()) {
-            const node: AbstractNode = new GameNode(stateProvider.get()(MGPOptional.of(config)));
-            this.configDemo = {
-                click: MGPOptional.empty(),
-                name: this.getGameUrlName(),
-                node,
-            };
-            this.cdr.detectChanges();
-        }
-    }
-
-    public getConfigDemo(): DemoNodeInfo {
-        return this.configDemo;
     }
 
 }

@@ -560,10 +560,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         return this.configDemo;
     }
 
-    public getStateProvider(): MGPOptional<(config: MGPOptional<RulesConfig>) => GameState> {
-        return GameInfo.getStateProvider(this.getGameUrlName());
-    }
-
     public async ngOnDestroy(): Promise<void> {
         // This will unsubscribe from all observables
         this.ngUnsubscribe.next();

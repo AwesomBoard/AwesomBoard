@@ -2,7 +2,6 @@ import { Component, ComponentRef, Type, ViewChild, ViewContainerRef } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Comparable, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
-import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
 import { Move } from '../../jscaip/Move';
 import { GameInfo } from '../normal-component/pick-game/pick-game.component';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
@@ -49,7 +48,6 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
     public Player: typeof Player = Player;
 
     public constructor(activatedRoute: ActivatedRoute,
-                       protected readonly connectedUserService: ConnectedUserService,
                        protected readonly router: Router,
                        protected readonly messageDisplayer: MessageDisplayer)
     {
@@ -74,7 +72,6 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
         const componentType: MGPOptional<Type<AbstractGameComponent>> =
             await this.getMatchingComponentAndNavigateOutIfAbsent();
         if (componentType.isPresent()) {
-            await this.waitForConfig();
             await this.createGameComponent(componentType.get());
             const config: MGPOptional<RulesConfig> = this.getConfig();
             this.gameComponent.config = config;
@@ -166,12 +163,6 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
         return RulesConfigUtils.getGameDefaultConfig(urlName);
     }
 
-    // Wait for the config to be set, if needed
-    // (Components that need to change this are badly designed and should be refactored)
-    protected async waitForConfig(): Promise<void> {
-        return;
-    }
-
     public async canUserPlay(_clickedElementName: string): Promise<MGPValidation> {
         if (this.isPlayerTurn() === false) {
             return MGPValidation.failure(GameWrapperMessages.NOT_YOUR_TURN());
@@ -247,17 +238,4 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
         await this.gameComponent.showLastMoveAndRedraw();
     }
 
-    public getRulesConfigDescription(): MGPOptional<RulesConfigDescription<RulesConfig>> {
-        const urlName: string = this.getGameUrlName();
-        return this.getRulesConfigDescriptionByName(urlName);
-    }
-
-    private getRulesConfigDescriptionByName(gameName: string): MGPOptional<RulesConfigDescription<RulesConfig>> {
-        const gameInfos: MGPOptional<GameInfo> = GameInfo.getByUrlName(gameName);
-        if (gameInfos.isAbsent()) {
-            return MGPOptional.empty();
-        } else {
-            return gameInfos.get().getRulesConfigDescription();
-        }
-    }
 }

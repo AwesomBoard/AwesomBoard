@@ -62,7 +62,7 @@ export class ActivatedRouteStub {
 
     private route: {[key: string]: string} = {};
     public snapshot: { paramMap: { get: (str: string) => string } };
-    public constructor(compo?: string, id?: string) {
+    public constructor(game?: string, id?: string) {
         this.snapshot = {
             paramMap: {
                 get: (str: string): string => {
@@ -72,8 +72,8 @@ export class ActivatedRouteStub {
                 },
             },
         };
-        if (compo != null) {
-            this.setRoute('compo', compo);
+        if (game != null) {
+            this.setRoute('game', game);
         }
         if (id != null) {
             this.setRoute('id', id);

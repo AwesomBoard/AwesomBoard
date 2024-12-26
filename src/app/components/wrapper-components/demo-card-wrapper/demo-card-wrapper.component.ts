@@ -29,12 +29,11 @@ export class DemoCardWrapperComponent extends GameWrapper<string> implements Aft
     private gameComponentIsSetup: boolean = false;
 
     public constructor(activatedRoute: ActivatedRoute,
-                       connectedUserService: ConnectedUserService,
                        router: Router,
                        messageDisplayer: MessageDisplayer,
                        private readonly cdr: ChangeDetectorRef)
     {
-        super(activatedRoute, connectedUserService, router, messageDisplayer);
+        super(activatedRoute, router, messageDisplayer);
     }
 
     public async ngAfterViewInit(): Promise<void> {
