@@ -112,10 +112,13 @@ export class RulesConfigDescription<R extends RulesConfig = EmptyRulesConfig> {
     }
 
     public isValid(fieldName: string, value: unknown): boolean {
-        return this.defaultConfigDescription.config[fieldName].checkValidity(value).isSuccess();
+        return value != null && this.defaultConfigDescription.config[fieldName].checkValidity(value).isSuccess();
     }
 
     public getValidityError(fieldName: string, value: unknown): string {
+        if (value === null) {
+            return $localize`This value is mandatory`;
+        }
         return this.defaultConfigDescription.config[fieldName].checkValidity(value).getReason();
     }
 
