@@ -19,6 +19,8 @@ import { TaflPieceMinimax } from './TaflPieceMinimax';
 import { TaflPieceAndControlMinimax } from './TaflPieceAndControlMinimax';
 import { TaflEscapeThenPieceThenControlMinimax } from './TaflEscapeThenPieceThenControlMinimax';
 import { ChangeDetectorRef } from '@angular/core';
+import { TaflPieceHeuristic } from './TaflPieceHeuristic';
+import { MCTSWithHeuristic } from 'src/app/jscaip/AI/MCTSWithHeuristic';
 
 export abstract class TaflComponent<R extends TaflRules<M>, M extends TaflMove>
     extends RectangularGameComponent<R, M, TaflState, TaflPawn, TaflConfig>
@@ -210,6 +212,7 @@ export abstract class TaflComponent<R extends TaflRules<M>, M extends TaflMove>
             new TaflPieceAndControlMinimax(this.rules),
             new TaflEscapeThenPieceThenControlMinimax(this.rules),
             new MCTS($localize`MCTS`, moveGenerator, this.rules),
+            new MCTSWithHeuristic($localize`MCTS with heuristic`, moveGenerator, this.rules, new TaflPieceHeuristic(this.rules)),
         ];
     }
 
