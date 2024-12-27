@@ -82,7 +82,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         const defaultConfig: MGPOptional<RulesConfig> = RulesConfigUtils.getGameDefaultConfig(this.getGameUrlName());
         const gameIsNotConfigurable: boolean = defaultConfig.isAbsent();
 
-        console.log({gameIsNotConfigurable, noConfigIsProvided})
         if (noConfigIsProvided || gameIsNotConfigurable) {
             this.rulesConfig = defaultConfig;
         } else {
