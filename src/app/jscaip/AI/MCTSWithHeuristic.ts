@@ -58,7 +58,6 @@ export class MCTSWithHeuristic<M extends Move,
                     // We can warn the user about it.
                     console.warn(`MCTSWithHeuristic capped a value close to the bounds: ${metric} has been capped to ${cappedValue}, bounds are [${player0Best}, ${player1Best}]`);
                 }
-                console.log(`capping ${metric} to ${cappedValue}`);
                 value += (Math.min(metric, player1Best) - player0Best) / (player1Best - player0Best);
             }
             value = value / boardValue.metrics.length;
