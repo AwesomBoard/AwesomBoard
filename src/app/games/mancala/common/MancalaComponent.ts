@@ -14,6 +14,8 @@ import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { MancalaConfig } from './MancalaConfig';
 import { AI, AIOptions, MoveGenerator } from 'src/app/jscaip/AI/AI';
+import { MCTSWithHeuristic } from 'src/app/jscaip/AI/MCTSWithHeuristic';
+import { MancalaScoreHeuristic } from './MancalaScoreHeurisic';
 
 export type SeedDropResult = {
     houseToDistribute: Coord,
@@ -407,6 +409,7 @@ export abstract class MancalaComponent<R extends MancalaRules>
         return [
             new MancalaScoreMinimax(this.rules, moveGenerator),
             new MCTS($localize`MCTS`, moveGenerator, this.rules),
+            new MCTSWithHeuristic($localize`MCTS with heuristic`, moveGenerator, this.rules, new MancalaScoreHeuristic()),
         ];
     }
 

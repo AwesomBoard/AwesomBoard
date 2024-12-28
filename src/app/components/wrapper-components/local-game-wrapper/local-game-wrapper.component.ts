@@ -10,7 +10,7 @@ import { Move } from 'src/app/jscaip/Move';
 import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { GameState } from 'src/app/jscaip/state/GameState';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { Player } from 'src/app/jscaip/Player';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { Debug } from 'src/app/utils/Debug';
 import { RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
@@ -18,6 +18,7 @@ import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
 import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
+import { MCTS } from 'src/app/jscaip/AI/MCTS';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -337,6 +338,37 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public displayAIInfo(): boolean {
         return localStorage.getItem('displayAIInfo') === 'true';
+    }
+
+    public viewTreeFromCurrentNode(): void {
+        this.viewTreeFrom(this.gameComponent.node);
+    }
+
+    public viewTreeFromPreviousNode(): void {
+        // Useful to explain why an AI has selected a particular node
+        this.viewTreeFrom(this.gameComponent.node.parent.get());
+    }
+
+    private viewTreeFrom(node: GameNode<Move, GameState>): void {
+        // We will use the data from the previous turn's AI
+        const opponentAI: MGPOptional<AbstractAI> = this.getAI((this.gameComponent.getTurn() + 1) % 2);
+        // We will annotate the trees with data from MCTS
+        function mctsLabel(nodeToLabel: GameNode<Move, GameState>): string {
+            if (opponentAI.isPresent() && opponentAI.get() instanceof MCTS) {
+                const mcts: MCTS<Move, GameState, RulesConfig, unknown> =
+                    opponentAI.get() as MCTS<Move, GameState, RulesConfig, unknown>;
+                const wins: number = mcts.getCounterFromCache(nodeToLabel, 'wins');
+                const simulations: number = mcts.getCounterFromCache(nodeToLabel, 'simulations');
+                return `${wins}/${simulations} = ${Math.round(wins/simulations * 100)}%`;
+            } else {
+                return '';
+            }
+        }
+        const maxDepth: number = Number(localStorage.getItem('tree-depth') ?? '2'); // Change it to a lower/higher value for more tree depth
+        const result: { dot: string, nextId: number, winner: PlayerOrNone } =
+            node.showDot(this.gameComponent.rules, this.rulesConfig, mctsLabel, maxDepth);
+        // Shows the graph on an online tool by opening a new tab
+        window.open('https://dreampuf.github.io/GraphvizOnline/#' + encodeURI(result.dot));
     }
 
     private setConfigDemo(config: RulesConfig): void {

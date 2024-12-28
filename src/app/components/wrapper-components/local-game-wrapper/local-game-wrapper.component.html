@@ -76,8 +76,16 @@
                 <ng-container *ngFor="let ai of gameComponent.availableAIs">
                     {{ ai.name + ': ' + ai.getInfo(gameComponent.node, gameComponent.config) }} <br/>
                 </ng-container>
-                Created {{ getCreatedNodes() }} nodes.<br/>
-                Minimax time: {{ getMinimaxTime() }}ms.<br/>
+                Created {{ getCreatedNodes() }} nodes since the beginning.<br/>
+                Minimax time: {{ getMinimaxTime() }}ms since the beginning.<br/>
+                <button id="viewTreeFromCurrentNode"
+                        (click)="viewTreeFromCurrentNode()"
+                        class="button is-medium is-fullwidth is-primary mb-1">
+                    DOT from current node</button>
+                <button id="viewTreeFromPreviousNode"
+                        (click)="viewTreeFromPreviousNode()"
+                        class="button is-medium is-fullwidth is-primary mb-1">
+                    DOT from previous node</button>
             </div>
         </div>
     </div>

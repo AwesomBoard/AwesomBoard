@@ -10,6 +10,11 @@ import { EmptyRulesConfig, RulesConfig } from '../RulesConfigUtil';
 import { GameNode } from './GameNode';
 import { PlayerNumberTable } from '../PlayerNumberTable';
 
+export type HeuristicBounds<B> = {
+    player0Best: B,
+    player1Best: B,
+}
+
 /**
  * A heuristic assigns a specific value for a node.
  * This is used for example by minimax-based AIs.
@@ -23,6 +28,18 @@ export abstract class Heuristic<M extends Move,
     public abstract getBoardValue(node: GameNode<M, S>, config: MGPOptional<C>): B;
 }
 
+/**
+ * A heuristic that defines its upper and lower bounds
+ */
+export abstract class HeuristicWithBounds<M extends Move,
+                                          S extends GameState,
+                                          B extends BoardValue = BoardValue,
+                                          C extends RulesConfig = EmptyRulesConfig>
+    extends Heuristic<M, S, B, C>
+{
+    public abstract getBounds(config: MGPOptional<C>): HeuristicBounds<B>
+}
+
 export abstract class PlayerMetricHeuristic<M extends Move,
                                             S extends GameState,
                                             C extends RulesConfig = EmptyRulesConfig>
@@ -30,6 +47,25 @@ export abstract class PlayerMetricHeuristic<M extends Move,
 {
     public abstract getMetrics(node: GameNode<M, S>, config: MGPOptional<C>): PlayerNumberTable;
 
+    public getBoardValue(node: GameNode<M, S>, config: MGPOptional<C>): BoardValue {
+        const metrics: PlayerNumberTable = this.getMetrics(node, config);
+        return BoardValue.ofMultiple(
+            metrics.get(Player.ZERO).get(),
+            metrics.get(Player.ONE).get(),
+        );
+    }
+
+}
+
+export abstract class PlayerMetricHeuristicWithBounds<M extends Move,
+                                                      S extends GameState,
+                                                      C extends RulesConfig = EmptyRulesConfig>
+    extends HeuristicWithBounds<M, S, BoardValue, C>
+{
+    public abstract getMetrics(node: GameNode<M, S>, config: MGPOptional<C>): PlayerNumberTable;
+
+    // Yes, this is duplicated from PlayerMetricHeuristic, because we don't have multiple inheritance
+    // and probably don't want to use mixins!
     public getBoardValue(node: GameNode<M, S>, config: MGPOptional<C>): BoardValue {
         const metrics: PlayerNumberTable = this.getMetrics(node, config);
         return BoardValue.ofMultiple(
@@ -62,7 +98,7 @@ implements AI<M, S, AIDepthLimitOptions, C>
 {
 
     // States whether the minimax takes random moves from the list of best moves.
-    public random: boolean = false;
+    public random: boolean = true;
     // States whether alpha-beta pruning must be done. It probably is never useful to set it to false.
     public prune: boolean = true;
 

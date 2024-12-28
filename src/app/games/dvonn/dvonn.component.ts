@@ -15,6 +15,8 @@ import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { DvonnMoveGenerator } from './DvonnMoveGenerator';
 import { DvonnMaxStacksMinimax } from './DvonnMaxStacksMinimax';
 import { DvonnScoreMinimax } from './DvonnScoreMinimax';
+import { DvonnScoreHeuristic } from './DvonnScoreHeuristic';
+import { MCTSWithHeuristic } from 'src/app/jscaip/AI/MCTSWithHeuristic';
 
 @Component({
     selector: 'app-dvonn',
@@ -35,6 +37,7 @@ export class DvonnComponent extends HexagonalGameComponent<DvonnRules, DvonnMove
             new DvonnMaxStacksMinimax(),
             new DvonnScoreMinimax(),
             new MCTS($localize`MCTS`, new DvonnMoveGenerator(), this.rules),
+            new MCTSWithHeuristic($localize`MCTS Score`, new DvonnMoveGenerator(), this.rules, new DvonnScoreHeuristic()),
         ];
         this.encoder = DvonnMove.encoder;
         this.scores = MGPOptional.of(DvonnRules.getScores(this.getState()));

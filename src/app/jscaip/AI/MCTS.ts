@@ -14,7 +14,7 @@ type NodeAndPath<M extends Move, S extends GameState> = {
     path: GameNode<M, S>[],
 }
 
-/*
+/**
  * Implement Monte-Carlo Tree Search
  * Useful resources to understand MCTS:
  *   - https://www.analyticsvidhya.com/blog/2019/01/monte-carlo-tree-search-introduction-algorithm-deepmind-alphago/
@@ -27,18 +27,24 @@ export class MCTS<M extends Move,
 implements AI<M, S, AITimeLimitOptions, C>
 {
     // The exploration parameter influences the MCTS results.
-    // It is chosen "empirically" (this is the "generally recommended value" from Wikipedia)
-    public explorationParameter: number = Math.sqrt(2);
+    // It is chosen "empirically". The generally recommended value from Wikipedia is Math.sqrt(2),
+    // but in our case it seems to work much better with a higher exploration parameter.
+    // A higher exploration parameter steers MCTS towards exploring more unexplored playouts, vs. exploring its wins.
+    public explorationParameter: number = 80;
 
     // The longest a game can be before we decide to stop simulating it
-    public maxGameLength: number = 8;
+    public maxGameLength: number = 7*6; // Set to the number of moves in connect 4
 
     public readonly availableOptions: AITimeLimitOptions[] = [];
+
+    // A id unique to this MCTS, used to store/retrieve cached value in nodes without clashing with other AIs
+    private readonly uniqueId: string;
 
     public constructor(public readonly name: string,
                        private readonly moveGenerator: MoveGenerator<M, S, C>,
                        private readonly rules: SuperRules<M, S, C, L>)
     {
+        this.uniqueId = Math.random().toString(36).substring(2, 8);
         for (let i: number = 1; i < 10; i++) {
             this.availableOptions.push({ name: `${i*i} seconds`, maxSeconds: i*i });
         }
@@ -58,7 +64,7 @@ implements AI<M, S, AITimeLimitOptions, C>
             const expansionResult: NodeAndPath<M, S> = this.expand(
                 this.select({ node: root, path: [root] }), config);
             const gameStatus: GameStatus = this.simulate(expansionResult.node, endTime, config);
-            this.backpropagate(expansionResult.path, this.winScore(gameStatus, player));
+            this.backpropagate(expansionResult.path, this.winScore(expansionResult.node, config, gameStatus, player));
             iterations++;
         }
         Debug.display('MCTS', 'chooseNextMove', 'root winRatio: ' + this.winRatio(root));
@@ -73,11 +79,17 @@ implements AI<M, S, AITimeLimitOptions, C>
         return bestChild.previousMove.get();
     }
 
-    private winScore(gameStatus: GameStatus, player: Player): number {
+    /**
+     * Returns 1 for win, 0 for losses. Must return a result between 0 and 1 otherwise.
+     */
+    protected winScore(_node: GameNode<M, S>,
+                       _config: MGPOptional<RulesConfig>,
+                       gameStatus: GameStatus,
+                       player: Player): number {
         switch (gameStatus) {
             case GameStatus.DRAW:
             case GameStatus.ONGOING:
-                return 0.5;
+                return 0.01; // Prefer ongoing/draw to loss
             default:
                 if (gameStatus.winner === player) return 1;
                 else return 0;
@@ -102,7 +114,7 @@ implements AI<M, S, AITimeLimitOptions, C>
      */
     private winRatio(node: GameNode<M, S>): number {
         const simulations: number = this.simulations(node);
-        if (this.simulations(node) === 0) {
+        if (simulations === 0) {
             return 1;
         }
         return this.wins(node) / simulations;
@@ -116,12 +128,12 @@ implements AI<M, S, AITimeLimitOptions, C>
         return this.getCounterFromCache(node, 'simulations');
     }
 
-    private getCounterFromCache(node: GameNode<M, S>, name: string): number {
-        const cachedValue: MGPOptional<number> = node.getCache(name);
+    public getCounterFromCache(node: GameNode<M, S>, name: string): number {
+        const cachedValue: MGPOptional<number> = node.getCache(this.uniqueId + name);
         if (cachedValue.isPresent()) {
             return cachedValue.get();
         } else {
-            node.setCache(name, 0);
+            node.setCache(this.uniqueId + name, 0);
             return 0;
         }
     }
@@ -198,7 +210,9 @@ implements AI<M, S, AITimeLimitOptions, C>
      * @returns the state after the move
      */
     private playRandomStep(node: GameNode<M, S>, config: MGPOptional<C>): GameNode<M, S> {
-        const move: M = ArrayUtils.getRandomElement(this.moveGenerator.getListMoves(node, config));
+        const moves: M[] = this.moveGenerator.getListMoves(node, config);
+        Utils.assert(moves.length > 0, 'MoveGenerator gave empty list of moves for ongoing game to MCTS');
+        const move: M = ArrayUtils.getRandomElement(moves);
         return this.play(node, move, config);
     }
 
@@ -230,8 +244,8 @@ implements AI<M, S, AITimeLimitOptions, C>
     private addSimulationResult(node: GameNode<M, S>, winScore: number): void {
         const simulations: number = this.simulations(node) + 1;
         const wins: number = this.wins(node) + winScore;
-        node.setCache('wins', wins);
-        node.setCache('simulations', simulations);
+        node.setCache(this.uniqueId + 'wins', wins);
+        node.setCache(this.uniqueId + 'simulations', simulations);
     }
 
     public getInfo(node: GameNode<M, S>): string {

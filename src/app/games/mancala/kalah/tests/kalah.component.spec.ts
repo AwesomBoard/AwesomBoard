@@ -20,11 +20,33 @@ import { KalahRules } from '../KalahRules';
 import { KalahMoveGenerator } from '../KalahMoveGenerator';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { MGPOptional } from '@everyboard/lib';
+import { AbstractAI, AI, AIOptions } from 'src/app/jscaip/AI/AI';
+import { GameNode } from 'src/app/jscaip/AI/GameNode';
+import { Move } from 'src/app/jscaip/Move';
+import { GameState } from 'src/app/jscaip/state/GameState';
+import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 
 describe('KalahComponent', () => {
 
     let mancalaTestUtils: MancalaComponentTestUtils<KalahComponent, KalahRules>;
     const defaultConfig: MGPOptional<MancalaConfig> = KalahRules.get().getDefaultRulesConfig();
+
+    function getAIReturningOnly(move: Move): AbstractAI {
+        return new class extends AI<Move, GameState, AIOptions, RulesConfig> {
+            public readonly name: string = 'test-AI';
+            public readonly availableOptions: AIOptions[] = [];
+            public chooseNextMove(_node: GameNode<Move, GameState>,
+                                  _options: AIOptions,
+                                  _config: MGPOptional<RulesConfig>)
+            : Move {
+                return move;
+            }
+            public getInfo(_node: GameNode<Move, GameState>, _config: MGPOptional<RulesConfig>): string {
+                return '';
+            }
+        }();
+    }
+
 
     doMancalaComponentTests({
         component: KalahComponent,
@@ -131,11 +153,12 @@ describe('KalahComponent', () => {
 
             it('should wait TIMEOUT_BETWEEN_LAPS between each sub-distribution when receiving move', fakeAsync(async() => {
                 // Given a board where AI move is sure to be two distributions (here, the initial state)
-                // When AI play
-                await mancalaTestUtils.testUtils.selectAIPlayer(Player.ZERO);
+                // When AI plays
+                const ai: AbstractAI = getAIReturningOnly(MancalaMove.of(MancalaDistribution.of(1)));
+                const localGameWrapper: LocalGameWrapperComponent =
+                    mancalaTestUtils.testUtils.getComponent() as LocalGameWrapperComponent;
+                await localGameWrapper.doAIMove(ai, { name: 'noOption' });
 
-                // Then the pause of the AI should be done first
-                tick(LocalGameWrapperComponent.AI_TIMEOUT);
                 // Then it should take TIMEOUT_BETWEEN_SEED ms to empty the initial house
                 tick(MancalaComponent.TIMEOUT_BETWEEN_SEEDS);
                 // Then 4 * TIMEOUT_BETWEEN_SEED ms to sow the 4 seeds
@@ -313,10 +336,13 @@ describe('KalahComponent', () => {
             ], 0, PlayerNumberMap.of(0, 0));
             await mancalaTestUtils.testUtils.setupState(state);
 
-            // When giving turn to AI to play and waiting for move
-            await mancalaTestUtils.testUtils.selectAIPlayer(Player.ZERO);
-            // time for AI to take action + time for the distribution
-            tick(LocalGameWrapperComponent.AI_TIMEOUT + (5 * MancalaComponent.TIMEOUT_BETWEEN_SEEDS));
+            // When the AI plays a move
+            const ai: AbstractAI = getAIReturningOnly(MancalaMove.of(MancalaDistribution.of(1)));
+            const localGameWrapper: LocalGameWrapperComponent =
+                mancalaTestUtils.testUtils.getComponent() as LocalGameWrapperComponent;
+            await localGameWrapper.doAIMove(ai, { name: 'noOption' });
+            // time for the distribution
+            tick(5 * MancalaComponent.TIMEOUT_BETWEEN_SEEDS);
 
             // Then the " +1 " in Kalah secondary message should have disappeared
             mancalaTestUtils.expectStoreContentToBe(Player.ZERO, ' 1 ', ' +1 ');
