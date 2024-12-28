@@ -81,11 +81,11 @@ export class ConspirateursComponent extends GameComponent<ConspirateursRules, Co
     }
 
     private updateScores(): void {
-        this.scores = MGPOptional.of(this.rules.getProtectedPawns(this.getState()));
+        this.scores = MGPOptional.of(this.rules.getProtectedPieces(this.getState()));
     }
 
-    public override getScoreName(): string {
-        return ScoreName.PROTECTED_PIECES();
+    public override getScoreName(): ScoreName {
+        return ScoreName.PROTECTED_PIECES;
     }
 
     private updateViewInfo(): void {

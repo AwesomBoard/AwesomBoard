@@ -5,17 +5,41 @@
       <trans-unit id="4894728399261164928" datatype="html">
         <source>If you like <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>EveryBoard<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>, follow us!</source>
       </trans-unit>
-      <trans-unit id="3020302862287038294" datatype="html">
-        <source>points</source>
+      <trans-unit id="2330911039423728715" datatype="html">
+        <source>0 points</source>
       </trans-unit>
-      <trans-unit id="2504106190626996440" datatype="html">
-        <source>captures</source>
+      <trans-unit id="3615868699392073675" datatype="html">
+        <source>1 point</source>
       </trans-unit>
-      <trans-unit id="2092541830819738222" datatype="html">
-        <source>remaining pieces</source>
+      <trans-unit id="5859970255480348780" datatype="html">
+        <source><x id="PH" equiv-text="n"/> points</source>
       </trans-unit>
-      <trans-unit id="3417852595158891776" datatype="html">
-        <source>protected pieces</source>
+      <trans-unit id="5338644563389793015" datatype="html">
+        <source>0 captures</source>
+      </trans-unit>
+      <trans-unit id="4285343428589620223" datatype="html">
+        <source>1 capture</source>
+      </trans-unit>
+      <trans-unit id="3582401300259379730" datatype="html">
+        <source><x id="PH" equiv-text="n"/> captures</source>
+      </trans-unit>
+      <trans-unit id="1477756554987205959" datatype="html">
+        <source>0 remaining pieces</source>
+      </trans-unit>
+      <trans-unit id="1621210823826499525" datatype="html">
+        <source>1 remaining piece</source>
+      </trans-unit>
+      <trans-unit id="3762170440311046861" datatype="html">
+        <source><x id="PH" equiv-text="n"/> remaining pieces</source>
+      </trans-unit>
+      <trans-unit id="4263400138524138884" datatype="html">
+        <source>0 protected pieces</source>
+      </trans-unit>
+      <trans-unit id="7720479219163238747" datatype="html">
+        <source>1 protected piece</source>
+      </trans-unit>
+      <trans-unit id="386205842328325911" datatype="html">
+        <source><x id="PH" equiv-text="n"/> protected pieces</source>
       </trans-unit>
       <trans-unit id="6153797048311741939" datatype="html">
         <source>User settings</source>

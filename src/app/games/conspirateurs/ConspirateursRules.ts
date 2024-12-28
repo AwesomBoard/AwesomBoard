@@ -165,24 +165,24 @@ export class ConspirateursRules extends Rules<ConspirateursMove, ConspirateursSt
     }
 
     public override getGameStatus(node: ConspirateursNode): GameStatus {
-        const protectedPawns: PlayerNumberMap = this.getProtectedPawns(node.gameState);
+        const protectedPieces: PlayerNumberMap = this.getProtectedPieces(node.gameState);
         for (const player of Player.PLAYERS) {
-            if (protectedPawns.get(player) === 20) {
+            if (protectedPieces.get(player) === 20) {
                 return GameStatus.getVictory(player);
             }
         }
         return GameStatus.ONGOING;
     }
 
-    public getProtectedPawns(state: ConspirateursState): PlayerNumberMap {
-        const protectedPawns: PlayerNumberMap = PlayerNumberMap.of(0, 0);
+    public getProtectedPieces(state: ConspirateursState): PlayerNumberMap {
+        const protectedPieces: PlayerNumberMap = PlayerNumberMap.of(0, 0);
         for (const shelter of ConspirateursState.ALL_SHELTERS) {
             const content: PlayerOrNone = state.getPieceAt(shelter);
             if (content.isPlayer()) {
-                protectedPawns.add(content, 1);
+                protectedPieces.add(content, 1);
             }
         }
-        return protectedPawns;
+        return protectedPieces;
     }
 
 }

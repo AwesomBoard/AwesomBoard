@@ -90,11 +90,14 @@ export class GoComponent extends GobanGameComponent<GoRules,
         this.scores = MGPOptional.of(this.getState().captured);
     }
 
-    public override getScoreName(): string {
-        if (this.getState().phase === 'PLAYING') {
-            return ScoreName.CAPTURES();
-        } else {
-            return ScoreName.POINTS();
+    public override getScoreName(): ScoreName {
+        switch (this.getState().phase) {
+            case 'COUNTING':
+            case 'ACCEPT':
+            case 'FINISHED':
+                return ScoreName.POINTS;
+            default:
+                return ScoreName.CAPTURES;
         }
     }
 

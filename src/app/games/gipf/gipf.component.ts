@@ -89,8 +89,8 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
         this.moveToInitialCaptureOrPlacementPhase();
     }
 
-    public override getScoreName(): string {
-        return ScoreName.CAPTURES();
+    public override getScoreName(): ScoreName {
+        return ScoreName.CAPTURES;
     }
 
     public override async showLastMove(move: GipfMove): Promise<void> {

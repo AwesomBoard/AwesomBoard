@@ -19,14 +19,45 @@ import { Localized } from 'src/app/utils/LocaleUtils';
 
 export class ScoreName {
 
-    public static readonly POINTS: Localized = () => $localize`points`;
+    public static readonly POINTS: ScoreName =
+        new ScoreName(() => $localize`0 points`,
+                      () => $localize`1 point`,
+                      (n: number) => $localize`${n} points`);
 
-    public static readonly CAPTURES: Localized = () => $localize`captures`;
+    public static readonly CAPTURES: ScoreName =
+        new ScoreName(() => $localize`0 captures`,
+                      () => $localize`1 capture`,
+                      (n: number) => $localize`${n} captures`);
 
-    public static readonly REMAINING_PIECES: Localized = () => $localize`remaining pieces`;
+    public static readonly REMAINING_PIECES: ScoreName =
+        new ScoreName(() => $localize`0 remaining pieces`,
+                      () => $localize`1 remaining piece`,
+                      (n: number) => $localize`${n} remaining pieces`);
 
-    public static readonly PROTECTED_PIECES: Localized = () => $localize`protected pieces`;
+    public static readonly PROTECTED_PIECES: ScoreName =
+        new ScoreName(() => $localize`0 protected pieces`,
+                      () => $localize`1 protected piece`,
+                      (n: number) => $localize`${n} protected pieces`);
 
+    /**
+     * A score name might be differently written for zero, one, or more than one "points".
+     * Zero might be plural like in english, but different in another language, like french where it is singular.
+     */
+    private constructor(public readonly zero: Localized,
+                        public readonly singular: Localized,
+                        public readonly plural: (n: number) => string) {
+    }
+
+    public toString(count: number): string {
+        switch (count) {
+            case 0:
+                return this.zero();
+            case 1:
+                return this.singular();
+            default:
+                return this.plural(count);
+        }
+    }
 }
 
 /**
@@ -124,9 +155,9 @@ export abstract class GameComponent<R extends SuperRules<M, S, C, L>,
         return this.scores.get().get(player);
     }
 
-    public getScoreName(): string {
+    public getScoreName(): ScoreName {
         // This can be redefined in games where we don't talk about points
-        return ScoreName.POINTS();
+        return ScoreName.POINTS;
     }
 
     public getPointOfView(): Player {

@@ -89,8 +89,8 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
                                          PointyHexaOrientation.INSTANCE);
     }
 
-    public override getScoreName(): string {
-        return ScoreName.CAPTURES();
+    public override getScoreName(): ScoreName {
+        return ScoreName.CAPTURES;
     }
 
     public getViewBox(): ViewBox {

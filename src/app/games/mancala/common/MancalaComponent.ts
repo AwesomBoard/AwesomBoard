@@ -55,8 +55,8 @@ export abstract class MancalaComponent<R extends MancalaRules>
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
     }
 
-    public override getScoreName(): string {
-        return ScoreName.CAPTURES();
+    public override getScoreName(): ScoreName {
+        return ScoreName.CAPTURES;
     }
 
     public getMancalaViewBox(): string {
