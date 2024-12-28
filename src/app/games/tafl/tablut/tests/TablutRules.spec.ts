@@ -253,7 +253,7 @@ describe('TablutRules', () => {
     });
 
     it('should allow King to come back on the throne', () => {
-        // Given a board where the king is not on his throne but can go back
+        // Given a board where the king is not on their throne but can go back
         const board: TaflPawn[][] = [
             [_, _, O, _, _, _, _, _, _],
             [_, _, O, _, O, _, _, _, _],
@@ -267,7 +267,7 @@ describe('TablutRules', () => {
         ];
         const state: TaflState = new TaflState(board, 1);
 
-        // When moving the king back to his throne
+        // When moving the king back to their throne
         const move: TablutMove = TablutMove.from(new Coord(4, 3), new Coord(4, 4)).get();
 
         // Then the move should succeed

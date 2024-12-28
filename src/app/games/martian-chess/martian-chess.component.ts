@@ -38,7 +38,7 @@ export type MartianChessPoint = 'Concentric Circles' | 'Dots' | 'Horizontal Poin
  * Then for those pattern it's better to think that we draw from the coord (-4, -4)
  * and that the width is 308.
  *
- * For the inside circle, his center must still be (50, 50), but is radius cannot be 50 to avoid overlap,
+ * For the inside circle, its center must still be (50, 50), but is radius cannot be 50 to avoid overlap,
  * so you must remove one two halves of a stroke-width, one for circle stroke-outside-half,
  * and one for square stroke-inside-half
  */

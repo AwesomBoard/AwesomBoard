@@ -329,7 +329,7 @@ describe('PylosRules', () => {
         expect(status.isSuccess()).toBeTrue();
     });
 
-    it('should declare loser Player.ZERO when he put his 15th ball', () => {
+    it('should declare loser Player.ZERO when he put their 15th ball', () => {
         const board: PlayerOrNone[][][] = [
             [
                 [X, O, X, O],
@@ -374,7 +374,7 @@ describe('PylosRules', () => {
         RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
     });
 
-    it('should declare loser Player.ONE when he put his 15th ball', () => {
+    it('should declare loser Player.ONE when they put their 15th ball', () => {
         const board: PlayerOrNone[][][] = [
             [
                 [O, X, O, X],

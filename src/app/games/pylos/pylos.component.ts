@@ -214,7 +214,7 @@ export class PylosComponent extends GameComponent<PylosRules, PylosMove, PylosSt
             this.chosenLandingCoord = MGPOptional.of(clickedCoord);
             this.constructedState = this.constructedState.dropCurrentPlayersPieceAt(clickedCoord);
             this.updateCapturableList();
-            return MGPValidation.SUCCESS; // now player can click on his captures
+            return MGPValidation.SUCCESS; // now player can click on their captures
         } else {
             this.chosenLandingCoord = MGPOptional.of(clickedCoord);
             return this.concludeMoveWithCapture([]);

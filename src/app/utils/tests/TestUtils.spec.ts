@@ -53,6 +53,7 @@ import { ConfigRoomService } from 'src/app/services/ConfigRoomService';
 import { ServerTimeService } from 'src/app/services/ServerTimeService';
 import { ServerTimeServiceMock } from 'src/app/services/tests/ServerTimeServiceMock.spec';
 import { ConfigRoomServiceMock } from 'src/app/services/tests/ConfigRoomServiceMock.spec';
+import { RulesConfigurationComponent } from 'src/app/components/wrapper-components/rules-configuration/rules-configuration.component';
 
 @Component({})
 export class BlankComponent {}
@@ -61,7 +62,7 @@ export class ActivatedRouteStub {
 
     private route: {[key: string]: string} = {};
     public snapshot: { paramMap: { get: (str: string) => string } };
-    public constructor(compo?: string, id?: string) {
+    public constructor(game?: string, id?: string) {
         this.snapshot = {
             paramMap: {
                 get: (str: string): string => {
@@ -71,8 +72,8 @@ export class ActivatedRouteStub {
                 },
             },
         };
-        if (compo != null) {
-            this.setRoute('compo', compo);
+        if (game != null) {
+            this.setRoute('game', game);
         }
         if (id != null) {
             this.setRoute('id', id);
@@ -687,6 +688,7 @@ export class ConfigureTestingModuleUtils {
                 FirestoreTimePipe,
                 HumanDurationPipe,
                 ToggleVisibilityDirective,
+                RulesConfigurationComponent,
             ],
             schemas: [
                 CUSTOM_ELEMENTS_SCHEMA,

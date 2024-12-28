@@ -71,14 +71,14 @@ export class GoGroupData extends GroupData<GoPiece> {
 
     public isMonoWrapped(): boolean {
         // If a group is empty, we assign him 1, else 2
-        // If only the group of the group and the group of his wrapper are filled, result will be 2*2*1
+        // If only the group of the group and the group of its wrapper are filled, result will be 2*2*1
         const darkWrapper: number = (this.darkCoords.length + this.deadLightCoords.length) === 0 ? 0 : 1;
         const lightWrapper: number = (this.lightCoords.length + this.deadDarkCoords.length) === 0 ? 0 : 1;
         return darkWrapper + lightWrapper === 1;
     }
 
     public getWrapper(): GoPiece {
-        // If a piece is wrapped by a player and/or by dead piece of his opponent, it's returning the player
+        // If a piece is wrapped by a player and/or by dead piece of their opponent, it's returning the player
         // If a piece is wrapped by two player, it's throwing
         // If a piece is wrapped by a player and dead piece of this player, it's throwing
         // color, [empty, dark, light, deadDark, deadLight]

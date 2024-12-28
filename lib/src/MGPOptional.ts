@@ -69,6 +69,14 @@ export class MGPOptional<T> {
         }
     }
 
+    public orElse(other: MGPOptional<T>): MGPOptional<T> {
+        if (this.isPresent()) {
+            return this;
+        } else {
+            return other;
+        }
+    }
+
     public equals(other: MGPOptional<T>): boolean {
         if (this.isAbsent()) {
             return other.isAbsent();

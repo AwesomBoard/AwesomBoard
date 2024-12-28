@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { ActivatedRoute, NavigationEnd, Router, Event } from '@angular/router';
 import { Mutex } from 'async-mutex';
 import { Subscription } from 'rxjs';
+import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 import { JSONValue, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { ConnectedUserService, AuthUser } from 'src/app/services/ConnectedUserService';
 import { GameService } from 'src/app/services/GameService';
 import { Move } from '../../../jscaip/Move';
@@ -28,7 +30,6 @@ import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { Debug } from 'src/app/utils/Debug';
 import { ServerTimeService } from 'src/app/services/ServerTimeService';
-import { UserService } from 'src/app/services/UserService';
 
 export class OnlineGameWrapperMessages {
 
@@ -81,20 +82,22 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
 
     private moveSentButNotReceivedYet: boolean = false;
 
+    public faCog: IconDefinition = faCog;
+    public viewConfig: boolean = false;
+
     public constructor(activatedRoute: ActivatedRoute,
-                       connectedUserService: ConnectedUserService,
                        router: Router,
                        messageDisplayer: MessageDisplayer,
+                       private readonly connectedUserService: ConnectedUserService,
                        private readonly currentGameService: CurrentGameService,
                        private readonly gameService: GameService,
                        private readonly gameEventService: GameEventService,
                        private readonly timeManager: OGWCTimeManagerService,
                        private readonly requestManager: OGWCRequestManagerService,
                        private readonly serverTimeService: ServerTimeService,
-                       private readonly userService: UserService,
                        private readonly cdr: ChangeDetectorRef)
     {
-        super(activatedRoute, connectedUserService, router, messageDisplayer);
+        super(activatedRoute, router, messageDisplayer);
     }
 
     private extractPartIdFromURL(): string {
@@ -576,7 +579,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         }
     }
 
-    public override async getConfig(): Promise<MGPOptional<RulesConfig>> {
+    public override getConfig(): MGPOptional<RulesConfig> {
         const rulesConfig: RulesConfig = this.configRoom.rulesConfig;
         return MGPOptional.of(rulesConfig);
     }
