@@ -76,7 +76,7 @@ export class SixComponent
     private getScores(): MGPOptional<PlayerNumberMap> {
         const state: SixState = this.getState();
         const config: SixConfig = this.getConfig().get();
-        const lastDropTurn: number = 2 * config.piecePerPlayer;
+        const lastDropTurn: number = 2 * config.piecesPerPlayer;
         if (state.turn <= lastDropTurn) {
             return MGPOptional.of(state.countRemainingPieces(config));
         } else {
@@ -170,7 +170,7 @@ export class SixComponent
             return this.cancelMove(clickValidity.getReason());
         }
         const config: SixConfig = this.getConfig().get();
-        const maxPiece: number = 2 * config.piecePerPlayer;
+        const maxPiece: number = 2 * config.piecesPerPlayer;
         if (this.state.turn < maxPiece) {
             return this.cancelMove(SixFailure.CANNOT_MOVE_YET());
         } else if (this.chosenLanding.isAbsent()) {
@@ -199,7 +199,7 @@ export class SixComponent
             return this.cancelMove(SixFailure.MUST_CUT());
         }
         const config: SixConfig = this.getConfig().get();
-        const maxPiece: number = 2 * config.piecePerPlayer;
+        const maxPiece: number = 2 * config.piecesPerPlayer;
         if (this.state.turn < maxPiece) {
             return this.chooseMove(SixMove.ofDrop(neighbor));
         } else {

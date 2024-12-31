@@ -32,7 +32,7 @@ export class SixHeuristic extends AlignmentHeuristic<SixMove, SixState, SixVicto
         if (shapeInfo.status === AlignmentStatus.VICTORY) {
             return BoardValue.of(victoryValue);
         }
-        const lastDropTurn: number = (2 * config.get().piecePerPlayer) - 1;
+        const lastDropTurn: number = (2 * config.get().piecesPerPlayer) - 1;
         if (state.turn > lastDropTurn) {
             const pieces: PlayerNumberMap = state.countPieces();
             return BoardValue.ofPlayerNumberMap(pieces);

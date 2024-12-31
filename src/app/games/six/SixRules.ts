@@ -23,7 +23,7 @@ export class SixNode extends GameNode<SixMove, SixState> {
 
 export type SixConfig = {
 
-    piecePerPlayer: number;
+    piecesPerPlayer: number;
 
 }
 
@@ -43,7 +43,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         new RulesConfigDescription<SixConfig>({
             name: (): string => $localize`Six`,
             config: {
-                piecePerPlayer: new NumberConfig(20, () => $localize`Number of pieces to drop per player`, MGPValidators.range(5, 99)),
+                piecesPerPlayer: new NumberConfig(20, () => $localize`Number of pieces to drop per player`, MGPValidators.range(5, 99)),
             },
         });
 
@@ -69,7 +69,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
                                    kept: SixLegalityInformation)
     : SixState
     {
-        const totalDroppablePieces: number = 2 * config.get().piecePerPlayer;
+        const totalDroppablePieces: number = 2 * config.get().piecesPerPlayer;
         if (state.turn < totalDroppablePieces) {
             return state.applyLegalDrop(move.landing);
         } else {
@@ -84,7 +84,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         if (landingLegality.isFailure()) {
             return landingLegality.toOtherFallible();
         }
-        const totalDroppablePieces: number = 2 * config.get().piecePerPlayer;
+        const totalDroppablePieces: number = 2 * config.get().piecesPerPlayer;
         if (state.turn < totalDroppablePieces) {
             return this.isLegalDrop(move, state);
         } else {
@@ -189,7 +189,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         if (shapeVictory.length === 6) {
             return GameStatus.getVictory(previousPlayer);
         }
-        const lastDropTurn: number = (2 * config.get().piecePerPlayer) - 1;
+        const lastDropTurn: number = (2 * config.get().piecesPerPlayer) - 1;
         if (state.turn > lastDropTurn) {
             const pieces: PlayerNumberMap = state.countPieces();
             const zeroPieces: number = pieces.get(Player.ZERO);

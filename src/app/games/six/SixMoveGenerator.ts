@@ -13,7 +13,7 @@ export class SixMoveGenerator extends MoveGenerator<SixMove, SixState, SixConfig
 
     public override getListMoves(node: SixNode, config: MGPOptional<SixConfig>): SixMove[] {
         const legalLandings: Coord[] = SixRules.getLegalLandings(node.gameState);
-        const totalDroppablePieces: number = 2 * config.get().piecePerPlayer;
+        const totalDroppablePieces: number = 2 * config.get().piecesPerPlayer;
         if (node.gameState.turn < totalDroppablePieces) {
             return this.getListDrops(legalLandings);
         } else {

@@ -266,7 +266,7 @@ describe('SixComponent', () => {
             // Given a part with shorter config, on second phase
             const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
-                piecePerPlayer: 5,
+                piecesPerPlayer: 5,
             });
             const board: Table<PlayerOrNone> = [
                 [O],
@@ -287,7 +287,7 @@ describe('SixComponent', () => {
             // And a shorter config
             const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
-                piecePerPlayer: 5,
+                piecesPerPlayer: 5,
             });
             const board: Table<PlayerOrNone> = [
                 [O],

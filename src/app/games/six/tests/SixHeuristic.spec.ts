@@ -175,7 +175,7 @@ describe('SixHeuristic', () => {
             ], 20);
             const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
-                piecePerPlayer: 10,
+                piecesPerPlayer: 10,
             });
             const move: SixMove = SixMove.ofDrop(new Coord(1, 1));
             const node: SixNode = new SixNode(state, MGPOptional.empty(), MGPOptional.of(move));
@@ -183,7 +183,7 @@ describe('SixHeuristic', () => {
             // When evaluating its board value
             const boardValue: BoardValue = heuristic.getBoardValue(node, customConfig);
 
-            // Then it should should be the difference of piece between two player
+            // Then it should be the difference of pieces between two player
             expect(boardValue.metrics).toEqual([2 * Player.ZERO.getScoreModifier()]);
         });
 

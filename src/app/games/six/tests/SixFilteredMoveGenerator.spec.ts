@@ -135,7 +135,7 @@ describe('SixFilteredMoveGenerator', () => {
             const node: SixNode = new SixNode(state);
             const customCOnfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
-                piecePerPlayer: 10,
+                piecesPerPlayer: 10,
             });
 
             // When listing the moves

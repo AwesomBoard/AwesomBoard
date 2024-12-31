@@ -586,11 +586,11 @@ describe('SixRules', () => {
 
     describe('custom config', () => {
 
-        it('should recognize victory when dropping bellow 6 pieces in shorter game', () => {
+        it('should recognize victory when dropping below 6 pieces in shorter game', () => {
             // Given a custom config where you need to drop less pieces to reach second phase
             const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
-                piecePerPlayer: 5,
+                piecesPerPlayer: 5,
             });
             // And a state in phase two
             const board: Table<PlayerOrNone> = [

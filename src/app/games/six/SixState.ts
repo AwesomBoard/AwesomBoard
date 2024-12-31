@@ -111,7 +111,7 @@ export class SixState extends OpenHexagonalGameState<Player> {
     }
 
     public countRemainingPieces(config: SixConfig): PlayerNumberMap {
-        const total: number = config.piecePerPlayer + 1;
+        const total: number = config.piecesPerPlayer + 1;
         const pieces: ReversibleMap<Player, Set<Coord>> = this.pieces.reverse();
         const zeroPieces: Set<Coord> = pieces.get(Player.ZERO).getOrElse(new CoordSet());
         const onePieces: Set<Coord> = pieces.get(Player.ONE).getOrElse(new CoordSet());
