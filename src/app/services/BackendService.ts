@@ -5,19 +5,21 @@ import { Injectable, OnInit } from '@angular/core';
 
 type HTTPMethod = 'POST' | 'GET' | 'PATCH' | 'HEAD' | 'DELETE';
 
+export type Callback = (type: string, data: JSONValue) => Promise<void>
 @Injectable({
     providedIn: 'root', // This ensures that this is a singleton service
 })
 export class WebSocketManagerService {
 
     private webSocket: MGPOptional<WebSocket> = MGPOptional.empty();
+    private callbacks: Callback[] = [];
 
     public constructor(private readonly connectedUserService: ConnectedUserService) {
         console.log('WebSocketManagerService created (should happen only once');
     }
 
     public async connect(): Promise<void> {
-        // TODO: let user know we're trying to connect to the server somehow?
+        // TODO: let user know we're trying to connect to the server somehow visually?
         Utils.assert(this.webSocket.isAbsent(), 'Should not connect twice to WebSocket!');
         const token: string = await this.connectedUserService.getIdToken();
 
@@ -26,7 +28,6 @@ export class WebSocketManagerService {
 
             ws.onopen = (): void => {
                 console.log('WS: connected');
-                ws.send('HELLO');
                 this.webSocket = MGPOptional.of(ws);
                 resolve();
             };
@@ -40,16 +41,31 @@ export class WebSocketManagerService {
             ws.onmessage = (ev: MessageEvent<unknown>): void => {
                 console.log('WS: message: ');
                 console.log(ev);
+                Utils.assert(typeof(ev.data) === 'string', `Received malformed WebSocket message: ${ev.data}`);
+                const json: NonNullable<JSONValue> = Utils.getNonNullable(JSON.parse(ev.data as string));
+                Utils.assert(json['type'] != null && typeof(json['type']) === 'string' && json['data'] != null,
+                             `Received malformed WebSocket message: ${json}`);
+                for (const callback of this.callbacks) {
+                    callback(Utils.getNonNullable(json['type']), Utils.getNonNullable(json['data']));
+                }
             };
         });
     }
 
-    public async send(message: any): Promise<void> {
+    public async send(message: JSONValue): Promise<void> {
         // TODO: get rid of the any
         if (this.webSocket.isAbsent()) {
             await this.connect();
         }
-        this.webSocket.get().send(message);
+        this.webSocket.get().send(JSON.stringify(message));
+    }
+
+    public setCallback(callback: Callback): void {
+        this.callbacks.push(callback);
+    }
+
+    public clearCallbacks(): void {
+        this.callbacks = [];
     }
 }
 

@@ -6,8 +6,7 @@ import { FirestoreTime } from './Time';
 export type Message = {
     content: string; // the content of the message
     sender: MinimalUser, // the sender of the message
-    postedTime: FirestoreTime; // publication time
-    currentTurn?: number; // number of the turn when this message was written
+    timestamp: number; // publication time
 }
 
 export type MessageDocument = FirestoreDocument<Message>;

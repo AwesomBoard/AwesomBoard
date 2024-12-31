@@ -129,7 +129,7 @@ import { NotConnectedGuard } from './guard/not-connected.guard';
 
 import { HumanDurationPipe } from './pipes-and-directives/human-duration.pipe';
 import { AutofocusDirective } from './pipes-and-directives/autofocus.directive';
-import { FirestoreTimePipe } from './pipes-and-directives/firestore-time.pipe';
+import { TimestampPipe } from './pipes-and-directives/firestore-time.pipe';
 
 import { ToggleVisibilityDirective } from './pipes-and-directives/toggle-visibility.directive';
 import { RulesConfigurationComponent } from './components/wrapper-components/rules-configuration/rules-configuration.component';
@@ -235,7 +235,7 @@ export const routes: Route[] = [
         YinshComponent,
 
         HumanDurationPipe,
-        FirestoreTimePipe,
+        TimestampPipe,
         AutofocusDirective,
         ToggleVisibilityDirective,
         RulesConfigurationComponent,

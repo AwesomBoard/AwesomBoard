@@ -522,3 +522,12 @@ module GameEvent = struct
         | Move move -> Move.to_yojson move
 
 end
+
+module Message = struct
+    type t = {
+        author: MinimalUser.t;
+        timestamp: int;
+        content: string
+    }
+    [@@deriving yojson]
+end

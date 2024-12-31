@@ -1,8 +1,10 @@
 (library
  (name backend)
- (libraries dream yojson ppx_deriving_yojson.runtime mirage-crypto-pk x509 cohttp cohttp-lwt-unix)
+ (libraries dream yojson ppx_deriving_yojson.runtime mirage-crypto-pk x509 cohttp cohttp-lwt-unix caqti)
  (modules Utils External
           TokenRefresher Jwt Auth GoogleCertificates Cors
+          WebSocketMessage WebSocketServer
+          Chat
           Firestore FirestorePrimitives
           Domain GameEndpoint ConfigRoomEndpoint Elo
           Stats Server ServerUtils Options)

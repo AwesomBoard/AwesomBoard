@@ -1,13 +1,12 @@
 import { Component, Input, OnDestroy, ElementRef, ViewChild, OnInit, AfterViewChecked } from '@angular/core';
 import { ChatService } from '../../../services/ChatService';
-import { Message, MessageDocument } from '../../../domain/Message';
+import { Callback } from '../../../services/BackendService';
+import { Message } from '../../../domain/Message';
 import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
 import { faReply, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { FirestoreCollectionObserver } from 'src/app/dao/FirestoreCollectionObserver';
-import { MinimalUser } from 'src/app/domain/MinimalUser';
 import { Subscription } from 'rxjs';
 import { Debug } from 'src/app/utils/Debug';
-import { Utils } from '@everyboard/lib';
+import { Utils, JSONValue } from '@everyboard/lib';
 
 @Component({
     selector: 'app-chat',
@@ -41,32 +40,23 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
                        private readonly connectedUserService: ConnectedUserService)
     {
     }
-    public ngOnInit(): void {
+
+    public async ngOnInit(): Promise<void> {
         Utils.assert(this.chatId != null && this.chatId !== '', 'No chat to join mentionned');
-        this.loadChatContent();
+        await this.loadChatContent();
     }
+
     public ngAfterViewChecked(): void {
         this.scrollToBottomIfNeeded();
     }
-    public loadChatContent(): void {
-        const updateMessages: (messages: MessageDocument[]) => void = (messages: MessageDocument[]) => {
-            this.updateMessages(messages.flatMap((doc: MessageDocument) => {
-                if (doc.data.postedTime == null) {
-                    // This is a local update that does not contain the time yet, ignore it
-                    return [];
-                }
-                return [doc.data];
-            }));
-        };
-        const callback: FirestoreCollectionObserver<Message> = new FirestoreCollectionObserver(
-            updateMessages,
-            updateMessages,
-            () => {
-                // We don't care about deleted messages
-            });
-        this.chatSubscription = this.chatService.subscribeToMessages(this.chatId, callback);
+    public async loadChatContent(): Promise<void> {
+        console.log('subscribing')
+        this.chatSubscription =
+            await this.chatService.subscribeToMessages(this.chatId,
+                                                       (message: Message) => this.updateMessages([message]));
     }
     public updateMessages(newMessages: Message[]): void {
+        console.log({newMessages})
         this.chat = this.chat.concat(newMessages);
         const nbMessages: number = this.chat.length;
         if (this.visible && this.isNearBottom) {
@@ -124,8 +114,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     public async sendMessage(): Promise<void> {
         const content: string = this.userMessage;
         this.userMessage = ''; // clears it first to seem more responsive
-        const sender: MinimalUser = this.connectedUserService.user.get().toMinimalUser();
-        await this.chatService.sendMessage(this.chatId, sender, content, this.turn);
+        await this.chatService.sendMessage(this.chatId, content);
     }
     public ngOnDestroy(): void {
         this.chatSubscription.unsubscribe();
