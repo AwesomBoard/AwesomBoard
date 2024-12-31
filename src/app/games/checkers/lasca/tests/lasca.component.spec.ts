@@ -13,16 +13,72 @@ import { CheckersConfig } from '../../common/AbstractCheckersRules';
 import { LascaRules } from '../LascaRules';
 import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { DirectionFailure } from 'src/app/jscaip/Direction';
+import { CheckersTestEntries, DoCheckersTests } from '../../common/tests/CheckersTest.spec';
+
+const zero: CheckersPiece = CheckersPiece.ZERO;
+const zeroPromoted: CheckersPiece = CheckersPiece.ZERO_PROMOTED;
+const one: CheckersPiece = CheckersPiece.ONE;
+
+const _O: CheckersStack = new CheckersStack([zeroPromoted]);
+const _U: CheckersStack = new CheckersStack([zero]);
+const _V: CheckersStack = new CheckersStack([one]);
+const UV: CheckersStack = new CheckersStack([zero, one]);
+const __: CheckersStack = CheckersStack.EMPTY;
+
+const lascaEntries: CheckersTestEntries<LascaComponent, LascaRules> = {
+    gameName: 'Lasca',
+    component: LascaComponent,
+    firstPlayerCoords: [
+        new Coord(0, 4),
+        new Coord(2, 4),
+        new Coord(4, 4),
+        new Coord(6, 4),
+    ],
+    firstPlayerSecondClicks: [new Coord(1, 3)],
+    promotedPieceOrientedState: CheckersState.of([
+        [__, __, __, __, __, __, __],
+        [__, __, __, __, __, __, __],
+        [__, __, _O, __, __, __, __],
+        [__, __, __, __, __, __, __],
+        [__, __, __, __, __, __, __],
+        [__, __, __, __, __, __, __],
+        [__, __, __, __, __, __, __],
+    ], 10),
+    promotedPieceCoord: new Coord(2, 2),
+    promotedLandings: [
+        new Coord(1, 1),
+        new Coord(3, 1),
+        new Coord(3, 3),
+        new Coord(1, 3),
+    ],
+    stateWithForcedCapture: CheckersState.of([
+        [_V, __, _V, __, _V, __, _V],
+        [__, _V, __, _V, __, _V, __],
+        [_V, __, _V, __, _V, __, _V],
+        [__, _U, __, __, __, __, __],
+        [_U, __, __, __, _U, __, _U],
+        [__, _U, __, _U, __, _U, __],
+        [_U, __, _U, __, _U, __, _U],
+    ], 1),
+    forcedToMove: new Coord(0, 2),
+    unmovable: new Coord(0, 6),
+    secondPlayerCoord: new Coord(2, 2),
+    stateWithInvalidVerticalMove: CheckersState.of([
+        [_V, __, _V, __, _V, __, _V],
+        [__, _V, __, _V, __, _V, __],
+        [__, __, __, __, __, __, __],
+        [__, __, __, __, __, __, __],
+        [__, __, __, __, __, __, __],
+        [__, _U, __, _U, __, _U, __],
+        [_U, __, _U, __, _U, __, _U],
+    ], 1),
+    invalidStepperCoord: new Coord(1, 1),
+};
+
+DoCheckersTests(lascaEntries);
 
 fdescribe('LascaComponent', () => {
 
-    const zero: CheckersPiece = CheckersPiece.ZERO;
-    const one: CheckersPiece = CheckersPiece.ONE;
-
-    const _U: CheckersStack = new CheckersStack([zero]);
-    const _V: CheckersStack = new CheckersStack([one]);
-    const UV: CheckersStack = new CheckersStack([zero, one]);
-    const __: CheckersStack = CheckersStack.EMPTY;
     const defaultConfig: MGPOptional<CheckersConfig> = LascaRules.get().getDefaultRulesConfig();
 
     let testUtils: ComponentTestUtils<LascaComponent>;
@@ -35,167 +91,7 @@ fdescribe('LascaComponent', () => {
         testUtils.expectToBeCreated();
     });
 
-    describe('first click', () => {
-
-        it('should highlight possible step-landing after selecting piece', fakeAsync(async() => {
-            // Given any board where steps are possible (initial board)
-            // When selecting a piece
-            await testUtils.expectClickSuccess('#coord-4-4');
-
-            // Then its landing coord should be landable
-            testUtils.expectElementToHaveClass('#clickable-highlight-3-3', 'clickable-stroke');
-            testUtils.expectElementToHaveClass('#clickable-highlight-5-3', 'clickable-stroke');
-            // But the other second step should not be
-            testUtils.expectElementNotToExist('#clickable-highlight-1-3');
-        }));
-
-        it('should highlight piece that can move this turn (when forced capture)', fakeAsync(async() => {
-            // Given a board where current player have 3 "mobile" pieces but one must capture
-            const state: CheckersState = CheckersState.of([
-                [_V, __, _V, __, _V, __, _V],
-                [__, _V, __, _V, __, _V, __],
-                [_V, __, _V, __, _V, __, _V],
-                [__, _U, __, __, __, __, __],
-                [_U, __, __, __, _U, __, _U],
-                [__, _U, __, _U, __, _U, __],
-                [_U, __, _U, __, _U, __, _U],
-            ], 1);
-
-            // When displaying the board
-            await testUtils.setupState(state);
-
-            // Then only the one that must capture must be "clickable-stroke"
-            testUtils.expectElementToHaveClass('#clickable-highlight-0-2', 'clickable-stroke');
-            testUtils.expectElementNotToExist('#clickable-highlight-2-2');
-            testUtils.expectElementNotToExist('#clickable-highlight-4-2');
-            testUtils.expectElementNotToExist('#clickable-highlight-6-2');
-        }));
-
-        it(`should forbid clicking on opponent's pieces`, fakeAsync(async() => {
-            // Given any board
-            // When clicking on the opponent's piece
-            // Then it should fail
-            const reason: string = RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT();
-            await testUtils.expectClickFailure('#coord-0-0', reason);
-        }));
-
-        it('should forbid clicking on empty square', fakeAsync(async() => {
-            // Given any board
-            // When clicking on an empty square
-            // Then it should fail
-            const reason: string = RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_EMPTY();
-            await testUtils.expectClickFailure('#coord-1-0', reason);
-        }));
-
-        it('should forbid clicking on an unmovable stack', fakeAsync(async() => {
-            // Given any board
-            // When clicking a piece that could not move
-            // Then it should fail
-            await testUtils.expectClickFailure('#coord-5-5', CheckersFailure.THIS_PIECE_CANNOT_MOVE());
-        }));
-
-        it('should show clicked stack as selected', fakeAsync(async() => {
-            // Given any board
-            // When clicking on one of your pieces
-            await testUtils.expectClickSuccess('#coord-4-4');
-
-            // Then it should show the clicked piece as 'selected'
-            testUtils.expectElementToHaveClass('#square-4-4-piece-0', 'selected-stroke');
-        }));
-
-        it('should hide last move when selecting stack', fakeAsync(async() => {
-            // Given a board with a last move
-            const previousState: CheckersState = LascaRules.get().getInitialState(defaultConfig);
-            const previousMove: CheckersMove = CheckersMove.fromStep(new Coord(2, 4), new Coord(3, 3));
-            const state: CheckersState = CheckersState.of([
-                [_V, __, _V, __, _V, __, _V],
-                [__, _V, __, _V, __, _V, __],
-                [_V, __, _V, __, _V, __, _V],
-                [__, __, __, _U, __, __, __],
-                [_U, __, __, __, _U, __, _U],
-                [__, _U, __, _U, __, _U, __],
-                [_U, __, _U, __, _U, __, _U],
-            ], 1);
-            await testUtils.setupState(state, { previousState, previousMove });
-
-            // When selecting stack
-            await testUtils.expectClickSuccess('#coord-4-2');
-
-            // Then start and end coord of last move should not be highlighted
-            testUtils.expectElementNotToHaveClass('#square-2-4', 'moved-fill');
-            testUtils.expectElementNotToHaveClass('#square-3-3', 'moved-fill');
-        }));
-
-    });
-
     describe('second click', () => {
-
-        it('should fail when clicking on opponent', fakeAsync(async() => {
-            // Given any board with a selected piece
-            await testUtils.expectClickSuccess('#coord-4-4');
-
-            // When clicking on an opponent
-            // Then it should fail
-            const reason: string = RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT();
-            await testUtils.expectClickFailure('#coord-2-2', reason);
-        }));
-
-        it('should fail when doing impossible click (non ordinal direction)', fakeAsync(async() => {
-            // Given any board with a selected piece
-            await testUtils.expectClickSuccess('#coord-4-4');
-
-            // When clicking on an empty square in (+2; +1) of selected piece
-            // Then it should fail
-            const reason: string = DirectionFailure.DIRECTION_MUST_BE_LINEAR();
-            await testUtils.expectClickFailure('#coord-6-5', reason);
-        }));
-
-        it('should fail when doing impossible click (ordinal direction)', fakeAsync(async() => {
-            // Given any board with a selected piece
-            const state: CheckersState = CheckersState.of([
-                [_V, __, _V, __, _V, __, _V],
-                [__, _V, __, _V, __, _V, __],
-                [_V, __, _V, __, _V, __, _V],
-                [__, __, __, __, __, __, __],
-                [__, __, __, __, __, __, __],
-                [__, _U, __, _U, __, _U, __],
-                [_U, __, _U, __, _U, __, _U],
-            ], 0);
-            await testUtils.setupState(state);
-            await testUtils.expectClickSuccess('#coord-5-5');
-
-            // When clicking on an empty square in (+0; -2) of selected piece
-            // Then it should fail
-            const reason: string = CheckersFailure.CANNOT_MOVE_ORTHOGONALLY();
-            await testUtils.expectClickFailure('#coord-5-3', reason);
-        }));
-
-        it('should deselect piece when clicking a second time on it', fakeAsync(async() => {
-            // Given any board with a selected piece
-            await testUtils.expectClickSuccess('#coord-4-4');
-            testUtils.expectElementToHaveClass('#square-4-4-piece-0', 'selected-stroke');
-
-            // When clicking on the selected piece again
-            await testUtils.expectClickFailure('#coord-4-4');
-
-            // Then the piece should no longer be selected
-            testUtils.expectElementNotToHaveClass('#square-4-4-piece-0', 'selected-stroke');
-        }));
-
-        it('should show possible first-selection again when deselecting piece', fakeAsync(async() => {
-            // Given any board with a selected piece
-            await testUtils.expectClickSuccess('#coord-4-4');
-            testUtils.expectElementToHaveClass('#square-4-4-piece-0', 'selected-stroke');
-
-            // When clicking on the selected piece again
-            await testUtils.expectClickFailure('#coord-4-4');
-
-            // Then the possible first choices should be shown again
-            testUtils.expectElementToHaveClass('#clickable-highlight-0-4', 'clickable-stroke');
-            testUtils.expectElementToHaveClass('#clickable-highlight-2-4', 'clickable-stroke');
-            testUtils.expectElementToHaveClass('#clickable-highlight-4-4', 'clickable-stroke');
-            testUtils.expectElementToHaveClass('#clickable-highlight-6-4', 'clickable-stroke');
-        }));
 
         it('should change selected piece when clicking on another one of your pieces', fakeAsync(async() => {
             // Given any board with a selected piece

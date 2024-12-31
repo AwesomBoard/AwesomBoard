@@ -229,7 +229,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     InternationalCheckersRules.get(),
                     internationalCheckerTutorial[7],
                     CheckersMove.fromStep(new Coord(2, 9), new Coord(3, 8)),
-                    MGPValidation.failure(`You did not move your queen.`),
+                    MGPValidation.failure(`You did not move your king.`),
                 ], [
                     KalahRules.get(),
                     kalahTutorial[4],
