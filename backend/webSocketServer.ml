@@ -129,7 +129,10 @@ module Make
             raise Not_found
 
     (** Handle a message on a websocket *)
-    let handle_message = fun (client_id : int) (user : Domain.MinimalUser.t) (message : WebSocketIncomingMessage.t) : unit Lwt.t ->
+    let handle_message = fun (client_id : int)
+                             (user : Domain.MinimalUser.t)
+                             (message : WebSocketIncomingMessage.t)
+                             : unit Lwt.t ->
         let open WebSocketIncomingMessage in
         match message.message_type with
         | Subscribe ->

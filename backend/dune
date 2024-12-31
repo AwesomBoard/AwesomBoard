@@ -1,6 +1,6 @@
 (library
  (name backend)
- (libraries dream yojson ppx_deriving_yojson.runtime mirage-crypto-pk x509 cohttp cohttp-lwt-unix caqti)
+ (libraries dream yojson ppx_deriving_yojson.runtime mirage-crypto-pk x509 cohttp cohttp-lwt-unix caqti-lwt caqti-driver-sqlite3)
  (modules Utils External
           TokenRefresher Jwt Auth GoogleCertificates Cors
           WebSocketMessage WebSocketServer

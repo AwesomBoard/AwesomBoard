@@ -135,3 +135,5 @@ module FirestoreUtils = struct
             | None -> [] in
         `Assoc (name @ [("fields", doc_with_fields)])
 end
+
+module type DB = Caqti_lwt.CONNECTION
