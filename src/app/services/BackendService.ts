@@ -24,7 +24,7 @@ export class WebSocketManagerService {
         const token: string = await this.connectedUserService.getIdToken();
 
         return new Promise((resolve: () => void, reject) => {
-            const ws: WebSocket = new WebSocket(environment.backendURL + '/ws', ['Authorization', token]);
+            const ws: WebSocket = new WebSocket(environment.backendURL.replace('http://', 'ws://') + '/ws', ['Authorization', token]);
 
             ws.onopen = (): void => {
                 console.log('WS: connected');

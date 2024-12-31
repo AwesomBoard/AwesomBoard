@@ -53,6 +53,7 @@ module Make
        var token = await FirebaseAuth.instance.currentUser().getIdToken(); *)
     let middleware = fun (handler : Dream.handler) (request : Dream.request) ->
         let check_everything_and_process_request = fun () ->
+            let websocket = ref false in
             (* Extract the Authorization header *)
             Dream.log "%s" (Dream.all_headers request |> List.map (fun (x, y) -> x ^ ":" ^ y) |> String.concat ", ");
             let authorization_header : string =
@@ -63,6 +64,7 @@ module Make
                 | Some authorization, _ -> authorization
                 | None, Some ws_header -> match String.split_on_char ',' ws_header with
                     | ["Authorization"; authorization] ->
+                        websocket := true; (* need to remind ourselves to add header to the reply *)
                         (* Need to add Bearer in front of the token, which already contains a first space.
                            This way, we can treat it just like a normal HTTP header *)
                         "Bearer" ^ authorization
@@ -91,7 +93,12 @@ module Make
                 (* The user has a verified account, so we can finally call the handler *)
                 Dream.set_field request user_field (uid, user);
                 Stats.set_user request (Domain.User.to_minimal_user uid user);
-                handler request
+                Dream.log "All good!";
+                let* response : Dream.response = handler request in
+                if !websocket then
+                    (* WebSocket (in Chrome) expects the same header in the reply, otherwise it closes the connection *)
+                    Dream.add_header response "Sec-WebSocket-Protocol" "Authorization";
+                Lwt.return response
             end else
                 raise (AuthError "User is not verified") in
         try check_everything_and_process_request ()

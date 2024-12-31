@@ -525,7 +525,7 @@ end
 
 module Message = struct
     type t = {
-        author: MinimalUser.t;
+        sender: MinimalUser.t;
         timestamp: int;
         content: string
     }

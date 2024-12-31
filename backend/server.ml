@@ -25,8 +25,8 @@ let start = fun () : unit ->
     let ws_handler = fun (request : Dream.request) ->
         (* Some module gymnastics is needed to get the db module propagated at the right place... sorry! *)
         Dream.sql request (fun (module Db : Utils.DB) ->
-            let module Chat = Chat.ChatSQLite(External)(Db) in
-            let module WebSocketServer = WebSocketServer.Make(Auth)(Chat) in
+            let module Chat = Chat.ChatSQLite(Db) in
+            let module WebSocketServer = WebSocketServer.Make(Auth)(External)(Chat) in
             WebSocketServer.handle request) in
     let api = [
         Dream.scope "/" [TokenRefresher.middleware !Options.service_account_file; Auth.middleware]
@@ -39,7 +39,11 @@ let start = fun () : unit ->
     ] in
     Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna); (* Required for token refresher and JWT *)
     Dream.initialize_log ~level:`Info ();
-    Dream.run ~interface:!Options.address ~error_handler:ServerUtils.error_handler ~port:!Options.port
+    Dream.run
+        ~interface:!Options.address
+        ~error_handler:ServerUtils.error_handler
+        ~port:!Options.port
+    (* ~tls:true ~certificate_file:"localhost.crt" ~key_file:"localhost.key" *)
     @@ Dream.sql_pool "sqlite3:everyboard.db"
     @@ Dream.logger
     @@ Cors.middleware

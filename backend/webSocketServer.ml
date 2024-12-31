@@ -53,6 +53,7 @@ module IntSet = Set.Make(Int)
 
 module Make
         (Auth : Auth.AUTH)
+        (External : External.EXTERNAL)
         (Chat : Chat.CHAT)
     : WEBSOCKET_SERVER = struct
 
@@ -137,12 +138,10 @@ module Make
         match message.message_type with
         | Subscribe ->
             let game_id = message.data |> JSON.Util.to_string in
-            Dream.log "[%d] subscribing to %s" client_id game_id;
             if is_subscribed client_id then
                 send_to client_id { message_type = Error; data = `String "Already subscribed" }
             else begin
                 subscribe client_id game_id;
-                Dream.log "[%d] subscribed to: %s" client_id (subscribed_game_of client_id);
                 Chat.iter_messages game_id (fun message ->
                     send_to client_id { message_type = ChatMessage; data = Domain.Message.to_yojson message })
             end
@@ -151,19 +150,23 @@ module Make
             Lwt.return ()
         | ChatSend ->
             let game_id = subscribed_game_of client_id in
-            let message_content = message.data |> JSON.Util.to_string in
+            let content = message.data |> JSON.Util.to_string in
+            let message = Domain.Message.{ sender = user; timestamp = External.now (); content } in
             Lwt.join [
-                Chat.add_message user game_id message_content;
-                broadcast game_id { message_type = ChatMessage; data = message.data };
+                Chat.add_message game_id message;
+                broadcast game_id { message_type = ChatMessage; data = Domain.Message.to_yojson message };
             ]
 
     (** The main handler *)
     let handle : Dream.handler = fun (request : Dream.request) ->
         Dream.websocket (fun ws ->
+            Dream.log "handling...";
             let client_id = track ws in
             let rec loop = fun () ->
+                Dream.log "waiting for message...";
                 match%lwt Dream.receive ws with
                 | Some message ->
+                    Dream.log "got message...";
                     let user = Auth.get_minimal_user request in
                     let%lwt () = try
                             let message = message
@@ -179,6 +182,7 @@ module Make
                 | None ->
                     (* Client left, forget about it *)
                     (* TODO: check that clients disconnect after a timeout, if not implement one *)
+                    Dream.log "client left...";
                     forget client_id;
                     Dream.close_websocket ws
             in
