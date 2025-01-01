@@ -11,33 +11,41 @@ export class SixMove extends Move {
         (move: SixMove): SixMoveFields => [move.start, move.landing, move.keep],
         (fields: SixMoveFields): SixMove => SixMove.of(fields[0], fields[1], fields[2]),
     );
+
     private static of(start: MGPOptional<Coord>, landing: Coord, keep: MGPOptional<Coord>): SixMove {
         return new SixMove(start, landing, keep);
     }
+
     public static ofDrop(landing: Coord): SixMove {
         return new SixMove(MGPOptional.empty(), landing, MGPOptional.empty());
     }
-    public static ofMovement(start: Coord, landing: Coord): SixMove {
+
+    public static ofTranslation(start: Coord, landing: Coord): SixMove {
         return new SixMove(MGPOptional.of(start), landing, MGPOptional.empty());
     }
+
     public static ofCut(start: Coord, landing: Coord, keep: Coord): SixMove {
         return new SixMove(MGPOptional.of(start), landing, MGPOptional.of(keep));
     }
+
     private constructor(public readonly start: MGPOptional<Coord>,
                         public readonly landing: Coord,
                         public readonly keep: MGPOptional<Coord>)
     {
         super();
-        Utils.assert(start.equalsValue(landing) === false, 'Deplacement cannot be static!');
+        Utils.assert(start.equalsValue(landing) === false, 'Translation cannot be static!');
         Utils.assert(start.isAbsent() || start.equals(keep) === false,
                      'Cannot keep starting coord, since it will always be empty after move!');
     }
+
     public isDrop(): boolean {
         return this.start.isAbsent();
     }
+
     public isCut(): boolean {
         return this.keep.isPresent();
     }
+
     public override toString(): string {
         if (this.isDrop()) {
             return 'SixMove(' + this.landing.toString() + ')';
@@ -50,6 +58,7 @@ export class SixMove extends Move {
                                 this.landing + ')';
         }
     }
+
     public equals(other: SixMove): boolean {
         if (this.landing.equals(other.landing) === false) {
             return false;
@@ -59,4 +68,5 @@ export class SixMove extends Move {
         }
         return this.keep.equals(other.keep);
     }
+
 }
