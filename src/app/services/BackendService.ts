@@ -46,7 +46,7 @@ export class WebSocketManagerService {
                 Utils.assert(json['type'] != null && typeof(json['type']) === 'string' && json['data'] != null,
                              `Received malformed WebSocket message: ${json}`);
                 for (const callback of this.callbacks) {
-                    callback(Utils.getNonNullable(json['type']), Utils.getNonNullable(json['data']));
+                    await callback(Utils.getNonNullable(json['type']), Utils.getNonNullable(json['data']));
                 }
             };
         });

@@ -8,6 +8,8 @@ module Firestore = Firestore.Make(FirestorePrimitives.Make(External)(TokenRefres
 module Auth = Auth.Make(Firestore)(GoogleCertificates)(Stats)(Jwt)
 module GameEndpoint = GameEndpoint.Make(External)(Auth)(Firestore)(Stats)
 module ConfigRoomEndpoint = ConfigRoomEndpoint.Make(External)(Auth)(Firestore)(Stats)
+module Chat = Chat.ChatSQL
+module WebSocketServer = WebSocketServer.Make(Auth)(External)(Chat)
 
 (** The version number of this server. Used to avoid redeploying when there are no changes.
     If a redeployment is needed, just change the version number. Any difference will trigger redeployment.
@@ -22,19 +24,13 @@ let version_handler : Dream.handler = fun _ ->
 
 (** The actual backend server, dispatching to various endpoints *)
 let start = fun () : unit ->
-    let ws_handler = fun (request : Dream.request) ->
-        (* Some module gymnastics is needed to get the db module propagated at the right place... sorry! *)
-        Dream.sql request (fun (module Db : Utils.DB) ->
-            let module Chat = Chat.ChatSQLite(Db) in
-            let module WebSocketServer = WebSocketServer.Make(Auth)(External)(Chat) in
-            WebSocketServer.handle request) in
     let api = [
         Dream.scope "/" [TokenRefresher.middleware !Options.service_account_file; Auth.middleware]
         @@ List.concat [
             GameEndpoint.routes;
             ConfigRoomEndpoint.routes;
             [Dream.get "/time" ServerUtils.server_time];
-            [Dream.get "/ws" ws_handler];
+            [Dream.get "/ws" WebSocketServer.handle];
         ];
     ] in
     Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna); (* Required for token refresher and JWT *)

@@ -94,6 +94,7 @@ module Make
         Hashtbl.remove client_to_game client_id
 
     (** Subscribes a client to a game *)
+    (* TODO: why only one client? *)
     let subscribe = fun (client_id : int) (game_id : string) : unit ->
         Hashtbl.replace client_to_game client_id game_id;
         let new_clients = match Hashtbl.find_opt game_to_clients game_id with
@@ -125,16 +126,14 @@ module Make
     let subscribed_game_of = fun (client_id : int) : string ->
         match Hashtbl.find_opt client_to_game client_id with
         | Some game -> game
-        | None ->
-            Dream.log "[%d] is not subscribed" client_id;
-            raise Not_found
+        | None -> raise Not_found
 
-    (** Handle a message on a websocket *)
-    let handle_message = fun (client_id : int)
+    (** Handle a message on a WebSocket *)
+    let handle_message = fun (request : Dream.request)
+                             (client_id : int)
                              (user : Domain.MinimalUser.t)
                              (message : WebSocketIncomingMessage.t)
                              : unit Lwt.t ->
-        let open WebSocketIncomingMessage in
         match message.message_type with
         | Subscribe ->
             let game_id = message.data |> JSON.Util.to_string in
@@ -142,7 +141,7 @@ module Make
                 send_to client_id { message_type = Error; data = `String "Already subscribed" }
             else begin
                 subscribe client_id game_id;
-                Chat.iter_messages game_id (fun message ->
+                Chat.iter_messages request game_id (fun message ->
                     send_to client_id { message_type = ChatMessage; data = Domain.Message.to_yojson message })
             end
         | Unsubscribe ->
@@ -153,27 +152,24 @@ module Make
             let content = message.data |> JSON.Util.to_string in
             let message = Domain.Message.{ sender = user; timestamp = External.now (); content } in
             Lwt.join [
-                Chat.add_message game_id message;
+                Chat.add_message request game_id message;
                 broadcast game_id { message_type = ChatMessage; data = Domain.Message.to_yojson message };
             ]
 
     (** The main handler *)
     let handle : Dream.handler = fun (request : Dream.request) ->
-        Dream.websocket (fun ws ->
-            Dream.log "handling...";
+        Dream.websocket (fun (ws : Dream.websocket) ->
             let client_id = track ws in
             let rec loop = fun () ->
-                Dream.log "waiting for message...";
                 match%lwt Dream.receive ws with
                 | Some message ->
-                    Dream.log "got message...";
                     let user = Auth.get_minimal_user request in
                     let%lwt () = try
                             let message = message
                                           |> Utils.JSON.from_string
                                           |> WebSocketIncomingMessage.of_yojson
                                           |> Result.get_ok in
-                            handle_message client_id user message
+                            handle_message request client_id user message
                         with
                         | e ->
                             Dream.log "ERROR: %s\n" (Printexc.to_string e);
@@ -182,7 +178,7 @@ module Make
                 | None ->
                     (* Client left, forget about it *)
                     (* TODO: check that clients disconnect after a timeout, if not implement one *)
-                    Dream.log "client left...";
+                    Dream.log "forgetting about %d" client_id;
                     forget client_id;
                     Dream.close_websocket ws
             in

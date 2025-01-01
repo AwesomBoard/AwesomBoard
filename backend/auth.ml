@@ -55,7 +55,6 @@ module Make
         let check_everything_and_process_request = fun () ->
             let websocket = ref false in
             (* Extract the Authorization header *)
-            Dream.log "%s" (Dream.all_headers request |> List.map (fun (x, y) -> x ^ ":" ^ y) |> String.concat ", ");
             let authorization_header : string =
                 (* The header is passed in Authorization in HTTP(S),
                    but in a special field Sec-WebSocket-Protocol for WebSocket connections *)
@@ -70,7 +69,6 @@ module Make
                         "Bearer" ^ authorization
                     | _ -> raise (AuthError "Authorization token is missing")
             in
-            Dream.log "%s" authorization_header;
             (* Parse the token *)
             let user_token : string =
                 match String.split_on_char ' ' authorization_header with
@@ -93,7 +91,6 @@ module Make
                 (* The user has a verified account, so we can finally call the handler *)
                 Dream.set_field request user_field (uid, user);
                 Stats.set_user request (Domain.User.to_minimal_user uid user);
-                Dream.log "All good!";
                 let* response : Dream.response = handler request in
                 if !websocket then
                     (* WebSocket (in Chrome) expects the same header in the reply, otherwise it closes the connection *)
