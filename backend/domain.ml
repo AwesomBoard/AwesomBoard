@@ -105,6 +105,7 @@ module ConfigRoom = struct
         type t = Created | ConfigProposed | Started | Finished
 
         (* Game status are stored as numbers, with specific values *)
+        (* TODO: change to strings for readability? *)
         let (to_yojson, of_yojson) =
             JSON.for_enum [
                 Created, `Int 0;
@@ -156,11 +157,12 @@ module ConfigRoom = struct
         maximal_move_duration: int [@key "maximalMoveDuration"];
         total_part_duration: int [@key "totalPartDuration"];
         rules_config: JSON.t [@key "rulesConfig"];
+        game_name: string [@key "gameName"];
     }
     [@@deriving yojson]
 
     (** The initial config room that we create when creating a new game *)
-    let initial = fun (creator : MinimalUser.t) (creator_elo : float) : t -> {
+    let initial = fun (creator : MinimalUser.t) (creator_elo : float) (game_name : string) : t -> {
         creator;
         creator_elo;
         first_player = FirstPlayer.Random;
@@ -170,6 +172,7 @@ module ConfigRoom = struct
         maximal_move_duration = GameType.standard_move_duration;
         total_part_duration = GameType.standard_game_duration;
         rules_config = `Null;
+        game_name;
     }
 
     (** A config room with similar characteristics as the [config_room] parameter, but for its rematch *)

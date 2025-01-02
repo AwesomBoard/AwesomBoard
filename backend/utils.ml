@@ -41,6 +41,13 @@ module JSON = struct
 
 end
 
+(** Anything that can be converted from and to JSON is a [JSONIFIABLE] *)
+module type JSONIFIABLE = sig
+    type t
+    val to_yojson : t -> JSON.t
+    val of_yojson : JSON.t -> (t, string) Result.t
+end
+
 module CryptoUtils = struct
     (** We will be using RSA keys only *)
     type public_key = Mirage_crypto_pk.Rsa.pub
@@ -136,4 +143,39 @@ module FirestoreUtils = struct
         `Assoc (name @ [("fields", doc_with_fields)])
 end
 
-module type DB = Caqti_lwt.CONNECTION
+(** Some extensions to Caqti to make it easier to use in our setting *)
+module Caqti_extension = struct
+
+    include Caqti_type.Std
+    include Caqti_request.Infix
+
+    module type DB = Caqti_lwt.CONNECTION
+
+    let json = fun (to_yojson : 'a -> JSON.t) (of_yojson : JSON.t -> ('a, string) Result.t) : 'a Caqti_type.t ->
+        let encode = fun (v : 'a) : (string, string) Result.t ->
+            to_yojson v |> JSON.to_string |> Result.ok in
+        let decode = fun (v : string) : ('a, string) Result.t ->
+            of_yojson (JSON.from_string v) in
+        custom ~encode ~decode string
+
+    let check = fun (result : ('a, Caqti_error.t) Result.t Lwt.t) : 'a Lwt.t ->
+        match%lwt result with
+        | Result.Ok r -> Lwt.return r
+        | Result.Error e ->
+            raise (UnexpectedError (Printf.sprintf "db failure: %s" (Caqti_error.show e)))
+end
+
+(** Handling of ids and their string representations *)
+module Id = struct
+
+    let sqids : Sqids.t = Sqids.make ()
+
+    let to_string = fun (id : int) : string ->
+        Sqids.encode sqids [id]
+
+    let of_string = fun (string_id : string) : int ->
+        match Sqids.decode sqids string_id with
+        | [id] -> id
+        | _ -> raise (UnexpectedError (Printf.sprintf "Badly formatted id: %s" string_id))
+
+end

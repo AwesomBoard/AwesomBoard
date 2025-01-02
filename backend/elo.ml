@@ -19,9 +19,9 @@ module Calculation : CALCULATION = struct
 
     let w_from = fun (winner : Winner.t) (player : Domain.Player.t) : float ->
         match winner with
-            | Draw -> 0.5
-            | Player p when player = p -> 1.0
-            | _ -> 0.0
+        | Draw -> 0.5
+        | Player p when player = p -> 1.0
+        | _ -> 0.0
 
     let k_from = fun (number_of_games_played : int) : float ->
         if number_of_games_played < 20 then 60.0

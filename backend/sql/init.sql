@@ -1,19 +1,86 @@
 -- To generate readable ids: https://sqids.org/ocaml
-CREATE TABLE IF NOT EXISTS games (
+
+-- This is the main element, created first: the config room
+CREATE TABLE IF NOT EXISTS config_rooms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     creator_id TEXT NOT NULL,
+    -- For simplifying queries, we cache user names
     creator_name TEXT NOT NULL,
     creator_elo REAL NOT NULL,
+    -- The chosen opponent is initially empty
     chosen_opponent_id TEXT,
     chosen_opponent_name TEXT,
-    chosen_opponent_elo TEXT,
     status TEXT NOT NULL,
     first_player TEXT NOT NULL,
     game_type TEXT NOT NULL,
     duration NUMBER NOT NULL,
-    CONFIG TEXT NOT NULL,
+    -- The config is a string representing the JSON config of the game
+    config TEXT NOT NULL,
+    -- This is the name of the game (used to be in "games", but it is better to have it in the config room too)
+    game_name TEXT NOT NULL,
     )
 
+-- When players join the config room, they are added as candidates
+CREATE TABLE IF NOT EXISTS candidates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    game_id INTEGER NOT NULL,
+    candidate_id TEXT NOT NULL,
+    candidate_name TEXT NOT_NULL,
+    FOREIGN KEY(game_id) references games(id)
+    )
+
+-- Indices allow for faster queries on these specific fields. As most (all?) queries will be wade with a specific game_id, we want this index.
+CREATE INDEX IF NOT EXISTS idx_game_id ON candidates (game_id);
+
+-- When the config room is accepted, the game is created
+CREATE TABLE IF NOT EXISTS games (
+    id INTEGER NOT NULL,
+    game_name TEXT NOT NULL,
+    player_zero_id TEXT NOT NULL,
+    player_zero_name TEXT NOT NULL,
+    -- Player one used to be optional; not anymore!
+    player_one_id TEXT NOT NULL,
+    player_one_name TEXT NOT NULL,
+    turn INT NOT NULL,
+    result TEXT NOT NULL,
+    beginning INT NOT NULL,
+    -- We have the names of players already, we can just use their id for winner/loser. Both are optional.
+    winner_id TEXT,
+    loser_id TEXT,
+    FOREIGN KEY(id) references config_room(id)
+    )
+
+CREATE INDEX IF NOT EXISTS idx_game_id ON games (id);
+
+-- A game is made of events: starting the game, playing a move, asking for take back, finishing the game, etc.
+CREATE TABLE IF NOT EXISTS game_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    -- New: events are now time-stamped (added by the backend)
+    timestamp INTEGER NOT NULL,
+    game_id INTEGER NOT NULL,
+    player BOOLEAN NOT NULL,
+    kind TEXT NOT NULL, -- AcceptDraw, RejectDraw, Move, etc.
+    data TEXT NOT NULL, -- move description, in JSON format
+    FOREIGN KEY(game_id) REFERENCES games(id)
+    )
+
+CREATE INDEX IF NOT EXISTS idx_game_id ON games (game_id);
+
+CREATE TABLE IF NOT EXISTS elos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    game_name TEXT NOT NULL,
+    game_config TEXT NOT NULL,
+    value INT NOT NULL
+)
+
+-- TODO: to "insert or update" elo:
+-- INSERT OR IGNORE INTO my_table (name, age) VALUES ('Karen', 34)
+-- UPDATE my_table SET age = 34 WHERE name='Karen'
+
+-- Elos are queried based on the game_name, game_config pair
+CREATE INDEX IF NOT EXISTS idx_game_id ON elos (game_name, game_config);
+
+-- These are chat messages
 CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     game_id INTEGER NOT NULL,
@@ -25,25 +92,3 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 
 CREATE INDEX IF NOT EXISTS idx_game_id ON messages (game_id);
-
-CREATE TABLE IF NOT EXISTS candidates (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    game_id INTEGER NOT NULL,
-    candidate_id TEXT NOT NULL,
-    candidate_name TEXT NOT_NULL,
-    FOREIGN KEY(game_id) references games(id)
-    )
-
-
-CREATE INDEX IF NOT EXISTS idx_game_id ON candidates (game_id);
-
-CREATE TABLE IF NOT EXISTS game_events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    game_id INTEGER NOT NULL,
-    player BOOLEAN NOT NULL,
-    kind TEXT NOT NULL, // AcceptDraw, RejectDraw, Move, etc.
-    data TEXT NOT NULL, // move description
-    FOREIGN KEY(game_id) REFERENCES games(id)
-    )
-
-CREATE INDEX IF NOT EXISTS idx_game_id ON games (game_id);

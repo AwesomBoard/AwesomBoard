@@ -51,7 +51,7 @@ module WebSocketIncomingMessage = WebSocketMessage(WebSocketIncomingMessageType)
 
 module IntSet = Set.Make(Int)
 
-(** This module conntains the subscription-related code. The idea is that one
+(** This module contains the subscription-related code. The idea is that one
     client can subscribe to at most one game. When they are subscribed, they will
     receive all data related to the game immediately, then receive any further
     updates until they unsubscribe. *)
@@ -59,11 +59,11 @@ module SubscriptionManager = struct
 
     (** The subscriptions of the clients. Each client can be subscribed to only one game.
         Both maps are managed together, in order to provide fast lookup in both ways. *)
-    let client_to_game : (int, string) Hashtbl.t = Hashtbl.create 16
-    let game_to_clients : (string, IntSet.t) Hashtbl.t = Hashtbl.create 16
+    let client_to_game : (int, int) Hashtbl.t = Hashtbl.create 16
+    let game_to_clients : (int, IntSet.t) Hashtbl.t = Hashtbl.create 16
 
     (** [subsrcibe client_id game_id] subscribes client [client_id] to game [game_id] *)
-    let subscribe = fun (client_id : int) (game_id : string) : unit ->
+    let subscribe = fun (client_id : int) (game_id : int) : unit ->
         (* Add it to the client_to_game map. It overwrites the previous subscription, if any. *)
         Hashtbl.replace client_to_game client_id game_id;
         (* Add it to the game_to_clients map, on top of other subscribers *)
@@ -89,7 +89,7 @@ module SubscriptionManager = struct
         Hashtbl.remove client_to_game client_id
 
     (** [subscription_to game_id] returns all the subscribers to game [game_id] *)
-    let subscriptions_to = fun (game_id : string) : IntSet.t ->
+    let subscriptions_to = fun (game_id : int) : IntSet.t ->
         match Hashtbl.find_opt game_to_clients game_id with
         | Some clients -> clients
         | None -> IntSet.empty
@@ -100,7 +100,7 @@ module SubscriptionManager = struct
 
     (** [subsrciption_of client_id] gets the game to which a client is subscribed.
         Assumes that the client is subscribed to a game. If not, raises [Not_found] *)
-    let subscription_of = fun (client_id : int) : string ->
+    let subscription_of = fun (client_id : int) : int ->
         match Hashtbl.find_opt client_to_game client_id with
         | Some game -> game
         | None -> raise Not_found
@@ -135,7 +135,7 @@ module Make
         SubscriptionManager.unsubscribe client_id
 
     (** Broadcasts a message to all subscribers of a game *)
-    let broadcast = fun (game_id : string) (message : WebSocketOutgoingMessage.t) : unit Lwt.t ->
+    let broadcast = fun (game_id : int) (message : WebSocketOutgoingMessage.t) : unit Lwt.t ->
         let client_ids = SubscriptionManager.subscriptions_to game_id in
         client_ids
         |> IntSet.elements
@@ -150,7 +150,7 @@ module Make
                              : unit Lwt.t ->
         match message.message_type with
         | Subscribe ->
-            let game_id = message.data |> JSON.Util.to_string in
+            let game_id : int = message.data |> JSON.Util.to_string |> Utils.Id.of_string in
             if SubscriptionManager.is_subscribed client_id then
                 send_to client_id { message_type = Error; data = `String "Already subscribed" }
             else begin
