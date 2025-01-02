@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 
 import { MGPValidation, JSONValue } from '@everyboard/lib';
 
-import { ChatDAO } from '../dao/ChatDAO';
-import { Subscription } from 'rxjs';
 import { Localized } from '../utils/LocaleUtils';
 import { Debug } from '../utils/Debug';
 import { ConnectedUserService } from './ConnectedUserService';
@@ -22,30 +20,24 @@ export class ChatMessages {
 @Debug.log
 export class ChatService extends BackendService {
 
-    public constructor(private readonly chatDAO: ChatDAO,
-                       private readonly webSocketManager: WebSocketManagerService,
+    public constructor(private readonly webSocketManager: WebSocketManagerService,
                        connectedUserService: ConnectedUserService) {
         super(connectedUserService);
     }
 
-    public async addMessage(chatId: string, message: string): Promise<void> {
-        await this.webSocketManager.send({ type: 'ChatSend', data: message });
+    public async addMessage(message: string): Promise<void> {
+        await this.webSocketManager.send('ChatSend', message);
     }
-    public async subscribeToMessages(chatId: string, callback: (message: Message) => void)
-    : Promise<Subscription>
-    {
-        await this.webSocketManager.send({ type: 'Subscribe', data: chatId });
-        this.webSocketManager.setCallback(async(type: string, data: JSONValue) => {
-            if (type === "ChatMessage") {
-                callback(data as Message);
-            }
+
+    public subscribeToMessages(callback: (message: Message) => void): void {
+        // Make a new subscription to receive new messages
+        this.webSocketManager.setCallback('ChatMessage', (data: JSONValue): void => {
+            callback(data as Message);
         });
-        return new Subscription(async() => this.webSocketManager.send({ type: 'Unsubscribe', data: null }));
     }
-    public async sendMessage(chatId: string, content: string)
-    : Promise<MGPValidation>
-    {
-        await this.addMessage(chatId, content);
+
+    public async sendMessage(content: string): Promise<MGPValidation> {
+        await this.addMessage(content);
         return MGPValidation.SUCCESS;
     }
 }

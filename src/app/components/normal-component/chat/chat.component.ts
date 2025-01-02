@@ -1,19 +1,17 @@
-import { Component, Input, OnDestroy, ElementRef, ViewChild, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, Input, ElementRef, ViewChild, OnInit, AfterViewChecked } from '@angular/core';
 import { ChatService } from '../../../services/ChatService';
-import { Callback } from '../../../services/BackendService';
 import { Message } from '../../../domain/Message';
-import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
 import { faReply, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { Debug } from 'src/app/utils/Debug';
-import { Utils, JSONValue } from '@everyboard/lib';
+import { Utils } from '@everyboard/lib';
 
 @Component({
     selector: 'app-chat',
     templateUrl: './chat.component.html',
 })
 @Debug.log
-export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class ChatComponent implements OnInit, AfterViewChecked {
 
     @Input() public chatId!: string;
     @Input() public turn?: number;
@@ -31,32 +29,26 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     private isNearBottom: boolean = true;
     private notYetScrolled: boolean = true;
 
-    private chatSubscription!: Subscription; // initialized in ngOnInit
-
     @ViewChild('chatDiv')
     private readonly chatDiv: ElementRef<HTMLElement>;
 
-    public constructor(private readonly chatService: ChatService,
-                       private readonly connectedUserService: ConnectedUserService)
-    {
+    public constructor(private readonly chatService: ChatService) {
     }
 
-    public async ngOnInit(): Promise<void> {
+    public ngOnInit(): void {
         Utils.assert(this.chatId != null && this.chatId !== '', 'No chat to join mentionned');
-        await this.loadChatContent();
+        this.loadChatContent();
     }
 
     public ngAfterViewChecked(): void {
         this.scrollToBottomIfNeeded();
     }
-    public async loadChatContent(): Promise<void> {
-        console.log('subscribing')
-        this.chatSubscription =
-            await this.chatService.subscribeToMessages(this.chatId,
-                                                       (message: Message) => this.updateMessages([message]));
+
+    public loadChatContent(): void {
+        this.chatService.subscribeToMessages((message: Message) => this.updateMessages([message]));
     }
+
     public updateMessages(newMessages: Message[]): void {
-        console.log({newMessages})
         this.chat = this.chat.concat(newMessages);
         const nbMessages: number = this.chat.length;
         if (this.visible && this.isNearBottom) {
@@ -67,6 +59,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.updateUnreadMessagesText(nbMessages - this.readMessages);
         }
     }
+
     private updateUnreadMessagesText(unreadMessages: number): void {
         if (this.visible && this.isNearBottom === false) {
             this.showUnreadMessagesButton = true;
@@ -83,6 +76,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.unreadMessagesText = $localize`${unreadMessages} new messages`;
         }
     }
+
     private scrollToBottomIfNeeded(): void {
         if (this.visible) {
             if (this.isNearBottom || this.notYetScrolled) {
@@ -90,12 +84,14 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
             }
         }
     }
+
     public updateCurrentScrollPosition(): void {
         const threshold: number = 10;
         const position: number = this.chatDiv.nativeElement.scrollTop + this.chatDiv.nativeElement.offsetHeight;
         const height: number = this.chatDiv.nativeElement.scrollHeight;
         this.isNearBottom = position > height - threshold;
     }
+
     public scrollToBottom(): void {
         if (this.chatDiv == null) {
             return;
@@ -104,6 +100,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.scrollTo(this.chatDiv.nativeElement.scrollHeight);
         this.notYetScrolled = false;
     }
+
     public scrollTo(position: number): void {
         this.chatDiv.nativeElement.scroll({
             top: position,
@@ -111,14 +108,13 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
             behavior: 'smooth',
         });
     }
+
     public async sendMessage(): Promise<void> {
         const content: string = this.userMessage;
         this.userMessage = ''; // clears it first to seem more responsive
-        await this.chatService.sendMessage(this.chatId, content);
+        await this.chatService.sendMessage(content);
     }
-    public ngOnDestroy(): void {
-        this.chatSubscription.unsubscribe();
-    }
+
     public switchChatVisibility(): void {
         if (this.visible) {
             this.visible = false;

@@ -12,9 +12,9 @@
     </ul>
 </div>
 
-<div *ngIf="currentTab === 'games'"
-     id="game-list-tab"
-     class="box">
+<div id="game-list-tab"
+     class="box"
+     [ngClass]="getVisibility('games')">
     <div class="table-container">
         <table class="table is-fullwidth is-hoverable is-striped">
             <thead>
@@ -44,15 +44,15 @@
     </div>
 </div>
 
-<div *ngIf="currentTab === 'create'"
-     id="game-creator-tab"
-     class="box">
+<div id="game-creator-tab"
+     class="box"
+     [ngClass]="getVisibility('create')">
     <app-online-game-selection id="online-game-selection"></app-online-game-selection>
 </div>
 
-<div *ngIf="currentTab === 'chat'"
-     id="chat-tab"
-     class="columns">
+<div id="chat-tab"
+     class="columns"
+     [ngClass]="getVisibility('chat')">
     <div class="column is-12">
         <div id="chat" class="box">
             <app-chat chatId="server" [turn]="-1"></app-chat>

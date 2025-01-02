@@ -8,6 +8,7 @@ import { MGPOptional, MGPValidation } from '@everyboard/lib';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { Subscription } from 'rxjs';
 import { Debug } from 'src/app/utils/Debug';
+import { WebSocketManagerService } from 'src/app/services/BackendService';
 
 type Tab = 'games' | 'create' | 'chat';
 
@@ -29,11 +30,13 @@ export class LobbyComponent implements OnInit, OnDestroy {
     public constructor(public readonly router: Router,
                        public readonly messageDisplayer: MessageDisplayer,
                        private readonly activePartsService: ActivePartsService,
-                       private readonly currentGameService: CurrentGameService)
+                       private readonly currentGameService: CurrentGameService,
+                       private readonly webSocketManager: WebSocketManagerService)
+
     {
     }
 
-    public ngOnInit(): void {
+    public async ngOnInit(): Promise<void> {
         this.activePartsSubscription = this.activePartsService.subscribeToActiveParts(
             (activeParts: PartDocument[]) => {
                 this.activeParts = activeParts;
@@ -45,11 +48,16 @@ export class LobbyComponent implements OnInit, OnDestroy {
                     this.createTabClasses = ['disabled-tab'];
                 }
             });
+
+        console.log('initializing lobby')
+        await this.webSocketManager.connect();
+        await this.webSocketManager.subscribeTo('lobby');
     }
 
-    public ngOnDestroy(): void {
+    public async ngOnDestroy(): Promise<void> {
         this.activePartsSubscription.unsubscribe();
         this.currentGameSubscription.unsubscribe();
+        await this.webSocketManager.disconnect();
     }
 
     public async joinGame(part: PartDocument): Promise<void> {
@@ -74,6 +82,14 @@ export class LobbyComponent implements OnInit, OnDestroy {
             }
         } else {
             this.currentTab = tab;
+        }
+    }
+
+    public getVisibility(tab: Tab): string {
+        if (this.currentTab === tab) {
+            return '';
+        } else {
+            return 'is-hidden';
         }
     }
 

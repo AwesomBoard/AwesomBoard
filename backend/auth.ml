@@ -94,6 +94,7 @@ module Make
                 let* response : Dream.response = handler request in
                 if !websocket then
                     (* WebSocket (in Chrome) expects the same header in the reply, otherwise it closes the connection *)
+                    (* See https://github.com/aantron/dream/issues/375 *)
                     Dream.add_header response "Sec-WebSocket-Protocol" "Authorization";
                 Lwt.return response
             end else

@@ -1,18 +1,20 @@
 import { ConnectedUserService } from './ConnectedUserService';
 import { environment } from 'src/environments/environment';
-import { JSONValue, MGPFallible, MGPOptional, Utils } from '@everyboard/lib';
-import { Injectable, OnInit } from '@angular/core';
+import { JSONValue, MGPFallible, MGPMap, MGPOptional, Utils } from '@everyboard/lib';
+import { Injectable } from '@angular/core';
 
 type HTTPMethod = 'POST' | 'GET' | 'PATCH' | 'HEAD' | 'DELETE';
 
-export type Callback = (type: string, data: JSONValue) => Promise<void>
+export type Callback = (data: JSONValue) => void
 @Injectable({
-    providedIn: 'root', // This ensures that this is a singleton service
+    // This ensures that this is a singleton service, which is very important for this one
+    // because we want only a single websocket connection, shared among all other services
+    providedIn: 'root',
 })
 export class WebSocketManagerService {
 
     private webSocket: MGPOptional<WebSocket> = MGPOptional.empty();
-    private callbacks: Callback[] = [];
+    private readonly callbacks: MGPMap<string, Callback> = new MGPMap();
 
     public constructor(private readonly connectedUserService: ConnectedUserService) {
         console.log('WebSocketManagerService created (should happen only once');
@@ -23,6 +25,7 @@ export class WebSocketManagerService {
         Utils.assert(this.webSocket.isAbsent(), 'Should not connect twice to WebSocket!');
         const token: string = await this.connectedUserService.getIdToken();
 
+        console.log('connect')
         return new Promise((resolve: () => void, reject) => {
             const ws: WebSocket = new WebSocket(environment.backendURL.replace('http://', 'ws://') + '/ws', ['Authorization', token]);
 
@@ -45,28 +48,36 @@ export class WebSocketManagerService {
                 const json: NonNullable<JSONValue> = Utils.getNonNullable(JSON.parse(ev.data as string));
                 Utils.assert(json['type'] != null && typeof(json['type']) === 'string' && json['data'] != null,
                              `Received malformed WebSocket message: ${json}`);
-                for (const callback of this.callbacks) {
-                    await callback(Utils.getNonNullable(json['type']), Utils.getNonNullable(json['data']));
-                }
+                const callback: MGPOptional<Callback> = this.callbacks.get(Utils.getNonNullable(json['type']));
+                Utils.assert(callback.isPresent(), `Received a message with no callback registered: ${json}`);
+                // TODO: in case we need async for callbacks, use void to not wait for the async here.
+                callback.get()(Utils.getNonNullable(json['data']));
             };
         });
     }
 
-    public async send(message: JSONValue): Promise<void> {
-        // TODO: get rid of the any
-        if (this.webSocket.isAbsent()) {
-            await this.connect();
-        }
-        this.webSocket.get().send(JSON.stringify(message));
+    public async subscribeTo(gameId: string): Promise<void> {
+        return this.send('Subscribe', gameId);
     }
 
-    public setCallback(callback: Callback): void {
-        this.callbacks.push(callback);
+    public async send(type: string, data: JSONValue): Promise<void> {
+        this.webSocket.get().send(JSON.stringify({ type, data }));
     }
 
-    public clearCallbacks(): void {
-        this.callbacks = [];
+    public setCallback(type: string, callback: Callback): void {
+        this.callbacks.set(type, callback);
     }
+
+    public overrideCallback(type: string, callback: Callback): void {
+        this.callbacks.replace(type, callback);
+    }
+
+    public async disconnect(): Promise<void> {
+        Utils.assert(this.webSocket.isAbsent(), 'Should not disconnect from unconnected WebSocket!');
+        this.webSocket.get().close();
+        this.callbacks.clear();
+    }
+
 }
 
 export abstract class BackendService {
