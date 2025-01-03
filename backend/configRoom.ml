@@ -23,9 +23,9 @@ module type CONFIG_ROOM = sig
         [request]. *)
     val select_opponent : Dream.request -> int -> Domain.MinimalUser.t -> unit Lwt.t
 
-    (** [propose request game_id] proposes the config of [game_id] to the
-        selected opponent, in the context of [request]. *)
-    val propose : Dream.request -> int -> unit Lwt.t
+    (** [propose request game_id config] proposes the config [config] of
+        [game_id] to the selected opponent, in the context of [request]. *)
+    val propose : Dream.request -> int -> Domain.ConfigRoom.Proposal.t -> unit Lwt.t
 
     (** [accept request game_id] accepts the config of [game_id], in the context
         of [request]. *)
@@ -42,7 +42,7 @@ module type CONFIG_ROOM = sig
 
 end
 
-module ConfigRoomSql : CONFIG_ROOM = struct
+module ConfigRoomSQL : CONFIG_ROOM = struct
 
     open Caqti_extension
 
@@ -104,7 +104,8 @@ module ConfigRoomSql : CONFIG_ROOM = struct
         BEGIN;
             INSERT INTO config_rooms(creator_id, creator_name, creator_elo,
                                      chosen_opponent_id, chosen_opponent_name,
-                                     status, first_player, game_type, duration,
+                                     status, first_player, game_type,
+                                     maximal_move_duration, total_part_duration,
                                      config, game_name)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             SELECT last_insert_rowid();
@@ -157,6 +158,22 @@ module ConfigRoomSql : CONFIG_ROOM = struct
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.exec select_opponent_query (opponent.id, opponent.name, game_id)
 
+    let propose_config_query = t7 game_status game_type int int first_player string int ->. unit @@ {|
+        UPDATE games
+        SET status = ?, game_type = ?, maximal_move_duration = ?, total_part_duration = ?, first_player = ?, config = ?
+        WHERE id = ?;
+    |}
+
+    let propose = fun (request : Dream.request) (game_id : int) (proposal : Domain.ConfigRoom.Proposal.t) : unit Lwt.t ->
+        Dream.sql request @@ fun (module Db : DB) -> check @@
+        Db.exec propose_config_query (Domain.ConfigRoom.GameStatus.ConfigProposed,
+                                      proposal.game_type,
+                                      proposal.maximal_move_duration,
+                                      proposal.total_part_duration,
+                                      proposal.first_player,
+                                      JSON.to_string proposal.rules_config,
+                                      game_id)
+
     let change_status_query = t2 int game_status ->. unit @@ {|
         UPDATE games
         SET status = ?
@@ -167,8 +184,6 @@ module ConfigRoomSql : CONFIG_ROOM = struct
         fun (request : Dream.request) (id : int) : unit Lwt.t ->
             Dream.sql request @@ fun (module Db : DB) -> check @@
             Db.exec change_status_query (id, status)
-
-    let propose = change_status_to Domain.ConfigRoom.GameStatus.ConfigProposed
 
     let accept = change_status_to Domain.ConfigRoom.GameStatus.Started
 

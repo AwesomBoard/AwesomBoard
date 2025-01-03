@@ -9,7 +9,8 @@ module Auth = Auth.Make(Firestore)(GoogleCertificates)(Stats)(Jwt)
 module GameEndpoint = GameEndpoint.Make(External)(Auth)(Firestore)(Stats)
 module ConfigRoomEndpoint = ConfigRoomEndpoint.Make(External)(Auth)(Firestore)(Stats)
 module Chat = Chat.ChatSQL
-module WebSocketServer = WebSocketServer.Make(Auth)(External)(Chat)
+module ConfigRoom = ConfigRoom.ConfigRoomSQL
+module WebSocketServer = WebSocketServer.Make(Auth)(External)(Chat)(ConfigRoom)(Stats)
 
 (** The version number of this server. Used to avoid redeploying when there are no changes.
     If a redeployment is needed, just change the version number. Any difference will trigger redeployment.

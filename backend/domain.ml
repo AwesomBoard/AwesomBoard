@@ -185,6 +185,25 @@ module ConfigRoom = struct
         { config_room with game_status; first_player; creator; chosen_opponent = Some chosen_opponent }
 
 
+    module Proposal = struct
+        type t = {
+            game_status: GameStatus.t [@key "partStatus"];
+            game_type: GameType.t [@key "partType"];
+            maximal_move_duration: int [@key "maximalMoveDuration"];
+            total_part_duration: int [@key "totalPartDuration"];
+            first_player: FirstPlayer.t [@key "firstPlayer"];
+            rules_config: JSON.t [@key "rulesConfig"];
+        }
+        [@@deriving yojson]
+
+        let of_yojson = fun (json : JSON.t) : (t, string) result ->
+            match of_yojson json with
+            | Ok config when config.game_status = ConfigProposed ->
+                Ok config
+            | Ok _ -> Error "invalid config proposal update: game_status must be ConfigProposed"
+            | Error err -> Error err
+    end
+
     (** The [Updates] module describes all types of updates that we can do to a
         document. It enables forcing the programmer to not over or under define the
         updates: types have to match precisely *)
@@ -227,24 +246,6 @@ module ConfigRoom = struct
             }
         end
 
-        module Proposal = struct
-            type t = {
-                game_status: GameStatus.t [@key "partStatus"];
-                game_type: GameType.t [@key "partType"];
-                maximal_move_duration: int [@key "maximalMoveDuration"];
-                total_part_duration: int [@key "totalPartDuration"];
-                first_player: FirstPlayer.t [@key "firstPlayer"];
-                rules_config: JSON.t [@key "rulesConfig"];
-            }
-            [@@deriving yojson]
-
-            let of_yojson = fun (json : JSON.t) : (t, string) result ->
-                match of_yojson json with
-                | Ok config when config.game_status = ConfigProposed ->
-                    Ok config
-                | Ok _ -> Error "invalid config proposal update: game_status must be ConfigProposed"
-                | Error err -> Error err
-        end
     end
 
 end
@@ -430,7 +431,7 @@ module GameEvent = struct
             user: MinimalUser.t;
             request_type: string [@key "requestType"];
         }
-        [@@deriving to_yojson]
+        [@@deriving yojson]
 
         let make = fun (user : MinimalUser.t) (request_type : string) (now : int) : t ->
             { event_type = "Request"; time = now; user; request_type }
@@ -452,7 +453,7 @@ module GameEvent = struct
             request_type: string [@key "requestType"];
             data: JSON.t option;
         }
-        [@@deriving to_yojson]
+        [@@deriving yojson]
 
         let make = fun ?(data : JSON.t option)
                         (user : MinimalUser.t)
@@ -483,7 +484,7 @@ module GameEvent = struct
             user: MinimalUser.t;
             action: string;
         }
-        [@@deriving to_yojson]
+        [@@deriving yojson]
 
         let add_time = fun (user : MinimalUser.t) (kind : [ `Turn | `Global ]) (now : int) : t ->
             let action = match kind with
@@ -504,7 +505,7 @@ module GameEvent = struct
             user: MinimalUser.t;
             move: JSON.t;
         }
-        [@@deriving to_yojson]
+        [@@deriving yojson]
 
         let of_json = fun (user : MinimalUser.t) (move : JSON.t) (now : int) : t ->
             { event_type = "Move"; user; move; time = now }
@@ -516,13 +517,7 @@ module GameEvent = struct
         | Reply of Reply.t
         | Action of Action.t
         | Move of Move.t
-
-    let to_yojson = fun (event : t) : JSON.t ->
-        match event with
-        | Request request -> Request.to_yojson request
-        | Reply reply -> Reply.to_yojson reply
-        | Action action -> Action.to_yojson action
-        | Move move -> Move.to_yojson move
+    [@@deriving yojson]
 
 end
 

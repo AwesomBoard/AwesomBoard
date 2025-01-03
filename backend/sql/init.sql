@@ -34,7 +34,7 @@ CREATE INDEX IF NOT EXISTS idx_game_id ON candidates (game_id);
 
 -- When the config room is accepted, the game is created
 CREATE TABLE IF NOT EXISTS games (
-    id INTEGER NOT NULL,
+    id INTEGER PRIMARY KEY NOT NULL, -- same as id from config_rooms
     game_name TEXT NOT NULL,
     player_zero_id TEXT NOT NULL,
     player_zero_name TEXT NOT NULL,

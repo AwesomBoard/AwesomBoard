@@ -179,3 +179,9 @@ module Id = struct
         | _ -> raise (UnexpectedError (Printf.sprintf "Badly formatted id: %s" string_id))
 
 end
+
+(** A set of integers *)
+module IntSet = Set.Make(Int)
+
+(** A set of strings *)
+module StringSet = Set.Make(String)
