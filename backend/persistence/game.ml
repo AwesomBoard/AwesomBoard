@@ -1,5 +1,6 @@
 module type GAME = sig
 
+    (*
     val create : Dream.request -> int -> unit Lwt.t
 
     val get : Dream.request -> string -> unit Lwt.t
@@ -12,7 +13,7 @@ module type GAME = sig
 
     *)
     val finish : Dream.request -> string -> ?winner:Models.MinimalUser.t -> ?loser:Models.MinimalUser.t -> Models.Game.GameResult.t -> unit Lwt.t
-
+ *)
 
     (*
     val delete : Dream.request -> string -> unit Lwt.t
@@ -29,4 +30,7 @@ module type GAME = sig
 
     val end_turn *)
 
+end
+
+module GameSql : GAME = struct
 end

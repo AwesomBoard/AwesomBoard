@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { MGPValidation, JSONValue } from '@everyboard/lib';
+import { MGPValidation, JSONValue, Utils } from '@everyboard/lib';
 
 import { Localized } from '../utils/LocaleUtils';
 import { Debug } from '../utils/Debug';
@@ -26,13 +26,13 @@ export class ChatService extends BackendService {
     }
 
     public async addMessage(message: string): Promise<void> {
-        await this.webSocketManager.send('ChatSend', message);
+        await this.webSocketManager.send(['ChatSend', { message }]);
     }
 
     public subscribeToMessages(callback: (message: Message) => void): void {
         // Make a new subscription to receive new messages
         this.webSocketManager.setCallback('ChatMessage', (data: JSONValue): void => {
-            callback(data as Message);
+            callback(Utils.getNonNullable(data)['message'] as Message);
         });
     }
 

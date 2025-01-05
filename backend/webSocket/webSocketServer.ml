@@ -27,6 +27,8 @@ module Make
         (External : Utils.External.EXTERNAL)
         (Chat : Persistence.Chat.CHAT)
         (ConfigRoom : Persistence.ConfigRoom.CONFIG_ROOM)
+        (Game : Persistence.Game.GAME)
+        (Elo : Persistence.Elo.ELO)
         (Stats : Firestore.Stats.STATS)
     : WEBSOCKET_SERVER = struct
 
@@ -91,17 +93,16 @@ module Make
                 broadcast game_id (ChatMessage { message });
             ]
 
-        | Create { game_name } when game_exists game_name = false ->
+        | Create { game_name; _ } when game_exists game_name = false ->
             raise (Errors.BadInput "gameName does not correspond to an existing game")
 
         | Create { game_name } ->
-            (* Retrieve elo *)
-            let* creator_elo_info : Models.User.EloInfo.t = failwith "TODO" (* Firestore.User.get_elo ~request ~user_id:user.id ~type_game:game_name *) in
+            (* Retrieve elo of the creator *)
+            let* creator_elo_info : Models.User.EloInfo.t = Elo.get ~user_id:user.id ~game_name in
             let creator_elo : float = creator_elo_info.current_elo in
             (* Create the config room only *)
             let config_room : Models.ConfigRoom.t = Models.ConfigRoom.initial user creator_elo game_name in
             let* game_id : int = ConfigRoom.create request config_room in
-            Stats.set_game_id request (Id.to_string game_id);
             (* Send the info to the creator and the observers of the lobby *)
             let update : WebSocketOutgoingMessage.t = GameCreated { game_id = Id.to_string game_id; config_room } in
             let* () = send_to client_id update in
@@ -157,16 +158,11 @@ module Make
                 match%lwt Dream.receive ws with
                 | Some message ->
                     let user = Auth.get_minimal_user request in
-                    let%lwt () = try
-                            let message = message
-                                          |> Utils.JSON.from_string
-                                          |> WebSocketIncomingMessage.of_yojson
-                                          |> Result.get_ok in
-                            handle_message request client_id user message
-                        with
-                        | e ->
-                            Dream.log "ERROR: %s\n" (Printexc.to_string e);
-                            send_to client_id (Error { reason = "Malformed message" }) in
+                    let%lwt () = match message |> Utils.JSON.from_string |> WebSocketIncomingMessage.of_yojson with
+                    | Ok message -> handle_message request client_id user message
+                    | Error e ->
+                        Dream.log "ERROR: %s\n" e;
+                        send_to client_id (Error { reason = Printf.sprintf "Malformed message: %s" e }) in
                     loop ()
                 | None ->
                     (* Client left, forget about it *)

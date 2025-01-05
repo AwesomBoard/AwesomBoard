@@ -1,3 +1,4 @@
+(* TODO: rename some modules and module types *)
 module External = Utils.External.Impl
 module ServerUtils = ServerUtils.Make(External)
 module Stats = Firestore.Stats.Impl
@@ -9,7 +10,9 @@ module FirestoreOps = Firestore.FirestoreOps.Make(FirestorePrimitives)
 module Auth = Firestore.Auth.Make(FirestoreOps)(GoogleCertificates)(Stats)(Jwt)
 module Chat = Persistence.Chat.ChatSQL
 module ConfigRoom = Persistence.ConfigRoom.ConfigRoomSQL
-module WebSocketServer = WebSocket.WebSocketServer.Make(Auth)(External)(Chat)(ConfigRoom)(Stats)
+module Game = Persistence.Game.GameSql
+module Elo = Persistence.Elo.EloSql
+module WebSocketServer = WebSocket.WebSocketServer.Make(Auth)(External)(Chat)(ConfigRoom)(Game)(Elo)(Stats)
 
 (** The version number of this server. Used to avoid redeploying when there are no changes.
     If a redeployment is needed, just change the version number. Any difference will trigger redeployment.
@@ -38,7 +41,7 @@ let start = fun () : unit ->
         ~interface:!Options.address
         ~error_handler:ServerUtils.error_handler
         ~port:!Options.port
-    (* ~tls:true ~certificate_file:"localhost.crt" ~key_file:"localhost.key" *)
+    (* TODO: set tls: ~tls:true ~certificate_file:"localhost.crt" ~key_file:"localhost.key" *)
     @@ Dream.sql_pool "sqlite3:everyboard.db"
     @@ Dream.logger
     @@ Cors.middleware !Options.frontend_origin

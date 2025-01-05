@@ -46,22 +46,21 @@ export class WebSocketManagerService {
                 console.log(ev);
                 Utils.assert(typeof(ev.data) === 'string', `Received malformed WebSocket message: ${ev.data}`);
                 const json: NonNullable<JSONValue> = Utils.getNonNullable(JSON.parse(ev.data as string));
-                Utils.assert(json['type'] != null && typeof(json['type']) === 'string' && json['data'] != null,
-                             `Received malformed WebSocket message: ${json}`);
-                const callback: MGPOptional<Callback> = this.callbacks.get(Utils.getNonNullable(json['type']));
+                Utils.assert(json[0] != null && typeof(json[0]) === 'string', `Received malformed WebSocket message: ${json}`);
+                const callback: MGPOptional<Callback> = this.callbacks.get(Utils.getNonNullable(json[0]));
                 Utils.assert(callback.isPresent(), `Received a message with no callback registered: ${json}`);
                 // TODO: in case we need async for callbacks, use void to not wait for the async here.
-                callback.get()(Utils.getNonNullable(json['data']));
+                callback.get()(Utils.getNonNullable(json[1]));
             };
         });
     }
 
     public async subscribeTo(gameId: string): Promise<void> {
-        return this.send('Subscribe', gameId);
+        return this.send(['Subscribe', { game_id: gameId }]);
     }
 
-    public async send(type: string, data: JSONValue): Promise<void> {
-        this.webSocket.get().send(JSON.stringify({ type, data }));
+    public async send(message: JSONValue): Promise<void> {
+        this.webSocket.get().send(JSON.stringify(message));
     }
 
     public setCallback(type: string, callback: Callback): void {
