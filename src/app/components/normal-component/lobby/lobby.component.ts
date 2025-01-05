@@ -49,7 +49,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
                 }
             });
 
-        console.log('initializing lobby')
         await this.webSocketManager.connect();
         await this.webSocketManager.subscribeTo('lobby');
     }

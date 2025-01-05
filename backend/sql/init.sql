@@ -13,11 +13,12 @@ CREATE TABLE IF NOT EXISTS config_rooms (
     status TEXT NOT NULL,
     first_player TEXT NOT NULL,
     game_type TEXT NOT NULL,
-    duration NUMBER NOT NULL,
+    move_duration NUMBER NOT NULL,
+    game_duration NUMBER NOT NULL,
     -- The config is a string representing the JSON config of the game
     config TEXT NOT NULL,
     -- This is the name of the game (used to be in "games", but it is better to have it in the config room too)
-    game_name TEXT NOT NULL,
+    game_name TEXT NOT NULL
     )
 
 -- When players join the config room, they are added as candidates
@@ -68,17 +69,18 @@ CREATE INDEX IF NOT EXISTS idx_game_id ON games (game_id);
 
 CREATE TABLE IF NOT EXISTS elos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
     game_name TEXT NOT NULL,
-    game_config TEXT NOT NULL,
-    value INT NOT NULL
+    current_elo REAL NOT NULL,
+    number_of_games_played INT NOT NULL
 )
 
 -- TODO: to "insert or update" elo:
 -- INSERT OR IGNORE INTO my_table (name, age) VALUES ('Karen', 34)
 -- UPDATE my_table SET age = 34 WHERE name='Karen'
 
--- Elos are queried based on the game_name, game_config pair
-CREATE INDEX IF NOT EXISTS idx_game_id ON elos (game_name, game_config);
+-- Elos are queried based on the user_id, game_name pair
+CREATE INDEX IF NOT EXISTS idx_game_id ON elos (user_id, game_name);
 
 -- These are chat messages
 CREATE TABLE IF NOT EXISTS messages (

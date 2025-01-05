@@ -5,7 +5,7 @@ import { Part } from '../domain/Part';
 import { Subscription } from 'rxjs';
 import { MinimalUser } from '../domain/MinimalUser';
 import { FirestoreTime } from '../domain/Time';
-import { BackendService } from './BackendService';
+import { BackendService, WebSocketManagerService } from './BackendService';
 import { Player, PlayerOrNone } from '../jscaip/Player';
 import { PlayerNumberMap } from '../jscaip/PlayerMap';
 import { Debug } from '../utils/Debug';
@@ -26,6 +26,7 @@ export interface StartingPartConfig extends Partial<Part> {
 export class GameService extends BackendService {
 
     public constructor(protected readonly partDAO: PartDAO,
+                       private readonly webSocketManager: WebSocketManagerService,
                        connectedUserService: ConnectedUserService)
     {
         super(connectedUserService);
@@ -37,11 +38,12 @@ export class GameService extends BackendService {
 
     /** Create a game, its config room and chat. Return the id of the created game. */
     public async createGame(gameName: string): Promise<string> {
-        const result: MGPFallible<JSONValue> =
-            await this.performRequestWithJSONResponse('POST', `game?gameName=${gameName}`);
-        this.assertSuccess(result);
-        // eslint-disable-next-line dot-notation
-        return Utils.getNonNullable(Utils.getNonNullable(result.get())['id']) as string;
+
+        await this.webSocketManager.send(['Create', { game_name: gameName }]);
+        const response: JSONValue[] = await this.webSocketManager.waitForMessage('GameCreated');
+        const gameId: string = Utils.getNonNullable(response[0])['gameId'];
+
+        return gameId;
     }
 
     /** Retrieve the name of the game with the given id. If there is no corresponding game, returns an empty option. */

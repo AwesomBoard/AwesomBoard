@@ -13,7 +13,8 @@ let to_minimal_user = fun (uid : string) (user : t) : MinimalUser.t ->
 
 (** The user contains a sub-collection containing its elo score for each game.
     Each game therefore has an EloInfo.t *)
-(* TODO: also get rid of elo stored in user *)
+(* TODO: get rid of elo stored in user *)
+(* TODO: simply rename to "Elo"? *)
 module EloInfo = struct
     type t = {
         current_elo : float [@key "currentElo"];

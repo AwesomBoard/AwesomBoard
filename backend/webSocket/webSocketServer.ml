@@ -70,6 +70,7 @@ module Make
                              (user : Models.MinimalUser.t)
                              (message : WebSocketIncomingMessage.t)
                              : unit Lwt.t ->
+        Dream.log "[%s] %s" user.name (message |> WebSocketIncomingMessage.to_yojson |> JSON.to_string);
         match message with
         | Subscribe { game_id = game_id_str} ->
             let game_id = Id.of_string game_id_str in
@@ -98,19 +99,20 @@ module Make
 
         | Create { game_name } ->
             (* Retrieve elo of the creator *)
-            let* creator_elo_info : Models.User.EloInfo.t = Elo.get ~user_id:user.id ~game_name in
+            let* creator_elo_info : Models.User.EloInfo.t = Elo.get ~request ~user_id:user.id ~game_name in
             let creator_elo : float = creator_elo_info.current_elo in
             (* Create the config room only *)
             let config_room : Models.ConfigRoom.t = Models.ConfigRoom.initial user creator_elo game_name in
             let* game_id : int = ConfigRoom.create request config_room in
             (* Send the info to the creator and the observers of the lobby *)
-            let update : WebSocketOutgoingMessage.t = GameCreated { game_id = Id.to_string game_id; config_room } in
+            let update : WebSocketOutgoingMessage.t = GameCreated { game_id = Id.to_string game_id } in
             let* () = send_to client_id update in
             broadcast lobby update
+        | Join { game_id } -> failwith "TODO"
         | ProposeConfig { config } ->
             let game_id = SubscriptionManager.subscription_of client_id in
             let* () = ConfigRoom.propose request game_id config in
-            broadcast game_id (ConfigProposed { config  })
+            failwith "TODO" (* broadcast game_id (ConfigProposed { config  }) *)
         | AcceptConfig ->
             let game_id = SubscriptionManager.subscription_of client_id in
             let* () = ConfigRoom.accept request game_id in
@@ -118,15 +120,15 @@ module Make
         | SelectOpponent { opponent } ->
             let game_id = SubscriptionManager.subscription_of client_id in
             let* () = ConfigRoom.select_opponent request game_id opponent in
-            broadcast game_id (OpponentSelected { opponent })
+            failwith "TODO" (* broadcast game_id (OpponentSelected { opponent }) *)
         | ReviewConfig ->
             let game_id = SubscriptionManager.subscription_of client_id in
             let* () = ConfigRoom.review request game_id in
-            broadcast game_id ConfigInReview
+            failwith "TODO" (* broadcast game_id ConfigInReview *)
         | ReviewConfigAndRemoveOpponent ->
             let game_id = SubscriptionManager.subscription_of client_id in
             let* () = ConfigRoom.review_and_remove_opponent request game_id in
-            broadcast game_id ConfigInReviewAndOpponentRemoved
+            failwith "TODO" (* broadcast game_id ConfigInReviewAndOpponentRemoved *)
 
         | Resign ->
             failwith "TODO"

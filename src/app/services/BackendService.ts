@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 
 type HTTPMethod = 'POST' | 'GET' | 'PATCH' | 'HEAD' | 'DELETE';
 
-export type Callback = (data: JSONValue) => void
+export type Callback = (args: JSONValue[]) => void
 @Injectable({
     // This ensures that this is a singleton service, which is very important for this one
     // because we want only a single websocket connection, shared among all other services
@@ -46,33 +46,49 @@ export class WebSocketManagerService {
                 console.log(ev);
                 Utils.assert(typeof(ev.data) === 'string', `Received malformed WebSocket message: ${ev.data}`);
                 const json: NonNullable<JSONValue> = Utils.getNonNullable(JSON.parse(ev.data as string));
-                Utils.assert(json[0] != null && typeof(json[0]) === 'string', `Received malformed WebSocket message: ${json}`);
-                const callback: MGPOptional<Callback> = this.callbacks.get(Utils.getNonNullable(json[0]));
+                Utils.assert(typeof(json) === 'object', // i.e., an array
+                             `Received malformed WebSocket message: ${json}`);
+                const tag: unknown = json[0]; // the tag is the first element of the array
+                const args: JSONValue[] = (json as JSONValue[]).slice(1);
+                Utils.assert(tag != null && typeof(tag) === 'string', `Received malformed WebSocket message: ${json}`);
+                // each callback is associated to a tag
+                const callback: MGPOptional<Callback> = this.callbacks.get(tag as string);
                 Utils.assert(callback.isPresent(), `Received a message with no callback registered: ${json}`);
-                // TODO: in case we need async for callbacks, use void to not wait for the async here.
-                callback.get()(Utils.getNonNullable(json[1]));
+                // NOTE: in case we need async for callbacks, use void to not wait for the async here.
+                callback.get()(args);
             };
         });
     }
 
     public async subscribeTo(gameId: string): Promise<void> {
-        return this.send(['Subscribe', { game_id: gameId }]);
+        return this.send(['Subscribe', { gameId }]);
     }
 
     public async send(message: JSONValue): Promise<void> {
+        Utils.assert(this.webSocket.isPresent(), 'Trying to send message over closed WebSocket');
         this.webSocket.get().send(JSON.stringify(message));
     }
 
-    public setCallback(type: string, callback: Callback): void {
-        this.callbacks.set(type, callback);
+    public async waitForMessage(tag: string): Promise<JSONValue[]> {
+        return new Promise((resolve: (value: JSONValue[]) => void) => {
+            this.setCallback(tag, (args: JSONValue[]) => {
+                this.removeCallback(tag);
+                resolve(args);
+            });
+        });
     }
 
-    public overrideCallback(type: string, callback: Callback): void {
-        this.callbacks.replace(type, callback);
+    public setCallback(tag: string, callback: Callback): void {
+        this.callbacks.set(tag, callback);
     }
 
-    public async disconnect(): Promise<void> {
-        Utils.assert(this.webSocket.isAbsent(), 'Should not disconnect from unconnected WebSocket!');
+    public removeCallback(tag: string): void {
+        this.callbacks.delete(tag);
+    }
+
+    public disconnect(): void {
+        console.log('WS: disconnect!')
+        Utils.assert(this.webSocket.isPresent(), 'Should not disconnect from unconnected WebSocket!');
         this.webSocket.get().close();
         this.callbacks.clear();
     }

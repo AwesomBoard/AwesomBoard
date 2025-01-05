@@ -1,5 +1,5 @@
 (** Handling of ids and their string representations *)
-let sqids : Sqids.t = Sqids.make ()
+let sqids : Sqids.t = Sqids.make ~min_length:8 ()
 
 let to_string = fun (id : int) : string ->
     Sqids.encode sqids [id]

@@ -31,8 +31,8 @@ export class ChatService extends BackendService {
 
     public subscribeToMessages(callback: (message: Message) => void): void {
         // Make a new subscription to receive new messages
-        this.webSocketManager.setCallback('ChatMessage', (data: JSONValue): void => {
-            callback(Utils.getNonNullable(data)['message'] as Message);
+        this.webSocketManager.setCallback('ChatMessage', (args: JSONValue[]): void => {
+            callback(Utils.getNonNullable(args[0])['message'] as Message);
         });
     }
 

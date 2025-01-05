@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConnectedUserService, AuthUser } from 'src/app/services/ConnectedUserService';
 import { GameService } from 'src/app/services/GameService';
@@ -7,26 +7,33 @@ import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { GameInfo } from '../pick-game/pick-game.component';
 import { GameWrapperMessages } from '../../wrapper-components/GameWrapper';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
+import { WebSocketManagerService } from 'src/app/services/BackendService';
 
 @Component({
     selector: 'app-online-game-creation',
     template: '<p i18n>Creating online game, please wait, it should not take long.</p>',
 })
-export class OnlineGameCreationComponent implements OnInit {
+export class OnlineGameCreationComponent implements OnInit, OnDestroy {
 
     public constructor(private readonly route: ActivatedRoute,
                        private readonly router: Router,
                        private readonly connectedUserService: ConnectedUserService,
                        private readonly currentGameService: CurrentGameService,
                        private readonly messageDisplayer: MessageDisplayer,
-                       private readonly gameService: GameService) {
+                       private readonly gameService: GameService,
+                       private readonly webSocketManager: WebSocketManagerService)
+    {
     }
+
     public async ngOnInit(): Promise<void> {
+        await this.webSocketManager.connect();
         await this.createGameAndRedirectOrShowError(this.extractGameFromURL());
     }
+
     private extractGameFromURL(): string {
         return Utils.getNonNullable(this.route.snapshot.paramMap.get('compo'));
     }
+
     private async createGameAndRedirectOrShowError(game: string): Promise<boolean> {
         const authUser: AuthUser = this.connectedUserService.user.get();
         Utils.assert(authUser.isConnected(), 'User must be connected and have a username to reach this page');
@@ -45,8 +52,13 @@ export class OnlineGameCreationComponent implements OnInit {
             return false;
         }
     }
+
     private gameExists(gameName: string): boolean {
         const optionalGameInfo: MGPOptional<GameInfo> = GameInfo.getByUrlName(gameName);
         return optionalGameInfo.isPresent();
+    }
+
+    public ngOnDestroy(): void {
+        this.webSocketManager.disconnect();
     }
 }

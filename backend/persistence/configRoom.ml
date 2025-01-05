@@ -100,22 +100,25 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
             @@ proj string (fun (c : Models.ConfigRoom.t) -> c.game_name)
             @@ proj_end
 
-    let create_query = config_room ->! int @@ {|
-        BEGIN;
-            INSERT INTO config_rooms(creator_id, creator_name, creator_elo,
-                                     chosen_opponent_id, chosen_opponent_name,
-                                     status, first_player, game_type,
-                                     maximal_move_duration, total_part_duration,
-                                     config, game_name)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            SELECT last_insert_rowid();
-        COMMIT
+    let create_query = config_room ->. unit @@ {|
+        INSERT INTO config_rooms(creator_id, creator_name, creator_elo,
+                                 chosen_opponent_id, chosen_opponent_name,
+                                 status, first_player, game_type,
+                                 move_duration, game_duration,
+                                 config, game_name)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    |}
+
+    let get_last_inserted_id = unit ->! int @@ {|
+        SELECT last_insert_rowid()
     |}
 
     let create = fun (request : Dream.request) (config_room : Models.ConfigRoom.t) : int Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.find create_query config_room
-
+        Db.with_transaction (fun () ->
+            match%lwt  Db.exec create_query config_room with
+            | Result.Ok () -> Db.find get_last_inserted_id ()
+            | Result.Error e -> Lwt.return (Result.Error e))
 
     let get_query = int ->? config_room @@ {|
         SELECT creator_id, creator_name, creator_elo,

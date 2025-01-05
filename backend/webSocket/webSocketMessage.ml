@@ -1,4 +1,5 @@
 open Models
+open Utils
 
 (** All the messages we can receive *)
 module WebSocketIncomingMessage = struct
@@ -10,20 +11,20 @@ module WebSocketIncomingMessage = struct
 
     type t =
         (** Subscription messages *)
-        | Subscribe of { game_id : string }
+        | Subscribe of { game_id : string [@key "gameId"]}
         | Unsubscribe
 
         (** Chat messages *)
         | ChatSend of { message : string }
 
         (** Config room messages *)
-        | Create of { game_name : string }
+        | Create of { game_name : string [@key "gameName"]}
+        | Join of { game_id : string [@key "gameId"] }
         | ProposeConfig of { config : ConfigRoom.Proposal.t }
         | AcceptConfig
         | SelectOpponent of { opponent : MinimalUser.t }
         | ReviewConfig
         | ReviewConfigAndRemoveOpponent
-        (* | JoinGame of { game_id : string } TODO: subsumed by subscribe *)
         (* | RemoveCandidate of { game_id : string; candidate_id : string } TODO: subsubmed by unsubscribe *)
 
         (** Game messages *)
@@ -48,18 +49,15 @@ module WebSocketOutgoingMessage = struct
         | ChatMessage of { message : Message.t }
 
         (** Config room messages *)
-        | GameCreated of { game_id : string; config_room : ConfigRoom.t }
+        | GameCreated of { game_id : string }
+        | GameJoined of { config : ConfigRoom.t }
         | CandidateJoined of { candidate : MinimalUser.t }
         | CandidateLeft of { candidate : MinimalUser.t }
-        | ConfigProposed of { config : ConfigRoom.Proposal.t }
-        | OpponentSelected of { opponent : MinimalUser.t }
-        | ConfigInReview
-        | ConfigInReviewAndOpponentRemoved
+        | ConfigRoomUpdate of { update : JSON.t }
 
         (** Game messages *)
         | GameEvent of { event : GameEvent.t }
-        | PlayerResigned of { resigner : MinimalUser.t }
-        | PlayerTimedOut of { winner : MinimalUser.t; loser : MinimalUser.t }
+        | GameUpdate of { update : JSON.t }
 
     [@@deriving yojson]
 end
