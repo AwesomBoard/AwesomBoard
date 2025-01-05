@@ -1,13 +1,9 @@
 (library
- (name backend)
- (libraries dream yojson ppx_deriving_yojson.runtime mirage-crypto-pk x509 cohttp cohttp-lwt-unix caqti-lwt caqti-driver-sqlite3 sqids)
- (modules Utils External
-          TokenRefresher Jwt Auth GoogleCertificates Cors
-          SubscriptionManager WebSocketMessage WebSocketServer
-          Chat ConfigRoom Game
-          Firestore FirestorePrimitives
-          Domain GameEndpoint ConfigRoomEndpoint Elo
-          Stats Server ServerUtils Options)
+ (name everyboard)
+ (libraries
+   everyboard.utils everyboard.firestore everyboard.models everyboard.persistence everyboard.websocket
+   dream yojson ppx_deriving_yojson.runtime mirage-crypto-pk x509 cohttp cohttp-lwt-unix caqti-lwt caqti-driver-sqlite3 sqids)
+ (modules Server ServerUtils Options Cors)
  (instrumentation (backend bisect_ppx))
  (preprocess (pps lwt_ppx ppx_deriving_yojson ppx_deriving.show)))
 
@@ -15,17 +11,4 @@
  (name main)
  (modules Main)
  ;; (flags (:standard -cclib -static -cclib -no-pie))
- (libraries backend dream))
-
-(tests
- (names tests)
- (modules Tests TestUtils
-          UtilsTests ExternalTests
-          TokenRefresherTests JwtTests AuthTests GoogleCertificatesTests CorsTests
-          FirestoreTests FirestorePrimitivesTests
-          DomainTests GameEndpointTests ConfigRoomEndpointTests EloTests
-          StatsTests ServerUtilsTests)
- (preprocess (pps lwt_ppx ppx_deriving_yojson ppx_deriving.show))
- (libraries backend alcotest alcotest-lwt))
-
-(include_subdirs unqualified)
+ (libraries everyboard dream))

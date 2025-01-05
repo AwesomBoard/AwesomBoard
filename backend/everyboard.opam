@@ -1,6 +1,6 @@
 synopsis: "The EveryBoard backend"
-homepage: "https://github.com/EveryBoard/backend"
-bug-reports: "https://github.com/EveryBoard/backend/issues"
+homepage: "https://github.com/EveryBoard/EveryBoard"
+bug-reports: "https://github.com/EveryBoard/EveryBoard/issues"
 authors: "The EveryBoard Team"
 maintainer: "quentin.stievenart@gmail.com"
 opam-version: "2.0"
@@ -20,7 +20,7 @@ depends: [
   "bisect_ppx" {with-test & >= "2.5.0"}
 ]
 
-dev-repo: "git+https://github.com/EveryBoard/backend"
+dev-repo: "git+https://github.com/EveryBoard/EveryBoard"
 url {
-  src: "git+https://github.com/EveryBoard/backend"
+  src: "git+https://github.com/EveryBoard/EveryBoard"
 }

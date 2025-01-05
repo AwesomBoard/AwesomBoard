@@ -1,4 +1,4 @@
-open Domain
+open Models
 
 (** All the messages we can receive *)
 module WebSocketIncomingMessage = struct

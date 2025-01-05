@@ -11,7 +11,7 @@ module type GAME = sig
             let* _ = end_game_elo_update_win ~request ~game ~winner in
 
     *)
-    val finish : Dream.request -> string -> ?winner:Domain.MinimalUser.t -> ?loser:Domain.MinimalUser.t -> Domain.Game.GameResult.t -> unit Lwt.t
+    val finish : Dream.request -> string -> ?winner:Models.MinimalUser.t -> ?loser:Models.MinimalUser.t -> Models.Game.GameResult.t -> unit Lwt.t
 
 
     (*
@@ -19,7 +19,7 @@ module type GAME = sig
 
     val start : Dream.request -> string -> starting_config -> unit Lwt.t
 
-    val add_event : Dream.request -> string -> Domain.Game.GameEvent.t -> unit Lwt.t
+    val add_event : Dream.request -> string -> Models.Game.GameEvent.t -> unit Lwt.t
 
 
     val finish_with_move : Dream.request -> string -> unit Lwt.t

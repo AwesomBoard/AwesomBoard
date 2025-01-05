@@ -23,11 +23,11 @@ let game_exists = fun (game_name : string) : bool ->
     StringSet.mem game_name games_list
 
 module Make
-        (Auth : Auth.AUTH)
-        (External : External.EXTERNAL)
-        (Chat : Chat.CHAT)
-        (ConfigRoom : ConfigRoom.CONFIG_ROOM)
-        (Stats : Stats.STATS)
+        (Auth : Firestore.Auth.AUTH)
+        (External : Utils.External.EXTERNAL)
+        (Chat : Persistence.Chat.CHAT)
+        (ConfigRoom : Persistence.ConfigRoom.CONFIG_ROOM)
+        (Stats : Firestore.Stats.STATS)
     : WEBSOCKET_SERVER = struct
 
     (** The clients currently connected. They each are associated an id and a websocket connection *)
@@ -65,7 +65,7 @@ module Make
     (** Handle a message on a WebSocket *)
     let handle_message = fun (request : Dream.request)
                              (client_id : int)
-                             (user : Domain.MinimalUser.t)
+                             (user : Models.MinimalUser.t)
                              (message : WebSocketIncomingMessage.t)
                              : unit Lwt.t ->
         match message with
@@ -85,21 +85,21 @@ module Make
 
         | ChatSend { message = content } ->
             let game_id = SubscriptionManager.subscription_of client_id in
-            let message = Domain.Message.{ sender = user; timestamp = External.now (); content } in
+            let message = Models.Message.{ sender = user; timestamp = External.now (); content } in
             Lwt.join [
                 Chat.add_message request game_id message;
                 broadcast game_id (ChatMessage { message });
             ]
 
         | Create { game_name } when game_exists game_name = false ->
-            raise (BadInput "gameName does not correspond to an existing game")
+            raise (Errors.BadInput "gameName does not correspond to an existing game")
 
         | Create { game_name } ->
             (* Retrieve elo *)
-            let* creator_elo_info : Domain.User.EloInfo.t = failwith "TODO" (* Firestore.User.get_elo ~request ~user_id:user.id ~type_game:game_name *) in
+            let* creator_elo_info : Models.User.EloInfo.t = failwith "TODO" (* Firestore.User.get_elo ~request ~user_id:user.id ~type_game:game_name *) in
             let creator_elo : float = creator_elo_info.current_elo in
             (* Create the config room only *)
-            let config_room : Domain.ConfigRoom.t = Domain.ConfigRoom.initial user creator_elo game_name in
+            let config_room : Models.ConfigRoom.t = Models.ConfigRoom.initial user creator_elo game_name in
             let* game_id : int = ConfigRoom.create request config_room in
             Stats.set_game_id request (Id.to_string game_id);
             (* Send the info to the creator and the observers of the lobby *)
@@ -138,7 +138,7 @@ module Make
             Stats.end_game ();
             let winner : MinimalUser.t = if resigner = game.player_zero then player_one else player_zero in
             let loser : MinimalUser.t = resigner in
-            let* () = Game.finish request ~winner ~loser Domain.Game.GameResult.Resign in
+            let* () = Game.finish request ~winner ~loser Models.Game.GameResult.Resign in
             broadcast game_id (PlayerResigned { resigner }) *)
         | NotifyTimeout _
         | Propose _

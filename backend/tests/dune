@@ -1,0 +1,10 @@
+(tests
+ (names tests)
+ (modules Tests TestUtils
+          UtilsTests ExternalTests
+          TokenRefresherTests JwtTests AuthTests GoogleCertificatesTests CorsTests
+          FirestoreTests FirestorePrimitivesTests
+          DomainTests GameEndpointTests ConfigRoomEndpointTests EloTests
+          StatsTests ServerUtilsTests)
+ (preprocess (pps lwt_ppx ppx_deriving_yojson ppx_deriving.show))
+ (libraries backend alcotest alcotest-lwt))

@@ -1,0 +1,6 @@
+(library
+ (name persistence)
+ (public_name everyboard.persistence)
+ (libraries everyboard.utils everyboard.models
+            dream)
+ (modules Chat ConfigRoom Game))

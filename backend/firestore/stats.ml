@@ -1,5 +1,4 @@
 open Utils
-open Domain
 
 (** This module is used for telemetry: we record the number of reads/writes per endpoint.
     It will make it easier with this information to know which endpoints should be optimized *)
@@ -8,7 +7,7 @@ module type STATS = sig
     val set_action : Dream.request -> string -> unit
 
     (** [set_user request user] remembers which user is doing something in in this request order to track reads and writes *)
-    val set_user : Dream.request -> MinimalUser.t -> unit
+    val set_user : Dream.request -> Models.MinimalUser.t -> unit
 
     (** [set_game_id request game_id] remembers on which game we are doing the request *)
     val set_game_id : Dream.request -> string -> unit
@@ -39,10 +38,10 @@ module Impl : STATS = struct
     let set_action = fun (request : Dream.request) (action : string) : unit ->
         Dream.set_field request action_field action
 
-    let user_field : MinimalUser.t Dream.field =
+    let user_field : Models.MinimalUser.t Dream.field =
         Dream.new_field ~name:"user" ()
 
-    let set_user  = fun (request : Dream.request) (user : MinimalUser.t) : unit ->
+    let set_user  = fun (request : Dream.request) (user : Models.MinimalUser.t) : unit ->
         Dream.set_field request user_field user
 
     let game_id_field : string Dream.field =
@@ -108,7 +107,7 @@ module Impl : STATS = struct
         Dream.field request field
         |> Option.value ~default
 
-    let no_user : MinimalUser.t = {
+    let no_user : Models.MinimalUser.t = {
         id = "none";
         name = "none";
     }
