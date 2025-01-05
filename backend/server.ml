@@ -4,7 +4,8 @@ module Stats = Firestore.Stats.Impl
 module GoogleCertificates = Firestore.GoogleCertificates.Make(External)
 module Jwt = Firestore.Jwt.Make(External)
 module TokenRefresher = Firestore.TokenRefresher.Make(External)(Jwt)
-module FirestoreOps = Firestore.FirestoreOps.Make(Firestore.FirestorePrimitives.Make(External)(TokenRefresher)(Stats))
+module FirestorePrimitives = Firestore.FirestorePrimitives.Make(External)(TokenRefresher)(Stats)
+module FirestoreOps = Firestore.FirestoreOps.Make(FirestorePrimitives)
 module Auth = Firestore.Auth.Make(FirestoreOps)(GoogleCertificates)(Stats)(Jwt)
 module Chat = Persistence.Chat.ChatSQL
 module ConfigRoom = Persistence.ConfigRoom.ConfigRoomSQL
@@ -23,6 +24,7 @@ let version_handler : Dream.handler = fun _ ->
 
 (** The actual backend server, dispatching to various endpoints *)
 let start = fun () : unit ->
+    FirestorePrimitives.set_config !Options.project_name !Options.database_name !Options.base_endpoint;
     let api = [
         Dream.scope "/" [TokenRefresher.middleware !Options.service_account_file !Options.emulator; Auth.middleware !Options.project_id]
         @@ List.concat [
