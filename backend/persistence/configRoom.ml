@@ -2,43 +2,48 @@ open Utils
 
 module type CONFIG_ROOM = sig
 
-    (** [create reques] creates a new config room and returns its id,
-        in the context of [request] *)
-    val create : Dream.request -> Models.ConfigRoom.t -> int Lwt.t
+    (** [create ~request config_room] creates a new config room and returns its
+        id, in the context of [request] *)
+    val create : request:Dream.request -> Models.ConfigRoom.t -> int Lwt.t
 
-    (** [get game_id] retrieves the config room for game [game_id]. If it does
-        not exist, returns [None]. *)
-    val get : Dream.request -> int -> Models.ConfigRoom.t option Lwt.t
+    (** [get ~request ~game_id] retrieves the config room for game [game_id]. If
+        it does not exist, returns [None]. *)
+    val get : request:Dream.request -> game_id:int -> Models.ConfigRoom.t option Lwt.t
 
-    (** [join request game_id user] makes [user] join the game [game_id] by
-        adding them to the candidates, in the context of [request]. *)
-    val join : Dream.request -> int -> Models.MinimalUser.t -> unit Lwt.t
+    (** [get_game_name ~request ~game_id] retrieves the name of game [game_id],
+        in the context of [request]. Returns [None] if the game does not exist. *)
+    val get_game_name : request:Dream.request -> game_id:int -> string option Lwt.t
 
-    (** [remove_candidate request game_id candidate] removes candidate [candidate] from
-        the game [game_id], in the context of [request]. *)
-    val remove_candidate : Dream.request -> int -> Models.MinimalUser.t -> unit Lwt.t
-
-    (** [select_opponent request game_id opponent] selects candidate [opponent]
-        as the chosen opponent for game [game_id], in the context of
+    (** [add_candidate ~request ~game_id candidate] makes [candidate] join the
+        game [game_id] by adding them to the candidates, in the context of
         [request]. *)
-    val select_opponent : Dream.request -> int -> Models.MinimalUser.t -> unit Lwt.t
+    val add_candidate : request:Dream.request -> game_id:int -> Models.MinimalUser.t -> unit Lwt.t
 
-    (** [propose request game_id config] proposes the config [config] of
+    (** [remove_candidate ~request ~game_id candidate] removes candidate
+        [candidate] from the game [game_id], in the context of [request]. *)
+    val remove_candidate : request:Dream.request -> game_id:int -> Models.MinimalUser.t -> unit Lwt.t
+
+    (** [select_opponent ~request ~game_id opponent] selects candidate
+        [opponent] as the chosen opponent for game [game_id], in the context of
+        [request]. *)
+    val select_opponent : request:Dream.request -> game_id:int -> Models.MinimalUser.t -> unit Lwt.t
+
+    (** [propose_config ~request ~game_id config] proposes the config [config] of
         [game_id] to the selected opponent, in the context of [request]. *)
-    val propose : Dream.request -> int -> Models.ConfigRoom.Proposal.t -> unit Lwt.t
+    val propose_config : request:Dream.request -> game_id:int -> Models.ConfigRoom.Proposal.t -> unit Lwt.t
 
-    (** [accept request game_id] accepts the config of [game_id], in the context
+    (** [accept ~request ~game_id] accepts the config of [game_id], in the context
         of [request]. *)
-    val accept : Dream.request -> int -> unit Lwt.t
+    val accept : request:Dream.request -> game_id:int -> unit Lwt.t
 
-    (** [review request game_id] changes the config of [game_id] from proposed
+    (** [review ~request ~game_id] changes the config of [game_id] from proposed
         to in progress, in the context of [request]. *)
-    val review : Dream.request -> int -> unit Lwt.t (* is change_status to config, simply? *)
+    val review : request:Dream.request -> game_id:int -> unit Lwt.t (* is change_status to config, simply? *)
 
-    (** [review_and_remove_opponent request game_id] is like [review request
-        game_id], but also clears the chosen opponent, in the context of
+    (** [review_and_remove_opponent ~request ~game_id] is like [review ~request
+        ~game_id], but also clears the chosen opponent, in the context of
         [request]. *)
-    val review_and_remove_opponent : Dream.request -> int -> unit Lwt.t
+    val review_and_remove_opponent : request:Dream.request -> game_id:int -> unit Lwt.t
 
 end
 
@@ -113,7 +118,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         SELECT last_insert_rowid()
     |}
 
-    let create = fun (request : Dream.request) (config_room : Models.ConfigRoom.t) : int Lwt.t ->
+    let create = fun ~(request : Dream.request) (config_room : Models.ConfigRoom.t) : int Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.with_transaction (fun () ->
             match%lwt  Db.exec create_query config_room with
@@ -129,16 +134,26 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         WHERE id = ?
     |}
 
-    let get = fun (request : Dream.request) (id : int) : Models.ConfigRoom.t option Lwt.t ->
+    let get = fun ~(request : Dream.request) ~(game_id : int) : Models.ConfigRoom.t option Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.find_opt get_query id
+        Db.find_opt get_query game_id
+
+    let get_game_name_query = int ->? string @@ {|
+        SELECT game_name
+        FROM config_rooms
+        WHERE id = ?
+    |}
+
+    let get_game_name = fun ~(request : Dream.request) ~(game_id : int) : string option Lwt.t ->
+        Dream.sql request @@ fun (module Db : DB) -> check @@
+        Db.find_opt get_game_name_query game_id
 
     let join_query = t3 int string string ->. unit @@ {|
         INSERT INTO candidates (game_id, candidate_id, candidate_name)
         VALUES (?, ?, ?)
     |}
 
-    let join = fun (request : Dream.request) (game_id : int) (candidate : Models.MinimalUser.t) : unit Lwt.t ->
+    let add_candidate = fun ~(request : Dream.request) ~(game_id : int) (candidate : Models.MinimalUser.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.exec join_query (game_id, candidate.id, candidate.name)
 
@@ -147,7 +162,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         WHERE game_id = ? AND candidate_id = ?
     |}
 
-    let remove_candidate = fun (request : Dream.request) (game_id : int) (candidate : Models.MinimalUser.t) : unit Lwt.t ->
+    let remove_candidate = fun ~(request : Dream.request) ~(game_id : int) (candidate : Models.MinimalUser.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.exec remove_candidate_query (game_id, candidate.id)
 
@@ -157,7 +172,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         WHERE game_id = ?
     |}
 
-    let select_opponent = fun (request : Dream.request) (game_id : int) (opponent : Models.MinimalUser.t) : unit Lwt.t ->
+    let select_opponent = fun ~(request : Dream.request) ~(game_id : int) (opponent : Models.MinimalUser.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.exec select_opponent_query (opponent.id, opponent.name, game_id)
 
@@ -167,7 +182,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         WHERE id = ?;
     |}
 
-    let propose = fun (request : Dream.request) (game_id : int) (proposal : Models.ConfigRoom.Proposal.t) : unit Lwt.t ->
+    let propose_config = fun ~(request : Dream.request) ~(game_id : int) (proposal : Models.ConfigRoom.Proposal.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.exec propose_config_query (Models.ConfigRoom.GameStatus.ConfigProposed,
                                       proposal.game_type,
@@ -184,9 +199,9 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
     |}
 
     let change_status_to = fun (status : Models.ConfigRoom.GameStatus.t) ->
-        fun (request : Dream.request) (id : int) : unit Lwt.t ->
+        fun ~(request : Dream.request) ~(game_id : int) : unit Lwt.t ->
             Dream.sql request @@ fun (module Db : DB) -> check @@
-            Db.exec change_status_query (id, status)
+            Db.exec change_status_query (game_id, status)
 
     let accept = change_status_to Models.ConfigRoom.GameStatus.Started
 
@@ -198,7 +213,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         WHERE id = ?
     |}
 
-    let review_and_remove_opponent = fun (request : Dream.request) (id : int) : unit Lwt.t ->
+    let review_and_remove_opponent = fun ~(request : Dream.request) ~(game_id : int) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.exec review_and_remove_opponent_query (id, Models.ConfigRoom.GameStatus.Created)
+        Db.exec review_and_remove_opponent_query (game_id, Models.ConfigRoom.GameStatus.Created)
 end

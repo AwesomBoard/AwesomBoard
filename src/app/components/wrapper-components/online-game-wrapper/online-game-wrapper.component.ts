@@ -29,6 +29,7 @@ import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { Debug } from 'src/app/utils/Debug';
 import { ServerTimeService } from 'src/app/services/ServerTimeService';
 import { UserService } from 'src/app/services/UserService';
+import { WebSocketManagerService } from 'src/app/services/BackendService';
 
 export class OnlineGameWrapperMessages {
 
@@ -92,7 +93,8 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
                        private readonly requestManager: OGWCRequestManagerService,
                        private readonly serverTimeService: ServerTimeService,
                        private readonly userService: UserService,
-                       private readonly cdr: ChangeDetectorRef)
+                       private readonly cdr: ChangeDetectorRef,
+                       private readonly webSocketManager: WebSocketManagerService)
     {
         super(activatedRoute, connectedUserService, router, messageDisplayer);
     }
@@ -133,9 +135,11 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     public async ngOnInit(): Promise<void> {
+        await this.webSocketManager.connect();
 
         this.routerEventsSubscription = this.router.events.subscribe(async(ev: Event) => {
             if (ev instanceof NavigationEnd) {
+                // TODO: why do we need to do this here and just below too?
                 await this.setCurrentPartIdOrRedirect();
             }
         });
@@ -564,6 +568,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     public async ngOnDestroy(): Promise<void> {
+        this.webSocketManager.disconnect();
         this.routerEventsSubscription.unsubscribe();
         this.userSubscription.unsubscribe();
         this.currentGameSubscription.unsubscribe();

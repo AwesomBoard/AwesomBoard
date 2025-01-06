@@ -38,21 +38,18 @@ export class GameService extends BackendService {
 
     /** Create a game, its config room and chat. Return the id of the created game. */
     public async createGame(gameName: string): Promise<string> {
-
-        await this.webSocketManager.send(['Create', { game_name: gameName }]);
-        const response: JSONValue[] = await this.webSocketManager.waitForMessage('GameCreated');
+        const response: JSONValue[] = await this.webSocketManager.sendAndWaitForReply(['Create', { gameName }], 'GameCreated');
+        // eslint-disable-next-line dot-notation
         const gameId: string = Utils.getNonNullable(response[0])['gameId'];
-
         return gameId;
     }
 
     /** Retrieve the name of the game with the given id. If there is no corresponding game, returns an empty option. */
     public async getGameName(gameId: string): Promise<MGPOptional<string>> {
-        const result: MGPFallible<JSONValue> =
-            await this.performRequestWithJSONResponse('GET', `game/${gameId}?onlyGameName`);
-        if (result.isSuccess()) {
-            // eslint-disable-next-line dot-notation
-            const gameName: string = Utils.getNonNullable(Utils.getNonNullable(result.get())['gameName']) as string;
+        const response: JSONValue[] = await this.webSocketManager.sendAndWaitForReply(['GetGameName', { gameId }], 'GameName');
+        // eslint-disable-next-line dot-notation
+        const gameName: string | null = Utils.getNonNullable(response[0])['gameName'];
+        if (typeof(gameName) === 'string') {
             return MGPOptional.of(gameName);
         } else {
             return MGPOptional.empty();

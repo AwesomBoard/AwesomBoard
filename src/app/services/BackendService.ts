@@ -69,7 +69,12 @@ export class WebSocketManagerService {
         this.webSocket.get().send(JSON.stringify(message));
     }
 
-    public async waitForMessage(tag: string): Promise<JSONValue[]> {
+    public async sendAndWaitForReply(message: JSONValue, replyTag: string): Promise<JSONValue[]> {
+        await this.send(message);
+        return this.waitForMessage(replyTag);
+    }
+
+    private async waitForMessage(tag: string): Promise<JSONValue[]> {
         return new Promise((resolve: (value: JSONValue[]) => void) => {
             this.setCallback(tag, (args: JSONValue[]) => {
                 this.removeCallback(tag);

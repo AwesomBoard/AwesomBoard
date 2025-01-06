@@ -96,61 +96,49 @@ module Make
 
         | Create { game_name; _ } when game_exists game_name = false ->
             raise (Errors.BadInput "gameName does not correspond to an existing game")
-
         | Create { game_name } ->
+            (** Someone is creating a new game [game_name] *)
             (* Retrieve elo of the creator *)
             let* creator_elo_info : Models.User.EloInfo.t = Elo.get ~request ~user_id:user.id ~game_name in
             let creator_elo : float = creator_elo_info.current_elo in
-            (* Create the config room only *)
+            (* Create the config room *)
             let config_room : Models.ConfigRoom.t = Models.ConfigRoom.initial user creator_elo game_name in
-            let* game_id : int = ConfigRoom.create request config_room in
+            let* game_id : int = ConfigRoom.create ~request config_room in
             (* Send the info to the creator and the observers of the lobby *)
             let update : WebSocketOutgoingMessage.t = GameCreated { game_id = Id.to_string game_id } in
-            let* () = send_to client_id update in
-            broadcast lobby update
-        | Join { game_id } -> failwith "TODO"
-        | ProposeConfig { config } ->
-            let game_id = SubscriptionManager.subscription_of client_id in
-            let* () = ConfigRoom.propose request game_id config in
-            failwith "TODO" (* broadcast game_id (ConfigProposed { config  }) *)
-        | AcceptConfig ->
-            let game_id = SubscriptionManager.subscription_of client_id in
-            let* () = ConfigRoom.accept request game_id in
-            failwith "TODO: start game"
-        | SelectOpponent { opponent } ->
-            let game_id = SubscriptionManager.subscription_of client_id in
-            let* () = ConfigRoom.select_opponent request game_id opponent in
-            failwith "TODO" (* broadcast game_id (OpponentSelected { opponent }) *)
-        | ReviewConfig ->
-            let game_id = SubscriptionManager.subscription_of client_id in
-            let* () = ConfigRoom.review request game_id in
-            failwith "TODO" (* broadcast game_id ConfigInReview *)
-        | ReviewConfigAndRemoveOpponent ->
-            let game_id = SubscriptionManager.subscription_of client_id in
-            let* () = ConfigRoom.review_and_remove_opponent request game_id in
-            failwith "TODO" (* broadcast game_id ConfigInReviewAndOpponentRemoved *)
+            Lwt.join [
+                send_to client_id update;
+                broadcast lobby update;
+            ]
+        | Join { game_id = game_id_str } ->
+            (** Someone is joining the game [game_id]. It can be either the creator, or a candidate *)
+            let candidate : Models.MinimalUser.t = user in
+            let game_id : int = Id.of_string game_id_str in
+            (* Retrieve the config room *)
+            begin match%lwt ConfigRoom.get ~request ~game_id with
+            | None -> raise (Errors.DocumentNotFound (Printf.sprintf "config room %s" game_id_str))
+            | Some config_room ->
+                if config_room.creator.id = user.id then
+                    (* If the creator joins, there's nothing to do! (They are not a candidate) *)
+                    Lwt.return ()
+                else
+                    (* If a non-creator joins, they become a candidate *)
+                    let* () = ConfigRoom.add_candidate ~request ~game_id candidate in
+                    (* Send the update to everyone subscribed *)
+                    let update : WebSocketOutgoingMessage.t = CandidateJoined { candidate } in
+                    broadcast lobby update
+            end
 
-        | Resign ->
-            failwith "TODO"
-            (*
-            let game_id = SubscriptionManager.subscription_of client_id in
-            let resigner = user in
-            let* game = Game.get request game_id in
-            let player_zero : MinimalUser.t = game.player_zero in
-            let player_one : MinimalUser.t = game.player_one in
-            Stats.end_game ();
-            let winner : MinimalUser.t = if resigner = game.player_zero then player_one else player_zero in
-            let loser : MinimalUser.t = resigner in
-            let* () = Game.finish request ~winner ~loser Models.Game.GameResult.Resign in
-            broadcast game_id (PlayerResigned { resigner }) *)
-        | NotifyTimeout _
-        | Propose _
-        | Reject _
-        | AcceptTakeBack
-        | AcceptDraw
-        | AcceptRematch
-        | AddTime _ ->
-            failwith "TODO"
+        (* TODO: part creation should load *)
+        | GetGameName { game_id = game_id_str } ->
+            (** Someone loading a game, they want to make sure that the game name is right *)
+            let game_id : int = Id.of_string game_id_str in
+            (* Retrieve the game name from the config room *)
+            let* game_name : string option = ConfigRoom.get_game_name ~request ~game_id in
+            send_to client_id (GameName { game_name })
+        (* TODO: a candidate should be able to see the part from the lobby and join *)
+        | m ->
+            failwith (Printf.sprintf "TODO: %s" (m |> WebSocketIncomingMessage.to_yojson |> JSON.to_string))
 
     (** The main handler *)
     let handle : Dream.handler = fun (request : Dream.request) ->

@@ -11,15 +11,16 @@ module WebSocketIncomingMessage = struct
 
     type t =
         (** Subscription messages *)
-        | Subscribe of { game_id : string [@key "gameId"]}
+        | Subscribe of { game_id : string [@key "gameId"] }
         | Unsubscribe
 
         (** Chat messages *)
         | ChatSend of { message : string }
 
         (** Config room messages *)
-        | Create of { game_name : string [@key "gameName"]}
+        | Create of { game_name : string [@key "gameName"] }
         | Join of { game_id : string [@key "gameId"] }
+        | GetGameName of { game_id : string [@key "gameId"] }
         | ProposeConfig of { config : ConfigRoom.Proposal.t }
         | AcceptConfig
         | SelectOpponent of { opponent : MinimalUser.t }
@@ -49,7 +50,8 @@ module WebSocketOutgoingMessage = struct
         | ChatMessage of { message : Message.t }
 
         (** Config room messages *)
-        | GameCreated of { game_id : string }
+        | GameCreated of { game_id : string [@key "gameId"] }
+        | GameName of { game_name : string option [@key "gameName"] }
         | GameJoined of { config : ConfigRoom.t }
         | CandidateJoined of { candidate : MinimalUser.t }
         | CandidateLeft of { candidate : MinimalUser.t }
