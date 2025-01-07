@@ -7,26 +7,23 @@ import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { GameInfo } from '../pick-game/pick-game.component';
 import { GameWrapperMessages } from '../../wrapper-components/GameWrapper';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
-import { WebSocketManagerService } from 'src/app/services/BackendService';
 
 @Component({
     selector: 'app-online-game-creation',
     template: '<p i18n>Creating online game, please wait, it should not take long.</p>',
 })
-export class OnlineGameCreationComponent implements OnInit, OnDestroy {
+export class OnlineGameCreationComponent implements OnInit {
 
     public constructor(private readonly route: ActivatedRoute,
                        private readonly router: Router,
                        private readonly connectedUserService: ConnectedUserService,
                        private readonly currentGameService: CurrentGameService,
                        private readonly messageDisplayer: MessageDisplayer,
-                       private readonly gameService: GameService,
-                       private readonly webSocketManager: WebSocketManagerService)
+                       private readonly gameService: GameService)
     {
     }
 
     public async ngOnInit(): Promise<void> {
-        await this.webSocketManager.connect();
         await this.createGameAndRedirectOrShowError(this.extractGameFromURL());
     }
 
@@ -58,7 +55,4 @@ export class OnlineGameCreationComponent implements OnInit, OnDestroy {
         return optionalGameInfo.isPresent();
     }
 
-    public ngOnDestroy(): void {
-        this.webSocketManager.disconnect();
-    }
 }

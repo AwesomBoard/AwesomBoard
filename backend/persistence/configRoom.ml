@@ -128,7 +128,8 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
     let get_query = int ->? config_room @@ {|
         SELECT creator_id, creator_name, creator_elo,
                chosen_opponent_id, chosen_opponent_name,
-               status, first_player, game_type, duration,
+               status, first_player, game_type,
+               move_duration, game_duration,
                config, game_name
         FROM config_rooms
         WHERE id = ?
@@ -178,7 +179,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
 
     let propose_config_query = t7 game_status game_type int int first_player string int ->. unit @@ {|
         UPDATE games
-        SET status = ?, game_type = ?, maximal_move_duration = ?, total_part_duration = ?, first_player = ?, config = ?
+        SET status = ?, game_type = ?, move_duration = ?, game_duration = ?, first_player = ?, config = ?
         WHERE id = ?;
     |}
 

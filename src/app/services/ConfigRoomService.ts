@@ -7,7 +7,7 @@ import { MinimalUser } from '../domain/MinimalUser';
 import { FirestoreCollectionObserver } from '../dao/FirestoreCollectionObserver';
 import { FirestoreDocument, IFirestoreDAO } from '../dao/FirestoreDAO';
 import { RulesConfig } from '../jscaip/RulesConfigUtil';
-import { BackendService } from './BackendService';
+import { BackendService, WebSocketManagerService } from './BackendService';
 import { Debug } from '../utils/Debug';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Localized } from '../utils/LocaleUtils';
@@ -16,7 +16,6 @@ export class ConfigRoomServiceFailure {
     public static readonly GAME_DOES_NOT_EXIST: Localized = () => $localize`This game does not exist!`;
 }
 
-
 @Injectable({
     providedIn: 'root',
 })
@@ -24,11 +23,11 @@ export class ConfigRoomServiceFailure {
 export class ConfigRoomService extends BackendService {
 
     public constructor(protected readonly configRoomDAO: ConfigRoomDAO,
-                       connectedUserService: ConnectedUserService)
+                       connectedUserService: ConnectedUserService,
+                       private readonly webSocketManager: WebSocketManagerService)
     {
         super(connectedUserService);
     }
-
     public subscribeToChanges(gameId: string, callback: (doc: MGPOptional<ConfigRoom>) => void): Subscription {
         return this.configRoomDAO.subscribeToChanges(gameId, callback);
     }
@@ -68,15 +67,8 @@ export class ConfigRoomService extends BackendService {
     }
 
     /** Join a game */
-    public async joinGame(gameId: string): Promise<MGPValidation> {
-        const endpoint: string = `config-room/${gameId}/candidates`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        if (result.isSuccess()) {
-            return MGPValidation.SUCCESS;
-        } else {
-            Utils.assert(result.getReason() === 'not_found', `Unexpected failure from backend: ${result.getReason()}`);
-            return MGPValidation.failure(ConfigRoomServiceFailure.GAME_DOES_NOT_EXIST());
-        }
+    public async joinGame(gameId: string): Promise<void> {
+        return this.webSocketManager.send(['Join', { gameId }]);
     }
 
     /** Remove a candidate from a config room (it can be ourselves or someone else) */

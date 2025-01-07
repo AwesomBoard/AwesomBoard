@@ -126,7 +126,7 @@ module Make
                     let* () = ConfigRoom.add_candidate ~request ~game_id candidate in
                     (* Send the update to everyone subscribed *)
                     let update : WebSocketOutgoingMessage.t = CandidateJoined { candidate } in
-                    broadcast lobby update
+                    broadcast lobby update;
             end
 
         (* TODO: part creation should load *)

@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, ViewChild, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, Input, ElementRef, ViewChild, OnInit, AfterViewChecked, OnDestroy } from '@angular/core';
 import { ChatService } from '../../../services/ChatService';
 import { Message } from '../../../domain/Message';
 import { faReply, IconDefinition } from '@fortawesome/free-solid-svg-icons';
@@ -11,7 +11,7 @@ import { Utils } from '@everyboard/lib';
     templateUrl: './chat.component.html',
 })
 @Debug.log
-export class ChatComponent implements OnInit, AfterViewChecked {
+export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     @Input() public chatId!: string;
     @Input() public turn?: number;
@@ -32,6 +32,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     @ViewChild('chatDiv')
     private readonly chatDiv: ElementRef<HTMLElement>;
 
+    private chatSubscription!: Subscription;
+
     public constructor(private readonly chatService: ChatService) {
     }
 
@@ -40,12 +42,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.loadChatContent();
     }
 
-    public ngAfterViewChecked(): void {
-        this.scrollToBottomIfNeeded();
+    private loadChatContent(): void {
+        this.chatSubscription = this.chatService.subscribeToMessages((message: Message) => {
+            this.updateMessages([message]);
+        });
     }
 
-    public loadChatContent(): void {
-        this.chatService.subscribeToMessages((message: Message) => this.updateMessages([message]));
+    public ngOnDestroy(): void {
+        this.chatSubscription.unsubscribe();
+    }
+
+    public ngAfterViewChecked(): void {
+        this.scrollToBottomIfNeeded();
     }
 
     public updateMessages(newMessages: Message[]): void {

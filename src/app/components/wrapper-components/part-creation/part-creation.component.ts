@@ -136,12 +136,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     public async ngOnInit(): Promise<void> {
         this.checkInputs();
         this.createForms();
-        const joinResult: MGPValidation = await this.configRoomService.joinGame(this.partId);
-        if (joinResult.isFailure()) {
-            const reason: string = joinResult.getReason();
-            this.messageDisplayer.criticalMessage(reason);
-            return;
-        }
+        await this.configRoomService.joinGame(this.partId);
         await this.startSendingPresenceTokens();
         this.subscribeToConfigRoomDoc();
         this.subscribeToFormElements();

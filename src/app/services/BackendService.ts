@@ -1,7 +1,8 @@
 import { ConnectedUserService } from './ConnectedUserService';
 import { environment } from 'src/environments/environment';
 import { JSONValue, MGPFallible, MGPMap, MGPOptional, Utils } from '@everyboard/lib';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 type HTTPMethod = 'POST' | 'GET' | 'PATCH' | 'HEAD' | 'DELETE';
 
@@ -20,7 +21,7 @@ export class WebSocketManagerService {
         console.log('WebSocketManagerService created (should happen only once');
     }
 
-    public async connect(): Promise<void> {
+    private async connect(): Promise<void> {
         // TODO: let user know we're trying to connect to the server somehow visually?
         Utils.assert(this.webSocket.isAbsent(), 'Should not connect twice to WebSocket!');
         const token: string = await this.connectedUserService.getIdToken();
@@ -42,10 +43,9 @@ export class WebSocketManagerService {
                 console.log('WS: closed');
             };
             ws.onmessage = (ev: MessageEvent<unknown>): void => {
-                console.log('WS: message: ');
-                console.log(ev);
                 Utils.assert(typeof(ev.data) === 'string', `Received malformed WebSocket message: ${ev.data}`);
                 const json: NonNullable<JSONValue> = Utils.getNonNullable(JSON.parse(ev.data as string));
+                console.log('%cWS: <<< ' + JSON.stringify(json), 'color: green');
                 Utils.assert(typeof(json) === 'object', // i.e., an array
                              `Received malformed WebSocket message: ${json}`);
                 const tag: unknown = json[0]; // the tag is the first element of the array
@@ -60,12 +60,16 @@ export class WebSocketManagerService {
         });
     }
 
-    public async subscribeTo(gameId: string): Promise<void> {
-        return this.send(['Subscribe', { gameId }]);
+    public async subscribeTo(gameId: string): Promise<Subscription> {
+        await this.send(['Subscribe', { gameId }]);
+        return new Subscription(async() => this.send(['Unsubscribe']));
     }
 
     public async send(message: JSONValue): Promise<void> {
-        Utils.assert(this.webSocket.isPresent(), 'Trying to send message over closed WebSocket');
+        if (this.webSocket.isAbsent()) {
+            await this.connect();
+        }
+        console.log('%cWS: >>> ' + JSON.stringify(message), 'color: lightblue');
         this.webSocket.get().send(JSON.stringify(message));
     }
 

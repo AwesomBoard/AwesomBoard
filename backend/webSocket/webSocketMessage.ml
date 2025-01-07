@@ -52,7 +52,6 @@ module WebSocketOutgoingMessage = struct
         (** Config room messages *)
         | GameCreated of { game_id : string [@key "gameId"] }
         | GameName of { game_name : string option [@key "gameName"] }
-        | GameJoined of { config : ConfigRoom.t }
         | CandidateJoined of { candidate : MinimalUser.t }
         | CandidateLeft of { candidate : MinimalUser.t }
         | ConfigRoomUpdate of { update : JSON.t }

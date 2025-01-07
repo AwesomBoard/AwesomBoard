@@ -7,6 +7,7 @@ import { Debug } from '../utils/Debug';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Message } from '../domain/Message';
 import { BackendService, WebSocketManagerService } from './BackendService';
+import { Subscription } from 'rxjs';
 
 export class ChatMessages {
     public static readonly CANNOT_SEND_MESSAGE: Localized = () => $localize`You're not allowed to send a message here.`;
@@ -29,11 +30,12 @@ export class ChatService extends BackendService {
         await this.webSocketManager.send(['ChatSend', { message }]);
     }
 
-    public subscribeToMessages(callback: (message: Message) => void): void {
+    public subscribeToMessages(callback: (message: Message) => void): Subscription {
         // Make a new subscription to receive new messages
         this.webSocketManager.setCallback('ChatMessage', (args: JSONValue[]): void => {
             callback(Utils.getNonNullable(args[0])['message'] as Message);
         });
+        return new Subscription(() => this.webSocketManager.removeCallback('ChatMessage'));
     }
 
     public async sendMessage(content: string): Promise<MGPValidation> {
