@@ -1,4 +1,4 @@
-import { MGPFallible, MGPOptional, MGPValidation, Utils, Set } from '@everyboard/lib';
+import { MGPFallible, MGPOptional, MGPValidation, Utils, Set, MGPUniqueList } from '@everyboard/lib';
 import { ModeConfig, ParallelogramGameComponent } from 'src/app/components/game-components/parallelogram-game-component/ParallelogramGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Vector } from 'src/app/jscaip/Vector';
@@ -9,7 +9,6 @@ import { CheckersMove } from '../common/CheckersMove';
 import { AbstractCheckersRules, CheckersConfig } from '../common/AbstractCheckersRules';
 import { CheckersPiece, CheckersStack, CheckersState } from '../common/CheckersState';
 import { CheckersMoveGenerator } from '../common/CheckersMoveGenerator';
-import { CoordSet } from 'src/app/jscaip/CoordSet';
 import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 import { CheckersScoreMinimax } from './CheckersScoreMinimax';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
@@ -129,7 +128,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         if (this.rules.isMoveStep(move)) {
             this.lastMoveds.push(move.getEndingCoord());
         } else {
-            const jumpedOverCoord: MGPFallible<CoordSet> = move.getSteppedOverCoords();
+            const jumpedOverCoord: MGPFallible<MGPUniqueList<Coord>> = move.getSteppedOverCoords();
             Utils.assert(jumpedOverCoord.isSuccess(), 'Last move is a capture yet has illegal jumps !?');
             for (const coord of jumpedOverCoord.get().toList().slice(1)) {
                 if (this.getPreviousState().getPieceAt(coord).isOccupied()) {

@@ -2,7 +2,6 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { Move } from 'src/app/jscaip/Move';
 import { ArrayUtils, Encoder, MGPFallible, MGPOptional, MGPUniqueList, Utils } from '@everyboard/lib';
 import { CheckersFailure } from './CheckersFailure';
-import { CoordSet } from 'src/app/jscaip/CoordSet';
 
 export class CheckersMove extends Move {
 
@@ -11,7 +10,7 @@ export class CheckersMove extends Move {
     }
 
     public static fromCapture(coords: Coord[]): MGPFallible<CheckersMove> {
-        const jumpsValidity: MGPFallible<CoordSet> = CheckersMove.getSteppedOverCoords(coords);
+        const jumpsValidity: MGPFallible<MGPUniqueList<Coord>> = CheckersMove.getSteppedOverCoords(coords);
         if (jumpsValidity.isSuccess()) {
             return MGPFallible.success(new CheckersMove(coords, false));
         } else {
@@ -19,9 +18,9 @@ export class CheckersMove extends Move {
         }
     }
 
-    public static getSteppedOverCoords(steppedOn: Coord[]): MGPFallible<CoordSet> {
+    public static getSteppedOverCoords(steppedOn: Coord[]): MGPFallible<MGPUniqueList<Coord>> {
         let lastCoordOpt: MGPOptional<Coord> = MGPOptional.empty();
-        let jumpedOverCoords: CoordSet = new CoordSet([steppedOn[0]]);
+        let jumpedOverCoords: MGPUniqueList<Coord> = new MGPUniqueList([steppedOn[0]]);
         for (const coord of steppedOn) {
             if (lastCoordOpt.isPresent()) {
                 const lastCoord: Coord = lastCoordOpt.get();
@@ -58,7 +57,11 @@ export class CheckersMove extends Move {
     public override toString(): string {
         const coordStrings: string[] = this.coords.toList().map((coord: Coord) => coord.toString());
         const coordString: string = coordStrings.join(', ');
-        return 'CheckersMove(' + coordString + ')';
+        if (this.isStep) {
+            return 'CheckersStep(' + coordString + ')';
+        } else {
+            return 'CheckersCapture(' + coordString + ')';
+        }
     }
 
     private getRelation(other: CheckersMove): 'EQUALITY' | 'PREFIX' | 'INEQUALITY' {
@@ -93,7 +96,7 @@ export class CheckersMove extends Move {
         return this.coords.getFromEnd(0);
     }
 
-    public getSteppedOverCoords(): MGPFallible<CoordSet> {
+    public getSteppedOverCoords(): MGPFallible<MGPUniqueList<Coord>> {
         return CheckersMove.getSteppedOverCoords(this.coords.toList());
     }
 

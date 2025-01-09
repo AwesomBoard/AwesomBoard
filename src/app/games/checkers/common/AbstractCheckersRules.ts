@@ -1,16 +1,16 @@
+import { ArrayUtils, MGPFallible, MGPOptional, MGPUniqueList, MGPValidation } from '@everyboard/lib';
+
 import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { Player } from 'src/app/jscaip/Player';
 import { ConfigurableRules } from 'src/app/jscaip/Rules';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { ArrayUtils, MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { CheckersMove } from './CheckersMove';
 import { CheckersFailure } from './CheckersFailure';
 import { CheckersPiece, CheckersStack, CheckersState } from './CheckersState';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { TableUtils } from 'src/app/jscaip/TableUtils';
-import { CoordSet } from 'src/app/jscaip/CoordSet';
 import { Localized } from 'src/app/utils/LocaleUtils';
 import { Vector } from 'src/app/jscaip/Vector';
 
@@ -331,8 +331,8 @@ export abstract class AbstractCheckersRules extends ConfigurableRules<CheckersMo
         return resultingState.incrementTurn();
     }
 
-    private getCapturedCoords(move: CheckersMove, state: CheckersState): CoordSet {
-        const steppedOverCoords: CoordSet = move.getSteppedOverCoords().get();
+    private getCapturedCoords(move: CheckersMove, state: CheckersState): MGPUniqueList<Coord> {
+        const steppedOverCoords: MGPUniqueList<Coord> = move.getSteppedOverCoords().get();
         return steppedOverCoords.filter((coord: Coord) =>
             state.getPieceAt(coord).isOccupied() &&
             coord.equals(move.getStartingCoord()) === false);
