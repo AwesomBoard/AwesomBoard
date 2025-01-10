@@ -54,7 +54,7 @@ module WebSocketOutgoingMessage = struct
         | GameName of { game_name : string option [@key "gameName"] }
         | CandidateJoined of { candidate : MinimalUser.t }
         | CandidateLeft of { candidate : MinimalUser.t }
-        | ConfigRoomUpdate of { update : JSON.t }
+        | ConfigRoomUpdate of { update : ConfigRoom.t }
 
         (** Game messages *)
         | GameEvent of { event : GameEvent.t }

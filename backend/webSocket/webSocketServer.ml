@@ -81,6 +81,8 @@ module Make
                 Chat.iter_messages request game_id (fun message ->
                     send_to client_id (ChatMessage { message }))
                 (* TODO: for lobby, send game list. For game, send game info/updates *)
+                (* TODO: it is important to send first a config room before really subscribing, lest the subscriber would receive candidates without knowing the config room *)
+                (* TODO: on top of sendin the config room, we need to send candidates too *)
             end
         | Unsubscribe ->
             SubscriptionManager.unsubscribe client_id;
@@ -118,15 +120,20 @@ module Make
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None -> raise (Errors.DocumentNotFound (Printf.sprintf "config room %s" game_id_str))
             | Some config_room ->
-                if config_room.creator.id = user.id then
-                    (* If the creator joins, there's nothing to do! (They are not a candidate) *)
-                    Lwt.return ()
-                else
-                    (* If a non-creator joins, they become a candidate *)
-                    let* () = ConfigRoom.add_candidate ~request ~game_id candidate in
-                    (* Send the update to everyone subscribed *)
-                    let update : WebSocketOutgoingMessage.t = CandidateJoined { candidate } in
-                    broadcast lobby update;
+                Lwt.join @@
+                    (* Send the config room to the joiner *)
+                    send_to client_id (ConfigRoomUpdate { update = config_room }) ::
+                    if config_room.creator.id = user.id then
+                        (* If the creator joins, they are not a candidate. *)
+                        []
+                    else
+                        [
+                            (* If a non-creator joins, they become a candidate *)
+                            let* () = ConfigRoom.add_candidate ~request ~game_id candidate in
+                            (* Send the update to everyone subscribed *)
+                            let update : WebSocketOutgoingMessage.t = CandidateJoined { candidate } in
+                            broadcast lobby update;
+                        ]
             end
 
         (* TODO: part creation should load *)

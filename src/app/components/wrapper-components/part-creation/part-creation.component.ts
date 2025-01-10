@@ -136,9 +136,9 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     public async ngOnInit(): Promise<void> {
         this.checkInputs();
         this.createForms();
+        this.subscribeToConfigRoomDoc();
         await this.configRoomService.joinGame(this.partId);
         await this.startSendingPresenceTokens();
-        this.subscribeToConfigRoomDoc();
         this.subscribeToFormElements();
     }
 
@@ -192,20 +192,10 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     }
 
     private subscribeToConfigRoomDoc(): void {
-        const candidatesCallback: (candidates: MinimalUser[]) => void = async(candidates: MinimalUser[]) => {
-            await this.onCandidatesUpdate(candidates);
-        };
-        const configRoomCallback: (configRoom: MGPOptional<ConfigRoom>) => void =
-            async(configRoom: MGPOptional<ConfigRoom>) => {
-                await this.onCurrentConfigRoomUpdate(configRoom);
-                if (configRoom.isPresent() && this.candidatesSubscription === Subscription.EMPTY) {
-                    // We want to subscribe to candidates AFTER receiving a first config room
-                    this.candidatesSubscription =
-                        this.configRoomService.subscribeToCandidates(this.partId, candidatesCallback);
-                }
-            };
-        this.configRoomSubscription =
-            this.configRoomService.subscribeToChanges(this.partId, configRoomCallback);
+        this.configRoomService.subscribeToChanges(
+            (configRoom: ConfigRoom): Promise<void> => this.onConfigRoomUpdate(configRoom),
+            (candidate: MinimalUser): void => this.onCandidateJoined(candidate),
+            (candidate: MinimalUser): void => this.onCandidateLeft(candidate));
     }
 
     private getForm(name: string): AbstractControl {
@@ -357,46 +347,47 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         await this.gameService.deleteGame(this.partId);
     }
 
-    private async onCurrentConfigRoomUpdate(configRoomOpt: MGPOptional<ConfigRoom>): Promise<void> {
-        if (configRoomOpt.isAbsent()) {
-            Debug.display('PartCreationComponent', 'onCurrentConfigRoomUpdate', 'LAST UPDATE : the game is canceled');
-            return this.onGameCanceled();
-        } else {
-            const configRoom: ConfigRoom = configRoomOpt.get();
-            const oldConfigRoom: ConfigRoom | null = this.currentConfigRoom;
-            this.currentConfigRoom = configRoom;
-            if (configRoom.rulesConfig !== null) {
-                // Not null means that there was already a rule config saved in the config room
-                this.saveRulesConfig(
-                    MGPOptional.of(configRoom.rulesConfig),
-                );
-            }
-            if (this.chosenOpponentJustLeft(oldConfigRoom, configRoom) &&
-                this.userIsCreator(configRoom))
-            {
-                const userName: string = Utils.getNonNullable(oldConfigRoom?.chosenOpponent).name;
-                this.messageDisplayer.infoMessage($localize`${userName} left the game, please pick another opponent.`);
-                await this.currentGameService.updateCurrentGame({ opponent: null });
-            }
-            if (this.userJustChosenAsOpponent(oldConfigRoom, configRoom) ||
-                this.allUserInterval.isAbsent())
-            {
-                // Only update user doc if we were chosen and we haven't updated the doc yet
-                await this.updateUserDocWithCurrentGame(configRoom);
-            }
-            if (this.allUserInterval.isAbsent()) {
-                await this.observeNeededPlayers(configRoom);
-            }
-            this.updateViewInfo(configRoom);
-            if (this.isGameStarted(configRoom)) {
-                Debug.display('PartCreationComponent', 'onCurrentConfigRoomUpdate', 'the game has started');
-                this.onGameStarted();
-            }
+    private async onConfigRoomUpdate(configRoom: ConfigRoom): Promise<void> {
+        console.log({configRoom})
+        const oldConfigRoom: ConfigRoom | null = this.currentConfigRoom;
+        this.currentConfigRoom = configRoom;
+        if (configRoom.rulesConfig !== null) {
+            // Not null means that there was already a rule config saved in the config room
+            this.saveRulesConfig(MGPOptional.of(configRoom.rulesConfig));
         }
+        if (this.chosenOpponentJustLeft(oldConfigRoom, configRoom) &&
+            this.userIsCreator(configRoom))
+        {
+            const userName: string = Utils.getNonNullable(oldConfigRoom?.chosenOpponent).name;
+            this.messageDisplayer.infoMessage($localize`${userName} left the game, please pick another opponent.`);
+            await this.currentGameService.updateCurrentGame({ opponent: null });
+        }
+        if (this.userJustChosenAsOpponent(oldConfigRoom, configRoom) ||
+            this.allUserInterval.isAbsent())
+        {
+            // Only update user doc if we were chosen and we haven't updated the doc yet
+            await this.updateUserDocWithCurrentGame(configRoom);
+        }
+        if (this.allUserInterval.isAbsent()) {
+            await this.observeNeededPlayers(configRoom);
+        }
+        this.updateViewInfo(configRoom);
+        if (this.isGameStarted(configRoom)) {
+            Debug.display('PartCreationComponent', 'onCurrentConfigRoomUpdate', 'the game has started');
+            this.onGameStarted();
+        }
+
     }
 
-    private async onCandidatesUpdate(candidates: MinimalUser[]): Promise<void> {
-        this.candidates = candidates;
+    private onCandidateJoined(candidate: MinimalUser): void {
+        console.log({joined: candidate})
+        this.candidates.push(candidate);
+        this.updateViewInfo(Utils.getNonNullable(this.currentConfigRoom));
+    }
+
+    private onCandidateLeft(candidate: MinimalUser): void {
+        console.log({left: candidate})
+        this.candidates = this.candidates.filter((c: MinimalUser) => c.id !== candidate.id);
         this.updateViewInfo(Utils.getNonNullable(this.currentConfigRoom));
     }
 

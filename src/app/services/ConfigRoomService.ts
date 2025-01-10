@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FirstPlayer, ConfigRoom, PartStatus, PartType } from '../domain/ConfigRoom';
 import { ConfigRoomDAO } from '../dao/ConfigRoomDAO';
-import { FirestoreJSONObject, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+import { FirestoreJSONObject, JSONValue, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { Subscription } from 'rxjs';
 import { MinimalUser } from '../domain/MinimalUser';
 import { FirestoreCollectionObserver } from '../dao/FirestoreCollectionObserver';
@@ -28,47 +28,36 @@ export class ConfigRoomService extends BackendService {
     {
         super(connectedUserService);
     }
-    public subscribeToChanges(gameId: string, callback: (doc: MGPOptional<ConfigRoom>) => void): Subscription {
-        return this.configRoomDAO.subscribeToChanges(gameId, callback);
-    }
 
-    public subscribeToCandidates(gameId: string, callback: (candidates: MinimalUser[]) => void): Subscription {
-        let candidates: MinimalUser[] = [];
-        const observer: FirestoreCollectionObserver<MinimalUser> = new FirestoreCollectionObserver(
-            (created: FirestoreDocument<MinimalUser>[]) => {
-                for (const candidate of created) {
-                    candidates.push(candidate.data);
-                }
-                callback(candidates);
-            },
-            (modified: FirestoreDocument<MinimalUser>[]) => {
-                // This should never happen, but we can still update the candidates list just in case
-                for (const modifiedCandidate of modified) {
-                    candidates = candidates.map((candidate: MinimalUser) => {
-                        if (candidate.id === modifiedCandidate.data.id) {
-                            return modifiedCandidate.data;
-                        } else {
-                            return candidate;
-                        }
-                    });
-                }
-                callback(candidates);
-            },
-            (deleted: FirestoreDocument<MinimalUser>[]) => {
-                for (const deletedCandidate of deleted) {
-                    candidates = candidates.filter((candidate: MinimalUser) =>
-                        candidate.id !== deletedCandidate.data.id);
-                }
-                callback(candidates);
+    public subscribeToChanges(configRoomUpdate: (configRoom: ConfigRoom) => void,
+                              candidateJoined: (candidate: MinimalUser) => void,
+                              candidateLeft: (candidate: MinimalUser) => void)
+    : Subscription
+    {
+        console.log('ConfigRoomService: subscribeToChanges');
+        const configRoomSubscription: Subscription =
+            this.webSocketManager.setCallback('ConfigRoomUpdate', (args: JSONValue[]): void => {
+                configRoomUpdate(Utils.getNonNullable(args[0])['update'] as ConfigRoom);
             });
-        const subCollection: IFirestoreDAO<FirestoreJSONObject> =
-            this.configRoomDAO.subCollectionDAO(gameId, 'candidates');
-        return subCollection.observingWhere([], observer);
+        const candidateJoinedSubscription: Subscription =
+            this.webSocketManager.setCallback('CandidateJoined', (args: JSONValue[]): void => {
+                candidateJoined(Utils.getNonNullable(args[0])['candidate'] as MinimalUser);
+            });
+        const candidateLeftSubscription: Subscription =
+            this.webSocketManager.setCallback('CandidateLeft', (args: JSONValue[]): void => {
+                candidateLeft(Utils.getNonNullable(args[0])['candidate'] as MinimalUser);
+            });
+        return new Subscription(() => {
+            configRoomSubscription.unsubscribe();
+            candidateJoinedSubscription.unsubscribe();
+            candidateLeftSubscription.unsubscribe();
+        });
     }
 
     /** Join a game */
     public async joinGame(gameId: string): Promise<void> {
-        return this.webSocketManager.send(['Join', { gameId }]);
+        await this.webSocketManager.send(['Subscribe', { gameId }]);
+        await this.webSocketManager.send(['Join', { gameId }]);
     }
 
     /** Remove a candidate from a config room (it can be ourselves or someone else) */

@@ -1,7 +1,7 @@
 import { ConnectedUserService } from './ConnectedUserService';
 import { environment } from 'src/environments/environment';
 import { JSONValue, MGPFallible, MGPMap, MGPOptional, Utils } from '@everyboard/lib';
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 type HTTPMethod = 'POST' | 'GET' | 'PATCH' | 'HEAD' | 'DELETE';
@@ -87,8 +87,9 @@ export class WebSocketManagerService {
         });
     }
 
-    public setCallback(tag: string, callback: Callback): void {
+    public setCallback(tag: string, callback: Callback): Subscription {
         this.callbacks.set(tag, callback);
+        return new Subscription(() => this.removeCallback(tag));
     }
 
     public removeCallback(tag: string): void {
