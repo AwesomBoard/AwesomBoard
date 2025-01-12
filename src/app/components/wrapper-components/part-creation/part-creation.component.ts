@@ -100,13 +100,9 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
     // Subscription
     private readonly ngUnsubscribe: Subject<void> = new Subject<void>();
-    private allUserInterval: MGPOptional<number> = MGPOptional.empty();
-    private ownTokenInterval: MGPOptional<number> = MGPOptional.empty();
     private lastToken: Timestamp;
-    private selfSubscription: Subscription = new Subscription();
 
-    private configRoomSubscription: Subscription = Subscription.EMPTY;
-    private candidatesSubscription: Subscription = Subscription.EMPTY;
+    private configRoomSubscription: Subscription = new Subscription();
 
     private navigateThereAfterGameCanceled: string[] = ['/lobby'];
 
@@ -138,7 +134,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         this.createForms();
         this.subscribeToConfigRoomDoc();
         await this.configRoomService.joinGame(this.partId);
-        await this.startSendingPresenceTokens();
         this.subscribeToFormElements();
     }
 
@@ -192,7 +187,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     }
 
     private subscribeToConfigRoomDoc(): void {
-        this.configRoomService.subscribeToChanges(
+        this.configRoomSubscription = this.configRoomService.subscribeToChanges(
             (configRoom: ConfigRoom): Promise<void> => this.onConfigRoomUpdate(configRoom),
             (candidate: MinimalUser): void => this.onCandidateJoined(candidate),
             (candidate: MinimalUser): void => this.onCandidateLeft(candidate));
@@ -341,7 +336,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     }
 
     public async cancelGameCreation(): Promise<void> {
-        this.stopSendingPresenceTokensAndObservingUsersIfNeeded();
         this.allDocDeleted = true;
         await this.currentGameService.removeCurrentGame();
         await this.gameService.deleteGame(this.partId);
@@ -353,7 +347,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         this.currentConfigRoom = configRoom;
         if (configRoom.rulesConfig !== null) {
             // Not null means that there was already a rule config saved in the config room
-            this.saveRulesConfig(MGPOptional.of(configRoom.rulesConfig));
+            this.onRulesConfigUpdate(MGPOptional.of(configRoom.rulesConfig));
         }
         if (this.chosenOpponentJustLeft(oldConfigRoom, configRoom) &&
             this.userIsCreator(configRoom))
@@ -362,21 +356,15 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
             this.messageDisplayer.infoMessage($localize`${userName} left the game, please pick another opponent.`);
             await this.currentGameService.updateCurrentGame({ opponent: null });
         }
-        if (this.userJustChosenAsOpponent(oldConfigRoom, configRoom) ||
-            this.allUserInterval.isAbsent())
-        {
+        if (this.userJustChosenAsOpponent(oldConfigRoom, configRoom)) {
             // Only update user doc if we were chosen and we haven't updated the doc yet
             await this.updateUserDocWithCurrentGame(configRoom);
-        }
-        if (this.allUserInterval.isAbsent()) {
-            await this.observeNeededPlayers(configRoom);
         }
         this.updateViewInfo(configRoom);
         if (this.isGameStarted(configRoom)) {
             Debug.display('PartCreationComponent', 'onCurrentConfigRoomUpdate', 'the game has started');
             this.onGameStarted();
         }
-
     }
 
     private onCandidateJoined(candidate: MinimalUser): void {
@@ -429,28 +417,9 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         this.gameStarted = true;
     }
 
-    private async observeNeededPlayers(configRoom: ConfigRoom): Promise<void> {
-        Utils.assert(this.allUserInterval.isAbsent(), 'Cannot observe players multiple times');
-        this.allUserInterval = MGPOptional.of(window.setInterval(async() => {
-            const currentTime: Timestamp = this.lastToken;
-            if (this.userIsCreator(configRoom)) {
-                await this.checkCandidatesTokensFreshness(currentTime);
-            } else {
-                await this.checkCreatorTokenFreshness(currentTime);
-            }
-        }, PartCreationComponent.TOKEN_INTERVAL));
-    }
-
     private userIsCreator(configRoom: ConfigRoom): boolean {
         const currentUserId: string = this.connectedUserService.user.get().id;
         return currentUserId === configRoom.creator.id;
-    }
-
-    private async checkCreatorTokenFreshness(currentTime: Timestamp): Promise<void> {
-        const configRoom: ConfigRoom = Utils.getNonNullable(this.currentConfigRoom);
-        if (await this.didUserTimeout(configRoom.creator.id, currentTime)) {
-            await this.destroyDocIfPartDidNotStart();
-        }
     }
 
     private async destroyDocIfPartDidNotStart(): Promise<void> {
@@ -458,14 +427,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         Utils.assert(partStarted === false, 'Should not try to cancelGameCreation when part started!');
         Utils.assert(this.allDocDeleted === false, 'Should not delete doc twice');
         await this.cancelGameCreation();
-    }
-
-    private async checkCandidatesTokensFreshness(currentTime: Timestamp): Promise<void> {
-        for (const candidate of this.candidates) {
-            if (await this.didUserTimeout(candidate.id, currentTime)) {
-                await this.removeCandidateFromLobby(candidate);
-            }
-        }
     }
 
     private async didUserTimeout(userId: string, currentTime: Timestamp): Promise<boolean> {
@@ -480,41 +441,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         return diff > PartCreationComponent.TOKEN_TIMEOUT;
     }
 
-    private async removeCandidateFromLobby(user: MinimalUser): Promise<void> {
-        const configRoom: ConfigRoom = Utils.getNonNullable(this.currentConfigRoom);
-        if (user.id === configRoom.chosenOpponent?.id) {
-            // The chosen player has been removed, the user will have to review the config
-            // A message will be displayed once the configRoom has been update
-            await this.configRoomService.reviewConfigAndRemoveChosenOpponent(this.partId);
-        }
-        return this.configRoomService.removeCandidate(this.partId, user.id);
-    }
-
-    public async startSendingPresenceTokens(): Promise<void> {
-        await this.connectedUserService.sendPresenceToken();
-        Utils.assert(this.ownTokenInterval.isAbsent(), 'should not start sending presence tokens twice');
-        this.ownTokenInterval = MGPOptional.of(window.setInterval(() => {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.connectedUserService.sendPresenceToken();
-        }, PartCreationComponent.TOKEN_INTERVAL));
-        const userId: string = this.connectedUserService.user.get().id;
-        this.selfSubscription = this.userService.observeUserOnServer(userId, (user: MGPOptional<User>) => {
-            Utils.assert(user.isPresent(), 'connected user should exist');
-            this.lastToken = Utils.getNonNullable(user.get().lastUpdateTime) as Timestamp;
-        });
-    }
-
-    public stopSendingPresenceTokensAndObservingUsersIfNeeded(): void {
-        if (this.ownTokenInterval.isPresent()) {
-            window.clearInterval(this.ownTokenInterval.get());
-            this.ownTokenInterval = MGPOptional.empty();
-        }
-        if (this.allUserInterval.isPresent()) {
-            window.clearInterval(this.allUserInterval.get());
-        }
-        this.selfSubscription.unsubscribe();
-    }
-
     public acceptConfig(): Promise<void> {
         // called by the configRoom
         // triggers the redirection that will be applied for every subscribed user
@@ -522,7 +448,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     }
 
     // Only public because of tests
-    public saveRulesConfig(rulesConfig: MGPOptional<RulesConfig>): void {
+    public onRulesConfigUpdate(rulesConfig: MGPOptional<RulesConfig>): void {
         this.rulesConfig = rulesConfig;
         if (this.rulesConfig.isPresent()) {
             this.setConfigDemo(this.rulesConfig.get());
@@ -557,9 +483,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
         // Unsubscribe from the config room and candidates
         this.configRoomSubscription.unsubscribe();
-        this.candidatesSubscription.unsubscribe();
 
-        this.stopSendingPresenceTokensAndObservingUsersIfNeeded();
         if (this.connectedUserService.user.isAbsent()) {
             // User disconnected, there's not much we can do at this point
             // We could instead remove parts in creation when doing the log out,
@@ -583,7 +507,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         } else {
             Debug.display('PartCreationComponent', 'ngOnDestroy', 'you are about to cancel game joining');
             await this.currentGameService.removeCurrentGame();
-            await this.configRoomService.removeCandidate(this.partId, this.connectedUserService.user.get().id);
+            await this.configRoomService.leave();
         }
     }
 

@@ -69,6 +69,8 @@ module ChatSQL : CHAT = struct
 
     let iter_messages = fun (request : Dream.request) (game_id : int) (f : Models.Message.t -> unit Lwt.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.iter_s get_messages_query (fun m -> let* () = f m in Lwt.return (Result.Ok ())) game_id
+        Db.iter_s get_messages_query (fun message ->
+            let+ r = f message in Result.ok r)
+            game_id
 
 end

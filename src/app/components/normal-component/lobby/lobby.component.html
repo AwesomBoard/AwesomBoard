@@ -22,22 +22,22 @@
                     <th class="th" scope="col" i18n>Game</th>
                     <th class="th" scope="col" i18n>First player</th>
                     <th class="th" scope="col" i18n>Second player</th>
-                    <th class="th" scope="col" i18n>Turn</th>
+                    <th class="th" scope="col" i18n>Status</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let part of activeParts; index as i"
+                <tr *ngFor="let configRoom of getActiveConfigRooms(); index as i"
                     id="part-{{ i }}"
-                    (click)="joinGame(part)">
-                    <td class="td data-game-name">{{ part.getGameName() }}</td>
-                    <td class="td" id="part-of-{{ part.data.playerZero.name}}">{{ part.data.playerZero.name + ' (' + part.getPlayerZeroFloorElo() + ')' }}</td>
+                    (click)="joinGame(configRoom)">
+                    <td class="td data-game-name">{{ getGameName(configRoom.data) }}</td>
+                    <td class="td" id="part-of-{{ configRoom.data.creator.name}}">{{ getCreatorLine(configRoom.data) }} </td>
                     <td class="td">
-                        <ng-container *ngIf="part.data.playerOne else waitingForOpponent">{{ part.data.playerOne.name }}</ng-container>
+                        <ng-container *ngIf="configRoom.data.chosenOpponent else waitingForOpponent">{{ configRoom.data.chosenOpponent.name }}</ng-container>
                         <ng-template #waitingForOpponent>
                             <ng-container i18n>Waiting for opponent</ng-container>
                         </ng-template>
                     </td>
-                    <td class="td data-turn">{{ part.data.turn+1 }}</td>
+                    <td class="td data-status">{{ configRoom.data.partStatus }}</td>
                 </tr>
             </tbody>
         </table>

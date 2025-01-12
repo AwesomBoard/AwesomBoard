@@ -10,9 +10,18 @@ module type CONFIG_ROOM = sig
         it does not exist, returns [None]. *)
     val get : request:Dream.request -> game_id:int -> Models.ConfigRoom.t option Lwt.t
 
+    (** [iter_active_rooms ~request f] retrieve the currently active games,
+        applying [f] to each of them (with the game id), in the context of
+        [request] *)
+    val iter_active_rooms : request:Dream.request -> (int -> Models.ConfigRoom.t -> unit Lwt.t) -> unit Lwt.t
+
     (** [get_game_name ~request ~game_id] retrieves the name of game [game_id],
         in the context of [request]. Returns [None] if the game does not exist. *)
     val get_game_name : request:Dream.request -> game_id:int -> string option Lwt.t
+
+    (** [iter_candidates ~request ~game_id f] retrieves all candidates to game
+        [game_id], applying [f] to each of them, in the context of [request] *)
+    val iter_candidates : request:Dream.request -> game_id:int -> (Models.MinimalUser.t -> unit Lwt.t) -> unit Lwt.t
 
     (** [add_candidate ~request ~game_id candidate] makes [candidate] join the
         game [game_id] by adding them to the candidates, in the context of
@@ -59,6 +68,14 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
 
     let game_type : Models.ConfigRoom.GameType.t Caqti_type.t =
         json Models.ConfigRoom.GameType.to_yojson Models.ConfigRoom.GameType.of_yojson
+
+    let minimal_user : Models.MinimalUser.t Caqti_type.t =
+        let make = fun (id : string) (name : string) : Models.MinimalUser.t ->
+            Models.MinimalUser.{ id; name } in
+        product make
+        @@ proj string (fun (u : Models.MinimalUser.t) -> u.id)
+        @@ proj string (fun (u : Models.MinimalUser.t) -> u.name)
+        @@ proj_end
 
     let config_room : Models.ConfigRoom.t Caqti_type.t =
         let make = fun (creator_id : string)
@@ -139,6 +156,23 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.find_opt get_query game_id
 
+    let get_active_rooms_query = unit ->* t2 int config_room @@ {|
+        SELECT id, creator_id, creator_name, creator_elo,
+               chosen_opponent_id, chosen_opponent_name,
+               status, first_player, game_type,
+               move_duration, game_duration,
+               config, game_name
+        FROM config_rooms
+        WHERE status != 'Finished'
+
+    |}
+
+    let iter_active_rooms = fun ~(request : Dream.request) (f : int -> Models.ConfigRoom.t -> unit Lwt.t) : unit Lwt.t ->
+        Dream.log "iter_active_rooms";
+        Dream.sql request @@ fun (module Db : DB) -> check @@
+        Db.iter_s get_active_rooms_query (fun (game_id, config_room) ->
+            Lwt.map Result.ok (f game_id config_room)) ()
+
     let get_game_name_query = int ->? string @@ {|
         SELECT game_name
         FROM config_rooms
@@ -149,14 +183,25 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.find_opt get_game_name_query game_id
 
-    let join_query = t3 int string string ->. unit @@ {|
+    let get_candidates_query = int ->* minimal_user @@ {|
+        SELECT candidate_id, candidate_name
+        FROM candidates
+        WHERE game_id = ?
+    |}
+
+    let iter_candidates = fun ~(request : Dream.request) ~(game_id : int) (f : Models.MinimalUser.t -> unit Lwt.t) : unit Lwt.t ->
+        Dream.sql request @@ fun (module Db : DB) -> check @@
+        Db.iter_s get_candidates_query (fun candidate ->
+            let+ result = f candidate in Result.Ok result) game_id
+
+    let add_candidate_query = t3 int string string ->. unit @@ {|
         INSERT INTO candidates (game_id, candidate_id, candidate_name)
         VALUES (?, ?, ?)
     |}
 
     let add_candidate = fun ~(request : Dream.request) ~(game_id : int) (candidate : Models.MinimalUser.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.exec join_query (game_id, candidate.id, candidate.name)
+        Db.exec add_candidate_query (game_id, candidate.id, candidate.name)
 
     let remove_candidate_query = t2 int string ->. unit @@ {|
         DELETE FROM candidates

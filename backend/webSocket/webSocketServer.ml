@@ -35,8 +35,6 @@ module Make
     (** The clients currently connected. They each are associated an id and a websocket connection *)
     let clients : (int, Dream.websocket) Hashtbl.t = Hashtbl.create 16
 
-    let lobby : int = 0 (* Lobby has a special game_id *)
-
     (** Tracks a new client, return its id *)
     let track : Dream.websocket -> int =
         let last_client_id = ref 0 in
@@ -73,16 +71,45 @@ module Make
         Dream.log "[%s] %s" user.name (message |> WebSocketIncomingMessage.to_yojson |> JSON.to_string);
         match message with
         | Subscribe { game_id = game_id_str} ->
+            (* Someone is joining a game *)
             let game_id = Id.of_string game_id_str in
             if SubscriptionManager.is_subscribed client_id then
                 send_to client_id (Error { reason = "Already subscribed" })
             else begin
                 SubscriptionManager.subscribe client_id game_id;
-                Chat.iter_messages request game_id (fun message ->
-                    send_to client_id (ChatMessage { message }))
-                (* TODO: for lobby, send game list. For game, send game info/updates *)
-                (* TODO: it is important to send first a config room before really subscribing, lest the subscriber would receive candidates without knowing the config room *)
-                (* TODO: on top of sendin the config room, we need to send candidates too *)
+                let send_chat_messages =
+                    (* Send all messages already in the chat *)
+                    Chat.iter_messages request game_id (fun message ->
+                        send_to client_id (ChatMessage { message })) in
+                if game_id_str = "lobby" then
+                    (* If this is the lobby, send all ongoing games infos *)
+                    Lwt.join [
+                        send_chat_messages;
+                        ConfigRoom.iter_active_rooms ~request (fun game_id config_room ->
+                            send_to client_id (ConfigRoomUpdate { game_id = Id.to_string game_id; config_room}))
+                    ]
+                else
+                    (* Otherwise, send all current game infos *)
+                    match%lwt ConfigRoom.get ~request ~game_id with
+                    | None -> send_to client_id (Error { reason = "Game does not exist" })
+                    | Some config_room -> begin match config_room.game_status with
+                        | Created | ConfigProposed ->
+                            (* Send config room first, and then candidates.
+                               Doing the config room first is important so that
+                               the client does not receive candidates without
+                               knowing anything about the config room. *)
+                            let* () = send_to client_id (ConfigRoomUpdate { game_id = game_id_str; config_room }) in
+                            ConfigRoom.iter_candidates ~request ~game_id (fun candidate ->
+                                send_to client_id (CandidateJoined { candidate }))
+                        | Started | Finished ->
+                            (* Send game and game events *)
+                            let* game = Game.get ~request ~game_id in
+                            (* It is important to send the game first and then
+                               the events, so that the client knows about the
+                               game before receiving events *)
+                            let* () = send_to client_id (GameUpdate { update = game }) in
+                            Game.iter_events ~request ~game_id (fun event -> send_to client_id (GameEvent { event }))
+                    end
             end
         | Unsubscribe ->
             SubscriptionManager.unsubscribe client_id;
@@ -110,7 +137,7 @@ module Make
             let update : WebSocketOutgoingMessage.t = GameCreated { game_id = Id.to_string game_id } in
             Lwt.join [
                 send_to client_id update;
-                broadcast lobby update;
+                broadcast Id.lobby update;
             ]
         | Join { game_id = game_id_str } ->
             (** Someone is joining the game [game_id]. It can be either the creator, or a candidate *)
@@ -122,7 +149,7 @@ module Make
             | Some config_room ->
                 Lwt.join @@
                     (* Send the config room to the joiner *)
-                    send_to client_id (ConfigRoomUpdate { update = config_room }) ::
+                    send_to client_id (ConfigRoomUpdate { game_id = game_id_str; config_room }) ::
                     if config_room.creator.id = user.id then
                         (* If the creator joins, they are not a candidate. *)
                         []
@@ -132,17 +159,17 @@ module Make
                             let* () = ConfigRoom.add_candidate ~request ~game_id candidate in
                             (* Send the update to everyone subscribed *)
                             let update : WebSocketOutgoingMessage.t = CandidateJoined { candidate } in
-                            broadcast lobby update;
+                            broadcast game_id update;
                         ]
             end
 
-        (* TODO: part creation should load *)
         | GetGameName { game_id = game_id_str } ->
             (** Someone loading a game, they want to make sure that the game name is right *)
             let game_id : int = Id.of_string game_id_str in
             (* Retrieve the game name from the config room *)
             let* game_name : string option = ConfigRoom.get_game_name ~request ~game_id in
             send_to client_id (GameName { game_name })
+
         (* TODO: a candidate should be able to see the part from the lobby and join *)
         | m ->
             failwith (Printf.sprintf "TODO: %s" (m |> WebSocketIncomingMessage.to_yojson |> JSON.to_string))
@@ -163,6 +190,7 @@ module Make
                     loop ()
                 | None ->
                     (* Client left, forget about it *)
+                    (* TODO: also notify if game is is config (user left), or in play (user offline *)
                     forget client_id;
                     Dream.close_websocket ws
             in

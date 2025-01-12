@@ -15,5 +15,10 @@ let for_enum = fun (values : ('a * t) list) : (('a -> t) * (t -> ('a, string) re
     let enum_of_yojson = fun (json : t) : ('a, string) result ->
         match List.assoc_opt json inversed_values with
         | Some v -> Ok v
-        | None -> Error "not a member of the enum" in
+        | None -> Error
+                      (Printf.sprintf
+                           "%s not a member of the enum [%s]"
+                           (to_string json)
+                           (values |> List.map snd |> List.map to_string |> String.concat ","))
+    in
     (enum_to_yojson, enum_of_yojson)

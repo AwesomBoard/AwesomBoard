@@ -4,7 +4,12 @@ let sqids : Sqids.t = Sqids.make ~min_length:8 ()
 let to_string = fun (id : int) : string ->
     Sqids.encode sqids [id]
 
+let lobby = -1
+
 let of_string = fun (string_id : string) : int ->
-    match Sqids.decode sqids string_id with
-    | [id] -> id
-    | _ -> raise (Errors.UnexpectedError (Printf.sprintf "Badly formatted id: %s" string_id))
+    if string_id = "lobby" then
+        lobby
+    else
+        match Sqids.decode sqids string_id with
+        | [id] -> id
+        | _ -> raise (Errors.UnexpectedError (Printf.sprintf "Badly formatted id: %s" string_id))

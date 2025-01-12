@@ -7,14 +7,12 @@ module ConfigRoom = struct
     module GameStatus = struct
         type t = Created | ConfigProposed | Started | Finished
 
-        (* Game status are stored as numbers, with specific values *)
-        (* TODO: change to strings for readability? *)
         let (to_yojson, of_yojson) =
             JSON.for_enum [
-                Created, `Int 0;
-                ConfigProposed, `Int 2;
-                Started, `Int 3;
-                Finished, `Int 4;
+                Created, `String "Created";
+                ConfigProposed, `String "ConfigProposed";
+                Started, `String "Started";
+                Finished, `String "Finished";
             ]
     end
 
@@ -52,7 +50,7 @@ module ConfigRoom = struct
     (** The config room itself *)
     type t = {
         creator: MinimalUser.t;
-        creator_elo: float;
+        creator_elo: float [@key "creatorElo"];
         chosen_opponent: MinimalUser.t option [@key "chosenOpponent"];
         game_status: GameStatus.t [@key "partStatus"];
         first_player: FirstPlayer.t [@key "firstPlayer"];

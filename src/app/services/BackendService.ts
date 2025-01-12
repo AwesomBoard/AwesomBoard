@@ -6,7 +6,33 @@ import { Subscription } from 'rxjs';
 
 type HTTPMethod = 'POST' | 'GET' | 'PATCH' | 'HEAD' | 'DELETE';
 
-export type Callback = (args: JSONValue[]) => void
+export class WebSocketMessage {
+    public constructor(private readonly tag: string,
+                       private readonly args: JSONValue) {
+    }
+
+    public getArgument<T>(name: string): T {
+        const value: T | null = this.getOptionalArgument<T>(name);
+        if (value == null) {
+            throw new Error(`Trying to extract argument from server reply, but there were no such argument: ${name} (on a ${this.tag} message: argunments are ${JSON.stringify(this.args)})`);
+        } else {
+            return value;
+        }
+    }
+
+    public getOptionalArgument<T>(name: string): T | null {
+        if (this.args == null) {
+            throw new Error(`Trying to extract argument from server reply, but there were no argument: ${name} (on a ${this.tag} message)`);
+        }
+        const value: unknown = this.args[name];
+        // The only thing we can't check is that the argument value really corresponds to the type.
+        return value as T;
+    }
+}
+
+export type Callback = (message: WebSocketMessage) => void
+
+
 @Injectable({
     // This ensures that this is a singleton service, which is very important for this one
     // because we want only a single websocket connection, shared among all other services
@@ -26,7 +52,6 @@ export class WebSocketManagerService {
         Utils.assert(this.webSocket.isAbsent(), 'Should not connect twice to WebSocket!');
         const token: string = await this.connectedUserService.getIdToken();
 
-        console.log('connect')
         return new Promise((resolve: () => void, reject) => {
             const ws: WebSocket = new WebSocket(environment.backendURL.replace('http://', 'ws://') + '/ws', ['Authorization', token]);
 
@@ -49,13 +74,13 @@ export class WebSocketManagerService {
                 Utils.assert(typeof(json) === 'object', // i.e., an array
                              `Received malformed WebSocket message: ${json}`);
                 const tag: unknown = json[0]; // the tag is the first element of the array
-                const args: JSONValue[] = (json as JSONValue[]).slice(1);
+                const args: JSONValue = json[1]; // the arguments is an object being the second element
                 Utils.assert(tag != null && typeof(tag) === 'string', `Received malformed WebSocket message: ${json}`);
                 // each callback is associated to a tag
                 const callback: MGPOptional<Callback> = this.callbacks.get(tag as string);
                 Utils.assert(callback.isPresent(), `Received a message with no callback registered: ${json}`);
                 // NOTE: in case we need async for callbacks, use void to not wait for the async here.
-                callback.get()(args);
+                callback.get()(new WebSocketMessage(tag as string, args));
             };
         });
     }
@@ -73,16 +98,16 @@ export class WebSocketManagerService {
         this.webSocket.get().send(JSON.stringify(message));
     }
 
-    public async sendAndWaitForReply(message: JSONValue, replyTag: string): Promise<JSONValue[]> {
+    public async sendAndWaitForReply(message: JSONValue, replyTag: string): Promise<WebSocketMessage> {
         await this.send(message);
         return this.waitForMessage(replyTag);
     }
 
-    private async waitForMessage(tag: string): Promise<JSONValue[]> {
-        return new Promise((resolve: (value: JSONValue[]) => void) => {
-            this.setCallback(tag, (args: JSONValue[]) => {
+    private async waitForMessage(tag: string): Promise<WebSocketMessage> {
+        return new Promise((resolve: (value: WebSocketMessage) => void) => {
+            this.setCallback(tag, (message: WebSocketMessage) => {
                 this.removeCallback(tag);
-                resolve(args);
+                resolve(message);
             });
         });
     }

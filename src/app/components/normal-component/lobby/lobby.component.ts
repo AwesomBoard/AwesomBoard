@@ -1,16 +1,25 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ActivePartsService } from 'src/app/services/ActivePartsService';
+import { Subscription } from 'rxjs';
+
+import { MGPMap, MGPOptional, MGPValidation } from '@everyboard/lib';
+
+import { ActiveConfigRoomsService } from 'src/app/services/ActiveConfigRoomsService';
 import { PartDocument } from 'src/app/domain/Part';
 import { CurrentGame } from 'src/app/domain/User';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
-import { Subscription } from 'rxjs';
 import { Debug } from 'src/app/utils/Debug';
 import { WebSocketManagerService } from 'src/app/services/BackendService';
+import { ConfigRoom, PartStatus } from 'src/app/domain/ConfigRoom';
+import { GameInfo } from '../pick-game/pick-game.component';
 
 type Tab = 'games' | 'create' | 'chat';
+
+type WithId<T> = {
+    id : string;
+    data: T;
+};
 
 @Component({
     selector: 'app-lobby',
@@ -19,9 +28,9 @@ type Tab = 'games' | 'create' | 'chat';
 @Debug.log
 export class LobbyComponent implements OnInit, OnDestroy {
 
-    public activeParts: PartDocument[] = [];
+    private activeConfigRooms: MGPMap<string, ConfigRoom> = new MGPMap();
 
-    private activePartsSubscription!: Subscription; // initialized in ngOnInit
+    private activeConfigRoomsSubscription!: Subscription; // initialized in ngOnInit
     private currentGameSubscription!: Subscription; // initialized in ngOnInit
     private webSocketSubscription!: Subscription; // initialized in ngOnInit
 
@@ -30,17 +39,16 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
     public constructor(public readonly router: Router,
                        public readonly messageDisplayer: MessageDisplayer,
-                       private readonly activePartsService: ActivePartsService,
+                       private readonly activeConfigRoomsService: ActiveConfigRoomsService,
                        private readonly currentGameService: CurrentGameService,
                        private readonly webSocketManager: WebSocketManagerService)
-
     {
     }
 
     public async ngOnInit(): Promise<void> {
-        this.activePartsSubscription = this.activePartsService.subscribeToActiveParts(
-            (activeParts: PartDocument[]) => {
-                this.activeParts = activeParts;
+        this.activeConfigRoomsSubscription = this.activeConfigRoomsService.subscribe(
+            (rooms: MGPMap<string, ConfigRoom>) => {
+                this.activeConfigRooms = rooms;
             });
         this.currentGameSubscription = this.currentGameService.subscribeToCurrentGame(
             (observed: MGPOptional<CurrentGame>) => {
@@ -55,17 +63,35 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
     public async ngOnDestroy(): Promise<void> {
         this.webSocketSubscription.unsubscribe();
-        this.activePartsSubscription.unsubscribe();
+        this.activeConfigRoomsSubscription.unsubscribe();
         this.currentGameSubscription.unsubscribe();
     }
 
-    public async joinGame(part: PartDocument): Promise<void> {
-        const partId: string = part.id;
-        const typeGame: string = part.data.typeGame;
-        const gameStarted: boolean = part.data.beginning != null;
-        const canUserJoin: MGPValidation = this.currentGameService.canUserJoin(partId, gameStarted);
+    public getActiveConfigRooms(): WithId<ConfigRoom>[] {
+        // TODO: either generalize this pattern in library code (if it appears again), or don't use mgpmap in activeConfigRoomService?
+        const all: WithId<ConfigRoom>[] = [];
+        for (const [id, data] of this.activeConfigRooms) {
+            console.log(data)
+            all.push({ id, data });
+        }
+        return all;
+    }
+
+    public getGameName(configRoom: ConfigRoom): string {
+        return GameInfo.getByUrlName(configRoom.gameName).get().name;
+    }
+
+    public getCreatorLine(configRoom: ConfigRoom): string {
+        return `${configRoom.creator.name} (${Math.floor(configRoom.creatorElo)})`;
+    }
+
+    public async joinGame(configRoom: WithId<ConfigRoom>): Promise<void> {
+        const gameId: string = configRoom.id;
+        const gameName: string = configRoom.data.gameName;
+        const gameStarted: boolean = configRoom.data.partStatus >= PartStatus.PART_STARTED.value;
+        const canUserJoin: MGPValidation = this.currentGameService.canUserJoin(gameId, gameStarted);
         if (canUserJoin.isSuccess()) {
-            await this.router.navigate(['/play', typeGame, partId]);
+            await this.router.navigate(['/play', gameName, gameId]);
         } else {
             this.messageDisplayer.criticalMessage(canUserJoin.getReason());
         }

@@ -1,5 +1,4 @@
 open Models
-open Utils
 
 (** All the messages we can receive *)
 module WebSocketIncomingMessage = struct
@@ -26,7 +25,6 @@ module WebSocketIncomingMessage = struct
         | SelectOpponent of { opponent : MinimalUser.t }
         | ReviewConfig
         | ReviewConfigAndRemoveOpponent
-        (* | RemoveCandidate of { game_id : string; candidate_id : string } TODO: subsubmed by unsubscribe *)
 
         (** Game messages *)
         | Resign
@@ -50,15 +48,19 @@ module WebSocketOutgoingMessage = struct
         | ChatMessage of { message : Message.t }
 
         (** Config room messages *)
-        | GameCreated of { game_id : string [@key "gameId"] }
+        | GameCreated of { game_id : string [@key "gameId"] } (* TODO: Rename, it is an "ok" type of message *)
         | GameName of { game_name : string option [@key "gameName"] }
         | CandidateJoined of { candidate : MinimalUser.t }
         | CandidateLeft of { candidate : MinimalUser.t }
-        | ConfigRoomUpdate of { update : ConfigRoom.t }
+        | ConfigRoomUpdate of {
+              game_id : string [@key "gameId"];
+              config_room : ConfigRoom.t  [@key "configRoom"]
+          }
+        | ConfigRoomDeleted of { game_id : string [@key "gameId"] } (* TODO: use it! *)
 
         (** Game messages *)
         | GameEvent of { event : GameEvent.t }
-        | GameUpdate of { update : JSON.t }
+        | GameUpdate of { update : Game.t }
 
     [@@deriving yojson]
 end

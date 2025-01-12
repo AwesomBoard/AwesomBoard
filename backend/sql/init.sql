@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS config_rooms (
     config TEXT NOT NULL,
     -- This is the name of the game (used to be in "games", but it is better to have it in the config room too)
     game_name TEXT NOT NULL
-    )
+    );
 
 -- When players join the config room, they are added as candidates
 CREATE TABLE IF NOT EXISTS candidates (
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS candidates (
     candidate_id TEXT NOT NULL,
     candidate_name TEXT NOT_NULL,
     FOREIGN KEY(game_id) references games(id)
-    )
+    );
 
 -- Indices allow for faster queries on these specific fields. As most (all?) queries will be wade with a specific game_id, we want this index.
 CREATE INDEX IF NOT EXISTS idx_game_id ON candidates (game_id);
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS games (
     winner_id TEXT,
     loser_id TEXT,
     FOREIGN KEY(id) references config_room(id)
-    )
+    );
 
 CREATE INDEX IF NOT EXISTS idx_game_id ON games (id);
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS game_events (
     kind TEXT NOT NULL, -- AcceptDraw, RejectDraw, Move, etc.
     data TEXT NOT NULL, -- move description, in JSON format
     FOREIGN KEY(game_id) REFERENCES games(id)
-    )
+    );
 
 CREATE INDEX IF NOT EXISTS idx_game_id ON games (game_id);
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS elos (
     game_name TEXT NOT NULL,
     current_elo REAL NOT NULL,
     number_of_games_played INT NOT NULL
-)
+);
 
 -- TODO: to "insert or update" elo:
 -- INSERT OR IGNORE INTO my_table (name, age) VALUES ('Karen', 34)

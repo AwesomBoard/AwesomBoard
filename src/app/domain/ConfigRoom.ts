@@ -6,20 +6,24 @@ import { RulesConfig } from '../jscaip/RulesConfigUtil';
 // On top of these fields, a config room has a subcollection of candidates, which are MinimalUsers
 export type ConfigRoom = {
     readonly creator: MinimalUser;
+    readonly creatorElo: number;
+
     readonly chosenOpponent: MinimalUser | null;
-    readonly partStatus: IPartStatus;
+    readonly partStatus: IPartStatus; // TODO: rename to "status" simply
 
     readonly firstPlayer: IFirstPlayer;
-    readonly partType: IPartType;
+    readonly partType: IPartType; // TODO: rename gameType
     readonly maximalMoveDuration: number;
     readonly totalPartDuration: number;
     readonly rulesConfig: RulesConfig;
+    readonly gameName: string;
 };
 
 export type ConfigRoomDocument = FirestoreDocument<ConfigRoom>;
 
 export type IFirstPlayer = 'CREATOR' | 'RANDOM' | 'CHOSEN_PLAYER';
 
+// TODO: get rid of this class and keep only the utility function?
 export class FirstPlayer {
 
     private constructor(public value: IFirstPlayer) {}

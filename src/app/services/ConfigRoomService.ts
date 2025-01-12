@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
+
+import { JSONValue, MGPFallible, MGPOptional, Utils } from '@everyboard/lib';
+
 import { FirstPlayer, ConfigRoom, PartStatus, PartType } from '../domain/ConfigRoom';
 import { ConfigRoomDAO } from '../dao/ConfigRoomDAO';
-import { FirestoreJSONObject, JSONValue, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
-import { Subscription } from 'rxjs';
 import { MinimalUser } from '../domain/MinimalUser';
-import { FirestoreCollectionObserver } from '../dao/FirestoreCollectionObserver';
-import { FirestoreDocument, IFirestoreDAO } from '../dao/FirestoreDAO';
 import { RulesConfig } from '../jscaip/RulesConfigUtil';
-import { BackendService, WebSocketManagerService } from './BackendService';
+import { BackendService, WebSocketManagerService, WebSocketMessage } from './BackendService';
 import { Debug } from '../utils/Debug';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Localized } from '../utils/LocaleUtils';
@@ -36,16 +36,16 @@ export class ConfigRoomService extends BackendService {
     {
         console.log('ConfigRoomService: subscribeToChanges');
         const configRoomSubscription: Subscription =
-            this.webSocketManager.setCallback('ConfigRoomUpdate', (args: JSONValue[]): void => {
-                configRoomUpdate(Utils.getNonNullable(args[0])['update'] as ConfigRoom);
+            this.webSocketManager.setCallback('ConfigRoomUpdate', (message: WebSocketMessage): void => {
+                configRoomUpdate(message.getArgument('configRoom'));
             });
         const candidateJoinedSubscription: Subscription =
-            this.webSocketManager.setCallback('CandidateJoined', (args: JSONValue[]): void => {
-                candidateJoined(Utils.getNonNullable(args[0])['candidate'] as MinimalUser);
+            this.webSocketManager.setCallback('CandidateJoined', (message: WebSocketMessage): void => {
+                candidateJoined(message.getArgument('candidate'));
             });
         const candidateLeftSubscription: Subscription =
-            this.webSocketManager.setCallback('CandidateLeft', (args: JSONValue[]): void => {
-                candidateLeft(Utils.getNonNullable(args[0])['candidate'] as MinimalUser);
+            this.webSocketManager.setCallback('CandidateLeft', (message: WebSocketMessage): void => {
+                candidateLeft(message.getArgument('candidate'));
             });
         return new Subscription(() => {
             configRoomSubscription.unsubscribe();
@@ -57,7 +57,10 @@ export class ConfigRoomService extends BackendService {
     /** Join a game */
     public async joinGame(gameId: string): Promise<void> {
         await this.webSocketManager.send(['Subscribe', { gameId }]);
-        await this.webSocketManager.send(['Join', { gameId }]);
+    }
+
+    public async leave(): Promise<void> {
+        await this.webSocketManager.send(['Unsubscribe']);
     }
 
     /** Remove a candidate from a config room (it can be ourselves or someone else) */

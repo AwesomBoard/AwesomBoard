@@ -6,7 +6,7 @@ import { Localized } from '../utils/LocaleUtils';
 import { Debug } from '../utils/Debug';
 import { ConnectedUserService } from './ConnectedUserService';
 import { Message } from '../domain/Message';
-import { BackendService, WebSocketManagerService } from './BackendService';
+import { BackendService, WebSocketManagerService, WebSocketMessage } from './BackendService';
 import { Subscription } from 'rxjs';
 
 export class ChatMessages {
@@ -32,8 +32,8 @@ export class ChatService extends BackendService {
 
     public subscribeToMessages(callback: (message: Message) => void): Subscription {
         // Make a new subscription to receive new messages
-        this.webSocketManager.setCallback('ChatMessage', (args: JSONValue[]): void => {
-            callback(Utils.getNonNullable(args[0])['message'] as Message);
+        this.webSocketManager.setCallback('ChatMessage', (message: WebSocketMessage): void => {
+            callback(message.getArgument('message'));
         });
         return new Subscription(() => this.webSocketManager.removeCallback('ChatMessage'));
     }

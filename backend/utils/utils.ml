@@ -1,5 +1,5 @@
-(** We want to have let* denote a monadic operation from Lwt in order to have more readability *)
-let ( let* ) = Lwt.bind
+(** We want to have let* and let+ from Lwt (respectively, monadic bind and applicative map) *)
+include Lwt.Syntax
 
 (** A set of integers *)
 module IntSet = Set.Make(Int)
