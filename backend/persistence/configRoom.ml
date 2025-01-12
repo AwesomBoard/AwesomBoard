@@ -201,7 +201,10 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
 
     let add_candidate = fun ~(request : Dream.request) ~(game_id : int) (candidate : Models.MinimalUser.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.exec add_candidate_query (game_id, candidate.id, candidate.name)
+        begin
+            Dream.log "adding candidate %d:%s:%s" game_id candidate.id candidate.name;
+            Db.exec add_candidate_query (game_id, candidate.id, candidate.name)
+        end
 
     let remove_candidate_query = t2 int string ->. unit @@ {|
         DELETE FROM candidates

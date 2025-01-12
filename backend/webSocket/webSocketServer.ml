@@ -94,13 +94,26 @@ module Make
                     | None -> send_to client_id (Error { reason = "Game does not exist" })
                     | Some config_room -> begin match config_room.game_status with
                         | Created | ConfigProposed ->
-                            (* Send config room first, and then candidates.
-                               Doing the config room first is important so that
-                               the client does not receive candidates without
-                               knowing anything about the config room. *)
-                            let* () = send_to client_id (ConfigRoomUpdate { game_id = game_id_str; config_room }) in
-                            ConfigRoom.iter_candidates ~request ~game_id (fun candidate ->
-                                send_to client_id (CandidateJoined { candidate }))
+                            Lwt.join [
+                                begin
+                                    (* This is a new candidate! (unless it is the creator) *)
+                                    if user.id <> config_room.creator.id then
+                                        let* () = ConfigRoom.add_candidate ~request ~game_id user in
+                                        broadcast game_id (CandidateJoined { candidate = user })
+                                    else
+                                        Lwt.return ()
+                                end;
+                                begin
+                                    (* Send config room first, and then
+                                       candidates. Doing the config room first
+                                       is important so that the client does not
+                                       receive candidates without knowing
+                                       anything about the config room. *)
+                                    let* () = send_to client_id (ConfigRoomUpdate { game_id = game_id_str; config_room }) in
+                                    ConfigRoom.iter_candidates ~request ~game_id (fun candidate ->
+                                        send_to client_id (CandidateJoined { candidate }))
+                                end;
+                            ]
                         | Started | Finished ->
                             (* Send game and game events *)
                             let* game = Game.get ~request ~game_id in
@@ -139,30 +152,6 @@ module Make
                 send_to client_id update;
                 broadcast Id.lobby update;
             ]
-        | Join { game_id = game_id_str } ->
-            (** Someone is joining the game [game_id]. It can be either the creator, or a candidate *)
-            let candidate : Models.MinimalUser.t = user in
-            let game_id : int = Id.of_string game_id_str in
-            (* Retrieve the config room *)
-            begin match%lwt ConfigRoom.get ~request ~game_id with
-            | None -> raise (Errors.DocumentNotFound (Printf.sprintf "config room %s" game_id_str))
-            | Some config_room ->
-                Lwt.join @@
-                    (* Send the config room to the joiner *)
-                    send_to client_id (ConfigRoomUpdate { game_id = game_id_str; config_room }) ::
-                    if config_room.creator.id = user.id then
-                        (* If the creator joins, they are not a candidate. *)
-                        []
-                    else
-                        [
-                            (* If a non-creator joins, they become a candidate *)
-                            let* () = ConfigRoom.add_candidate ~request ~game_id candidate in
-                            (* Send the update to everyone subscribed *)
-                            let update : WebSocketOutgoingMessage.t = CandidateJoined { candidate } in
-                            broadcast game_id update;
-                        ]
-            end
-
         | GetGameName { game_id = game_id_str } ->
             (** Someone loading a game, they want to make sure that the game name is right *)
             let game_id : int = Id.of_string game_id_str in

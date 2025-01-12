@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS candidates (
     game_id INTEGER NOT NULL,
     candidate_id TEXT NOT NULL,
     candidate_name TEXT NOT_NULL,
-    FOREIGN KEY(game_id) references games(id)
+    FOREIGN KEY(game_id) references config_rooms(id)
     );
 
 -- Indices allow for faster queries on these specific fields. As most (all?) queries will be wade with a specific game_id, we want this index.
