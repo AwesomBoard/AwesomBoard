@@ -106,6 +106,8 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
     private navigateThereAfterGameCanceled: string[] = ['/lobby'];
 
+    private currentGameHasBeenSet: boolean = false;
+
     public configFormGroup: FormGroup;
 
     public allDocDeleted: boolean = false;
@@ -356,10 +358,11 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
             this.messageDisplayer.infoMessage($localize`${userName} left the game, please pick another opponent.`);
             await this.currentGameService.updateCurrentGame({ opponent: null });
         }
-        if (this.userJustChosenAsOpponent(oldConfigRoom, configRoom)) {
+        if (this.userJustChosenAsOpponent(oldConfigRoom, configRoom) || this.currentGameHasBeenSet == false) {
             // Only update user doc if we were chosen and we haven't updated the doc yet
             await this.updateUserDocWithCurrentGame(configRoom);
         }
+        this.currentGameHasBeenSet = true;
         this.updateViewInfo(configRoom);
         if (this.isGameStarted(configRoom)) {
             Debug.display('PartCreationComponent', 'onCurrentConfigRoomUpdate', 'the game has started');
