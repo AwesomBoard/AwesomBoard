@@ -21,10 +21,9 @@ module WebSocketIncomingMessage = struct
         | Join of { game_id : string [@key "gameId"] }
         | GetGameName of { game_id : string [@key "gameId"] }
         | ProposeConfig of { config : ConfigRoom.Proposal.t }
-        | AcceptConfig
         | SelectOpponent of { opponent : MinimalUser.t }
         | ReviewConfig
-        | ReviewConfigAndRemoveOpponent
+        | AcceptConfig
 
         (** Game messages *)
         | Resign
@@ -48,7 +47,7 @@ module WebSocketOutgoingMessage = struct
         | ChatMessage of { message : Message.t }
 
         (** Config room messages *)
-        | GameCreated of { game_id : string [@key "gameId"] } (* TODO: Rename, it is an "ok" type of message *)
+        | GameCreated of { game_id : string [@key "gameId"] } (* TODO: Rename, it is an "ack" type of message *)
         | GameName of { game_name : string option [@key "gameName"] }
         | CandidateJoined of { candidate : MinimalUser.t }
         | CandidateLeft of { candidate : MinimalUser.t }
@@ -60,7 +59,7 @@ module WebSocketOutgoingMessage = struct
 
         (** Game messages *)
         | GameEvent of { event : GameEvent.t }
-        | GameUpdate of { update : Game.t }
+        | GameUpdate of { game : Game.t }
 
     [@@deriving yojson]
 end

@@ -49,11 +49,6 @@ module type CONFIG_ROOM = sig
         to in progress, in the context of [request]. *)
     val review : request:Dream.request -> game_id:int -> unit Lwt.t (* is change_status to config, simply? *)
 
-    (** [review_and_remove_opponent ~request ~game_id] is like [review ~request
-        ~game_id], but also clears the chosen opponent, in the context of
-        [request]. *)
-    val review_and_remove_opponent : request:Dream.request -> game_id:int -> unit Lwt.t
-
 end
 
 module ConfigRoomSQL : CONFIG_ROOM = struct
@@ -186,7 +181,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
     let get_candidates_query = int ->* minimal_user @@ {|
         SELECT candidate_id, candidate_name
         FROM candidates
-        WHERE game_id = ?
+        WHERE id = ?
     |}
 
     let iter_candidates = fun ~(request : Dream.request) ~(game_id : int) (f : Models.MinimalUser.t -> unit Lwt.t) : unit Lwt.t ->
@@ -195,7 +190,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
             let+ result = f candidate in Result.Ok result) game_id
 
     let add_candidate_query = t3 int string string ->. unit @@ {|
-        INSERT INTO candidates (game_id, candidate_id, candidate_name)
+        INSERT OR IGNORE INTO candidates (game_id, candidate_id, candidate_name)
         VALUES (?, ?, ?)
     |}
 
@@ -208,7 +203,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
 
     let remove_candidate_query = t2 int string ->. unit @@ {|
         DELETE FROM candidates
-        WHERE game_id = ? AND candidate_id = ?
+        WHERE id = ? AND candidate_id = ?
     |}
 
     let remove_candidate = fun ~(request : Dream.request) ~(game_id : int) (candidate : Models.MinimalUser.t) : unit Lwt.t ->
@@ -216,9 +211,9 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         Db.exec remove_candidate_query (game_id, candidate.id)
 
     let select_opponent_query = t3 string string int ->. unit @@ {|
-        UPDATE games
+        UPDATE config_rooms
         SET chosen_opponent_id = ?, chosen_opponent_name = ?
-        WHERE game_id = ?
+        WHERE id = ?
     |}
 
     let select_opponent = fun ~(request : Dream.request) ~(game_id : int) (opponent : Models.MinimalUser.t) : unit Lwt.t ->
@@ -226,9 +221,9 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         Db.exec select_opponent_query (opponent.id, opponent.name, game_id)
 
     let propose_config_query = t7 game_status game_type int int first_player string int ->. unit @@ {|
-        UPDATE games
+        UPDATE config_rooms
         SET status = ?, game_type = ?, move_duration = ?, game_duration = ?, first_player = ?, config = ?
-        WHERE id = ?;
+        WHERE id = ?
     |}
 
     let propose_config = fun ~(request : Dream.request) ~(game_id : int) (proposal : Models.ConfigRoom.Proposal.t) : unit Lwt.t ->
@@ -242,7 +237,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
                                       game_id)
 
     let change_status_query = t2 int game_status ->. unit @@ {|
-        UPDATE games
+        UPDATE config_rooms
         SET status = ?
         WHERE id = ?
     |}
@@ -256,13 +251,4 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
 
     let review = change_status_to Models.ConfigRoom.GameStatus.Created
 
-    let review_and_remove_opponent_query = t2 int game_status ->. unit @@ {|
-        UPDATE games
-        SET status = ?, chosen_opponent_id = '', chosen_opponent_name = ''
-        WHERE id = ?
-    |}
-
-    let review_and_remove_opponent = fun ~(request : Dream.request) ~(game_id : int) : unit Lwt.t ->
-        Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.exec review_and_remove_opponent_query (game_id, Models.ConfigRoom.GameStatus.Created)
 end

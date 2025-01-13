@@ -166,6 +166,7 @@
                         </div>
                     </fieldset>
                     <div class="mt-2">
+                        <!-- TODO: bug already present before: if I reload the page after proposing, app-rules-configuration complains because they don't know the config! -->
                         <app-rules-configuration #rulesConfigurationComponent
                                                  id="rulesConfigurationComponent"
                                                  [rulesConfigDescriptionOptional]="rulesConfigDescription"

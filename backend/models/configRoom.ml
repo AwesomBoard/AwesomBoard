@@ -98,50 +98,6 @@ module ConfigRoom = struct
 
     end
 
-    (** The [Updates] module describes all types of updates that we can do to a
-        document. It enables forcing the programmer to not over or under define the
-        updates: types have to match precisely *)
-    module Updates = struct
-        (** This update changes the config room back to editing mode *)
-        module ReviewConfig = struct
-            type t = {
-                game_status: GameStatus.t [@key "partStatus"];
-            }
-            [@@deriving to_yojson]
-
-            let get : t = {
-                game_status = GameStatus.Created;
-            }
-        end
-
-        (** This update changes the config room back to editing mode, and removes the opponent *)
-        module ReviewConfigAndRemoveOpponent = struct
-            type t = {
-                chosen_opponent: unit [@key "chosenOpponent"];
-                game_status: GameStatus.t [@key "partStatus"];
-            }
-            [@@deriving to_yojson]
-
-            let get : t = {
-                chosen_opponent = ();
-                game_status = GameStatus.Created;
-            }
-        end
-
-        (** This update picks an opponent *)
-        module SelectOpponent = struct
-            type t = {
-                chosen_opponent: MinimalUser.t [@key "chosenOpponent"];
-            }
-            [@@deriving to_yojson]
-
-            let get = fun (opponent : MinimalUser.t) : t -> {
-                chosen_opponent = opponent;
-            }
-        end
-
-    end
-
 end
 
 include ConfigRoom

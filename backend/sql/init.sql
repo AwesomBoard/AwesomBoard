@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS candidates (
     game_id INTEGER NOT NULL,
     candidate_id TEXT NOT NULL,
     candidate_name TEXT NOT_NULL,
-    FOREIGN KEY(game_id) references config_rooms(id)
+    FOREIGN KEY(game_id) references config_rooms(id),
+    UNIQUE(game_id, candidate_id)
     );
 
 -- Indices allow for faster queries on these specific fields. As most (all?) queries will be wade with a specific game_id, we want this index.
@@ -48,6 +49,8 @@ CREATE TABLE IF NOT EXISTS games (
     -- We have the names of players already, we can just use their id for winner/loser. Both are optional.
     winner_id TEXT,
     loser_id TEXT,
+    score_zero INT,
+    score_one INT,
     FOREIGN KEY(id) references config_room(id)
     );
 
@@ -89,8 +92,8 @@ CREATE TABLE IF NOT EXISTS messages (
     author_id TEXT NOT NULL,
     author_name TEXT NOT NULL,
     timestamp INTEGER NOT NULL,
-    content TEXT NOT NULL,
-    FOREIGN KEY(game_id) REFERENCES games(id)
+    content TEXT NOT NULL
+    -- FOREIGN KEY(game_id) REFERENCES games(id) actually not, because of lobby. Could use a dummy entry in the config_rooms for lobby
 );
 
 CREATE INDEX IF NOT EXISTS idx_game_id ON messages (game_id);

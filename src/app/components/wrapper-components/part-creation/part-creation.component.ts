@@ -525,6 +525,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     }
 
     public getRulesConfigToDisplay(): RulesConfig | undefined {
+        console.log({currentConfigRoom: this.currentConfigRoom})
         return this.currentConfigRoom?.rulesConfig;
     }
 

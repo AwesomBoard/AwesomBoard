@@ -120,7 +120,7 @@ module Make
                             (* It is important to send the game first and then
                                the events, so that the client knows about the
                                game before receiving events *)
-                            let* () = send_to client_id (GameUpdate { update = game }) in
+                            let* () = send_to client_id (GameUpdate { game }) in
                             Game.iter_events ~request ~game_id (fun event -> send_to client_id (GameEvent { event }))
                     end
             end
@@ -159,29 +159,128 @@ module Make
             let* game_name : string option = ConfigRoom.get_game_name ~request ~game_id in
             send_to client_id (GameName { game_name })
 
-        (* TODO: a candidate should be able to see the part from the lobby and join *)
+        | SelectOpponent { opponent } ->
+            (** Creator has chosen the opponent *)
+            let game_id = SubscriptionManager.subscription_of client_id in
+            begin match%lwt ConfigRoom.get ~request ~game_id with
+            | None ->
+                send_to client_id (Error { reason = "This game does not exist" })
+            | Some config_room when user.id = config_room.creator.id ->
+                (* Add the opponent and send the update to everyone *)
+                let* () = ConfigRoom.select_opponent ~request ~game_id opponent in
+                let update : WebSocketOutgoingMessage.t =
+                    ConfigRoomUpdate { game_id = Id.to_string game_id;
+                                       config_room = { config_room with chosen_opponent = Some opponent }
+                                     } in
+                Lwt.join [
+                    broadcast game_id update;
+                    broadcast Id.lobby update; (* need to notify the lobby too! *)
+                ]
+            | _ ->
+                send_to client_id (Error { reason = "You can't select an opponent if you're not the creator!" })
+            end
+        | ProposeConfig { config } ->
+            (** Creator proposes a config to the chosen opponent *)
+            let game_id = SubscriptionManager.subscription_of client_id in
+            begin match%lwt ConfigRoom.get ~request ~game_id with
+            | None ->
+                send_to client_id (Error { reason = "This game does not exist" })
+            | Some config_room when user.id = config_room.creator.id && config_room.game_status = Created ->
+                (* Change the config room and send the update to candidates only *)
+                let* () = ConfigRoom.propose_config ~request ~game_id config in
+                let update : WebSocketOutgoingMessage.t =
+                    ConfigRoomUpdate { game_id = Id.to_string game_id;
+                                       config_room = { config_room with
+                                                       game_status = ConfigProposed;
+                                                       game_type = config.game_type;
+                                                       maximal_move_duration = config.maximal_move_duration;
+                                                       first_player = config.first_player;
+                                                       rules_config = config.rules_config } } in
+                Lwt.join [
+                    broadcast game_id update;
+                ]
+            | _ ->
+                send_to client_id (Error { reason = "You can't propose the config!" })
+            end
+        | ReviewConfig ->
+            (** Creator wants to review the config *)
+            let game_id = SubscriptionManager.subscription_of client_id in
+            begin match%lwt ConfigRoom.get ~request ~game_id with
+            | None ->
+                send_to client_id (Error { reason = "This game does not exist" })
+            | Some config_room when user.id = config_room.creator.id && config_room.game_status = ConfigProposed ->
+                (* Change the config room and send the update to candidates only *)
+                let* () = ConfigRoom.review ~request ~game_id in
+                let update : WebSocketOutgoingMessage.t =
+                    ConfigRoomUpdate { game_id = Id.to_string game_id;
+                                       config_room = { config_room with
+                                                       game_status = Created; } } in
+                Lwt.join [
+                    broadcast game_id update;
+                ]
+            | _ ->
+                send_to client_id (Error { reason = "You can't propose the config!" })
+            end
+        | AcceptConfig ->
+            (** Selected opponent accepts the config *)
+            let game_id = SubscriptionManager.subscription_of client_id in
+            begin match%lwt ConfigRoom.get ~request ~game_id with
+            | None ->
+                send_to client_id (Error { reason = "This game does not exist" })
+            | Some config_room when Some user = config_room.chosen_opponent && config_room.game_status = ConfigProposed ->
+                (* Change the config room and send the update to everyone *)
+                let* () = ConfigRoom.review ~request ~game_id in
+                let config_room_update : WebSocketOutgoingMessage.t =
+                    ConfigRoomUpdate { game_id = Id.to_string game_id;
+                                       config_room = { config_room with
+                                                       game_status = Created; } } in
+                (* Also, start the game! *)
+                let game = Models.Game.initial config_room (External.now ()) External.rand_bool in
+                let* () = Game.create ~request ~game_id game in
+                let game_update : WebSocketOutgoingMessage.t = GameUpdate { game } in
+                Lwt.join [
+                    broadcast game_id config_room_update;
+                    broadcast Id.lobby config_room_update;
+                    broadcast game_id game_update;
+                ]
+            | _ ->
+                send_to client_id (Error { reason = "You can't propose the config!" })
+            end
         | m ->
             failwith (Printf.sprintf "TODO: %s" (m |> WebSocketIncomingMessage.to_yojson |> JSON.to_string))
 
     (** The main handler *)
     let handle : Dream.handler = fun (request : Dream.request) ->
         Dream.websocket (fun (ws : Dream.websocket) ->
+            Dream.log "Got connection";
             let client_id = track ws in
             let rec loop = fun () ->
+                Dream.log "Waiting...";
                 match%lwt Dream.receive ws with
                 | Some message ->
+                    Dream.log "INCOMING: %s"  message;
                     let user = Auth.get_minimal_user request in
                     let%lwt () = match message |> Utils.JSON.from_string |> WebSocketIncomingMessage.of_yojson with
-                    | Ok message -> handle_message request client_id user message
+                    | Ok message ->
+                        handle_message request client_id user message
                     | Error e ->
                         Dream.log "ERROR: %s\n" e;
                         send_to client_id (Error { reason = Printf.sprintf "Malformed message: %s" e }) in
+                    Dream.log "done, looping";
                     loop ()
                 | None ->
+                    Dream.log "Closing connection to %d" client_id;
                     (* Client left, forget about it *)
                     (* TODO: also notify if game is is config (user left), or in play (user offline *)
                     forget client_id;
-                    Dream.close_websocket ws
+                    Dream.log "done with forget";
+                    let* () = Dream.close_websocket ws in
+                    Dream.log "done, stopping";
+                    Lwt.return ()
             in
-            loop ())
+            try loop ()
+            with e ->
+                Dream.log "UNEXPECTED: %s -- %s\n" (Printexc.to_string e) (Printexc.get_backtrace ());
+                Lwt.return ()
+        )
 end
