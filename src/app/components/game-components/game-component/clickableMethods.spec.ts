@@ -1,4 +1,5 @@
 import { MGPOptional } from '@everyboard/lib';
+
 import { DiamPiece } from 'src/app/games/diam/DiamPiece';
 import { EncapsulePiece } from 'src/app/games/encapsule/EncapsulePiece';
 import { HivePiece } from 'src/app/games/hive/HivePiece';
@@ -56,6 +57,7 @@ export const clickableMethods: { [gameName: string]: { [methodName: string]: unk
         selectRemaining: [new HivePiece(Player.ZERO, 'QueenBee')],
     },
     Hnefatafl: { onClick: [0, 0] },
+    InternationalCheckers: { onClick: [0, 0] },
     Kalah: {
         onClick: [0, 0],
         onStoreClick: [Player.ZERO],

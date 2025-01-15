@@ -22,7 +22,7 @@ export class TeekoTutorial extends Tutorial {
             $localize`Dropping a piece`,
             $localize`During your first four turns, you must drop one piece on any empty space of the board. There is no other restriction.<br/><br/>You're playing Dark, put a piece on the board.`,
             TeekoRules.get().getInitialState(),
-            TeekoDropMove.from(new Coord(2, 2)).get(),
+            TeekoDropMove.from(new Coord(2, 2)),
             TutorialStepMessage.CONGRATULATIONS(),
         ),
         TutorialStep.anyMove(

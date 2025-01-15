@@ -196,9 +196,15 @@ export class SimpleComponentTestUtils<T> {
     public findElement(elementName: string): DebugElement {
         this.forceChangeDetection();
         const elements: DebugElement[] = this.fixture.debugElement.queryAll(By.css(elementName));
-        expect(elements.length)
-            .withContext(`element should exist but does not: ${elementName}`)
-            .toBeGreaterThan(0);
+        if (['.', '#'].includes(elementName[0])) {
+            expect(elements.length)
+                .withContext(`element should exist but does not: ${elementName}`)
+                .toBeGreaterThan(0);
+        } else {
+            expect(elements.length)
+                .withContext(`element should exist but does not: ${elementName}. Note, it does neither start by '#' nor by '.'`)
+                .toBeGreaterThan(0);
+        }
         expect(elements.length)
             .withContext(`findElement with id as argument expects a unique result, but got ${elements.length} results instead for element '${elementName}'`)
             .toBe(1);

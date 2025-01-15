@@ -140,10 +140,10 @@ describe('GipfComponent', () => {
             await testUtils.expectClickSuccess('#click-3-3');
 
             // Then the piece should be disappeared
-            expect(testUtils.getGameComponent().isPiece(new Coord(3, 2))).toBeFalse();
-            expect(testUtils.getGameComponent().isPiece(new Coord(3, 3))).toBeFalse();
-            expect(testUtils.getGameComponent().isPiece(new Coord(3, 4))).toBeFalse();
-            expect(testUtils.getGameComponent().isPiece(new Coord(3, 5))).toBeFalse();
+            expect(testUtils.getGameComponent().isPlayerAt(new Coord(3, 2))).toBeFalse();
+            expect(testUtils.getGameComponent().isPlayerAt(new Coord(3, 3))).toBeFalse();
+            expect(testUtils.getGameComponent().isPlayerAt(new Coord(3, 4))).toBeFalse();
+            expect(testUtils.getGameComponent().isPlayerAt(new Coord(3, 5))).toBeFalse();
         }));
 
         it('should not allow capturing from a coord that is part of intersecting captures', fakeAsync(async() => {

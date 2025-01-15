@@ -30,7 +30,7 @@ export abstract class CoerceoHeuristic extends PlayerMetricHeuristic<CoerceoMove
     }
 
     protected getPiecesFreedomScore(state: CoerceoState): [number, number] {
-        const piecesByFreedom: PlayerNumberTable = state.getPiecesByFreedom(state);
+        const piecesByFreedom: PlayerNumberTable = state.getPiecesByFreedom();
         return [
             this.getPlayerPiecesScore(piecesByFreedom.get(Player.ZERO).get()),
             this.getPlayerPiecesScore(piecesByFreedom.get(Player.ONE).get()),

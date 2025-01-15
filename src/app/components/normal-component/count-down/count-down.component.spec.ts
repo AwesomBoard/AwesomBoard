@@ -1,8 +1,9 @@
 /* eslint-disable max-lines-per-function */
 import { DebugElement } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
-import { SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { TestUtils } from '@everyboard/lib';
+
+import { SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { CountDownComponent } from './count-down.component';
 import { Player } from 'src/app/jscaip/Player';
 

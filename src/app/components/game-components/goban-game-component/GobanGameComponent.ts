@@ -1,4 +1,5 @@
 import { Comparable } from '@everyboard/lib';
+
 import { Move } from '../../../jscaip/Move';
 import { Component } from '@angular/core';
 import { GameStateWithTable } from 'src/app/jscaip/state/GameStateWithTable';

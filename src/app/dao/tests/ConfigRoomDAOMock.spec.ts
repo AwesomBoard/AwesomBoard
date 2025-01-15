@@ -1,11 +1,12 @@
 /* eslint-disable max-lines-per-function */
-import { ConfigRoom, ConfigRoomDocument } from 'src/app/domain/ConfigRoom';
+import { fakeAsync } from '@angular/core/testing';
+import { Subscription } from 'rxjs';
 import { MGPMap, MGPOptional, ObservableSubject } from '@everyboard/lib';
+
+import { ConfigRoom, ConfigRoomDocument } from 'src/app/domain/ConfigRoom';
 import { FirestoreDAOMock } from './FirestoreDAOMock.spec';
 import { ConfigRoomMocks } from 'src/app/domain/ConfigRoomMocks.spec';
-import { fakeAsync } from '@angular/core/testing';
 import { UserMocks } from 'src/app/domain/UserMocks.spec';
-import { Subscription } from 'rxjs';
 import { Debug } from 'src/app/utils/Debug';
 
 type ConfigRoomOS = ObservableSubject<MGPOptional<ConfigRoomDocument>>;

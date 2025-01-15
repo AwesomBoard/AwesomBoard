@@ -58,7 +58,7 @@ export class PenteRules extends ConfigurableRules<PenteMove, PenteState, PenteCo
     }
 
     public override isLegal(move: PenteMove, state: PenteState): MGPValidation {
-        if (state.isOnBoard(move.coord) === false) {
+        if (state.isNotOnBoard(move.coord)) {
             return MGPValidation.failure(CoordFailure.OUT_OF_RANGE(move.coord));
         } else if (state.getPieceAt(move.coord).isPlayer()) {
             return MGPValidation.failure(RulesFailure.MUST_CLICK_ON_EMPTY_SQUARE());

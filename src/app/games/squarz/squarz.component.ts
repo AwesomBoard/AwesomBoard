@@ -66,7 +66,7 @@ export class SquarzComponent extends RectangularGameComponent<SquarzRules,
         this.movedSpaces.push(moveEnd);
         for (const direction of Ordinal.ORDINALS) {
             const neighbor: Coord = moveEnd.getNext(direction);
-            if (previousState.isOnBoard(neighbor) && previousState.getPieceAt(neighbor) === previousOpponent) {
+            if (previousState.hasPieceAt(neighbor, previousOpponent)) {
                 this.captured.push(neighbor);
             }
         }

@@ -264,5 +264,6 @@ describe('ArrayUtils', () => {
             expect(result).toEqual(greater);
         });
     });
+
 });
 

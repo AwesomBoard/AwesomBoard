@@ -149,28 +149,30 @@ export class Coord extends Vector {
         return new Vector(this.x, this.y);
     }
 
-    public getCoordsToward(c: Coord): Coord[] {
-        Utils.assert(c.isAlignedWith(this), 'Should only call getCoordsTowards on aligned coords');
-        if (c.equals(this)) {
-            return [];
+    public getCoordsToward(c: Coord, includeStart: boolean = false, includeEnd: boolean = false): Coord[] {
+        Utils.assert(c.isAlignedWith(this), 'Should only call getCoordsToward on aligned coords');
+        const coords: Coord[] = [];
+        if (includeStart) {
+            coords.push(this);
+        }
+        if (this.equals(c)) {
+            return coords;
         }
         const dir: Ordinal = this.getDirectionToward(c).get();
         let coord: Coord = this.getNext(dir, 1);
-        const coords: Coord[] = [];
         while (coord.equals(c) === false) {
             coords.push(coord);
             coord = coord.getNext(dir, 1);
         }
+        if (includeEnd) {
+            coords.push(coord);
+        }
         return coords;
     }
 
+    // [this, end]
     public getAllCoordsToward(end: Coord): Coord[] {
-        let coords: Coord[] = [this];
-        if (this.equals(end) === false) {
-            const middle: Coord[] = this.getCoordsToward(end);
-            coords = coords.concat(middle).concat(end);
-        }
-        return coords;
+        return this.getCoordsToward(end, true, true);
     }
 
     public override equals(obj: Coord): boolean {

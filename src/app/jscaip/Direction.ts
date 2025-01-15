@@ -113,4 +113,5 @@ export abstract class DirectionFactory<T extends Direction> {
 export class DirectionFailure {
 
     public static readonly DIRECTION_MUST_BE_LINEAR: Localized = () => $localize`You must move in a straight line! You can only move orthogonally or diagonally!`;
+
 }

@@ -96,20 +96,17 @@ export class AbaloneRules extends ConfigurableRules<AbaloneMove,
         const opponent: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentOpponent());
         const player: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
         while (opponentPieces < pushingPieces &&
-               state.isOnBoard(firstOpponent) &&
-               state.getPieceAt(firstOpponent) === opponent) {
+               state.hasPieceAt(firstOpponent, opponent))
+        {
             opponentPieces++;
             firstOpponent = firstOpponent.getNext(move.dir);
         }
         if (pushingPieces <= opponentPieces) {
             return MGPFallible.failure(AbaloneFailure.NOT_ENOUGH_PIECE_TO_PUSH());
-        } else if (AbaloneState.isOnBoard(firstOpponent)) {
-            if (state.getPieceAt(firstOpponent) === FourStatePiece.EMPTY) {
-                newBoard[firstOpponent.y][firstOpponent.x] = opponent;
-            }
-            if (state.getPieceAt(firstOpponent) === player) {
-                return MGPFallible.failure(AbaloneFailure.CANNOT_PUSH_YOUR_OWN_PIECES());
-            }
+        } else if (state.hasPieceAt(firstOpponent, FourStatePiece.EMPTY)) {
+            newBoard[firstOpponent.y][firstOpponent.x] = opponent;
+        } else if (state.hasPieceAt(firstOpponent, player)) {
+            return MGPFallible.failure(AbaloneFailure.CANNOT_PUSH_YOUR_OWN_PIECES());
         }
         return MGPFallible.success(newBoard);
     }
@@ -139,7 +136,7 @@ export class AbaloneRules extends ConfigurableRules<AbaloneMove,
 
     private getFirstPieceValidity(move: AbaloneMove, state: AbaloneState): MGPValidation {
         const firstPiece: FourStatePiece = state.getPieceAt(move.coord);
-        if (state.isPiece(move.coord) === false) {
+        if (firstPiece.isPlayer() === false) {
             return MGPValidation.failure(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_EMPTY());
         } else if (firstPiece === FourStatePiece.ofPlayer(state.getCurrentOpponent())) {
             return MGPValidation.failure(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
@@ -158,15 +155,14 @@ export class AbaloneRules extends ConfigurableRules<AbaloneMove,
         const newBoard: FourStatePiece[][] = state.getCopiedBoard();
         newBoard[move.coord.y][move.coord.x] = empty;
         while (pieces <= config.maximumPushingGroupSize &&
-               state.isOnBoard(tested) &&
-               state.getPieceAt(tested) === player)
+               state.hasPieceAt(tested, player))
         {
             pieces++;
             tested = tested.getNext(move.dir);
         }
         if (pieces > config.maximumPushingGroupSize) {
             return MGPFallible.failure(AbaloneFailure.CANNOT_MOVE_MORE_THAN_N_PIECES(config.maximumPushingGroupSize));
-        } else if (AbaloneState.isOnBoard(tested) === false) {
+        } else if (state.isNotOnBoard(tested)) {
             return MGPFallible.success(newBoard);
         }
         newBoard[tested.y][tested.x] = player;
@@ -183,14 +179,14 @@ export class AbaloneRules extends ConfigurableRules<AbaloneMove,
         let tested: Coord = move.coord;
         const player: FourStatePiece = FourStatePiece.ofPlayer(state.getCurrentPlayer());
         const newBoard: FourStatePiece[][] = state.getCopiedBoard();
-        while (tested.equals(last) === false && AbaloneState.isOnBoard(tested)) {
+        while (tested.equals(last) === false && state.isOnBoard(tested)) {
             if (state.getPieceAt(tested) !== player) {
                 return MGPFallible.failure(AbaloneFailure.MUST_ONLY_TRANSLATE_YOUR_PIECES());
             }
             const landing: Coord = tested.getNext(move.dir);
             newBoard[tested.y][tested.x] = FourStatePiece.EMPTY;
-            if (AbaloneState.isOnBoard(landing)) {
-                if (state.isPiece(landing)) {
+            if (state.isOnBoard(landing)) {
+                if (state.isPlayerAt(landing)) {
                     return MGPFallible.failure(AbaloneFailure.TRANSLATION_IMPOSSIBLE());
                 }
                 if (state.getPieceAt(landing) === FourStatePiece.EMPTY) {

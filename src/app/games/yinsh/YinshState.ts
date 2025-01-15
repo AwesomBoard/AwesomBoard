@@ -54,8 +54,9 @@ export class YinshState extends HexagonalGameState<YinshPiece> {
     public override isOnBoard(coord: Coord): boolean {
         if (coord.isNotInRange(this.width, this.height)) {
             return false;
+        } else {
+            return this.getUnsafe(coord) !== YinshPiece.UNREACHABLE;
         }
-        return this.board[coord.y][coord.x] !== YinshPiece.UNREACHABLE;
     }
 
     public override setAtUnsafe(coord: Coord, value: YinshPiece): this {
@@ -63,4 +64,5 @@ export class YinshState extends HexagonalGameState<YinshPiece> {
         newBoard[coord.y][coord.x] = value;
         return new YinshState(newBoard, this.sideRings, this.turn) as this;
     }
+
 }

@@ -81,10 +81,12 @@ import { HiveComponent } from './games/hive/hive.component';
 import { HivePieceComponent } from './games/hive/hive-piece.component';
 import { HnefataflComponent } from './games/tafl/hnefatafl/hnefatafl.component';
 
+import { InternationalCheckersComponent } from './games/checkers/international-checkers/international-checkers.component';
+
 import { KalahComponent } from './games/mancala/kalah/kalah.component';
 import { KamisadoComponent } from './games/kamisado/kamisado.component';
 
-import { LascaComponent } from './games/lasca/lasca.component';
+import { LascaComponent } from './games/checkers/lasca/lasca.component';
 import { LinesOfActionComponent } from './games/lines-of-action/lines-of-action.component';
 import { LodestoneComponent } from './games/lodestone/lodestone.component';
 import { LodestoneLodestoneComponent } from './games/lodestone/lodestone-lodestone.component';
@@ -211,6 +213,7 @@ export const routes: Route[] = [
         HexodiaComponent,
         HiveComponent, HivePieceComponent,
         HnefataflComponent,
+        InternationalCheckersComponent,
         KalahComponent,
         KamisadoComponent,
         LascaComponent,

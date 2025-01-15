@@ -29,9 +29,7 @@ export class EpaminondasPieceThenRowDominationThenAlignmentThenRowPresenceHeuris
                     row += mod;
                     for (const dir of [Ordinal.UP_LEFT, Ordinal.UP, Ordinal.UP_RIGHT]) {
                         let neighbor: Coord = coord.getNext(dir, 1);
-                        while (node.gameState.isOnBoard(neighbor) &&
-                               node.gameState.getPieceAt(neighbor) === player)
-                        {
+                        while (node.gameState.hasPieceAt(neighbor, player)) {
                             alignement += mod;
                             neighbor = neighbor.getNext(dir, 1);
                         }

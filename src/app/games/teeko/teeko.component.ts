@@ -70,7 +70,7 @@ export class TeekoComponent extends RectangularGameComponent<TeekoRules,
         }
         const clickedCoord: Coord = new Coord(x, y);
         if (this.getState().isInDropPhase()) {
-            const move: TeekoDropMove = TeekoDropMove.from(clickedCoord).get();
+            const move: TeekoDropMove = TeekoDropMove.from(clickedCoord);
             return this.chooseMove(move);
         } else {
             if (this.selected.isPresent()) {

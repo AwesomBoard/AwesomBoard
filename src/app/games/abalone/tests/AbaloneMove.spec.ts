@@ -1,4 +1,6 @@
 /* eslint-disable max-lines-per-function */
+import { TestUtils } from '@everyboard/lib';
+
 import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
 import { TestUtils } from '@everyboard/lib';
 

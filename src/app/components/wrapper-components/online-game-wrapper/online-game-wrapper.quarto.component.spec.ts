@@ -4,6 +4,7 @@ import { DebugElement } from '@angular/core';
 import { Router } from '@angular/router';
 import * as Firestore from '@firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { JSONValue, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 
 import { OnlineGameWrapperComponent, OnlineGameWrapperMessages } from './online-game-wrapper.component';
 import { ConfigRoomDAO } from 'src/app/dao/ConfigRoomDAO';
@@ -15,7 +16,6 @@ import { UserDAO } from 'src/app/dao/UserDAO';
 import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
 import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
 import { Action, GameEvent, MGPResult, Part, Reply, RequestType } from 'src/app/domain/Part';
-import { JSONValue, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { CurrentGame, User } from 'src/app/domain/User';
 import { ConnectedUserServiceMock } from 'src/app/services/tests/ConnectedUserService.spec';

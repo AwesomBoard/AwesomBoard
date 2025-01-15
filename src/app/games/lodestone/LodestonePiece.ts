@@ -14,21 +14,27 @@ export class LodestonePieceNone {
 
     private constructor(private readonly unreachable: boolean) {
     }
+
     public isLodestone(): this is LodestonePieceLodestone {
         return false;
     }
+
     public isPlayerPiece(): this is LodestonePiecePlayer {
         return false;
     }
+
     public isEmpty(): this is LodestonePieceNone {
         return true;
     }
+
     public isUnreachable(): boolean {
         return this.unreachable;
     }
+
     public equals(other: LodestonePiece): boolean {
         return this === other;
     }
+
 }
 
 export class LodestonePiecePlayer {
@@ -44,23 +50,30 @@ export class LodestonePiecePlayer {
             return LodestonePiecePlayer.ONE;
         }
     }
+
     private constructor(public readonly owner: Player) {
     }
+
     public isLodestone(): this is LodestonePieceLodestone {
         return false;
     }
+
     public isPlayerPiece(): this is LodestonePiecePlayer {
         return true;
     }
+
     public isEmpty(): this is LodestonePieceNone {
         return false;
     }
+
     public isUnreachable(): boolean {
         return false;
     }
+
     public equals(other: LodestonePiece): boolean {
         return this === other;
     }
+
 }
 
 type LodestoneOrientationMap = Record<LodestoneOrientation, LodestonePieceLodestone>;
@@ -115,26 +128,33 @@ export class LodestonePieceLodestone {
                         public readonly orientation: LodestoneOrientation)
     {
     }
+
     public static of(player: Player, description: LodestoneDescription)
     : LodestonePieceLodestone
     {
         return LodestonePieceLodestone.LODESTONES[player.getValue()][description.direction][description.orientation];
     }
+
     public isLodestone(): this is LodestonePieceLodestone {
         return true;
     }
+
     public isPlayerPiece(): this is LodestonePiecePlayer {
         return false;
     }
+
     public isEmpty(): this is LodestonePieceNone {
         return false;
     }
+
     public isUnreachable(): boolean {
         return false;
     }
+
     public equals(other: LodestonePiece): boolean {
         return this === other;
     }
+
 }
 
 export type LodestonePiece = LodestonePiecePlayer | LodestonePieceLodestone | LodestonePieceNone;

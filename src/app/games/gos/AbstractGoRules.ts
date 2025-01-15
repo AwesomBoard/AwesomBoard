@@ -243,7 +243,7 @@ export abstract class AbstractGoRules<C extends RulesConfig>
     public getCapturedInDirection(coord: Coord, direction: Direction, state: GoState): Coord[] {
         const copiedBoard: GoPiece[][] = state.getCopiedBoard();
         const neightbooringCoord: Coord = coord.getNext(direction);
-        if (this.isInBoard(neightbooringCoord, state)) {
+        if (this.isReachable(neightbooringCoord, state)) {
             const opponent: GoPiece = state.turn%2 === 0 ? GoPiece.LIGHT : GoPiece.DARK;
             if (copiedBoard[neightbooringCoord.y][neightbooringCoord.x] === opponent) {
                 Debug.display('GoRules', 'getCapturedInDirection', 'a group could be captured');
@@ -263,8 +263,8 @@ export abstract class AbstractGoRules<C extends RulesConfig>
         return [];
     }
 
-    private isInBoard(coord: Coord, state: GoState): boolean {
-        return state.isOnBoard(coord) && state.getPieceAt(coord) !== GoPiece.UNREACHABLE;
+    private isReachable(coord: Coord, state: GoState): boolean {
+        return state.hasInequalPieceAt(coord, GoPiece.UNREACHABLE);
     }
 
     private isCapturableGroup(groupData: GoGroupData, koCoord: MGPOptional<Coord>): boolean {

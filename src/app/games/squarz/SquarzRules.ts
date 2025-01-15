@@ -94,9 +94,7 @@ export class SquarzRules extends ConfigurableRules<SquarzMove, SquarzState, Squa
         }
         for (const direction of Ordinal.ORDINALS) {
             const neighbor: Coord = end.getNext(direction, 1);
-            if (resultingState.isOnBoard(neighbor) &&
-                resultingState.getPieceAt(neighbor) === opponent)
-            {
+            if (resultingState.hasPieceAt(neighbor, opponent)) {
                 resultingState = resultingState.setPieceAt(neighbor, player);
             }
         }
@@ -133,7 +131,7 @@ export class SquarzRules extends ConfigurableRules<SquarzMove, SquarzState, Squa
         for (let y: number = -jumpSize; y <= jumpSize; y++) {
             for (let x: number = -jumpSize; x <= jumpSize; x++) {
                 const landingCoord: Coord = new Coord(coord.x + x, coord.y + y);
-                if (state.isOnBoard(landingCoord) && state.getPieceAt(landingCoord).isNone()) {
+                if (state.isEmptyAt(landingCoord)) {
                     moves.push(SquarzMove.from(coord, landingCoord).get());
                 }
             }

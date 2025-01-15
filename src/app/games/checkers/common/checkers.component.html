@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      class="board"
-     [attr.viewBox]="LEFT + ' ' + UP + ' ' + WIDTH + ' ' + HEIGHT"
+     [attr.viewBox]="getViewBox().toSVGString()"
      preserveAspectRatio="xMidYMid meet">
 
     <defs>
@@ -21,13 +21,22 @@
 
     <rect id="bottomEdge"
           x="0"
-          [attr.y]="basicWidth"
+          [attr.y]="basicHeight"
           [attr.width]="basicWidth * mode.horizontalWidthRatio"
           [attr.height]="THICKNESS"
           class="base"/>
     <polygon id="rightEdge"
              [attr.points]="getRightEdge()"
              class="base"/>
+
+    <!-- Clickable highlights -->
+    <polygon *ngFor="let coord of possibleClicks"
+             id="clickable-highlight-{{ coord.x }}-{{ coord.y }}"
+             [attr.transform]="getTranslationAtXYZ(coord.x, coord.y, 0)"
+             (click)="onClick(coord.x, coord.y)"
+             [attr.points]="getParallelogramPoints()"
+             class="base no-fill clickable-stroke small-stroke"
+    />
 
     <!-- Pieces -->
     <g *ngFor="let coordAndContent of constructedState.getCoordsAndContents()"
@@ -42,8 +51,8 @@
                  xlink:href="#piece"
                  [ngClass]="getPieceClasses(coordAndContent.coord.x, coordAndContent.coord.y, z)"
                  class="base mid-stroke"/>
-            <circle id="square-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}-piece-{{ z }}-officer-symbol"
-                    *ngIf="isPieceOfficer(coordAndContent.coord.x, coordAndContent.coord.y, z)"
+            <circle id="square-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}-piece-{{ z }}-promoted-symbol"
+                    *ngIf="isPiecePromoted(coordAndContent.coord.x, coordAndContent.coord.y, z)"
                     [attr.cx]="SPACE_SIZE * 0.4"
                     [attr.cy]="SPACE_SIZE * 0.575"
                     [attr.r]="SPACE_SIZE * 0.045"
@@ -51,13 +60,4 @@
         </g>
     </g>
 
-    <!-- Clickable highlights -->
-    <polygon *ngFor="let coord of possibleClicks"
-             id="clickable-highlight-{{ coord.x }}-{{ coord.y }}"
-             [attr.transform]="getTranslationAtXYZ(coord.x, coord.y, 0)"
-             (click)="onClick(coord.x, coord.y)"
-             [attr.points]="getParallelogramPoints()"
-             [ngClass]="getSquareClass(coord.x, coord.y)"
-             class="base no-fill clickable-stroke small-stroke"
-    />
 </svg>

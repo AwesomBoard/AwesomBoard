@@ -129,11 +129,11 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         let moved: Coord = move.coord;
         this.moveds = [moved];
         moved = moved.getNext(move.dir);
-        while (AbaloneState.isOnBoard(moved) && previousState.isPiece(moved)) {
+        while (previousState.coordIsOccupiedSquare(moved)) {
             this.moveds.push(moved);
             moved = moved.getNext(move.dir);
         }
-        if (AbaloneState.isOnBoard(moved)) {
+        if (previousState.isOnBoard(moved)) {
             this.moveds.push(moved);
         } else {
             const fallenPieceCoord: Coord = moved.getPrevious(move.dir);
@@ -153,7 +153,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
         while (processed.equals(last) === false) {
             this.moveds.push(processed);
             const landing: Coord = processed.getNext(move.dir);
-            if (AbaloneState.isOnBoard(landing)) {
+            if (this.getState().isOnBoard(landing)) {
                 this.moveds.push(landing);
             } else {
                 // Since only current player could have translated out their pieces
@@ -253,7 +253,7 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
             const state: AbaloneState = this.getState();
             const currentPlayer: Player = state.getCurrentPlayer();
             let pointed: Coord = end;
-            while (state.isOnBoard(pointed) && state.getPieceAt(pointed).is(currentPlayer)) {
+            while (state.hasPieceBelongingTo(pointed, currentPlayer)) {
                 pointed = pointed.getNext(direction, 1);
             }
             return pointed;
@@ -264,10 +264,6 @@ export class AbaloneComponent extends HexagonalGameComponent<AbaloneRules,
 
     public isReachable(c: FourStatePiece): boolean {
         return c !== FourStatePiece.UNREACHABLE;
-    }
-
-    public isPiece(c: FourStatePiece): boolean {
-        return c !== FourStatePiece.EMPTY;
     }
 
     private async secondClick(coord: Coord): Promise<MGPValidation> {

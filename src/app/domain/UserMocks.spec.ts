@@ -1,6 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
-import { AuthUser } from '../services/ConnectedUserService';
 import { MGPOptional } from '@everyboard/lib';
+
+import { AuthUser } from '../services/ConnectedUserService';
 import { MinimalUser } from './MinimalUser';
 import { User } from './User';
 

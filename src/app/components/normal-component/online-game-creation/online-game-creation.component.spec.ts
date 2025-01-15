@@ -1,10 +1,11 @@
 /* eslint-disable max-lines-per-function */
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { MGPValidation } from '@everyboard/lib';
+
 import { UserMocks } from 'src/app/domain/UserMocks.spec';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { ConnectedUserServiceMock } from 'src/app/services/tests/ConnectedUserService.spec';
-import { MGPValidation } from '@everyboard/lib';
 import { ActivatedRouteStub, expectValidRouting, SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { GameWrapperMessages } from '../../wrapper-components/GameWrapper';
 import { OnlineGameWrapperComponent } from '../../wrapper-components/online-game-wrapper/online-game-wrapper.component';

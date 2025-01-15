@@ -41,9 +41,7 @@ export class EpaminondasPositionalHeuristic
             total += SCORE_BY_PIECE * mod;
             for (const dir of dirs) {
                 let neighbor: Coord = coord.getNext(dir, 1);
-                while (state.isOnBoard(neighbor) &&
-                       state.getPieceAt(neighbor) === player)
-                {
+                while (state.hasPieceAt(neighbor, player)) {
                     total += mod * SCORE_BY_ALIGNMENT;
                     neighbor = neighbor.getNext(dir, 1);
                 }

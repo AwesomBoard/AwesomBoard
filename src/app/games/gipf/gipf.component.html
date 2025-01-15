@@ -15,38 +15,38 @@
         </marker>
     </defs>
 
-    <g *ngFor="let space of getAllCoords()"
-       (click)="onClick(space)"
-       id="click-{{ space.x }}-{{ space.y }}"
-       [attr.transform]="getHexaCenterTranslationAt(space)">
+    <g *ngFor="let coord of getAllCoords()"
+       (click)="onClick(coord)"
+       id="click-{{ coord.x }}-{{ coord.y }}"
+       [attr.transform]="getHexaCenterTranslationAt(coord)">
 
         <polygon [attr.points]="getHexaPoints()"
-                 id="space-{{ space.x }}-{{ space.y }}"
-                 [ngClass]="getSpaceClass(space)"
+                 id="space-{{ coord.x }}-{{ coord.y }}"
+                 [ngClass]="getSpaceClass(coord)"
                  class="base"
                  stroke-linecap="round"/>
-        <circle *ngIf="isPiece(space)"
+        <circle *ngIf="isPlayerAt(coord)"
                 cx="0"
                 cy="0"
                 [attr.r]="SPACE_SIZE"
-                [ngClass]="getPieceClass(space)"
+                [ngClass]="getPieceClass(coord)"
                 class="base"/>
-        <circle *ngIf="isCapturedPiece(space)"
-                id="dead-piece-{{ space.x }}-{{ space.y }}"
+        <circle *ngIf="isCapturedPiece(coord)"
+                id="dead-piece-{{ coord.x }}-{{ coord.y }}"
                 cx="0"
                 cy="0"
                 [attr.r]="SPACE_SIZE"
-                [ngClass]="getCapturedPieceClass(space)"
+                [ngClass]="getCapturedPieceClass(coord)"
                 class="base semi-transparent"/>
     </g>
 
     <g *ngFor="let capture of possibleCaptures; index as i"
        pointer-events="fill"
        class="capturable-stroke">
-        <polygon *ngFor="let space of capture.capturedSpaces"
+        <polygon *ngFor="let coord of capture.capturedSpaces"
                  [attr.points]="getHexaPoints()"
-                 [attr.transform]="getHexaCenterTranslationAt(space)"
-                 (click)="onClick(space)"
+                 [attr.transform]="getHexaCenterTranslationAt(coord)"
+                 (click)="onClick(coord)"
                  class="no-fill"
                  stroke-linecap="round"/>
     </g>

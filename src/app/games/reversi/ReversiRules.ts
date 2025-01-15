@@ -100,13 +100,11 @@ export class ReversiRules extends ConfigurableRules<ReversiMove,
 
         for (const direction of Ordinal.ORDINALS) {
             const firstSpace: Coord = move.coord.getNext(direction);
-            if (state.isOnBoard(firstSpace)) {
-                if (state.getPieceAt(firstSpace) === opponent) {
-                    // let's test this direction
-                    const switchedInDir: Coord[] = this.getSandwicheds(player, direction, firstSpace, state);
-                    for (const switched of switchedInDir) {
-                        switcheds.push(switched);
-                    }
+            if (state.hasPieceAt(firstSpace, opponent)) {
+                // let's test this direction
+                const switchedInDir: Coord[] = this.getSandwicheds(player, direction, firstSpace, state);
+                for (const switched of switchedInDir) {
+                    switcheds.push(switched);
                 }
             }
         }

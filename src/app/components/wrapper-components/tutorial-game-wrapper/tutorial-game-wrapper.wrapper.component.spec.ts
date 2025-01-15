@@ -1,16 +1,17 @@
 /* eslint-disable max-lines-per-function */
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { Comparable, MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { TutorialGameWrapperComponent, TutorialGameWrapperMessages } from './tutorial-game-wrapper.component';
 import { TutorialStep } from './TutorialStep';
 import { QuartoMove } from 'src/app/games/quarto/QuartoMove';
 import { QuartoState } from 'src/app/games/quarto/QuartoState';
 import { QuartoPiece } from 'src/app/games/quarto/QuartoPiece';
 import { ComponentTestUtils, expectValidRouting } from 'src/app/utils/tests/TestUtils.spec';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { QuartoComponent } from '../../../games/quarto/quarto.component';
-import { Comparable, MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 import { TutorialFailure } from './TutorialFailure';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { Router } from '@angular/router';
 import { LocalGameWrapperComponent } from '../local-game-wrapper/local-game-wrapper.component';
 import { OnlineGameCreationComponent } from '../../normal-component/online-game-creation/online-game-creation.component';
 import { GameWrapperMessages } from '../GameWrapper';
@@ -22,6 +23,7 @@ import { QuartoConfig, QuartoRules } from 'src/app/games/quarto/QuartoRules';
 import { TutorialStepMessage } from './TutorialStepMessage';
 
 describe('TutorialGameWrapperComponent for non-existing game', () => {
+
     it('should redirect to /notFound', fakeAsync(async() => {
         // Given a game wrapper for a game that does not exist
         const testUtils: ComponentTestUtils<AbstractGameComponent> = await ComponentTestUtils.basic('invalid-game', true);
@@ -41,6 +43,7 @@ describe('TutorialGameWrapperComponent for non-existing game', () => {
             { skipLocationChange: true },
         );
     }));
+
 });
 
 describe('TutorialGameWrapperComponent (wrapper)', () => {
@@ -839,6 +842,34 @@ describe('TutorialGameWrapperComponent (wrapper)', () => {
             expect(gameComponent.hideLastMove).toHaveBeenCalledOnceWith();
         }));
 
+        it('should render not-interactive after move is done', fakeAsync(async() => {
+            // Given a TutorialStep for specific move
+            const tutorial: TutorialStep[] = [
+                TutorialStep.fromMove(
+                    'title',
+                    'Put your piece in a corner and give the opposite one.',
+                    QuartoRules.get().getInitialState(defaultConfig),
+                    [
+                        new QuartoMove(0, 0, QuartoPiece.BBBB),
+                        new QuartoMove(0, 3, QuartoPiece.BBBB),
+                        new QuartoMove(3, 3, QuartoPiece.BBBB),
+                        new QuartoMove(3, 0, QuartoPiece.BBBB),
+                    ],
+                    TutorialStepMessage.CONGRATULATIONS(),
+                    'Perdu.',
+                ),
+            ];
+            await wrapper.startTutorial(tutorial);
+            const gameComponent: AbstractGameComponent = testUtils.getGameComponent();
+
+            // When doing that move
+            await testUtils.expectClickSuccess('#click-coord-0-0');
+            await testUtils.expectMoveSuccess('#click-piece-15', new QuartoMove(0, 0, QuartoPiece.BBBB));
+
+            // Then the opponent should not be displayed as interactive
+            expect(gameComponent.isInteractive()).toBeFalse();
+        }));
+
     });
 
     describe('TutorialStep expecting any move', () => {
@@ -1056,6 +1087,7 @@ describe('TutorialGameWrapperComponent (wrapper)', () => {
                 testUtils.findElement('#currentMessage').nativeElement.innerHTML;
             expect(currentMessage).toBe(expectedMessage);
         }));
+
     });
 
     describe('Informational TutorialStep', () => {

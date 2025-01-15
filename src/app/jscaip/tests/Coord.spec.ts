@@ -36,7 +36,7 @@ describe('Coord', () => {
 
             // When calculating the coords from coord to notAligned
             // Then it should throw
-            const reason: string = 'Should only call getCoordsTowards on aligned coords';
+            const reason: string = 'Should only call getCoordsToward on aligned coords';
             TestUtils.expectToThrowAndLog(() => {
                 coord.getCoordsToward(notAligned);
             }, reason);
@@ -128,7 +128,7 @@ describe('Coord', () => {
 
             // When getting all coord toward end
             // Then it should throw
-            const reason: string = 'Should only call getCoordsTowards on aligned coords';
+            const reason: string = 'Should only call getCoordsToward on aligned coords';
             TestUtils.expectToThrowAndLog(() => {
                 start.getAllCoordsToward(end);
             }, reason);

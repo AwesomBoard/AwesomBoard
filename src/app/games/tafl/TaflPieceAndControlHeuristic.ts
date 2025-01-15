@@ -46,9 +46,7 @@ export class TaflPieceAndControlHeuristic<M extends TaflMove> extends TaflPieceA
                     metrics.safeScore += owner.getScoreModifier();
                     for (const dir of Orthogonal.ORTHOGONALS) {
                         let testedCoord: Coord = coord.getNext(dir, 1);
-                        while (state.isOnBoard(testedCoord) &&
-                               state.getPieceAt(testedCoord) === TaflPawn.UNOCCUPIED)
-                        {
+                        while (state.hasPieceAt(testedCoord, TaflPawn.UNOCCUPIED)) {
                             controlledSquares = controlledSquares.addElement(testedCoord);
                             testedCoord = testedCoord.getNext(dir, 1);
                         }

@@ -2,8 +2,9 @@
 import { DebugElement } from '@angular/core';
 import { fakeAsync, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { MGPValidation } from '@everyboard/lib';
+
+import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { expectValidRouting, expectValidRoutingLink, SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { LocalGameWrapperComponent } from '../../wrapper-components/local-game-wrapper/local-game-wrapper.component';
 import { TutorialGameWrapperComponent } from '../../wrapper-components/tutorial-game-wrapper/tutorial-game-wrapper.component';

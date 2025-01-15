@@ -1,5 +1,6 @@
-import { FirestoreDocument } from '../dao/FirestoreDAO';
 import { Utils } from '@everyboard/lib';
+
+import { FirestoreDocument } from '../dao/FirestoreDAO';
 import { MinimalUser } from './MinimalUser';
 import { RulesConfig } from '../jscaip/RulesConfigUtil';
 

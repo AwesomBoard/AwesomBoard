@@ -27,6 +27,7 @@ export class TestingHexagonalState extends HexagonalGameState<number> {
         }
         return new TestingHexagonalState(0, newBoard, width, height, excludedSpaces, empty);
     }
+
     public static fromTable(turn: number,
                             table: Table<number>,
                             excludedSpaces: ReadonlyArray<number>,
@@ -40,6 +41,7 @@ export class TestingHexagonalState extends HexagonalGameState<number> {
         const width: number = table[0].length;
         return new TestingHexagonalState(turn, table, width, height, excludedSpaces, empty);
     }
+
     public constructor(turn: number,
                        board: Table<number>,
                        width: number,
@@ -52,6 +54,7 @@ export class TestingHexagonalState extends HexagonalGameState<number> {
             throw new Error('Invalid excluded spaces specification for HexaBoard.');
         }
     }
+
     public override setAtUnsafe(coord: Coord, value: number): this {
         const newBoard: number[][] = TableUtils.copy(this.board);
         newBoard[coord.y][coord.x] = value;
@@ -62,18 +65,23 @@ export class TestingHexagonalState extends HexagonalGameState<number> {
                                          this.excludedSpaces,
                                          this.empty) as this;
     }
+
     public override isOnBoard(coord: Coord): boolean {
         if (coord.isNotInRange(this.width, this.height)) {
             return false;
+        } else {
+            return this.getUnsafe(coord) !== TestingHexagonalState.UNREACHABLE;
         }
-        return this.board[coord.y][coord.x] !== TestingHexagonalState.UNREACHABLE;
     }
+
     public numCompare(x: number, y: number): boolean {
         return x === y;
     }
+
     public equals(other: TestingHexagonalState): boolean {
         return this.equalsT(other, this.numCompare);
     }
+
 }
 
 describe('HexagonalGameState', () => {

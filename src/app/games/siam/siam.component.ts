@@ -227,7 +227,7 @@ export class SiamComponent extends RectangularGameComponent<SiamRules,
             if (move.direction.isPresent()) {
                 const target: Coord = move.coord.getNext(move.direction.get());
                 this.clickableCoords = this.clickableCoords.addElement(target);
-                if (state.isOnBoard(target) && state.getPieceAt(target) !== SiamPiece.EMPTY) {
+                if (state.hasInequalPieceAt(target, SiamPiece.EMPTY)) {
                     const arrow: SiamIndicatorArrow = {
                         source: MGPOptional.of({
                             coord: clickedCoord,

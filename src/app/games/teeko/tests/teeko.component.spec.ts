@@ -40,7 +40,7 @@ describe('TeekoComponent', () => {
             await testUtils.setupState(state);
 
             // When clicking on the occupied space
-            const move: TeekoDropMove = TeekoDropMove.from(new Coord(2, 2)).get();
+            const move: TeekoDropMove = TeekoDropMove.from(new Coord(2, 2));
 
             // Then the move should be illegal
             const reason: string = RulesFailure.MUST_LAND_ON_EMPTY_SPACE();
@@ -50,7 +50,7 @@ describe('TeekoComponent', () => {
         it('should drop when clicking on empty space', fakeAsync(async() => {
             // Given any board of drop phase
             // When clicking on empty space
-            const move: TeekoMove = TeekoDropMove.from(new Coord(2, 2)).get();
+            const move: TeekoMove = TeekoDropMove.from(new Coord(2, 2));
 
             // Then it should succeed
             await testUtils.expectMoveSuccess('#click_2_2', move);
@@ -58,7 +58,7 @@ describe('TeekoComponent', () => {
 
         it('should highlight the last piece dropped', fakeAsync(async() => {
             // Given a board with a last move that is a drop
-            const move: TeekoMove = TeekoDropMove.from(new Coord(2, 2)).get();
+            const move: TeekoMove = TeekoDropMove.from(new Coord(2, 2));
             await testUtils.expectMoveSuccess('#click_2_2', move);
             // When rendering the board
             // Then the last move should be highlighted

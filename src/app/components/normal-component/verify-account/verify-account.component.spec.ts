@@ -1,11 +1,12 @@
 /* eslint-disable max-lines-per-function */
 import { fakeAsync, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
 import { ConnectedUserService, AuthUser } from 'src/app/services/ConnectedUserService';
 import { expectValidRouting, SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { VerifyAccountComponent } from './verify-account.component';
 import { ConnectedUserServiceMock } from 'src/app/services/tests/ConnectedUserService.spec';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
-import { Router } from '@angular/router';
 import { LobbyComponent } from '../lobby/lobby.component';
 
 describe('VerifyAccountComponent', () => {

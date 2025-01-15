@@ -58,6 +58,10 @@ export class MartianChessState extends GameStateWithTable<MartianChessPiece> {
         return coord.isInRange(MartianChessState.WIDTH, MartianChessState.HEIGHT);
     }
 
+    public static isNotOnBoard(coord: Coord): boolean {
+        return MartianChessState.isOnBoard(coord) === false;
+    }
+
     public readonly captured: MGPMap<Player, MartianChessCapture>;
 
     public constructor(board: Table<MartianChessPiece>,

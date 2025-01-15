@@ -1,13 +1,14 @@
 import { Component, Input, OnDestroy, ElementRef, ViewChild, OnInit, AfterViewChecked } from '@angular/core';
+import { faReply, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { Subscription } from 'rxjs';
+import { Utils } from '@everyboard/lib';
+
 import { ChatService } from '../../../services/ChatService';
 import { Message, MessageDocument } from '../../../domain/Message';
 import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
-import { faReply, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FirestoreCollectionObserver } from 'src/app/dao/FirestoreCollectionObserver';
 import { MinimalUser } from 'src/app/domain/MinimalUser';
-import { Subscription } from 'rxjs';
 import { Debug } from 'src/app/utils/Debug';
-import { Utils } from '@everyboard/lib';
 
 @Component({
     selector: 'app-chat',

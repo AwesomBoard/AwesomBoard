@@ -20,7 +20,7 @@ export class TaflNode<M extends TaflMove> extends GameNode<M, TaflState> {}
 
 export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M, TaflState, TaflConfig> {
 
-    public static readonly CASTLE_IS_LEFT_FOR_GOOD: Localized = () => $localize`Central throne is left for good`;
+    public static readonly CAN_RETURN_TO_CASTLE: Localized = () => $localize`Central throne is left for good`;
     public static readonly EDGE_ARE_KING_S_ENNEMY: Localized = () => $localize`Edges are king's ennemy`;
     public static readonly CENTRAL_THRONE_CAN_SURROUND_KING: Localized = () => $localize`Central throne can surround king`;
     public static readonly KING_FAR_FROM_HOME_CAN_BE_SANDWICHED: Localized = () => $localize`King far from home can be sandwiched`;
@@ -57,7 +57,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
         }
         if (this.isThrone(state, move.getEnd())) {
             if (state.getPieceAt(move.getStart()).isKing()) {
-                if (state.isCentralThrone(move.getEnd()) && config.castleIsLeftForGood) {
+                if (state.isCentralThrone(move.getEnd()) && config.canReturnToCastle === false) {
                     return MGPValidation.failure(TaflFailure.THRONE_IS_LEFT_FOR_GOOD());
                 }
             } else {
@@ -77,15 +77,11 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
     }
 
     public isThrone(state: TaflState, coord: Coord): boolean {
-        if (this.isExternalThrone(state, coord)) {
+        if (state.isExternalThrone(coord)) {
             return true;
         } else {
             return state.isCentralThrone(coord);
         }
-    }
-
-    public isExternalThrone(state: TaflState, coord: Coord): boolean {
-        return state.isCorner(coord);
     }
 
     public tryCapture(player: Player, landingPawn: Coord, d: Orthogonal, state: TaflState, config: TaflConfig)
@@ -100,7 +96,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
          * 4: the threatened square is a piece         -> delegate calculation
          */
         const threatened: Coord = landingPawn.getNext(d);
-        if (state.isOnBoard(threatened) === false) {
+        if (state.isNotOnBoard(threatened)) {
             return MGPOptional.empty(); // 1: the threatened square dont exist, no capture
         }
         const threatenedPawnOwner: RelativePlayer = state.getRelativeOwner(player, threatened);
@@ -190,7 +186,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
                                      config: TaflConfig)
     : MGPOptional<Coord>
     {
-        if (this.isExternalThrone(state, backCoord)) {
+        if (state.isExternalThrone(backCoord) === true) {
             if (config.kingFarFromHomeCanBeSandwiched) {
                 return MGPOptional.of(kingCoord);
             }
@@ -320,7 +316,7 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
             return MGPOptional.of(this.getInvader(config));
         }
         const kingCoord: Coord = optionalKingCoord.get();
-        if (this.isExternalThrone(state, kingCoord)) {
+        if (state.isExternalThrone(kingCoord) === true) {
             Debug.display('TaflRules', 'getWinner', 'The king escape, victory to defender');
             // king reached one corner!
             return MGPOptional.of(this.getDefender(config));
@@ -395,28 +391,21 @@ export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M,
         // search the possible destinations for the piece at "start"
         const destinations: Coord[] = [];
         let foundDestination: Coord;
+        const pieceIsKing: boolean = state.getPieceAt(start).isKing();
         for (const dir of Orthogonal.ORTHOGONALS) {
             // we look for empty existing destinations in each direction as far as we can
             foundDestination = start.getNext(dir, 1);
-            let obstacleFound: boolean = false;
-            while (state.isOnBoard(foundDestination) && obstacleFound === false) {
-                const destinationEmpty: boolean = state.getAbsoluteOwner(foundDestination).isNone();
-                if (destinationEmpty) {
-                    if (this.isExternalThrone(state, foundDestination)) {
-                        if (state.getPieceAt(start).isKing()) {
-                            destinations.push(foundDestination);
-                        }
-                    } else if (state.isCentralThrone(foundDestination)) {
-                        if (state.getPieceAt(start).isKing() &&
-                            config.castleIsLeftForGood === false)
-                        {
-                            destinations.push(foundDestination);
-                        }
-                    } else {
+            while (state.hasPieceAt(foundDestination, TaflPawn.UNOCCUPIED)) {
+                if (state.isExternalThrone(foundDestination)) {
+                    if (pieceIsKing) {
+                        destinations.push(foundDestination);
+                    }
+                } else if (state.isCentralThrone(foundDestination)) {
+                    if (pieceIsKing && config.canReturnToCastle) {
                         destinations.push(foundDestination);
                     }
                 } else {
-                    obstacleFound = true;
+                    destinations.push(foundDestination);
                 }
                 foundDestination = foundDestination.getNext(dir, 1);
             }
