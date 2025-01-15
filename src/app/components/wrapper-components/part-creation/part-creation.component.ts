@@ -121,7 +121,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
                        private readonly router: Router,
                        private readonly connectedUserService: ConnectedUserService,
                        private readonly currentGameService: CurrentGameService,
-                       private readonly gameService: GameService,
                        private readonly configRoomService: ConfigRoomService,
                        private readonly userService: UserService,
                        private readonly formBuilder: FormBuilder,
@@ -310,7 +309,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         const opponent: MinimalUser = this.getUserFromName(opponentName);
         await Promise.all([
             this.currentGameService.updateCurrentGame({ opponent }),
-            this.configRoomService.selectOpponent(this.partId, opponent),
+            this.configRoomService.selectOpponent(opponent),
         ]);
         return;
     }
@@ -321,7 +320,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     }
 
     public async changeConfig(): Promise<void> {
-        return this.configRoomService.reviewConfig(this.partId);
+        return this.configRoomService.reviewConfig();
     }
 
     public async proposeConfig(): Promise<void> {
@@ -329,8 +328,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         const maxMoveDuration: number = this.getForm('maximalMoveDuration').value;
         const firstPlayer: string = this.getForm('firstPlayer').value;
         const totalPartDuration: number = this.getForm('totalPartDuration').value;
-        return this.configRoomService.proposeConfig(this.partId,
-                                                    PartType.of(partType),
+        return this.configRoomService.proposeConfig(PartType.of(partType),
                                                     maxMoveDuration,
                                                     FirstPlayer.of(firstPlayer),
                                                     totalPartDuration,
@@ -340,7 +338,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     public async cancelGameCreation(): Promise<void> {
         this.allDocDeleted = true;
         await this.currentGameService.removeCurrentGame();
-        await this.gameService.deleteGame(this.partId);
+        await this.configRoomService.leave();
     }
 
     private async onConfigRoomUpdate(configRoom: ConfigRoom): Promise<void> {
@@ -425,13 +423,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         return currentUserId === configRoom.creator.id;
     }
 
-    private async destroyDocIfPartDidNotStart(): Promise<void> {
-        const partStarted: boolean = this.isGameStarted(this.currentConfigRoom);
-        Utils.assert(partStarted === false, 'Should not try to cancelGameCreation when part started!');
-        Utils.assert(this.allDocDeleted === false, 'Should not delete doc twice');
-        await this.cancelGameCreation();
-    }
-
     private async didUserTimeout(userId: string, currentTime: Timestamp): Promise<boolean> {
         const lastChangedOpt: MGPOptional<FirestoreTime> = await this.userService.getUserLastUpdateTime(userId);
         if (lastChangedOpt.isAbsent()) {
@@ -447,7 +438,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     public acceptConfig(): Promise<void> {
         // called by the configRoom
         // triggers the redirection that will be applied for every subscribed user
-        return this.gameService.acceptConfig(this.partId);
+        return this.configRoomService.acceptConfig();
     }
 
     // Only public because of tests

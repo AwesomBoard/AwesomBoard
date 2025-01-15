@@ -116,15 +116,17 @@ module Make
                             ]
                         | Started | Finished ->
                             (* Send game and game events *)
-                            let* game = Game.get ~request ~game_id in
+                            let* game = Game.get ~request ~game_id in (* The game MUST exist here *)
                             (* It is important to send the game first and then
                                the events, so that the client knows about the
                                game before receiving events *)
-                            let* () = send_to client_id (GameUpdate { game }) in
+                            let* () = send_to client_id (GameUpdate { game = Option.get game }) in
                             Game.iter_events ~request ~game_id (fun event -> send_to client_id (GameEvent { event }))
                     end
             end
         | Unsubscribe ->
+            (* TODO: if this is a creator on an unfinished config room, remove their config room *)
+            (* TODO: if this is a candidate, remove them *)
             SubscriptionManager.unsubscribe client_id;
             Lwt.return ()
 
@@ -233,15 +235,15 @@ module Make
                 let config_room_update : WebSocketOutgoingMessage.t =
                     ConfigRoomUpdate { game_id = Id.to_string game_id;
                                        config_room = { config_room with
-                                                       game_status = Created; } } in
+                                                       game_status = Started; } } in
                 (* Also, start the game! *)
                 let game = Models.Game.initial config_room (External.now ()) External.rand_bool in
                 let* () = Game.create ~request ~game_id game in
-                let game_update : WebSocketOutgoingMessage.t = GameUpdate { game } in
+                (* let game_update : WebSocketOutgoingMessage.t = GameUpdate { game } in *)
                 Lwt.join [
                     broadcast game_id config_room_update;
                     broadcast Id.lobby config_room_update;
-                    broadcast game_id game_update;
+                    (* broadcast game_id game_update; TODO: they will subscribe again? *)
                 ]
             | _ ->
                 send_to client_id (Error { reason = "You can't propose the config!" })
@@ -271,7 +273,7 @@ module Make
                 | None ->
                     Dream.log "Closing connection to %d" client_id;
                     (* Client left, forget about it *)
-                    (* TODO: also notify if game is is config (user left), or in play (user offline *)
+                    (* TODO: also notify if game is is config (user left, or creator -> cancel), or in play (user offline) *)
                     forget client_id;
                     Dream.log "done with forget";
                     let* () = Dream.close_websocket ws in

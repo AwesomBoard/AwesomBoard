@@ -43,15 +43,9 @@ CREATE TABLE IF NOT EXISTS games (
     -- Player one used to be optional; not anymore!
     player_one_id TEXT NOT NULL,
     player_one_name TEXT NOT NULL,
-    turn INT NOT NULL,
     result TEXT NOT NULL,
     beginning INT NOT NULL,
-    -- We have the names of players already, we can just use their id for winner/loser. Both are optional.
-    winner_id TEXT,
-    loser_id TEXT,
-    score_zero INT,
-    score_one INT,
-    FOREIGN KEY(id) references config_room(id)
+    FOREIGN KEY(id) references config_rooms(id)
     );
 
 CREATE INDEX IF NOT EXISTS idx_game_id ON games (id);
@@ -59,12 +53,12 @@ CREATE INDEX IF NOT EXISTS idx_game_id ON games (id);
 -- A game is made of events: starting the game, playing a move, asking for take back, finishing the game, etc.
 CREATE TABLE IF NOT EXISTS game_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    -- New: events are now time-stamped (added by the backend)
-    timestamp INTEGER NOT NULL,
     game_id INTEGER NOT NULL,
-    player BOOLEAN NOT NULL,
-    kind TEXT NOT NULL, -- AcceptDraw, RejectDraw, Move, etc.
-    data TEXT NOT NULL, -- move description, in JSON format
+    -- New: events are now time-stamped (added by the backend)
+    time INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    data TEXT NOT NULL, -- description of the event in JSON
     FOREIGN KEY(game_id) REFERENCES games(id)
     );
 
@@ -73,6 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_game_id ON games (game_id);
 CREATE TABLE IF NOT EXISTS elos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
     game_name TEXT NOT NULL,
     current_elo REAL NOT NULL,
     number_of_games_played INT NOT NULL

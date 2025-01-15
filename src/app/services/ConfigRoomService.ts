@@ -59,8 +59,7 @@ export class ConfigRoomService {
     }
 
     /** Propose a config to the opponent */
-    public async proposeConfig(gameId: string,
-                               partType: PartType,
+    public async proposeConfig(partType: PartType,
                                maximalMoveDuration: number,
                                firstPlayer: FirstPlayer,
                                totalPartDuration: number,
@@ -78,13 +77,19 @@ export class ConfigRoomService {
     }
 
     /** Select an opponent */
-    public async selectOpponent(gameId: string, opponent: MinimalUser): Promise<void> {
+    public async selectOpponent(opponent: MinimalUser): Promise<void> {
         await this.webSocketManager.send(['SelectOpponent', { opponent }]);
     }
 
     /** Review a config proposed to the opponent */
-    public async reviewConfig(gameId: string): Promise<void> {
+    public async reviewConfig(): Promise<void> {
         await this.webSocketManager.send(['ReviewConfig']);
     }
+
+    /** Accept a game config */
+    public async acceptConfig(): Promise<void> {
+        await this.webSocketManager.send(['AcceptConfig']);
+    }
+
 
 }

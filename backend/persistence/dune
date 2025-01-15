@@ -3,5 +3,5 @@
  (public_name everyboard.persistence)
  (libraries everyboard.utils everyboard.models
             dream)
- (modules Chat ConfigRoom Game Elo)
+ (modules Chat ConfigRoom Game Elo Helpers)
  (preprocess (pps lwt_ppx)))

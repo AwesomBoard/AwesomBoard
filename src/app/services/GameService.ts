@@ -75,13 +75,6 @@ export class GameService extends BackendService {
         this.assertSuccess(result);
     }
 
-    /** Accept a game config */
-    public async acceptConfig(gameId: string): Promise<void> {
-        const endpoint: string = `config-room/${gameId}?action=accept`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
-    }
-
     /** Give the current player resignation in a game */
     public async resign(gameId: string): Promise<void> {
         return this.gameAction(gameId, 'resign');

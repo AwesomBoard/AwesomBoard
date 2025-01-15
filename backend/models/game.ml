@@ -4,7 +4,7 @@ open Utils
 module Game = struct
 
     (** The result of a game as represented in Firestore *)
-    module GameResult = struct
+    module Result = struct
         type t =
             | InProgress
             | Resign of Player.t
@@ -31,10 +31,10 @@ module Game = struct
 
     (** A game *)
     type t = {
-        type_game: string [@key "typeGame"];
+        game_name: string [@key "gameName"];
         player_zero: MinimalUser.t [@key "playerZero"];
         player_one: MinimalUser.t [@key "playerOne"];
-        result: GameResult.t;
+        result: Result.t;
         beginning: int;
     }
     [@@deriving yojson]
@@ -52,20 +52,20 @@ module Game = struct
             then (config_room.creator, Option.get config_room.chosen_opponent)
             else (Option.get config_room.chosen_opponent, config_room.creator) in
         {
-            type_game = config_room.game_name;
+            game_name = config_room.game_name;
             player_zero;
             player_one;
-            result = GameResult.InProgress;
+            result = Result.InProgress;
             beginning = now;
         }
 
     (** Constructor for a rematch *)
     let rematch = fun (game : t) (now : int) : t ->
         {
-            type_game = game.type_game;
+            game_name = game.game_name;
             player_zero = game.player_one;
             player_one = game.player_zero;
-            result = GameResult.InProgress;
+            result = Result.InProgress;
             beginning = now;
         }
 
