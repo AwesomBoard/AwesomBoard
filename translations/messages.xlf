@@ -872,6 +872,9 @@
       <trans-unit id="1103013531201615772" datatype="html">
         <source>Maximum pushing group size</source>
       </trans-unit>
+      <trans-unit id="1280308994802128299" datatype="html">
+        <source>Deadly Abalone</source>
+      </trans-unit>
       <trans-unit id="7123653594948067002" datatype="html">
         <source>Score</source>
       </trans-unit>
@@ -2931,6 +2934,9 @@
       </trans-unit>
       <trans-unit id="4110234759792602964" datatype="html">
         <source>You must put this piece next to another piece.</source>
+      </trans-unit>
+      <trans-unit id="1431305578867281747" datatype="html">
+        <source>Number of pieces to drop per player</source>
       </trans-unit>
       <trans-unit id="7208567678509553256" datatype="html">
         <source>This move does not disconnect your opponent&apos;s pieces. Try again with another piece.</source>

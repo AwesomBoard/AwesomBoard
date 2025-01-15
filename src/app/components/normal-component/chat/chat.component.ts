@@ -70,7 +70,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     public updateMessages(newMessages: Message[]): void {
         this.chat = this.chat.concat(newMessages);
         const nbMessages: number = this.chat.length;
-        if (this.visible === true && this.isNearBottom === true) {
+        if (this.visible && this.isNearBottom) {
             this.readMessages = nbMessages;
             this.updateUnreadMessagesText(0);
             this.scrollToBottom();
@@ -132,7 +132,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.chatSubscription.unsubscribe();
     }
     public switchChatVisibility(): void {
-        if (this.visible === true) {
+        if (this.visible) {
             this.visible = false;
         } else {
             this.visible = true;

@@ -1,7 +1,8 @@
+import { MGPValidation, MGPOptional, Utils, MGPMap } from '@everyboard/lib';
+
 import { ConfigurableRules } from 'src/app/jscaip/Rules';
 import { HexodiaState } from './HexodiaState';
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
-import { MGPValidation, MGPOptional, Utils, MGPMap } from '@everyboard/lib';
 import { HexodiaMove } from './HexodiaMove';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { Coord, CoordFailure } from 'src/app/jscaip/Coord';

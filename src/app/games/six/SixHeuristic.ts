@@ -4,19 +4,18 @@ import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { MGPOptional, Utils } from '@everyboard/lib';
 import { SixState } from './SixState';
 import { SixMove } from './SixMove';
-import { SixVictorySource, SixNode } from './SixRules';
+import { SixVictorySource, SixNode, SixConfig } from './SixRules';
 import { BoardValue } from 'src/app/jscaip/AI/BoardValue';
 import { AlignmentHeuristic, AlignmentStatus, BoardInfo } from 'src/app/jscaip/AI/AlignmentHeuristic';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 
-export class SixHeuristic extends AlignmentHeuristic<SixMove, SixState, SixVictorySource> {
+export class SixHeuristic extends AlignmentHeuristic<SixMove, SixState, SixVictorySource, SixConfig> {
 
     public VERBOSE: boolean = false;
 
     public currentVictorySource: SixVictorySource;
 
-    public getBoardValue(node: SixNode, _config: NoConfig): BoardValue {
+    public getBoardValue(node: SixNode, config: MGPOptional<SixConfig>): BoardValue {
         const move: MGPOptional<SixMove> = node.previousMove;
         const state: SixState = node.gameState;
         const previousPlayer: Player = state.getPreviousPlayer();
@@ -33,7 +32,8 @@ export class SixHeuristic extends AlignmentHeuristic<SixMove, SixState, SixVicto
         if (shapeInfo.status === AlignmentStatus.VICTORY) {
             return BoardValue.of(victoryValue);
         }
-        if (state.turn > 39) {
+        const lastDropTurn: number = (2 * config.get().piecesPerPlayer) - 1;
+        if (state.turn > lastDropTurn) {
             const pieces: PlayerNumberMap = state.countPieces();
             return BoardValue.ofPlayerNumberMap(pieces);
         }

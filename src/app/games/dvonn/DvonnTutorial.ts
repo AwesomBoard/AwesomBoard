@@ -1,10 +1,11 @@
+import { MGPValidation, Utils } from '@everyboard/lib';
+
 import { DvonnMove } from 'src/app/games/dvonn/DvonnMove';
 import { DvonnState } from 'src/app/games/dvonn/DvonnState';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Tutorial, TutorialStep } from 'src/app/components/wrapper-components/tutorial-game-wrapper/TutorialStep';
 import { DvonnPieceStack } from 'src/app/games/dvonn/DvonnPieceStack';
 import { Player } from 'src/app/jscaip/Player';
-import { MGPValidation, Utils } from '@everyboard/lib';
 import { DvonnRules } from './DvonnRules';
 import { TutorialStepMessage } from 'src/app/components/wrapper-components/tutorial-game-wrapper/TutorialStepMessage';
 

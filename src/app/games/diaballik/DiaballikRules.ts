@@ -117,7 +117,7 @@ export class DiaballikRules extends Rules<DiaballikMove, DiaballikState, Diaball
             return MGPFallible.failure(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
         }
         // The moved piece must not hold the ball
-        if (startPiece.holdsBall === true) {
+        if (startPiece.holdsBall) {
             return MGPFallible.failure(DiaballikFailure.CANNOT_MOVE_WITH_BALL());
         }
 
@@ -214,7 +214,7 @@ export class DiaballikRules extends Rules<DiaballikMove, DiaballikState, Diaball
     private getBallCoordInRow(state: DiaballikState, y: number, player: Player): MGPOptional<Coord> {
         for (let x: number = 0; x < state.getHeight(); x++) {
             const piece: DiaballikPiece = state.getPieceAtXY(x, y);
-            if (piece.holdsBall === true && piece.owner === player) {
+            if (piece.holdsBall && piece.owner === player) {
                 return MGPOptional.of(new Coord(x, y));
             }
         }
