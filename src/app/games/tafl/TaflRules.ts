@@ -20,7 +20,7 @@ export class TaflNode<M extends TaflMove> extends GameNode<M, TaflState> {}
 
 export abstract class TaflRules<M extends TaflMove> extends ConfigurableRules<M, TaflState, TaflConfig> {
 
-    public static readonly CAN_RETURN_IN_CASTLE: Localized = () => $localize`Central throne is left for good`;
+    public static readonly CAN_RETURN_TO_CASTLE: Localized = () => $localize`Central throne is left for good`;
     public static readonly EDGE_ARE_KING_S_ENNEMY: Localized = () => $localize`Edges are king's ennemy`;
     public static readonly CENTRAL_THRONE_CAN_SURROUND_KING: Localized = () => $localize`Central throne can surround king`;
     public static readonly KING_FAR_FROM_HOME_CAN_BE_SANDWICHED: Localized = () => $localize`King far from home can be sandwiched`;

@@ -17,7 +17,7 @@ export class BrandhubRules extends TaflRules<BrandhubMove> {
         new RulesConfigDescription<TaflConfig>({
             name: (): string => $localize`Brandhub`,
             config: {
-                canReturnToCastle: new BooleanConfig(false, TaflRules.CAN_RETURN_IN_CASTLE),
+                canReturnToCastle: new BooleanConfig(false, TaflRules.CAN_RETURN_TO_CASTLE),
                 edgesAreKingsEnnemy: new BooleanConfig(false, TaflRules.EDGE_ARE_KING_S_ENNEMY),
                 centralThroneCanSurroundKing: new BooleanConfig(true, TaflRules.CENTRAL_THRONE_CAN_SURROUND_KING),
                 kingFarFromHomeCanBeSandwiched: new BooleanConfig(true, TaflRules.KING_FAR_FROM_HOME_CAN_BE_SANDWICHED),
