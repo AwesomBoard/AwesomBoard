@@ -27,7 +27,7 @@ import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
 @Debug.log
 export class LocalGameWrapperComponent extends GameWrapper<string> implements AfterViewInit {
 
-    public static readonly AI_TIMEOUT: number = 1500;
+    public static readonly AI_TIMEOUT: number = 1;
 
     public aiOptions: [string, string] = ['none', 'none'];
 
@@ -98,6 +98,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public async onLegalUserMove(move: Move): Promise<void> {
         const config: MGPOptional<RulesConfig> = await this.getConfig();
+        console.log('JAAJ LGWC onLegalUserMove', move.toString())
         this.gameComponent.node = this.gameComponent.rules.choose(this.gameComponent.node, move, config).get();
         await this.applyNewMove();
     }

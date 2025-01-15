@@ -11,7 +11,7 @@ export abstract class MoveCoordToCoord extends MoveWithTwoCoords {
         if (start.equals(end)) throw new Error(RulesFailure.MOVE_CANNOT_BE_STATIC());
     }
 
-    public length(): number {
+    public getDistance(): number {
         return this.getStart().getLinearDistanceToward(this.getEnd());
     }
 
@@ -31,6 +31,11 @@ export abstract class MoveCoordToCoord extends MoveWithTwoCoords {
         return this.getStart().getAllCoordsToward(this.getEnd());
     }
 
+    public getJumpedOverCoords(): Coord[] {
+        return this.getStart().getCoordsToward(this.getEnd());
+        // TODO, reuse that method with [], wherever it is in branch
+    }
+
     public equals(other: this): boolean {
         if (this === other) return true;
         if (this.getStart().equals(other.getStart()) === false) return false;
@@ -41,6 +46,14 @@ export abstract class MoveCoordToCoord extends MoveWithTwoCoords {
         const start: string = this.getStart().toString();
         const end: string = this.getEnd().toString();
         return `${start} -> ${end}`;
+    }
+
+}
+
+export class TMPMoveCoordToCoord extends MoveCoordToCoord {
+
+    public static of(start: Coord, end: Coord): TMPMoveCoordToCoord {
+        return new TMPMoveCoordToCoord(start, end);
     }
 
 }

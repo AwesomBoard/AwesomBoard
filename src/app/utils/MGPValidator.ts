@@ -1,11 +1,12 @@
 import { MGPValidation } from '@everyboard/lib';
+import { EmptyRulesConfig, RulesConfig } from '../jscaip/RulesConfigUtil';
 
-export type MGPValidator = (v: number | null) => MGPValidation;
+export type MGPValidator<R extends RulesConfig = EmptyRulesConfig> = (v: number | null, config: R) => MGPValidation;
 
 export class MGPValidators {
 
-    public static range(min: number, max: number): MGPValidator {
-        return (value: number | null) => {
+    public static range<R extends RulesConfig = EmptyRulesConfig>(min: number, max: number): MGPValidator<R> {
+        return (value: number | null, config: R) => {
             if (value == null) {
                 return MGPValidation.failure($localize`This value is mandatory`);
             }

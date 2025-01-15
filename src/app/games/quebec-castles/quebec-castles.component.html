@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     class="board"
+     [attr.viewBox]="getViewBox().toSVGString()"
+     preserveAspectRatio="xMidYMid meet">
+    <rect [attr.x]="getViewBox().left"
+          [attr.y]="getViewBox().up"
+          [attr.width]="getViewBox().width"
+          [attr.height]="getViewBox().height"
+          fill="purple"
+    />
+    <g #board
+       [attr.transform]="getBoardTransform()">
+        <g *ngFor="let coordAndContent of getState().getCoordsAndContents()">
+            <rect id="click_{{ coordAndContent.coord.x }}_{{ coordAndContent.coord.y }}"
+                  (click)="onClick(coordAndContent.coord)"
+                  [attr.x]="SPACE_SIZE * coordAndContent.coord.x"
+                  [attr.y]="SPACE_SIZE * coordAndContent.coord.y"
+                  [attr.width]="SPACE_SIZE"
+                  [attr.height]="SPACE_SIZE"
+                  [ngClass]="getRectClasses(coordAndContent.coord)"
+                  class="base"
+            />
+            <circle *ngIf="coordAndContent.content !== PlayerOrNone.NONE"
+                    (click)="onClick(coordAndContent.coord)"
+                    [attr.r]="(SPACE_SIZE / 2) - STROKE_WIDTH"
+                    [attr.cx]="(SPACE_SIZE * coordAndContent.coord.x) + (SPACE_SIZE / 2)"
+                    [attr.cy]="(SPACE_SIZE * coordAndContent.coord.y) + (SPACE_SIZE / 2)"
+                    [ngClass]="getPieceClass(coordAndContent.coord)"
+                    class="base"
+            />
+            <g *ngFor="let player of Player.PLAYERS"
+               id="throne-{{ player.toString() }}">
+                <g *ngIf="getState().thrones.get(player).equalsValue(coordAndContent.coord)">
+                    <polygon [attr.transform]="getTranslationAt(getState().thrones.get(player).get())"
+                             points="10 20, 20 90, 80 90, 90 20, 65 60, 50 30, 35 60"
+                             class="base"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

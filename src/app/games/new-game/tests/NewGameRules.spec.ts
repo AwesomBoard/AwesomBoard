@@ -21,7 +21,7 @@ describe('NewGameRules', () => {
         // This is how you would test a particular rule:
 
         // Given a state
-        const state: NewGameState = NewGameRules.get().getInitialState();
+        const state: NewGameState = NewGameRules.get().getInitialState(defaultConfig);
 
         // When doing some move
         const move: NewGameMove = new NewGameMove();

@@ -34,7 +34,6 @@ interface DropArrow {
     styleUrls: ['../../components/game-components/game-component/game-component.scss'],
 })
 export class ApagosComponent extends GameComponent<ApagosRules, ApagosMove, ApagosState, ApagosConfig> {
-    public PlayerOrNone: typeof PlayerOrNone = PlayerOrNone;
 
     public board: readonly ApagosSquare[];
 

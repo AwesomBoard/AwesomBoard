@@ -87,7 +87,7 @@ describe('DvonnMoveGenerator', () => {
         const node: DvonnNode = new DvonnNode(state);
         const moves: DvonnMove[] = moveGenerator.getListMoves(node, defaultConfig);
         for (const move of moves) {
-            expect(move.length()).toEqual(state.getPieceAt(move.getStart()).getSize());
+            expect(move.getDistance()).toEqual(state.getPieceAt(move.getStart()).getSize());
         }
     });
 

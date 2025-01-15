@@ -1,4 +1,5 @@
 import { MGPFallible, MGPOptional } from '@everyboard/lib';
+
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
 import { NewGameMove } from './NewGameMove';
 import { NewGameState } from './NewGameState';
@@ -49,7 +50,7 @@ export class NewGameRules extends Rules<NewGameMove, NewGameState, NewGameLegali
     /**
      * This method returns the initial state of a game
      */
-    public override getInitialState(): NewGameState {
+    public override getInitialState(config: NoConfig): NewGameState {
         return new NewGameState(0);
     }
 
