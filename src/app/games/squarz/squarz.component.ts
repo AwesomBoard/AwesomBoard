@@ -40,7 +40,7 @@ export class SquarzComponent extends RectangularGameComponent<SquarzRules,
         this.setRulesAndNode('Squarz');
         this.availableAIs = [
             new SquarzMinimax(),
-            new MCTS($localize`MCTS`, new SquarzMoveGenerator(), this.rules),
+            new MCTS($localize`MCTS`, new SquarzMoveGenerator(this.rules), this.rules),
         ];
         this.encoder = SquarzMove.encoder;
 

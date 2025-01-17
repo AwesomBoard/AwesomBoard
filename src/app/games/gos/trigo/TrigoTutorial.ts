@@ -4,6 +4,7 @@ import { GoPiece } from '../GoPiece';
 import { Tutorial, TutorialStep } from '../../../components/wrapper-components/tutorial-game-wrapper/TutorialStep';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { TrigoConfig, TrigoRules } from './TrigoRules';
+import { GoPhase } from '../GoPhase';
 
 const X: GoPiece = GoPiece.LIGHT;
 const O: GoPiece = GoPiece.DARK;
@@ -31,7 +32,7 @@ export class TrigoTutorial extends Tutorial {
                 [N, N, _, _, _, _, _, _, _, _, _, N, N],
                 [N, _, _, _, _, _, _, _, _, _, _, _, N],
                 [O, _, _, _, _, _, _, _, _, _, _, _, X],
-            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'PLAYING'),
+            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), GoPhase.PLAYING),
         ),
         TutorialStep.informational(
             $localize`Freedom` + ' (2/4)',
@@ -44,7 +45,7 @@ export class TrigoTutorial extends Tutorial {
                 [N, N, _, _, _, _, _, _, _, _, _, N, N],
                 [N, O, _, _, _, _, _, _, _, _, X, _, N],
                 [_, _, _, _, O, _, _, _, X, _, _, _, _],
-            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'PLAYING'),
+            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), GoPhase.PLAYING),
         ),
         TutorialStep.informational(
             $localize`Freedom` + ' (3/4)',
@@ -57,7 +58,7 @@ export class TrigoTutorial extends Tutorial {
                 [N, N, _, _, _, _, _, _, _, _, _, N, N],
                 [N, _, _, X, _, _, _, _, _, _, _, _, N],
                 [_, _, _, _, _, _, _, _, _, _, _, _, _],
-            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'PLAYING'),
+            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), GoPhase.PLAYING),
         ),
         TutorialStep.informational(
             $localize`Freedom` + ' (4/4)',
@@ -70,7 +71,7 @@ export class TrigoTutorial extends Tutorial {
                 [N, N, O, O, _, _, _, O, _, _, _, N, N],
                 [N, _, _, _, _, _, _, _, _, _, _, _, N],
                 [_, _, _, _, _, _, _, _, _, _, _, _, _],
-            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'PLAYING'),
+            ], PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), GoPhase.PLAYING),
         ),
     ];
 }

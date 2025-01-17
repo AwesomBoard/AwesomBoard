@@ -32,6 +32,15 @@
       <trans-unit id="3762170440311046861" datatype="html">
         <source><x id="PH" equiv-text="n"/> remaining pieces</source>
       </trans-unit>
+      <trans-unit id="4877261268986191253" datatype="html">
+        <source>0 pieces to drop</source>
+      </trans-unit>
+      <trans-unit id="4536404072544955370" datatype="html">
+        <source>1 piece to drop</source>
+      </trans-unit>
+      <trans-unit id="3974299801183550747" datatype="html">
+        <source><x id="PH" equiv-text="n"/> pieces to drop</source>
+      </trans-unit>
       <trans-unit id="4263400138524138884" datatype="html">
         <source>0 protected pieces</source>
       </trans-unit>

@@ -82,7 +82,7 @@ export class GoComponent extends GobanGameComponent<GoRules,
         this.updateScores();
 
         this.ko = state.koCoord;
-        this.canPass = phase !== 'FINISHED';
+        this.canPass = phase.allowsPass();
         this.createHoshis();
     }
 
@@ -91,14 +91,7 @@ export class GoComponent extends GobanGameComponent<GoRules,
     }
 
     public override getScoreName(): ScoreName {
-        switch (this.getState().phase) {
-            case 'COUNTING':
-            case 'ACCEPT':
-            case 'FINISHED':
-                return ScoreName.POINTS;
-            default:
-                return ScoreName.CAPTURES;
-        }
+        return this.getState().phase.getScoreName();
     }
 
     private showCaptures(): void {
@@ -119,10 +112,10 @@ export class GoComponent extends GobanGameComponent<GoRules,
 
     public override async pass(): Promise<MGPValidation> {
         const phase: GoPhase = this.getState().phase;
-        if (phase === 'PLAYING' || phase === 'PASSED') {
+        if (phase.isPlaying() || phase.isPassed()) {
             return this.onClick(GoMove.PASS.coord);
         }
-        Utils.assert(phase === 'COUNTING' || phase === 'ACCEPT',
+        Utils.assert(phase.isCounting() || phase.isAccept(),
                      'GoComponent: pass() must be called only in playing, passed, counting, or accept phases');
         return this.onClick(GoMove.ACCEPT.coord);
     }

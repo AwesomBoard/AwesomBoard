@@ -34,10 +34,16 @@ export class ScoreName {
                       () => $localize`1 remaining piece`,
                       (n: number) => $localize`${n} remaining pieces`);
 
+    public static readonly PIECES_TO_DROP: ScoreName =
+        new ScoreName(() => $localize`0 pieces to drop`,
+                      () => $localize`1 piece to drop`,
+                      (n: number) => $localize`${n} pieces to drop`);
+
     public static readonly PROTECTED_PIECES: ScoreName =
         new ScoreName(() => $localize`0 protected pieces`,
                       () => $localize`1 protected piece`,
                       (n: number) => $localize`${n} protected pieces`);
+
 
     /**
      * A score name might be differently written for zero, one, or more than one "points".
