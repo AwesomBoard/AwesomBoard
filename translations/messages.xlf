@@ -2890,6 +2890,9 @@
       <trans-unit id="4110234759792602964" datatype="html">
         <source>You must put this piece next to another piece.</source>
       </trans-unit>
+      <trans-unit id="1431305578867281747" datatype="html">
+        <source>Number of pieces to drop per player</source>
+      </trans-unit>
       <trans-unit id="7208567678509553256" datatype="html">
         <source>This move does not disconnect your opponent&apos;s pieces. Try again with another piece.</source>
       </trans-unit>

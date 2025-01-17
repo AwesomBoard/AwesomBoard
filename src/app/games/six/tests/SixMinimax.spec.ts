@@ -1,14 +1,15 @@
 /* eslint-disable max-lines-per-function */
+import { MGPOptional } from '@everyboard/lib';
+
 import { Coord } from 'src/app/jscaip/Coord';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { SixState } from '../SixState';
 import { SixMove } from '../SixMove';
 import { Table } from 'src/app/jscaip/TableUtils';
-import { SixLegalityInformation, SixNode, SixRules } from '../SixRules';
+import { SixConfig, SixLegalityInformation, SixNode, SixRules } from '../SixRules';
 import { Minimax } from 'src/app/jscaip/AI/Minimax';
 import { AIDepthLimitOptions } from 'src/app/jscaip/AI/AI';
 import { SixMinimax } from '../SixMinimax';
-import { EmptyRulesConfig, NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { minimaxTest, SlowTest } from 'src/app/utils/tests/TestUtils.spec';
 
 const O: PlayerOrNone = Player.ZERO;
@@ -17,9 +18,9 @@ const _: PlayerOrNone = PlayerOrNone.NONE;
 
 describe('SixMinimax', () => {
 
-    let minimax: Minimax<SixMove, SixState, EmptyRulesConfig, SixLegalityInformation>;
+    let minimax: Minimax<SixMove, SixState, SixConfig, SixLegalityInformation>;
     const minimaxOptions: AIDepthLimitOptions = { name: 'Level 1', maxDepth: 1 };
-    const defaultConfig: NoConfig = SixRules.get().getDefaultRulesConfig();
+    const defaultConfig: MGPOptional<SixConfig> = SixRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
         minimax = new SixMinimax();
