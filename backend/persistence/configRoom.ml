@@ -146,14 +146,23 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.find_opt get_query game_id
 
-    let delete_query = int ->. unit @@ {|
+    let delete_config_room_query = int ->. unit @@ {|
         DELETE FROM config_rooms
         WHERE id = ?
     |}
 
+    let delete_candidates_query = int ->. unit @@ {|
+        DELETE FROM candidates
+        WHERE game_id = ?
+    |}
+
     let delete = fun ~(request : Dream.request) ~(game_id : int) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.exec delete_query game_id
+        Db.with_transaction (fun () ->
+            (* Need to delete candidates first to ensure foreign key constraints (candidates refer to config room's id) *)
+            match%lwt Db.exec delete_candidates_query game_id with
+            | Result.Ok () -> Db.exec delete_config_room_query game_id
+            | Result.Error e -> Lwt.return (Result.Error e))
 
     let get_active_rooms_query = unit ->* t2 int config_room @@ {|
         SELECT id, creator_id, creator_name, creator_elo,

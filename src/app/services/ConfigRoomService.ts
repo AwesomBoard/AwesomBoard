@@ -24,12 +24,14 @@ export class ConfigRoomService {
     {
     }
 
-    public subscribeToChanges(configRoomUpdate: (configRoom: ConfigRoom) => void,
-                              candidateJoined: (candidate: MinimalUser) => void,
-                              candidateLeft: (candidate: MinimalUser) => void)
-    : Subscription
+    public async join(gameId: string,
+                      configRoomUpdate: (configRoom: ConfigRoom) => void,
+                      candidateJoined: (candidate: MinimalUser) => void,
+                      candidateLeft: (candidate: MinimalUser) => void,
+                      error: (reason: string) => void)
+    : Promise<Subscription>
     {
-        console.log('ConfigRoomService: subscribeToChanges');
+        const gameSubscription: Subscription = await this.webSocketManager.subscribeTo(gameId);
         const configRoomSubscription: Subscription =
             this.webSocketManager.setCallback('ConfigRoomUpdate', (message: WebSocketMessage): void => {
                 configRoomUpdate(message.getArgument('configRoom'));
@@ -42,20 +44,17 @@ export class ConfigRoomService {
             this.webSocketManager.setCallback('CandidateLeft', (message: WebSocketMessage): void => {
                 candidateLeft(message.getArgument('candidate'));
             });
+        const errorSubscription: Subscription =
+            this.webSocketManager.setCallback('Error', (message: WebSocketMessage): void => {
+                error(message.getArgument('reason'));
+            });
         return new Subscription(() => {
             configRoomSubscription.unsubscribe();
             candidateJoinedSubscription.unsubscribe();
             candidateLeftSubscription.unsubscribe();
+            errorSubscription.unsubscribe();
+            gameSubscription.unsubscribe();
         });
-    }
-
-    /** Join a game */
-    public async joinGame(gameId: string): Promise<void> {
-        await this.webSocketManager.send(['Subscribe', { gameId }]);
-    }
-
-    public async leave(): Promise<void> {
-        await this.webSocketManager.send(['Unsubscribe']);
     }
 
     /** Propose a config to the opponent */

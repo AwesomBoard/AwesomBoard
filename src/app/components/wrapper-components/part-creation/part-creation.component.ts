@@ -2,20 +2,20 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, O
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { Timestamp } from 'firebase/firestore';
+
+import { getMillisecondsElapsed, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 
 import { FirstPlayer, IFirstPlayer, ConfigRoom, IPartType, PartStatus, PartType, IPartStatus } from '../../../domain/ConfigRoom';
 import { GameService } from '../../../services/GameService';
 import { ConfigRoomService } from '../../../services/ConfigRoomService';
-import { getMillisecondsElapsed, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { UserService } from 'src/app/services/UserService';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { AuthUser, ConnectedUserService } from 'src/app/services/ConnectedUserService';
 import { MinimalUser } from 'src/app/domain/MinimalUser';
 import { FirestoreTime } from 'src/app/domain/Time';
 import { CurrentGame, User, UserRoleInPart } from 'src/app/domain/User';
-import { Timestamp } from 'firebase/firestore';
-import { Subscription } from 'rxjs';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { RulesConfigurationComponent } from '../rules-configuration/rules-configuration.component';
@@ -26,6 +26,12 @@ import { Debug } from 'src/app/utils/Debug';
 import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
 import { AbstractNode, GameNode } from 'src/app/jscaip/AI/GameNode';
 import { BaseWrapperComponent } from '../BaseWrapperComponent';
+import { Localized } from 'src/app/utils/LocaleUtils';
+
+export class PartCreationComponentMessages {
+
+    public static readonly NO_MATCHING_PART: Localized = () => $localize`The game you tried to join does not exist.`;
+}
 
 type PartCreationViewInfo = {
     userIsCreator: boolean;
@@ -133,8 +139,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     public async ngOnInit(): Promise<void> {
         this.checkInputs();
         this.createForms();
-        this.subscribeToConfigRoomDoc();
-        await this.configRoomService.joinGame(this.partId);
+        this.joinAndSubscribeToConfigRoom();
         this.subscribeToFormElements();
     }
 
@@ -187,11 +192,30 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         return userOrUndefined;
     }
 
-    private subscribeToConfigRoomDoc(): void {
-        this.configRoomSubscription = this.configRoomService.subscribeToChanges(
+    private async joinAndSubscribeToConfigRoom(): Promise<void> {
+        this.configRoomSubscription = await this.configRoomService.join(
+            this.partId,
             (configRoom: ConfigRoom): Promise<void> => this.onConfigRoomUpdate(configRoom),
             (candidate: MinimalUser): void => this.onCandidateJoined(candidate),
-            (candidate: MinimalUser): void => this.onCandidateLeft(candidate));
+            (candidate: MinimalUser): void => this.onCandidateLeft(candidate),
+            (error: string): void => void this.onError(error),
+        );
+    }
+
+    private async onError(error: string): Promise<void> {
+        if (error === 'Game does not exist') {
+            await this.gameNotFound();
+        } else if (error === 'Already subscribed') {
+            // TODO: where to go? A specific error page like /notFound? Because /lobby is not allowed either!
+            this.messageDisplayer.criticalMessage($localize`You already have another tab open.`);
+        } else {
+            this.messageDisplayer.criticalMessage($localize`Unexpected error from backend: ${error}`);
+        }
+    }
+
+    private async gameNotFound(): Promise<void> {
+        const message: string = PartCreationComponentMessages.NO_MATCHING_PART();
+        await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
     }
 
     private getForm(name: string): AbstractControl {
@@ -338,7 +362,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     public async cancelGameCreation(): Promise<void> {
         this.allDocDeleted = true;
         await this.currentGameService.removeCurrentGame();
-        await this.configRoomService.leave();
+        this.onGameCanceled();
     }
 
     private async onConfigRoomUpdate(configRoom: ConfigRoom): Promise<void> {
@@ -476,6 +500,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         this.ngUnsubscribe.complete();
 
         // Unsubscribe from the config room and candidates
+        // This will cause the backend to deal with game/config-room destruction if needed
         this.configRoomSubscription.unsubscribe();
 
         if (this.connectedUserService.user.isAbsent()) {
@@ -485,24 +510,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
             // treats this similar to a "tab closed" event, so it is more consistent behavior.
             return;
         }
-        const authUser: AuthUser = this.connectedUserService.user.get();
-
-        if (this.gameStarted) {
-            // Avoid canceling game creation if part started but user leave
-            return;
-        }
-        if (this.currentConfigRoom === null) {
-            Debug.display('PartCreationComponent', 'ngOnDestroy', 'there is no part here');
-        } else if (this.allDocDeleted) {
-            Debug.display('PartCreationComponent', 'ngOnDestroy', 'part has already been deleted');
-        } else if (authUser.id === this.currentConfigRoom.creator.id) {
-            Debug.display('PartCreationComponent', 'ngOnDestroy', 'you(creator) about to cancel creation.');
-            await this.cancelGameCreation();
-        } else {
-            Debug.display('PartCreationComponent', 'ngOnDestroy', 'you are about to cancel game joining');
-            await this.currentGameService.removeCurrentGame();
-            await this.configRoomService.leave();
-        }
+        await this.currentGameService.removeCurrentGame();
     }
 
     public async goToLobby(): Promise<void> {

@@ -32,8 +32,6 @@ import { UserService } from 'src/app/services/UserService';
 
 export class OnlineGameWrapperMessages {
 
-    public static readonly NO_MATCHING_PART: Localized = () => $localize`The game you tried to join does not exist.`;
-
     public static readonly CANNOT_PLAY_AS_OBSERVER: Localized = () => $localize`You are an observer in this game, you cannot play.`;
 
     public static readonly MUST_ANSWER_REQUEST: Localized = () => $localize`You must answer your opponent's request.`;
@@ -112,16 +110,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     private async redirectIfPartOrGameIsInvalid(): Promise<void> {
         const urlName: string = this.getGameUrlName();
         const gameExists: boolean = GameInfo.getByUrlName(urlName).isPresent();
-        if (gameExists) {
-            // TODO: don't do that here? just wait for getting the config room
-            // const partValidity: MGPValidation =
-            //     await this.gameService.getGameValidity(this.currentPartId, urlName);
-            // if (partValidity.isFailure()) {
-            //     this.routerEventsSubscription.unsubscribe();
-            //     const message: string = OnlineGameWrapperMessages.NO_MATCHING_PART();
-            //     await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
-            // }
-        } else {
+        if (gameExists === false) {
             this.routerEventsSubscription.unsubscribe();
             const message: string = GameWrapperMessages.NO_MATCHING_GAME(urlName);
             await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
@@ -137,7 +126,8 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         this.routerEventsSubscription = this.router.events.subscribe(async(ev: Event) => {
             if (ev instanceof NavigationEnd) {
                 // TODO: why do we need to do this here and just below too?
-                await this.setCurrentPartIdOrRedirect();
+                // TODO: This one seems useless?
+                // await this.setCurrentPartIdOrRedirect();
             }
         });
         this.userSubscription = this.connectedUserService.subscribeToUser(async(user: AuthUser) => {

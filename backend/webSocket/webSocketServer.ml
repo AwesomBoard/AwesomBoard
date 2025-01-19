@@ -65,7 +65,7 @@ module Make
     (** When someone leaves, either by unsubscribing, or by being disconnected *)
     let unsubscribe = fun ~(request : Dream.request) (user : Models.MinimalUser.t) (client_id : int) : unit Lwt.t ->
         Dream.log "unsubscribing";
-        if SubscriptionManager.is_subscribed client_id then begin
+        if SubscriptionManager.is_subscribed user then begin
             let game_id = SubscriptionManager.subscription_of client_id in
             Dream.log "is subscribed to %d" game_id;
             SubscriptionManager.unsubscribe client_id;
@@ -111,10 +111,11 @@ module Make
         | Subscribe { game_id = game_id_str} ->
             (* Someone is joining a game *)
             let game_id = Id.of_string game_id_str in
-            if SubscriptionManager.is_subscribed client_id then
+            if SubscriptionManager.is_subscribed user then
+                (* TODO: also refuse if the *user* is subscribed *)
                 send_to client_id (Error { reason = "Already subscribed" })
             else begin
-                SubscriptionManager.subscribe client_id game_id;
+                SubscriptionManager.subscribe client_id user game_id;
                 let send_chat_messages =
                     (* Send all messages already in the chat *)
                     Chat.iter_messages request game_id (fun message ->
@@ -236,7 +237,7 @@ module Make
                     broadcast game_id update;
                 ]
             | _ ->
-                send_to client_id (Error { reason = "You can't propose the config!" })
+                send_to client_id (Error { reason = "You can't propose the config if you're not creator of it's not created!" })
             end
         | ReviewConfig ->
             (** Creator wants to review the config *)
@@ -255,7 +256,7 @@ module Make
                     broadcast game_id update;
                 ]
             | _ ->
-                send_to client_id (Error { reason = "You can't propose the config!" })
+                send_to client_id (Error { reason = "You can't review the config if you're not creator or if it's already proposed!" })
             end
         | AcceptConfig ->
             (** Selected opponent accepts the config *)
@@ -278,7 +279,7 @@ module Make
                     broadcast Id.lobby config_room_update;
                 ]
             | _ ->
-                send_to client_id (Error { reason = "You can't propose the config!" })
+                send_to client_id (Error { reason = "You can't accept the config if you're not selected or if's already proposed!" })
             end
         | m ->
             failwith (Printf.sprintf "TODO: %s" (m |> WebSocketIncomingMessage.to_yojson |> JSON.to_string))

@@ -32,7 +32,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
     private activeConfigRoomsSubscription!: Subscription; // initialized in ngOnInit
     private currentGameSubscription!: Subscription; // initialized in ngOnInit
-    private webSocketSubscription!: Subscription; // initialized in ngOnInit
+    private lobbySubscription!: Subscription; // initialized in ngOnInit
 
     public currentTab: Tab = 'games';
     public createTabClasses: string[] = [];
@@ -58,11 +58,11 @@ export class LobbyComponent implements OnInit, OnDestroy {
                 }
             });
 
-        this.webSocketSubscription = await this.webSocketManager.subscribeTo('lobby');
+        this.lobbySubscription = await this.webSocketManager.subscribeTo('lobby');
     }
 
     public async ngOnDestroy(): Promise<void> {
-        this.webSocketSubscription.unsubscribe();
+        this.lobbySubscription.unsubscribe();
         this.activeConfigRoomsSubscription.unsubscribe();
         this.currentGameSubscription.unsubscribe();
     }
