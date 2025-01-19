@@ -43,18 +43,6 @@ export class GameService extends BackendService {
         return response.getArgument('gameId');
     }
 
-    /** Retrieve the name of the game with the given id. If there is no corresponding game, returns an empty option. */
-    public async getGameName(gameId: string): Promise<MGPOptional<string>> {
-        const response: WebSocketMessage =
-            await this.webSocketManager.sendAndWaitForReply(['GetGameName', { gameId }], 'GameName');
-        const gameName: string | null = response.getOptionalArgument('gameName');
-        if (typeof(gameName) === 'string') {
-            return MGPOptional.of(gameName);
-        } else {
-            return MGPOptional.empty();
-        }
-    }
-
     /** Get a full game description */
     public async getExistingGame(gameId: string): Promise<Part> {
         const result: MGPFallible<JSONValue> = await this.performRequestWithJSONResponse('GET', `game/${gameId}`);
@@ -180,17 +168,6 @@ export class GameService extends BackendService {
         }
         const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
         this.assertSuccess(result);
-    }
-
-    public async getGameValidity(gameId: string, gameName: string): Promise<MGPValidation> {
-        const realGameName: MGPOptional<string> = await this.getGameName(gameId);
-        if (realGameName.isAbsent()) {
-            return MGPValidation.failure($localize`This game does not exist!`);
-        } else if (realGameName.get() !== gameName) {
-            return MGPValidation.failure($localize`This is the wrong game type!`);
-        } else {
-            return MGPValidation.SUCCESS;
-        }
     }
 
 }

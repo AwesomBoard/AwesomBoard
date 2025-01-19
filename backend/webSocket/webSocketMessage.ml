@@ -1,4 +1,5 @@
 open Models
+open Utils
 
 (** All the messages we can receive *)
 module WebSocketIncomingMessage = struct
@@ -7,6 +8,24 @@ module WebSocketIncomingMessage = struct
         | Draw
         | Rematch
     [@@deriving yojson]
+
+    (** Lifecycles of config rooms are as follows:
+       - Game creation:
+         1. Creator creates a game: [Create { game_name = "Abalone" }] sent to server
+         2. Server replies: [GameCreated { game_id = "abc" }] sent to creator
+         3. Creator subscribes to its own game: [Subscribe { game_id = "abc" }] sent to server
+         4. Candidate joins: [Subscribe { game_id = "abc" }] sent to server
+         5. Server let everyone on this room know: [CandidateJoined { candidate }] sent to creator & other subscribers
+         -. If other candidates join, same pattern
+         -. If anyone leaves, [CandidateLeft { candidate }] sent to everyone
+         6. Creator selects an opponent [SelectOpponent { opponent }] sent to server
+         7. Server lets everyone know [ConfigRoomUpdate { game_id; config_room }] to everyone
+         8. Creator proposes the config [ProposeConfig { config }] sent to server
+         9. Server lets everyone know [ConfigRoomUpdate { game_id; config_room }] to everyone
+         -. If creator reviews config, [ReviewConfig] sent to server, followed by [ConfigRoomUpdate] sent to the subscribers
+         10. Eventually, chosen opponent accepts: [AcceptConfig] sent to the server
+         11. The final update is sent to everyone and the game can start: [ConfigRoomUpdate] to everyone
+    *)
 
     type t =
         (** Subscription messages *)
@@ -18,7 +37,6 @@ module WebSocketIncomingMessage = struct
 
         (** Config room messages *)
         | Create of { game_name : string [@key "gameName"] }
-        | Join of { game_id : string [@key "gameId"] }
         | GetGameName of { game_id : string [@key "gameId"] }
         | ProposeConfig of { config : ConfigRoom.Proposal.t }
         | SelectOpponent of { opponent : MinimalUser.t }
@@ -34,6 +52,7 @@ module WebSocketIncomingMessage = struct
         | AcceptDraw
         | AcceptRematch
         | AddTime of { kind : [ `Turn | `Global ] }
+        | Move of { move : JSON.t }
     [@@deriving yojson]
 
 end

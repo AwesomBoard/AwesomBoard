@@ -29,7 +29,6 @@ import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { Debug } from 'src/app/utils/Debug';
 import { ServerTimeService } from 'src/app/services/ServerTimeService';
 import { UserService } from 'src/app/services/UserService';
-import { WebSocketManagerService } from 'src/app/services/BackendService';
 
 export class OnlineGameWrapperMessages {
 
@@ -114,13 +113,14 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         const urlName: string = this.getGameUrlName();
         const gameExists: boolean = GameInfo.getByUrlName(urlName).isPresent();
         if (gameExists) {
-            const partValidity: MGPValidation =
-                await this.gameService.getGameValidity(this.currentPartId, urlName);
-            if (partValidity.isFailure()) {
-                this.routerEventsSubscription.unsubscribe();
-                const message: string = OnlineGameWrapperMessages.NO_MATCHING_PART();
-                await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
-            }
+            // TODO: don't do that here? just wait for getting the config room
+            // const partValidity: MGPValidation =
+            //     await this.gameService.getGameValidity(this.currentPartId, urlName);
+            // if (partValidity.isFailure()) {
+            //     this.routerEventsSubscription.unsubscribe();
+            //     const message: string = OnlineGameWrapperMessages.NO_MATCHING_PART();
+            //     await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
+            // }
         } else {
             this.routerEventsSubscription.unsubscribe();
             const message: string = GameWrapperMessages.NO_MATCHING_GAME(urlName);

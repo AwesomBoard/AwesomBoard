@@ -62,6 +62,44 @@ module Make
         |> List.map (fun client_id -> send_to client_id message)
         |> Lwt.join
 
+    (** When someone leaves, either by unsubscribing, or by being disconnected *)
+    let unsubscribe = fun ~(request : Dream.request) (user : Models.MinimalUser.t) (client_id : int) : unit Lwt.t ->
+        Dream.log "unsubscribing";
+        if SubscriptionManager.is_subscribed client_id then begin
+            let game_id = SubscriptionManager.subscription_of client_id in
+            Dream.log "is subscribed to %d" game_id;
+            SubscriptionManager.unsubscribe client_id;
+            if game_id = Id.lobby then
+                (* Leaving the lobby is easy *)
+                Lwt.return ()
+            else
+                (* Leaving a config room / game *)
+                match%lwt ConfigRoom.get ~request ~game_id with
+                | Some config_room when Models.ConfigRoom.is_unstarted config_room ->
+                    if config_room.creator = user then begin
+                        (* This is a creator of an unstarted game, remove the config room *)
+                        Dream.log "deleting";
+                        let* () = ConfigRoom.delete ~request ~game_id in
+                        Dream.log "done!";
+                        let update : WebSocketOutgoingMessage.t = ConfigRoomDeleted { game_id = Id.to_string game_id } in
+                        Lwt.join [
+                            broadcast game_id update;
+                            broadcast Id.lobby update;
+                        ]
+                    end else
+                        (* Remove from candidates and let others know *)
+                        let* () = ConfigRoom.remove_candidate ~request ~game_id user in
+                        broadcast game_id (CandidateLeft { candidate = user })
+                | _ ->
+                    (* Either the game has started and there's nothing to do,
+                       or the config room doesn't exist (which should not be the case).
+                       Either case, there's nothing to do. *)
+                    Lwt.return ()
+        end else
+            (* If they're not subscribed, leave them be, there's nothing to do *)
+            Lwt.return ()
+
+
     (** Handle a message on a WebSocket *)
     let handle_message = fun (request : Dream.request)
                              (client_id : int)
@@ -125,11 +163,7 @@ module Make
                     end
             end
         | Unsubscribe ->
-            (* TODO: if this is a creator on an unfinished config room, remove their config room *)
-            (* TODO: if this is a candidate, remove them *)
-            SubscriptionManager.unsubscribe client_id;
-            Lwt.return ()
-
+            unsubscribe ~request user client_id
         | ChatSend { message = content } ->
             let game_id = SubscriptionManager.subscription_of client_id in
             let message = Models.Message.{ sender = user; timestamp = External.now (); content } in
@@ -239,11 +273,9 @@ module Make
                 (* Also, start the game! *)
                 let game = Models.Game.initial config_room (External.now ()) External.rand_bool in
                 let* () = Game.create ~request ~game_id game in
-                (* let game_update : WebSocketOutgoingMessage.t = GameUpdate { game } in *)
                 Lwt.join [
                     broadcast game_id config_room_update;
                     broadcast Id.lobby config_room_update;
-                    (* broadcast game_id game_update; TODO: they will subscribe again? *)
                 ]
             | _ ->
                 send_to client_id (Error { reason = "You can't propose the config!" })
@@ -258,10 +290,11 @@ module Make
             let client_id = track ws in
             let rec loop = fun () ->
                 Dream.log "Waiting...";
+                let user = Auth.get_minimal_user request in
                 match%lwt Dream.receive ws with
                 | Some message ->
                     Dream.log "INCOMING: %s"  message;
-                    let user = Auth.get_minimal_user request in
+                    ignore handle_message;
                     let%lwt () = match message |> Utils.JSON.from_string |> WebSocketIncomingMessage.of_yojson with
                     | Ok message ->
                         handle_message request client_id user message
@@ -272,11 +305,14 @@ module Make
                     loop ()
                 | None ->
                     Dream.log "Closing connection to %d" client_id;
+                    let* () = unsubscribe ~request user client_id in
+                    Dream.log "done with unsubscribe";
                     (* Client left, forget about it *)
-                    (* TODO: also notify if game is is config (user left, or creator -> cancel), or in play (user offline) *)
                     forget client_id;
-                    Dream.log "done with forget";
-                    let* () = Dream.close_websocket ws in
+                    Dream.log "done with forget, closing connection...";
+                    (* TODO: Dream.close_websocket not needed I think, the socket is already closed *)
+                    (* let* () = wrap @@ fun () -> Dream.close_websocket ws in *)
+                    ignore request;
                     Dream.log "done, stopping";
                     Lwt.return ()
             in

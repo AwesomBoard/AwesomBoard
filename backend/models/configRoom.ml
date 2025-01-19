@@ -85,6 +85,10 @@ module ConfigRoom = struct
         let game_status = GameStatus.Started in
         { config_room with game_status; first_player; creator; chosen_opponent = Some chosen_opponent }
 
+    let is_unstarted = fun (config_room : t) : bool ->
+        match config_room.game_status with
+        | Started | Finished -> false
+        | _ -> true
 
     module Proposal = struct
         type t = {

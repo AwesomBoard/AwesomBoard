@@ -13,6 +13,8 @@ module type CONFIG_ROOM = sig
         it does not exist, returns [None]. *)
     val get : request:Dream.request -> game_id:int -> ConfigRoom.t option Lwt.t
 
+    val delete : request:Dream.request -> game_id:int -> unit Lwt.t
+
     (** [iter_active_rooms ~request f] retrieve the currently active games,
         applying [f] to each of them (with the game id), in the context of
         [request] *)
@@ -143,6 +145,15 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
     let get = fun ~(request : Dream.request) ~(game_id : int) : ConfigRoom.t option Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.find_opt get_query game_id
+
+    let delete_query = int ->. unit @@ {|
+        DELETE FROM config_rooms
+        WHERE id = ?
+    |}
+
+    let delete = fun ~(request : Dream.request) ~(game_id : int) : unit Lwt.t ->
+        Dream.sql request @@ fun (module Db : DB) -> check @@
+        Db.exec delete_query game_id
 
     let get_active_rooms_query = unit ->* t2 int config_room @@ {|
         SELECT id, creator_id, creator_name, creator_elo,
