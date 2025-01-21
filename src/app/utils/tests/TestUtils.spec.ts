@@ -338,7 +338,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         const optionalGameInfo: MGPOptional<GameInfo> =
             MGPOptional.ofNullable(GameInfo.getAllGames().find((gameInfo: GameInfo) => gameInfo.urlName === game));
         if (optionalGameInfo.isAbsent()) {
-            throw new Error(game + ' is not a game developed on EveryBoard, check if its name is in the second param of GameInfo');
+            throw new Error(game + ' is not a game developed on EveryBoard, check if its name is in the second param of GameInfo (in pick-game.component.ts)');
         }
         return ComponentTestUtils.forGameWithWrapper(game,
                                                      LocalGameWrapperComponent,

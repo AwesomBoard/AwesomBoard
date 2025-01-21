@@ -27,8 +27,4 @@ export class SquarzMove extends MoveCoordToCoord {
         return distance > 1;
     }
 
-    public getDistance(): number {
-        return this.getStart().getDistanceToward(this.getEnd());
-    }
-
 }

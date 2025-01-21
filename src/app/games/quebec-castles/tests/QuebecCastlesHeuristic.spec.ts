@@ -1,11 +1,12 @@
 import { MGPOptional } from '@everyboard/lib';
 
 import { HeuristicUtils } from 'src/app/jscaip/AI/tests/HeuristicUtils.spec';
-import { NewGameHeuristic } from '../NewGameHeuristic';
-import { NewGameState } from '../NewGameState';
+import { QuebecCastlesHeuristic } from '../QuebecCastlesHeuristic';
+import { QuebecCastlesState } from '../QuebecCastlesState';
 import { Player } from 'src/app/jscaip/Player';
-import { NewGameRules } from '../NewGameRules';
-import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
+import { QuebecCastlesConfig, QuebecCastlesRules } from '../QuebecCastlesRules';
+import { PlayerMap } from 'src/app/jscaip/PlayerMap';
+import { Coord } from 'src/app/jscaip/Coord';
 
 /**
  * These are the tests for the heuristic.
@@ -13,13 +14,13 @@ import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
  * compared to another one.
  * We can rely on HeuristicUtils' functions to achieve this.
  */
-describe('NewGameHeuristic', () => {
+describe('QuebecCastlesHeuristic', () => {
 
-    let heuristic: NewGameHeuristic;
-    const defaultConfig: NoConfig = NewGameRules.get().getDefaultRulesConfig();
+    let heuristic: QuebecCastlesHeuristic;
+    const defaultConfig: MGPOptional<QuebecCastlesConfig> = QuebecCastlesRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
-        heuristic = new NewGameHeuristic();
+        heuristic = new QuebecCastlesHeuristic();
     });
 
     it('should have some board value', () => {
@@ -28,8 +29,9 @@ describe('NewGameHeuristic', () => {
          * `HeuristicUtils.expectSecondStateToBeBetterThanFirstFor`.
          * You can include last moves when needed (here there are set to MGPOptional.empty())
          */
-        const weakState: NewGameState = NewGameRules.get().getInitialState(defaultConfig);
-        const strongState: NewGameState = new NewGameState(42);
+        const weakState: QuebecCastlesState = QuebecCastlesRules.get().getInitialState(defaultConfig);
+        const thrones: PlayerMap<MGPOptional<Coord>> = PlayerMap.ofValues(MGPOptional.empty(), MGPOptional.empty());
+        const strongState: QuebecCastlesState = new QuebecCastlesState([], 42, thrones);
         HeuristicUtils.expectSecondStateToBeBetterThanFirstFor(heuristic,
                                                                weakState, MGPOptional.empty(),
                                                                strongState, MGPOptional.empty(),

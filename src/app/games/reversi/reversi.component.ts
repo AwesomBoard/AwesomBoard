@@ -25,7 +25,6 @@ export class ReversiComponent extends RectangularGameComponent<ReversiRules,
                                                                ReversiConfig,
                                                                ReversiLegalityInformation>
 {
-    public EMPTY: PlayerOrNone = PlayerOrNone.NONE;
     public lastMove: MGPOptional<Coord> = MGPOptional.empty();
 
     private capturedCoords: Coord[] = [];

@@ -188,7 +188,7 @@ export class DvonnRules extends Rules<DvonnMove, DvonnState> {
         }
 
         const stack: DvonnPieceStack = state.getPieceAt(move.getStart());
-        if (move.length() !== stack.getSize()) {
+        if (move.getDistance() !== stack.getSize()) {
             return MGPFallible.failure(DvonnFailure.INVALID_MOVE_LENGTH());
         }
 

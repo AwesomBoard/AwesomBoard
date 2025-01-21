@@ -13,7 +13,7 @@
                   [ngClass]="getRectClasses(x, y)"
                   class="base"
             />
-            <circle *ngIf="board[y][x] !== EMPTY"
+            <circle *ngIf="board[y][x] !== PlayerOrNone.NONE"
                     [attr.r]="(SPACE_SIZE / 2) - STROKE_WIDTH"
                     [attr.cx]="(SPACE_SIZE * x) + (SPACE_SIZE / 2)"
                     [attr.cy]="(SPACE_SIZE * y) + (SPACE_SIZE / 2)"
