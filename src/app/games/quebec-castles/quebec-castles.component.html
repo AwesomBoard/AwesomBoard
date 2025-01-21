@@ -10,8 +10,8 @@
     />
     <g #board
        [attr.transform]="getBoardTransform()">
-        <g *ngFor="let coordAndContent of getState().getCoordsAndContents()">
-            <rect id="click_{{ coordAndContent.coord.x }}_{{ coordAndContent.coord.y }}"
+        <g *ngFor="let coordAndContent of constructedState.getCoordsAndContents()">
+            <rect id="click-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
                   (click)="onClick(coordAndContent.coord)"
                   [attr.x]="SPACE_SIZE * coordAndContent.coord.x"
                   [attr.y]="SPACE_SIZE * coordAndContent.coord.y"
@@ -21,11 +21,12 @@
                   class="base"
             />
             <circle *ngIf="coordAndContent.content !== PlayerOrNone.NONE"
+                    id="piece-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
                     (click)="onClick(coordAndContent.coord)"
                     [attr.r]="(SPACE_SIZE / 2) - STROKE_WIDTH"
                     [attr.cx]="(SPACE_SIZE * coordAndContent.coord.x) + (SPACE_SIZE / 2)"
                     [attr.cy]="(SPACE_SIZE * coordAndContent.coord.y) + (SPACE_SIZE / 2)"
-                    [ngClass]="getPieceClass(coordAndContent.coord)"
+                    [ngClass]="getPieceClasses(coordAndContent.coord)"
                     class="base"
             />
             <g *ngFor="let player of Player.PLAYERS"

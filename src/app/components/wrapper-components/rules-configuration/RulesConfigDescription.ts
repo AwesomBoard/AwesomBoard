@@ -50,6 +50,7 @@ export class BooleanConfig<R extends RulesConfig = EmptyRulesConfig> extends Con
 
 }
 
+
 export class RulesConfigDescription<R extends RulesConfig = EmptyRulesConfig> {
 
     private readonly defaultConfig: NamedRulesConfig<R>;

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { MGPOptional, MGPValidation } from '@everyboard/lib';
+import { MGPOptional, MGPValidation, Set, Utils } from '@everyboard/lib';
 
 import { QuebecCastlesConfig, QuebecCastlesRules } from './QuebecCastlesRules';
 import { QuebecCastlesDrop, QuebecCastlesMove } from './QuebecCastlesMove';
@@ -9,11 +9,12 @@ import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { QuebecCastlesMoveGenerator } from './QuebecCastlesMoveGenerator';
 import { QuebecCastlesMinimax } from './QuebecCastlesMinimax';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
-import { PlayerOrNone } from 'src/app/jscaip/Player';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { RectangularGameComponent } from 'src/app/components/game-components/rectangular-game-component/RectangularGameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { TMPMoveCoordToCoord } from 'src/app/jscaip/MoveCoordToCoord';
 import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
+import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 
 @Component({
     selector: 'app-quebec-castles',
@@ -27,7 +28,13 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
                                                                      QuebecCastlesConfig>
 {
 
+    public constructedState: QuebecCastlesState;
+
     private selected: MGPOptional<Coord> = MGPOptional.empty();
+    private dropped: Set<Coord> = new Set();
+
+    private leftSquare: MGPOptional<Coord> = MGPOptional.empty();
+    private landingSquare: MGPOptional<Coord> = MGPOptional.empty();
 
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
         super(messageDisplayer, cdr);
@@ -44,7 +51,7 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
     public override getViewBox(): ViewBox {
         const originalViewBox: ViewBox = super.getViewBox();
         if (this.getConfig().get().isRhombic) {
-            const state: QuebecCastlesState = this.getState();
+            const state: QuebecCastlesState = this.constructedState;
             const minSize: number = Math.min(state.getWidth(), state.getHeight());
             const maxSize: number = Math.max(state.getWidth(), state.getHeight());
             const sizeDepassement: number = maxSize - minSize;
@@ -63,17 +70,50 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
-        if (this.rules.isDropPhase(this.getState(), this.getConfig())) {
+        const config: QuebecCastlesConfig = this.getConfig().get();
+        if (this.rules.isDropPhase(this.constructedState, config)) {
+            return this.onDrop(coord, config);
+        } else {
+            return this.onMove(coord);
+        }
+    }
+
+    private async onDrop(coord: Coord, config: QuebecCastlesConfig): Promise<MGPValidation> {
+        Utils.assert(config.dropPieceYourself, 'enterred "onDrop" on a non-dropping-config');
+        if (config.dropPieceByPiece) {
+            console.log('piece by piece)')
             const chosenMove: QuebecCastlesDrop = new QuebecCastlesDrop([coord]);
             return await this.chooseMove(chosenMove);
         } else {
-            if (this.selected.isPresent()) {
-                if (this.selected.equalsValue(coord)) {
-                    this.selected = MGPOptional.empty();
-                    return MGPValidation.SUCCESS;
-                } else {
-                    return this.chooseMove(TMPMoveCoordToCoord.of(this.selected.get(), coord));
-                }
+            console.log('ALLERU')
+            const currentPlayer: Player = this.constructedState.getCurrentPlayer();
+            if (this.dropped.contains(coord)) {
+                this.constructedState = this.constructedState.setPieceAt(coord, PlayerOrNone.NONE);
+                this.dropped = this.dropped.removeElement(coord);
+            } else {
+                this.constructedState = this.constructedState.setPieceAt(coord, currentPlayer);
+                this.dropped = this.dropped.addElement(coord);
+            }
+            return MGPValidation.SUCCESS;
+        }
+    }
+
+    private async onMove(coord: Coord): Promise<MGPValidation> {
+        if (this.selected.isPresent()) {
+            if (this.selected.equalsValue(coord)) {
+                this.selected = MGPOptional.empty();
+                return MGPValidation.SUCCESS;
+            } else {
+                return this.chooseMove(TMPMoveCoordToCoord.of(this.selected.get(), coord));
+            }
+        } else {
+            const state: QuebecCastlesState = this.constructedState;
+            const opponent: Player = state.getCurrentOpponent();
+            const clickedPiece: PlayerOrNone = state.getPieceAt(coord);
+            if (clickedPiece === opponent) {
+                return this.cancelMove(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
+            } else if (clickedPiece === PlayerOrNone.NONE) {
+                return this.cancelMove(RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_EMPTY());
             } else {
                 this.selected = MGPOptional.of(coord);
                 return MGPValidation.SUCCESS;
@@ -83,11 +123,15 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
         const state: QuebecCastlesState = this.getState();
+        this.constructedState = state;
         this.board = state.getCopiedBoard();
     }
 
     public override async showLastMove(move: QuebecCastlesMove): Promise<void> {
-        return;
+        if (move instanceof TMPMoveCoordToCoord) {
+            this.leftSquare = MGPOptional.of(move.getStart());
+            this.landingSquare = MGPOptional.of(move.getEnd());
+        }
     }
 
     public override hideLastMove(): void {
@@ -100,14 +144,17 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     public getRectClasses(coord: Coord): string[] {
         const classes: string[] = [];
+        if (this.leftSquare.equalsValue(coord) || this.landingSquare.equalsValue(coord)) {
+            classes.push('moved-fill');
+        }
         return classes;
     }
 
-    public getPieceClass(coord: Coord): string[] { // TODO classes
+    public getPieceClasses(coord: Coord): string[] {
         const classes: string[] = [
-            this.getPlayerClass(this.getState().getPieceAt(coord)),
+            this.getPlayerClass(this.constructedState.getPieceAt(coord)),
         ];
-        if (this.selected.equalsValue(coord)) {
+        if (this.selected.equalsValue(coord) || this.dropped.contains(coord)) {
             classes.push('selected-stroke');
         }
         return classes;
@@ -115,7 +162,7 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     public getBoardTransform(): string {
         if (this.getConfig().get().isRhombic) {
-            const state: QuebecCastlesState = this.getState();
+            const state: QuebecCastlesState = this.constructedState;
             const cx: number = (state.getWidth() / 2) * this.SPACE_SIZE;
             const cy: number = (state.getHeight() / 2) * this.SPACE_SIZE;
             return `rotate(45, ${ cx }, ${ cy })`;

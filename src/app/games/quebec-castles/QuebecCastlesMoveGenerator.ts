@@ -11,14 +11,15 @@ export class QuebecCastlesMoveGenerator extends MoveGenerator<QuebecCastlesMove,
                                                               QuebecCastlesConfig>
 {
 
-    public override getListMoves(node: QuebecCastlesNode, config: MGPOptional<QuebecCastlesConfig>)
+    public override getListMoves(node: QuebecCastlesNode, optionalConfig: MGPOptional<QuebecCastlesConfig>)
     : QuebecCastlesMove[]
     {
         const state: QuebecCastlesState = node.gameState;
+        const config: QuebecCastlesConfig = optionalConfig.get();
         if (QuebecCastlesRules.get().isDropPhase(state, config)) {
-            return this.getDropMoves(state, config.get());
+            return this.getDropMoves(state, config);
         } else {
-            return this.getNormalMoves(state, config.get());
+            return this.getNormalMoves(state, config);
         }
     }
     // TODO: if available space === number of soldier to put --> autofill
