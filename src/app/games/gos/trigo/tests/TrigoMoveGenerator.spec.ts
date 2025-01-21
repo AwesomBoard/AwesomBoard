@@ -8,6 +8,7 @@ import { GoNode } from '../../AbstractGoRules';
 import { TrigoMoveGenerator } from '../TrigoMoveGenerator';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { TrigoConfig, TrigoRules } from '../TrigoRules';
+import { GoPhase } from '../../GoPhase';
 
 const X: GoPiece = GoPiece.LIGHT;
 const O: GoPiece = GoPiece.DARK;
@@ -40,7 +41,7 @@ describe('TrigoMoveGenerator', () => {
                 [_, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), GoPhase.PLAYING);
             const initialNode: GoNode = new GoNode(state);
 
             // When listing the moves
@@ -58,7 +59,7 @@ describe('TrigoMoveGenerator', () => {
                 [N, b, O, b],
             ];
             const state: GoState =
-                new GoState(initialBoard, PlayerNumberMap.of(3, 0), 0, MGPOptional.empty(), 'ACCEPT');
+                new GoState(initialBoard, PlayerNumberMap.of(3, 0), 0, MGPOptional.empty(), GoPhase.ACCEPT);
             const initialNode: GoNode = new GoNode(state);
 
             // When listing the moves
@@ -75,7 +76,7 @@ describe('TrigoMoveGenerator', () => {
                                                PlayerNumberMap.of(0, 0),
                                                0,
                                                MGPOptional.empty(),
-                                               'COUNTING');
+                                               GoPhase.COUNTING);
             const initialNode: GoNode = new GoNode(state);
             spyOn(moveGenerator, 'getCountingMovesList').and.returnValue([]);
 
@@ -90,7 +91,7 @@ describe('TrigoMoveGenerator', () => {
             // Given a board in ACCEPT phase but having a disagreement on the final state
             const initialBoard: GoPiece[][] = TrigoRules.get().getInitialState(config).getCopiedBoard();
             const state: GoState =
-                new GoState(initialBoard, PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'ACCEPT');
+                new GoState(initialBoard, PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), GoPhase.ACCEPT);
             const initialNode: GoNode = new GoNode(state);
             spyOn(moveGenerator, 'getCountingMovesList').and.returnValue([new GoMove(1, 1)]);
 
@@ -111,7 +112,7 @@ describe('TrigoMoveGenerator', () => {
                 [_, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), 'COUNTING');
+                new GoState(board, PlayerNumberMap.of(0, 0), 0, MGPOptional.empty(), GoPhase.COUNTING);
             const initialNode: GoNode = new GoNode(state);
 
             // When listing the moves
@@ -132,7 +133,7 @@ describe('TrigoMoveGenerator', () => {
                 [_, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(0, 0), 1, MGPOptional.empty(), 'COUNTING');
+                new GoState(board, PlayerNumberMap.of(0, 0), 1, MGPOptional.empty(), GoPhase.COUNTING);
             const initialNode: GoNode = new GoNode(state);
 
             // When listing the moves

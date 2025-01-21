@@ -11,6 +11,7 @@ import { RulesUtils } from 'src/app/jscaip/tests/RulesUtils.spec';
 import { Player } from 'src/app/jscaip/Player';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { GoNode } from '../../AbstractGoRules';
+import { GoPhase } from '../../GoPhase';
 
 describe('TrigoRules', () => {
 
@@ -60,7 +61,7 @@ describe('TrigoRules', () => {
                 [O, _, _, _, _, _, _, _, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 1, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 1, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When doing the capture
             const move: GoMove = new GoMove(1, 6);
@@ -79,7 +80,7 @@ describe('TrigoRules', () => {
                                                        PlayerNumberMap.of(0, 1),
                                                        2,
                                                        MGPOptional.empty(),
-                                                       'PLAYING');
+                                                       GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -95,7 +96,7 @@ describe('TrigoRules', () => {
                 [_, _, _, _, _, _, _, _, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 1, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 1, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When doing the capture
             const move: GoMove = new GoMove(6, 1);
@@ -114,7 +115,7 @@ describe('TrigoRules', () => {
                                                        PlayerNumberMap.of(0, 1),
                                                        2,
                                                        MGPOptional.empty(),
-                                                       'PLAYING');
+                                                       GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -130,7 +131,7 @@ describe('TrigoRules', () => {
                 [O, O, O, _, _, _, _, _, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 1, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 1, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When playing on their last freedom
             const move: GoMove = new GoMove(3, 6);
@@ -149,7 +150,7 @@ describe('TrigoRules', () => {
                                                        PlayerNumberMap.of(0, 4),
                                                        2,
                                                        MGPOptional.empty(),
-                                                       'PLAYING');
+                                                       GoPhase.PLAYING);
 
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
@@ -166,7 +167,7 @@ describe('TrigoRules', () => {
                 [_, X, O, _, _, _, _, _, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 2, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 2, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When doing the capture
             const move: GoMove = new GoMove(0, 6);
@@ -183,7 +184,7 @@ describe('TrigoRules', () => {
             ];
             const koCoord: Coord = new Coord(1, 6);
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(1, 0), 3, MGPOptional.of(koCoord), 'PLAYING');
+                new GoState(expectedBoard, PlayerNumberMap.of(1, 0), 3, MGPOptional.of(koCoord), GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -199,7 +200,7 @@ describe('TrigoRules', () => {
                 [_, O, X, _, _, _, _, _, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 3, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 3, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When doing the capture
             const move: GoMove = new GoMove(0, 6);
@@ -216,7 +217,7 @@ describe('TrigoRules', () => {
             ];
             const koCoord: Coord = new Coord(1, 6);
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(0, 1), 4, MGPOptional.of(koCoord), 'PLAYING');
+                new GoState(expectedBoard, PlayerNumberMap.of(0, 1), 4, MGPOptional.of(koCoord), GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -233,7 +234,7 @@ describe('TrigoRules', () => {
             ];
             const koCoord: Coord = new Coord(1, 6);
             const state: GoState =
-                new GoState(board, noCaptures, 1, MGPOptional.of(koCoord), 'PLAYING');
+                new GoState(board, noCaptures, 1, MGPOptional.of(koCoord), GoPhase.PLAYING);
 
             // When playing on the Ko coord
             const move: GoMove = new GoMove(koCoord.x, koCoord.y);
@@ -255,7 +256,7 @@ describe('TrigoRules', () => {
                 [_, O, O, X, _, _, _, _, _, _, _, _, _], // This could be a pre snap-back board
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 1, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 1, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When playing in the 0 freedom coord that captures a group
             const move: GoMove = new GoMove(0, 6);
@@ -271,14 +272,14 @@ describe('TrigoRules', () => {
                 [X, _, _, X, _, _, _, _, _, _, _, _, _],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(0, 2), 2, MGPOptional.empty(), 'PLAYING');
+                new GoState(expectedBoard, PlayerNumberMap.of(0, 2), 2, MGPOptional.empty(), GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
         it('GoPhase.PLAYING + GoMove.PASS = GoPhase.PASSED', () => {
             // Given initial board (so, playing phase)
             const state: GoState = TrigoRules.get().getInitialState(defaultConfig);
-            expect(state.phase).toBe('PLAYING');
+            expect(state.phase).toBe(GoPhase.PLAYING);
 
             // When passing
             const move: GoMove = GoMove.PASS;
@@ -288,7 +289,7 @@ describe('TrigoRules', () => {
                                                        noCaptures,
                                                        1,
                                                        MGPOptional.empty(),
-                                                       'PASSED');
+                                                       GoPhase.PASSED);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -316,7 +317,7 @@ describe('TrigoRules', () => {
                 [_, O, O, X, _, _, _, _, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 1, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 1, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When playing on another piece
             const move: GoMove = new GoMove(1, 6);
@@ -338,7 +339,7 @@ describe('TrigoRules', () => {
                 [_, O, O, X, _, _, _, _, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(board, noCaptures, 0, MGPOptional.empty(), 'PLAYING');
+                new GoState(board, noCaptures, 0, MGPOptional.empty(), GoPhase.PLAYING);
 
             // When trying to play in that coord without capturing
             const move: GoMove = new GoMove(0, 6);
@@ -363,7 +364,7 @@ describe('TrigoRules', () => {
                 [N, X, _, _, _, _, _, _, _, _, _, _, N],
                 [_, O, O, X, _, _, _, _, _, _, _, _, _],
             ];
-            const state: GoState = new GoState(board, noCaptures, 0, MGPOptional.empty(), 'PASSED');
+            const state: GoState = new GoState(board, noCaptures, 0, MGPOptional.empty(), GoPhase.PASSED);
 
             // When doing a move again
             const move: GoMove = new GoMove(3, 3);
@@ -379,7 +380,7 @@ describe('TrigoRules', () => {
                 [_, O, O, X, _, _, _, _, _, _, _, _, _],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, noCaptures, 1, MGPOptional.empty(), 'PLAYING');
+                new GoState(expectedBoard, noCaptures, 1, MGPOptional.empty(), GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -394,7 +395,7 @@ describe('TrigoRules', () => {
                 [N, X, _, _, _, _, _, _, _, _, _, X, N],
                 [_, O, O, X, _, _, _, _, _, O, X, _, _],
             ];
-            const state: GoState = new GoState(board, noCaptures, 3, MGPOptional.empty(), 'PASSED');
+            const state: GoState = new GoState(board, noCaptures, 3, MGPOptional.empty(), GoPhase.PASSED);
 
             // When passing again
             const move: GoMove = GoMove.PASS;
@@ -410,7 +411,7 @@ describe('TrigoRules', () => {
                 [b, O, O, X, _, _, _, _, _, O, X, w, w],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(1, 2), 4, MGPOptional.empty(), 'COUNTING');
+                new GoState(expectedBoard, PlayerNumberMap.of(1, 2), 4, MGPOptional.empty(), GoPhase.COUNTING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -426,7 +427,7 @@ describe('TrigoRules', () => {
                 [_, _, _, _, _, _, O, X, _, _, _, _, _],
             ];
             const state: GoState =
-                new GoState(previousBoard, noCaptures, 10, MGPOptional.empty(), 'PASSED');
+                new GoState(previousBoard, noCaptures, 10, MGPOptional.empty(), GoPhase.PASSED);
 
             // When passing again
             const move: GoMove = GoMove.PASS;
@@ -442,7 +443,7 @@ describe('TrigoRules', () => {
                 [b, b, b, b, b, b, O, X, w, w, w, w, w],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(12, 29), 11, MGPOptional.empty(), 'COUNTING');
+                new GoState(expectedBoard, PlayerNumberMap.of(12, 29), 11, MGPOptional.empty(), GoPhase.COUNTING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -462,7 +463,7 @@ describe('TrigoRules', () => {
                 [_, O, O, X, _, _, _, _, _, O, X, _, _],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), 'COUNTING');
+                new GoState(board, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), GoPhase.COUNTING);
             const node: GoNode = new GoNode(state);
 
             // When evaluating it
@@ -482,7 +483,7 @@ describe('TrigoRules', () => {
                 [O, O, _, _, X, w, w, w, w, w, w, w, w],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(0, 40), 0, MGPOptional.empty(), 'COUNTING');
+                new GoState(board, PlayerNumberMap.of(0, 40), 0, MGPOptional.empty(), GoPhase.COUNTING);
 
             // When marking as dead one of the group sharing this territory
             const move: GoMove = new GoMove(0, 6);
@@ -498,7 +499,7 @@ describe('TrigoRules', () => {
                 [u, u, w, w, X, w, w, w, w, w, w, w, w],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(0, 48), 1, MGPOptional.empty(), 'COUNTING');
+                new GoState(expectedBoard, PlayerNumberMap.of(0, 48), 1, MGPOptional.empty(), GoPhase.COUNTING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -514,7 +515,7 @@ describe('TrigoRules', () => {
                 [b, b, b, O, X, w, w, w, w, w, w, w, w],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(4, 39), 3, MGPOptional.empty(), 'COUNTING');
+                new GoState(board, PlayerNumberMap.of(4, 39), 3, MGPOptional.empty(), GoPhase.COUNTING);
 
             // When marking this group as dead
             const move: GoMove = new GoMove(2, 5);
@@ -530,7 +531,7 @@ describe('TrigoRules', () => {
                 [w, w, w, u, X, w, w, w, w, w, w, w, w],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(0, 49), 4, MGPOptional.empty(), 'COUNTING');
+                new GoState(expectedBoard, PlayerNumberMap.of(0, 49), 4, MGPOptional.empty(), GoPhase.COUNTING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -544,7 +545,7 @@ describe('TrigoRules', () => {
                 [b, O, _, _, _, _, _, X, w],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(2, 1), 3, MGPOptional.empty(), 'COUNTING');
+                new GoState(board, PlayerNumberMap.of(2, 1), 3, MGPOptional.empty(), GoPhase.COUNTING);
 
             // When playing on an empty square
             const move: GoMove = new GoMove(3, 3);
@@ -558,7 +559,7 @@ describe('TrigoRules', () => {
                 [_, O, _, _, _, _, _, X, _],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(0, 0), 4, MGPOptional.empty(), 'PLAYING');
+                new GoState(expectedBoard, PlayerNumberMap.of(0, 0), 4, MGPOptional.empty(), GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -574,14 +575,14 @@ describe('TrigoRules', () => {
                 [_, O, O, X, _, _, _, _, _, O, X, _, _],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(25, 0), 1, MGPOptional.empty(), 'COUNTING');
+                new GoState(board, PlayerNumberMap.of(25, 0), 1, MGPOptional.empty(), GoPhase.COUNTING);
 
             // When accepting board
             const move: GoMove = GoMove.ACCEPT;
 
             // Then the move should go to accept phase
             const expectedState: GoState =
-                new GoState(board, PlayerNumberMap.of(25, 0), 2, MGPOptional.empty(), 'ACCEPT');
+                new GoState(board, PlayerNumberMap.of(25, 0), 2, MGPOptional.empty(), GoPhase.ACCEPT);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -596,7 +597,7 @@ describe('TrigoRules', () => {
                 [N, X, _, _, _, _, _, _, _, _, _, X, N],
                 [_, O, O, X, _, _, _, _, _, O, X, _, _],
             ];
-            const state: GoState = new GoState(board, noCaptures, 1, MGPOptional.empty(), 'COUNTING');
+            const state: GoState = new GoState(board, noCaptures, 1, MGPOptional.empty(), GoPhase.COUNTING);
 
             // When passing
             const move: GoMove = GoMove.PASS;
@@ -620,7 +621,7 @@ describe('TrigoRules', () => {
                 [b, O, _, _, _, _, _, X, w],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(2, 1), 3, MGPOptional.empty(), 'ACCEPT');
+                new GoState(board, PlayerNumberMap.of(2, 1), 3, MGPOptional.empty(), GoPhase.ACCEPT);
 
             // When playing on an empty square
             const move: GoMove = new GoMove(3, 3);
@@ -634,7 +635,7 @@ describe('TrigoRules', () => {
                 [_, O, _, _, _, _, _, X, _],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(0, 0), 4, MGPOptional.empty(), 'PLAYING');
+                new GoState(expectedBoard, PlayerNumberMap.of(0, 0), 4, MGPOptional.empty(), GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -648,7 +649,7 @@ describe('TrigoRules', () => {
                 [O, _, _, _, _, _, _, X, w],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(1, 1), 3, MGPOptional.empty(), 'ACCEPT');
+                new GoState(board, PlayerNumberMap.of(1, 1), 3, MGPOptional.empty(), GoPhase.ACCEPT);
 
             // When clicking on an empty square that could capture (even if the piece so far is still "dead")
             const move: GoMove = new GoMove(1, 4);
@@ -662,7 +663,7 @@ describe('TrigoRules', () => {
                 [_, X, _, _, _, _, _, X, _],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(0, 1), 4, MGPOptional.empty(), 'PLAYING');
+                new GoState(expectedBoard, PlayerNumberMap.of(0, 1), 4, MGPOptional.empty(), GoPhase.PLAYING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -675,7 +676,7 @@ describe('TrigoRules', () => {
                 [N, X, _, _, _, _, _, _, N],
                 [O, _, X, _, _, _, _, X, w],
             ];
-            const state: GoState = new GoState(board, PlayerNumberMap.of(1, 1), 1, MGPOptional.empty(), 'ACCEPT');
+            const state: GoState = new GoState(board, PlayerNumberMap.of(1, 1), 1, MGPOptional.empty(), GoPhase.ACCEPT);
 
             // When clicking on a piece to mark it as dead
             const move: GoMove = new GoMove(0, 4);
@@ -689,7 +690,7 @@ describe('TrigoRules', () => {
                 [u, w, X, _, _, _, _, X, w],
             ];
             const expectedState: GoState =
-                new GoState(expectedBoard, PlayerNumberMap.of(1, 4), 2, MGPOptional.empty(), 'COUNTING');
+                new GoState(expectedBoard, PlayerNumberMap.of(1, 4), 2, MGPOptional.empty(), GoPhase.COUNTING);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
         });
 
@@ -702,14 +703,14 @@ describe('TrigoRules', () => {
                 [N, _, _, _, _, _, _, X, N],
                 [O, _, _, _, _, _, X, w, w],
             ];
-            const state: GoState = new GoState(board, PlayerNumberMap.of(1, 2), 1, MGPOptional.empty(), 'ACCEPT');
+            const state: GoState = new GoState(board, PlayerNumberMap.of(1, 2), 1, MGPOptional.empty(), GoPhase.ACCEPT);
 
             // When accepting as well
             const move: GoMove = GoMove.ACCEPT;
 
             // Then the move should succeed and the game should be over
             const expectedState: GoState =
-                new GoState(board, PlayerNumberMap.of(1, 2), 2, MGPOptional.empty(), 'FINISHED');
+                new GoState(board, PlayerNumberMap.of(1, 2), 2, MGPOptional.empty(), GoPhase.FINISHED);
             const node: GoNode = new GoNode(expectedState);
             RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
             RulesUtils.expectToBeVictoryFor(rules, node, Player.ONE, defaultConfig);
@@ -731,7 +732,7 @@ describe('TrigoRules', () => {
                 [w, u, u, X, _, _, _, _, _, O, k, k, b],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(5, 5), 4, MGPOptional.empty(), 'FINISHED');
+                new GoState(board, PlayerNumberMap.of(5, 5), 4, MGPOptional.empty(), GoPhase.FINISHED);
             const node: GoNode = new GoNode(state);
 
             // When evaluating its value
@@ -751,7 +752,7 @@ describe('TrigoRules', () => {
                 [_, O, O, X, _, _, _, _, _, _, O, b, b],
             ];
             const state: GoState =
-                new GoState(board, PlayerNumberMap.of(2, 0), 2, MGPOptional.empty(), 'FINISHED');
+                new GoState(board, PlayerNumberMap.of(2, 0), 2, MGPOptional.empty(), GoPhase.FINISHED);
             const node: GoNode = new GoNode(state);
 
             // When evaluating it

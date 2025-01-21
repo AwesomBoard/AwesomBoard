@@ -186,9 +186,6 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         const state: SixState = node.gameState;
         const previousPlayer: Player = state.getPreviousPlayer();
         if (node.previousMove.isPresent()) {
-            // TODO FOR REVIEW: je comprends l'idée de ce boutte ci qui permet de focus la recherche de victoire juste sur le dernier move mais...
-            // TODO FOR REVIEW: ça pue pas la mort de checker ça que sur le dernier move ?
-            // TODO FOR REVIEW: genre ça veut dire que si j'écris un test "voici une forme de 6" sans last move, c'est pas considéré comme une victoire !
             const shapeVictory: Coord[] = this.getShapeVictory(node.previousMove.get(), state);
             if (shapeVictory.length === 6) {
                 return GameStatus.getVictory(previousPlayer);
