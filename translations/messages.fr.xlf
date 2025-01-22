@@ -3993,6 +3993,10 @@
         <source>You must put this piece next to another piece.</source>
         <target>Vous devez faire atterrir cette pièce à côté d&apos;une autre pièce.</target>
       </trans-unit>
+      <trans-unit id="1431305578867281747" datatype="html">
+        <source>Number of pieces to drop per player</source>
+        <target>Nombre de pièces à déposer par joueur</target>
+      </trans-unit>
       <trans-unit id="7208567678509553256" datatype="html">
         <source>This move does not disconnect your opponent&apos;s pieces. Try again with another piece.</source>
         <target>Ce mouvement ne déconnecte pas du jeu de pièces adverses ! Réessayez avec une autre pièce !</target>

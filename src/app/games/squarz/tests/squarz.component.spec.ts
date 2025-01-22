@@ -195,7 +195,7 @@ describe('SquarzComponent', () => {
             testUtils.expectElementToHaveClasses('#space-0-5', ['base', 'captured-fill']);
         }));
 
-        it('should should show left square when doing a jump', fakeAsync(async() => {
+        it('should show left square when doing a jump', fakeAsync(async() => {
             // Given a board with a selected piece
             await testUtils.expectClickSuccess('#click-0-0');
 
