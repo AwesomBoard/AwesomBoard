@@ -15,6 +15,7 @@ import { Debug } from 'src/app/utils/Debug';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { GoPhase } from '../GoPhase';
 import { GoMinimax } from './GoMinimax';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-go',
@@ -78,11 +79,19 @@ export class GoComponent extends GobanGameComponent<GoRules,
         const phase: GoPhase = state.phase;
 
         this.board = state.getCopiedBoard();
-        this.scores = MGPOptional.of(state.getCapturedCopy());
+        this.updateScores();
 
         this.ko = state.koCoord;
-        this.canPass = phase !== 'FINISHED';
+        this.canPass = phase.allowsPass();
         this.createHoshis();
+    }
+
+    private updateScores(): void {
+        this.scores = MGPOptional.of(this.getState().captured);
+    }
+
+    public override getScoreName(): ScoreName {
+        return this.getState().phase.getScoreName();
     }
 
     private showCaptures(): void {
@@ -103,10 +112,10 @@ export class GoComponent extends GobanGameComponent<GoRules,
 
     public override async pass(): Promise<MGPValidation> {
         const phase: GoPhase = this.getState().phase;
-        if (phase === 'PLAYING' || phase === 'PASSED') {
+        if (phase.isPlaying() || phase.isPassed()) {
             return this.onClick(GoMove.PASS.coord);
         }
-        Utils.assert(phase === 'COUNTING' || phase === 'ACCEPT',
+        Utils.assert(phase.isCounting() || phase.isAccept(),
                      'GoComponent: pass() must be called only in playing, passed, counting, or accept phases');
         return this.onClick(GoMove.ACCEPT.coord);
     }

@@ -16,7 +16,8 @@ describe('SquarzMoveGenerator', () => {
     const defaultConfig: MGPOptional<SquarzConfig> = SquarzRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
-        moveGenerator = new SquarzMoveGenerator();
+        const rules: SquarzRules = SquarzRules.get();
+        moveGenerator = new SquarzMoveGenerator(rules);
     });
 
     it('should have all move options', () => {

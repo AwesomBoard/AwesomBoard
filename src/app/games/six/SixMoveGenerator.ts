@@ -11,8 +11,12 @@ import { CoordSet } from 'src/app/jscaip/CoordSet';
 @Debug.log
 export class SixMoveGenerator extends MoveGenerator<SixMove, SixState, SixConfig> {
 
+    public constructor(private readonly rules: SixRules) {
+        super();
+    }
+
     public override getListMoves(node: SixNode, config: MGPOptional<SixConfig>): SixMove[] {
-        const legalLandings: Coord[] = SixRules.getLegalLandings(node.gameState);
+        const legalLandings: Coord[] = this.rules.getLegalLandings(node.gameState);
         const totalDroppablePieces: number = 2 * config.get().piecesPerPlayer;
         if (node.gameState.turn < totalDroppablePieces) {
             return this.getListDrops(legalLandings);
@@ -36,9 +40,8 @@ export class SixMoveGenerator extends MoveGenerator<SixMove, SixState, SixConfig
                 if (state.isCoordConnected(landing, MGPOptional.of(start))) {
                     const stateAfterMove: SixState = state.movePiece(move);
                     const groupsAfterMove: Set<CoordSet> = stateAfterMove.getGroups();
-                    if (SixRules.isSplit(groupsAfterMove)) {
-                        const largestGroups: Set<CoordSet> =
-                            SixRules.getLargestGroups(groupsAfterMove);
+                    if (this.rules.isSplit(groupsAfterMove)) {
+                        const largestGroups: Set<CoordSet> = this.rules.getLargestGroups(groupsAfterMove);
                         if (largestGroups.size() === 1) {
                             translations.push(SixMove.ofTranslation(start, landing));
                         } else {

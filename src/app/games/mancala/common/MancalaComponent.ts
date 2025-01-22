@@ -14,6 +14,7 @@ import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { MancalaConfig } from './MancalaConfig';
 import { AI, AIOptions, MoveGenerator } from 'src/app/jscaip/AI/AI';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 export type SeedDropResult = {
     houseToDistribute: Coord,
@@ -52,6 +53,10 @@ export abstract class MancalaComponent<R extends MancalaRules>
         super(messageDisplayer, cdr);
         this.hasAsymmetricBoard = true;
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
+    }
+
+    public override getScoreName(): ScoreName {
+        return ScoreName.CAPTURES;
     }
 
     public getMancalaViewBox(): string {

@@ -17,6 +17,7 @@ import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { CoerceoPiecesThreatsTilesMinimax } from './CoerceoPiecesThreatsTilesMinimax';
 import { CoerceoCapturesAndFreedomMinimax } from './CoerceoCapturesAndFreedomMinimax';
 import { CoerceoPiecesTilesFreedomMinimax } from './CoerceoPiecesTilesFreedomMinimax';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-coerceo',
@@ -54,6 +55,10 @@ export class CoerceoComponent extends TriangularGameComponent<CoerceoRules,
         ];
         this.encoder = CoerceoMove.encoder;
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
+    }
+
+    public override getScoreName(): ScoreName {
+        return ScoreName.CAPTURES;
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {

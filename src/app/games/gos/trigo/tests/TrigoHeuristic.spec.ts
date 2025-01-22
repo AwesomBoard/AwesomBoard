@@ -8,6 +8,7 @@ import { Player } from 'src/app/jscaip/Player';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { TrigoConfig, TrigoRules } from '../TrigoRules';
 import { TrigoHeuristic } from '../TrigoHeuristic';
+import { GoPhase } from '../../GoPhase';
 
 const X: GoPiece = GoPiece.LIGHT;
 const O: GoPiece = GoPiece.DARK;
@@ -32,7 +33,7 @@ describe('TrigoHeuristic', () => {
             [_, _, O, X, _],
         ];
         const strongState: GoState =
-            new GoState(strongBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), 'PLAYING');
+            new GoState(strongBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), GoPhase.PLAYING);
         const weakBoard: Table<GoPiece> = [
             [_, O, X, _, _],
             [_, O, X, _, _],
@@ -41,7 +42,7 @@ describe('TrigoHeuristic', () => {
             [_, O, X, _, _],
         ];
         const weakState: GoState =
-            new GoState(weakBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), 'PLAYING');
+            new GoState(weakBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), GoPhase.PLAYING);
 
         // When computing their value
         // Then it should prefer having a larger territory
@@ -63,7 +64,7 @@ describe('TrigoHeuristic', () => {
             [_, _, O, X, _],
         ];
         const strongState: GoState =
-            new GoState(strongBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), 'PLAYING');
+            new GoState(strongBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), GoPhase.PLAYING);
         const weakBoard: Table<GoPiece> = [
             [_, _, O, X, _],
             [_, _, O, X, _],
@@ -72,7 +73,7 @@ describe('TrigoHeuristic', () => {
             [_, _, O, X, _],
         ];
         const weakState: GoState =
-            new GoState(weakBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), 'PLAYING');
+            new GoState(weakBoard, PlayerNumberMap.of(10, 1), 0, MGPOptional.empty(), GoPhase.PLAYING);
         // When computing their value
         // Then it should assign the same value for both
         HeuristicUtils.expectStatesToBeOfEqualValue(heuristic, weakState, strongState, defaultConfig);

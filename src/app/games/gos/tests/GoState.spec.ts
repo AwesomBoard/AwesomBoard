@@ -5,6 +5,7 @@ import { GoState } from '../GoState';
 import { GoPiece } from '../GoPiece';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { GoConfig, GoRules } from '../go/GoRules';
+import { GoPhase } from '../GoPhase';
 
 const O: GoPiece = GoPiece.DARK;
 const _: GoPiece = GoPiece.EMPTY;
@@ -73,7 +74,7 @@ describe('GoState for Go', () => {
                                                        PlayerNumberMap.of(0, 0),
                                                        1,
                                                        MGPOptional.empty(),
-                                                       'PLAYING');
+                                                       GoPhase.PLAYING);
             expect(expectedState).toEqual(state);
         });
 
@@ -110,7 +111,7 @@ describe('GoState for Go', () => {
                                                        PlayerNumberMap.of(0, 0),
                                                        1,
                                                        MGPOptional.empty(),
-                                                       'PLAYING');
+                                                       GoPhase.PLAYING);
             expect(expectedState).toEqual(state);
         });
 
@@ -147,7 +148,7 @@ describe('GoState for Go', () => {
                                                        PlayerNumberMap.of(0, 0),
                                                        1,
                                                        MGPOptional.empty(),
-                                                       'PLAYING');
+                                                       GoPhase.PLAYING);
             expect(expectedState).toEqual(state);
         });
 
@@ -184,7 +185,7 @@ describe('GoState for Go', () => {
                                                        PlayerNumberMap.of(0, 0),
                                                        1,
                                                        MGPOptional.empty(),
-                                                       'PLAYING');
+                                                       GoPhase.PLAYING);
             expect(expectedState).toEqual(state);
         });
 

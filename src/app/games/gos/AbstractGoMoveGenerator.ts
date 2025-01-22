@@ -19,9 +19,7 @@ export class AbstractGoMoveGenerator<C extends RulesConfig> extends MoveGenerato
     public override getListMoves(node: GoNode): GoMove[] {
         const currentState: GoState = node.gameState;
         const playingMoves: GoMove[] = this.getPlayingMovesList(currentState);
-        if (currentState.phase === 'PLAYING' ||
-            currentState.phase === 'PASSED')
-        {
+        if (currentState.phase.isPlaying() || currentState.phase.isPassed()) {
             playingMoves.push(GoMove.PASS);
             return playingMoves;
         } else {

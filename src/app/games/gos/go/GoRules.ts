@@ -10,6 +10,7 @@ import { MGPValidators } from 'src/app/utils/MGPValidator';
 import { GobanConfig } from 'src/app/jscaip/GobanConfig';
 import { OrthogonalGoGroupDataFactory } from '../GoGroupDataFactory';
 import { GroupDataFactory } from 'src/app/jscaip/BoardData';
+import { GoPhase } from '../GoPhase';
 
 export type GoConfig = GobanConfig & {
 
@@ -79,7 +80,7 @@ export class GoRules extends AbstractGoRules<GoConfig> {
             const handicapToPut: Coord = orderedHandicaps[i];
             board[handicapToPut.y][handicapToPut.x] = GoPiece.DARK;
         }
-        return new GoState(board, PlayerNumberMap.of(0, 0), turn, MGPOptional.empty(), 'PLAYING');
+        return new GoState(board, PlayerNumberMap.of(0, 0), turn, MGPOptional.empty(), GoPhase.PLAYING);
     }
 
     public override getRulesConfigDescription(): MGPOptional<RulesConfigDescription<GoConfig>> {
