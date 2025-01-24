@@ -60,7 +60,7 @@ module GameSql : GAME = struct
         Db.exec create_query (game_id, game)
 
     let get_query = int ->? game @@ {|
-        SELECT (game_name, player_zero_id, player_zero_name, player_one_id, player_one_name, result, beginning)
+        SELECT game_name, player_zero_id, player_zero_name, player_one_id, player_one_name, result, beginning
         FROM games
         WHERE id = ?
     |}
@@ -70,7 +70,7 @@ module GameSql : GAME = struct
         Db.find_opt get_query game_id
 
     let get_events_query = int ->* event @@ {|
-        SELECT (time, user, data)
+        SELECT time, user, data
         FROM game_events
         WHERE game_id = ?
     |}
