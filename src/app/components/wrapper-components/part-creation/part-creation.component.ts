@@ -166,7 +166,7 @@ export class GameCreationComponent extends BaseWrapperComponent implements OnIni
         const currentGame: CurrentGame = {
             id: this.gameId,
             opponent: this.getOpponent(configRoom),
-            typeGame: this.getGameUrlName(),
+            gameName: this.getGameUrlName(),
             role,
         };
         return this.currentGameService.updateCurrentGame(currentGame);

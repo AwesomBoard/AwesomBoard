@@ -79,7 +79,7 @@ export class CurrentGameService implements OnDestroy {
             const fakeCurrentGame: CurrentGame = {
                 id: 'id',
                 role: 'Candidate',
-                typeGame: 'P4',
+                gameName: 'P4',
             };
             const keys: string[] = Object.keys(fakeCurrentGame);
             for (const key of keys) {

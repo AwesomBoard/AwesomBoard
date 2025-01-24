@@ -27,6 +27,6 @@ export class ExclusiveOnlineGameGuard {
         if (route.params.id === part.id) {
             return true;
         }
-        return this.router.parseUrl('/play/' + part.typeGame + '/' + part.id);
+        return this.router.parseUrl('/play/' + part.gameName + '/' + part.id);
     }
 }

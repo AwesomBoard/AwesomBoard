@@ -364,6 +364,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         ];
         await this.setCurrentPlayerAccordingToCurrentTurn();
         await this.setRealObserverRole();
+        await this.setCurrentGame(game);
     }
 
     private async setRealObserverRole(): Promise<void> {
@@ -376,11 +377,17 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         } else {
             await this.setRole(PlayerOrNone.NONE);
         }
+    }
+
+    private async setCurrentGame(game: Game): Promise<void>{
         await this.currentGameService.updateCurrentGame({
-            ...this.currentGame.get(),
+            id: this.gameId,
+            gameName: game.gameName,
+            opponent: this.opponent,
             role: this.role.isNone() ? 'Observer' : 'Player',
         });
     }
+
 
     public async onLegalUserMove(move: Move): Promise<void> {
         // First, show the move in the component
