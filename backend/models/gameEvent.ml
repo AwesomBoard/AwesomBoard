@@ -2,12 +2,14 @@ open Utils
 
 (** A request from a user *)
 module Request = struct
-    type t = string
+    type t = {
+        request_type: string [@key "requestType"];
+    }
     [@@deriving yojson]
 
-    let draw : t = "Draw"
-    let rematch : t = "Rematch"
-    let take_back : t = "TakeBack"
+    let draw : t = { request_type = "Draw" }
+    let rematch : t = { request_type = "Rematch" }
+    let take_back : t = { request_type = "TakeBack" }
 end
 
 (** A reply to a request *)
@@ -27,21 +29,25 @@ end
 
 (** An action event, such as adding time *)
 module Action = struct
-    type t = string
+    type t = {
+        action: string;
+    }
     [@@deriving yojson]
 
     let add_time = fun (kind : [ `Turn | `Global ]) : t ->
         match kind with
-        | `Turn -> "AddTurnTime"
-        | `Global -> "AddGlobalTime"
-    let start_game : t = "StartGame"
-    let end_game : t = "EndGame"
+        | `Turn -> { action = "AddTurnTime" }
+        | `Global -> { action = "AddGlobalTime" }
+    let start_game : t = { action = "StartGame" }
+    let end_game : t = { action = "EndGame" }
 end
 
 (** The crucial part of any game: a move *)
 module Move = struct
     (* It is simply represented as a JSON object *)
-    type t = JSON.t
+    type t = {
+        move: JSON.t
+    }
     [@@deriving yojson]
 end
 
@@ -61,4 +67,12 @@ type t = {
     user : MinimalUser.t;
     data: EventData.t;
 }
-[@@deriving yojson]
+
+let to_yojson = fun (event: t) : JSON.t ->
+    match EventData.to_yojson event.data with
+    | `Assoc [(_, `Assoc data)] ->
+        `Assoc ([
+            ("time", `Int event.time);
+            ("user", MinimalUser.to_yojson event.user);
+        ] @ data)
+    | _ -> failwith "Unexpected: invalid event"

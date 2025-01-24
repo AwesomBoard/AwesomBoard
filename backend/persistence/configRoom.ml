@@ -20,10 +20,6 @@ module type CONFIG_ROOM = sig
         [request] *)
     val iter_active_rooms : request:Dream.request -> (int -> ConfigRoom.t -> unit Lwt.t) -> unit Lwt.t
 
-    (** [get_game_name ~request ~game_id] retrieves the name of game [game_id],
-        in the context of [request]. Returns [None] if the game does not exist. *)
-    val get_game_name : request:Dream.request -> game_id:int -> string option Lwt.t
-
     (** [iter_candidates ~request ~game_id f] retrieves all candidates to game
         [game_id], applying [f] to each of them, in the context of [request] *)
     val iter_candidates : request:Dream.request -> game_id:int -> (MinimalUser.t -> unit Lwt.t) -> unit Lwt.t
@@ -58,8 +54,8 @@ end
 
 module ConfigRoomSQL : CONFIG_ROOM = struct
 
-    let game_status : ConfigRoom.GameStatus.t Caqti_type.t =
-        json ConfigRoom.GameStatus.to_yojson ConfigRoom.GameStatus.of_yojson
+    let status : ConfigRoom.Status.t Caqti_type.t =
+        json ConfigRoom.Status.to_yojson ConfigRoom.Status.of_yojson
 
     let first_player : ConfigRoom.FirstPlayer.t Caqti_type.t =
         json ConfigRoom.FirstPlayer.to_yojson ConfigRoom.FirstPlayer.of_yojson
@@ -73,7 +69,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
                        (creator_elo : float)
                        (chosen_opponent_id : string option)
                        (chosen_opponent_name : string option)
-                       (game_status : ConfigRoom.GameStatus.t)
+                       (status : ConfigRoom.Status.t)
                        (first_player : ConfigRoom.FirstPlayer.t)
                        (game_type : ConfigRoom.GameType.t)
                        (maximal_move_duration : int)
@@ -89,7 +85,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
                 creator = { id = creator_id; name = creator_name };
                 creator_elo;
                 chosen_opponent;
-                game_status;
+                status;
                 first_player;
                 game_type;
                 maximal_move_duration;
@@ -103,7 +99,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
             @@ proj float (fun (c : ConfigRoom.t) -> c.creator_elo)
             @@ proj (option string) (fun (c : ConfigRoom.t) -> Option.map (fun (u : MinimalUser.t) -> u.id) c.chosen_opponent)
             @@ proj (option string) (fun (c : ConfigRoom.t) -> Option.map (fun (u : MinimalUser.t) -> u.name) c.chosen_opponent)
-            @@ proj game_status (fun (c : ConfigRoom.t) -> c.game_status)
+            @@ proj status (fun (c : ConfigRoom.t) -> c.status)
             @@ proj first_player (fun (c : ConfigRoom.t) -> c.first_player)
             @@ proj game_type (fun (c : ConfigRoom.t) -> c.game_type)
             @@ proj int (fun (c : ConfigRoom.t) -> c.maximal_move_duration)
@@ -180,16 +176,6 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         Db.iter_s get_active_rooms_query (fun (game_id, config_room) ->
             Lwt.map Result.ok (f game_id config_room)) ()
 
-    let get_game_name_query = int ->? string @@ {|
-        SELECT game_name
-        FROM config_rooms
-        WHERE id = ?
-    |}
-
-    let get_game_name = fun ~(request : Dream.request) ~(game_id : int) : string option Lwt.t ->
-        Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.find_opt get_game_name_query game_id
-
     let get_candidates_query = int ->* MinimalUserSql.t @@ {|
         SELECT candidate_id, candidate_name
         FROM candidates
@@ -232,7 +218,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.exec select_opponent_query (opponent.id, opponent.name, game_id)
 
-    let propose_config_query = t7 game_status game_type int int first_player string int ->. unit @@ {|
+    let propose_config_query = t7 status game_type int int first_player string int ->. unit @@ {|
         UPDATE config_rooms
         SET status = ?, game_type = ?, move_duration = ?, game_duration = ?, first_player = ?, config = ?
         WHERE id = ?
@@ -240,7 +226,7 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
 
     let propose_config = fun ~(request : Dream.request) ~(game_id : int) (proposal : ConfigRoom.Proposal.t) : unit Lwt.t ->
         Dream.sql request @@ fun (module Db : DB) -> check @@
-        Db.exec propose_config_query (ConfigRoom.GameStatus.ConfigProposed,
+        Db.exec propose_config_query (ConfigRoom.Status.ConfigProposed,
                                       proposal.game_type,
                                       proposal.maximal_move_duration,
                                       proposal.total_part_duration,
@@ -248,19 +234,22 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
                                       JSON.to_string proposal.rules_config,
                                       game_id)
 
-    let change_status_query = t2 int game_status ->. unit @@ {|
+    let change_status_query = t2 status int ->. unit @@ {|
         UPDATE config_rooms
         SET status = ?
         WHERE id = ?
     |}
 
-    let change_status_to = fun (status : ConfigRoom.GameStatus.t) ->
+    let change_status_to = fun (status : ConfigRoom.Status.t) ->
         fun ~(request : Dream.request) ~(game_id : int) : unit Lwt.t ->
             Dream.sql request @@ fun (module Db : DB) -> check @@
-            Db.exec change_status_query (game_id, status)
+            begin
+                Dream.log "changing status to %s" (JSON.to_string (ConfigRoom.Status.to_yojson status));
+                Db.exec change_status_query (status, game_id)
+            end
 
-    let accept = change_status_to ConfigRoom.GameStatus.Started
+    let accept = change_status_to ConfigRoom.Status.Started
 
-    let review = change_status_to ConfigRoom.GameStatus.Created
+    let review = change_status_to ConfigRoom.Status.Created
 
 end

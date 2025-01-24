@@ -5,8 +5,7 @@ import { FieldValue } from 'firebase/firestore';
 // is encoded in these types.
 
 export type JSONPrimitive = string | number | boolean | null | undefined;
-export type JSONValue = JSONPrimitive | JSONObject | Array<JSONValueWithoutArray>;
-export type JSONValueWithoutArray = JSONPrimitive | JSONObject;
+export type JSONValue = JSONPrimitive | JSONObject | Array<JSONValue>;
 export type JSONObject = { [member: string]: JSONValue };
 
 export function isJSONPrimitive(value: unknown): value is JSONPrimitive {

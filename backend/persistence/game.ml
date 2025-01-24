@@ -37,7 +37,6 @@ module GameSql : GAME = struct
     let event_data : GameEvent.EventData.t Caqti_type.t =
         json GameEvent.EventData.to_yojson GameEvent.EventData.of_yojson
 
-
     let event : GameEvent.t Caqti_type.t =
         let make = fun (time : int)
                        (user : MinimalUser.t)

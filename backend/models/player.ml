@@ -30,4 +30,17 @@ module Map = struct
         | One -> map.one
 end
 
+(** When we need to represent a player that may be absent *)
+module OrNone = struct
+    type t = Zero | One | None
+
+    (** Players are represented by numbers in the database *)
+    let (to_yojson, of_yojson) =
+        JSON.for_enum [
+            Zero, `Int 0;
+            One, `Int 1;
+            None, `Int 2;
+        ]
+end
+
 include Player

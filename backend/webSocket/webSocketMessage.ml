@@ -37,22 +37,20 @@ module WebSocketIncomingMessage = struct
 
         (** Config room messages *)
         | Create of { game_name : string [@key "gameName"] }
-        | GetGameName of { game_id : string [@key "gameId"] }
         | ProposeConfig of { config : ConfigRoom.Proposal.t }
         | SelectOpponent of { opponent : MinimalUser.t }
         | ReviewConfig
         | AcceptConfig
 
         (** Game messages *)
+        | Move of { move : JSON.t }
+        | GameEnd of { winner : Player.OrNone.t }
         | Resign
-        | NotifyTimeout of { winner : MinimalUser.t; loser : MinimalUser.t }
+        | NotifyTimeout of { winner : Player.t }
         | Propose of { proposition : proposition }
         | Reject of { proposition : proposition }
-        | AcceptTakeBack
-        | AcceptDraw
-        | AcceptRematch
+        | Accept of { proposition : proposition }
         | AddTime of { kind : [ `Turn | `Global ] }
-        | Move of { move : JSON.t }
     [@@deriving yojson]
 
 end
@@ -80,5 +78,5 @@ module WebSocketOutgoingMessage = struct
         | GameEvent of { event : GameEvent.t }
         | GameUpdate of { game : Game.t }
 
-    [@@deriving yojson]
+    [@@deriving to_yojson]
 end

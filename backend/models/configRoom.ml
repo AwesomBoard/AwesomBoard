@@ -1,10 +1,10 @@
 open Utils
 
-(** The config room document in Firestore *)
+(** A config room *)
 module ConfigRoom = struct
 
-    (** The status of the game in Firestore *)
-    module GameStatus = struct
+    (** The status of the room in Firestore *)
+    module Status = struct
         type t = Created | ConfigProposed | Started | Finished
 
         let (to_yojson, of_yojson) =
@@ -52,7 +52,7 @@ module ConfigRoom = struct
         creator: MinimalUser.t;
         creator_elo: float [@key "creatorElo"];
         chosen_opponent: MinimalUser.t option [@key "chosenOpponent"];
-        game_status: GameStatus.t [@key "partStatus"];
+        status: Status.t [@key "partStatus"];
         first_player: FirstPlayer.t [@key "firstPlayer"];
         game_type: GameType.t [@key "partType"];
         maximal_move_duration: int [@key "maximalMoveDuration"];
@@ -68,7 +68,7 @@ module ConfigRoom = struct
         creator_elo;
         first_player = FirstPlayer.Random;
         chosen_opponent = None;
-        game_status = GameStatus.Created;
+        status = Status.Created;
         game_type = GameType.Standard;
         maximal_move_duration = GameType.standard_move_duration;
         total_part_duration = GameType.standard_game_duration;
@@ -82,11 +82,11 @@ module ConfigRoom = struct
                       (creator : MinimalUser.t)
                       (chosen_opponent : MinimalUser.t)
                       : t ->
-        let game_status = GameStatus.Started in
-        { config_room with game_status; first_player; creator; chosen_opponent = Some chosen_opponent }
+        let status = Status.Started in
+        { config_room with status; first_player; creator; chosen_opponent = Some chosen_opponent }
 
     let is_unstarted = fun (config_room : t) : bool ->
-        match config_room.game_status with
+        match config_room.status with
         | Started | Finished -> false
         | _ -> true
 

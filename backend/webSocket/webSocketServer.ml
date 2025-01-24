@@ -76,6 +76,7 @@ module Make
                 (* Leaving a config room / game *)
                 match%lwt ConfigRoom.get ~request ~game_id with
                 | Some config_room when Models.ConfigRoom.is_unstarted config_room ->
+                    Dream.log "config room is unstarted: %s" (JSON.to_string (Models.ConfigRoom.Status.to_yojson config_room.status));
                     if config_room.creator = user then begin
                         (* This is a creator of an unstarted game, remove the config room *)
                         Dream.log "deleting";
@@ -112,7 +113,6 @@ module Make
             (* Someone is joining a game *)
             let game_id = Id.of_string game_id_str in
             if SubscriptionManager.is_subscribed user then
-                (* TODO: also refuse if the *user* is subscribed *)
                 send_to client_id (Error { reason = "Already subscribed" })
             else begin
                 SubscriptionManager.subscribe client_id user game_id;
@@ -131,8 +131,9 @@ module Make
                     (* Otherwise, send all current game infos *)
                     match%lwt ConfigRoom.get ~request ~game_id with
                     | None -> send_to client_id (Error { reason = "Game does not exist" })
-                    | Some config_room -> begin match config_room.game_status with
+                    | Some config_room -> begin match config_room.status with
                         | Created | ConfigProposed ->
+                            Dream.log "Subscribed, status is: %s" (JSON.to_string (Models.ConfigRoom.Status.to_yojson config_room.status));
                             Lwt.join [
                                 begin
                                     (* This is a new candidate! (unless it is the creator) *)
@@ -183,18 +184,11 @@ module Make
             (* Create the config room *)
             let config_room : Models.ConfigRoom.t = Models.ConfigRoom.initial user creator_elo game_name in
             let* game_id : int = ConfigRoom.create ~request config_room in
-            (* Send the info to the creator and the observers of the lobby *)
-            let update : WebSocketOutgoingMessage.t = GameCreated { game_id = Id.to_string game_id } in
+            (* Send the id to the creator, and the config room to the observers of the lobby *)
             Lwt.join [
-                send_to client_id update;
-                broadcast Id.lobby update;
+                send_to client_id (WebSocketOutgoingMessage.GameCreated { game_id = Id.to_string game_id });
+                broadcast Id.lobby (WebSocketOutgoingMessage.ConfigRoomUpdate { game_id = Id.to_string game_id; config_room });
             ]
-        | GetGameName { game_id = game_id_str } ->
-            (** Someone loading a game, they want to make sure that the game name is right *)
-            let game_id : int = Id.of_string game_id_str in
-            (* Retrieve the game name from the config room *)
-            let* game_name : string option = ConfigRoom.get_game_name ~request ~game_id in
-            send_to client_id (GameName { game_name })
 
         | SelectOpponent { opponent } ->
             (** Creator has chosen the opponent *)
@@ -222,13 +216,13 @@ module Make
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None ->
                 send_to client_id (Error { reason = "This game does not exist" })
-            | Some config_room when user.id = config_room.creator.id && config_room.game_status = Created ->
+            | Some config_room when user.id = config_room.creator.id && config_room.status = Created ->
                 (* Change the config room and send the update to candidates only *)
                 let* () = ConfigRoom.propose_config ~request ~game_id config in
                 let update : WebSocketOutgoingMessage.t =
                     ConfigRoomUpdate { game_id = Id.to_string game_id;
                                        config_room = { config_room with
-                                                       game_status = ConfigProposed;
+                                                       status = ConfigProposed;
                                                        game_type = config.game_type;
                                                        maximal_move_duration = config.maximal_move_duration;
                                                        first_player = config.first_player;
@@ -245,13 +239,13 @@ module Make
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None ->
                 send_to client_id (Error { reason = "This game does not exist" })
-            | Some config_room when user.id = config_room.creator.id && config_room.game_status = ConfigProposed ->
+            | Some config_room when user.id = config_room.creator.id && config_room.status = ConfigProposed ->
                 (* Change the config room and send the update to candidates only *)
                 let* () = ConfigRoom.review ~request ~game_id in
                 let update : WebSocketOutgoingMessage.t =
                     ConfigRoomUpdate { game_id = Id.to_string game_id;
                                        config_room = { config_room with
-                                                       game_status = Created; } } in
+                                                       status = Created; } } in
                 Lwt.join [
                     broadcast game_id update;
                 ]
@@ -264,13 +258,16 @@ module Make
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None ->
                 send_to client_id (Error { reason = "This game does not exist" })
-            | Some config_room when Some user = config_room.chosen_opponent && config_room.game_status = ConfigProposed ->
+            | Some config_room when Some user = config_room.chosen_opponent && config_room.status = ConfigProposed ->
+                Dream.log "ACCEPTING";
                 (* Change the config room and send the update to everyone *)
-                let* () = ConfigRoom.review ~request ~game_id in
+                let* () = ConfigRoom.accept ~request ~game_id in
+                let* cr = ConfigRoom.get ~request ~game_id in
+                Dream.log "update done..., config room status is: %s" (Models.ConfigRoom.Status.to_yojson (Option.get cr).status |> JSON.to_string);
                 let config_room_update : WebSocketOutgoingMessage.t =
                     ConfigRoomUpdate { game_id = Id.to_string game_id;
                                        config_room = { config_room with
-                                                       game_status = Started; } } in
+                                                       status = Started; } } in
                 (* Also, start the game! *)
                 let game = Models.Game.initial config_room (External.now ()) External.rand_bool in
                 let* () = Game.create ~request ~game_id game in
@@ -294,7 +291,6 @@ module Make
                 let user = Auth.get_minimal_user request in
                 match%lwt Dream.receive ws with
                 | Some message ->
-                    Dream.log "INCOMING: %s"  message;
                     ignore handle_message;
                     let%lwt () = match message |> Utils.JSON.from_string |> WebSocketIncomingMessage.of_yojson with
                     | Ok message ->

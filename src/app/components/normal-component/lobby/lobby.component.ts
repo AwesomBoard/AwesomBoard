@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 import { MGPMap, MGPOptional, MGPValidation } from '@everyboard/lib';
 
 import { ActiveConfigRoomsService } from 'src/app/services/ActiveConfigRoomsService';
-import { PartDocument } from 'src/app/domain/Part';
 import { CurrentGame } from 'src/app/domain/User';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
@@ -71,7 +70,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
         // TODO: either generalize this pattern in library code (if it appears again), or don't use mgpmap in activeConfigRoomService?
         const all: WithId<ConfigRoom>[] = [];
         for (const [id, data] of this.activeConfigRooms) {
-            console.log(data)
             all.push({ id, data });
         }
         return all;

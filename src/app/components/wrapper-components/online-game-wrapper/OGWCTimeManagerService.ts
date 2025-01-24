@@ -149,6 +149,10 @@ export class OGWCTimeManagerService {
         }
     }
 
+    public onSync(): void {
+        // TODO
+    }
+
     // Continue the current player clock after receiving events
     public afterEventsBatch(gameEnd: boolean, player: Player, currentTimeMs: number): void {
         this.updateClocks();

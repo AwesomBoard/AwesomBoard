@@ -14,7 +14,6 @@ import { Utils } from '@everyboard/lib';
 export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     @Input() public chatId!: string;
-    @Input() public turn?: number;
     public userMessage: string = '';
 
     public connected: boolean = false;

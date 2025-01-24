@@ -28,12 +28,12 @@ import { AbstractNode, GameNode } from 'src/app/jscaip/AI/GameNode';
 import { BaseWrapperComponent } from '../BaseWrapperComponent';
 import { Localized } from 'src/app/utils/LocaleUtils';
 
-export class PartCreationComponentMessages {
+export class GameCreationComponentMessages {
 
     public static readonly NO_MATCHING_PART: Localized = () => $localize`The game you tried to join does not exist.`;
 }
 
-type PartCreationViewInfo = {
+type GameCreationViewInfo = {
     userIsCreator: boolean;
     showCustomTime?: boolean;
     canEditConfig?: boolean;
@@ -57,28 +57,29 @@ type PartCreationViewInfo = {
     candidateClasses: { [key: string]: string[] },
 }
 @Component({
-    selector: 'app-part-creation',
+    selector: 'app-game-creation',
+    // TODO: rename file
     templateUrl: './part-creation.component.html',
 })
 @Debug.log
-export class PartCreationComponent extends BaseWrapperComponent implements OnInit, OnDestroy {
+export class GameCreationComponent extends BaseWrapperComponent implements OnInit, OnDestroy {
     /*
      * Lifecycle:
      * 1. Creator chooses config and opponent
      * 2. Creator click on "proposing the config"
-     * 3a. Chosen opponent accepts the config -> part starts
+     * 3a. Chosen opponent accepts the config -> game starts
      * 3b. Creator clicks on "modifying config" -> back to 1, with the current config and opponent
      *
      * PageCreationComponent is always a child of OnlineGame component (one to one)
      * they need common data so that the parent calculates/retrieves the data then share it
-     * with the part creation component
+     * with the game creation component
      */
     public static TOKEN_INTERVAL: number = 5 * 1000;
     public static TOKEN_TIMEOUT: number = 5 * 1000 * 2;
 
     public partType: typeof PartType = PartType;
 
-    @Input() partId: string;
+    @Input() gameId: string;
 
     @Input() rulesConfigDescription: MGPOptional<RulesConfigDescription<RulesConfig>>;
 
@@ -90,7 +91,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
     public gameStarted: boolean = false;
 
-    public viewInfo: PartCreationViewInfo = {
+    public viewInfo: GameCreationViewInfo = {
         userIsCreator: false,
         userIsChosenOpponent: false,
         userIsObserver: false,
@@ -145,9 +146,9 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
     private checkInputs(): void {
         const user: MGPOptional<AuthUser> = this.connectedUserService.user;
-        Utils.assert(user.isPresent(), 'PartCreationComponent should not be called without connected user');
-        Utils.assert(user.get() !== AuthUser.NOT_CONNECTED, 'PartCreationComponent should not be created with an empty userName');
-        Utils.assert(this.partId !== '', 'PartCreationComponent should not be created with an empty partId');
+        Utils.assert(user.isPresent(), 'GameCreationComponent should not be called without connected user');
+        Utils.assert(user.get() !== AuthUser.NOT_CONNECTED, 'GameCreationComponent should not be created with an empty userName');
+        Utils.assert(this.gameId !== '', 'GameCreationComponent should not be created with an empty gameId');
     }
 
     private createForms(): void {
@@ -163,7 +164,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     private updateUserDocWithCurrentGame(configRoom: ConfigRoom): Promise<void> {
         const role: UserRoleInPart = this.getUserRoleInPart(configRoom);
         const currentGame: CurrentGame = {
-            id: this.partId,
+            id: this.gameId,
             opponent: this.getOpponent(configRoom),
             typeGame: this.getGameUrlName(),
             role,
@@ -194,7 +195,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
 
     private async joinAndSubscribeToConfigRoom(): Promise<void> {
         this.configRoomSubscription = await this.configRoomService.join(
-            this.partId,
+            this.gameId,
             (configRoom: ConfigRoom): Promise<void> => this.onConfigRoomUpdate(configRoom),
             (candidate: MinimalUser): void => this.onCandidateJoined(candidate),
             (candidate: MinimalUser): void => this.onCandidateLeft(candidate),
@@ -214,7 +215,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     }
 
     private async gameNotFound(): Promise<void> {
-        const message: string = PartCreationComponentMessages.NO_MATCHING_PART();
+        const message: string = GameCreationComponentMessages.NO_MATCHING_PART();
         await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
     }
 
@@ -387,7 +388,7 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
         this.currentGameHasBeenSet = true;
         this.updateViewInfo(configRoom);
         if (this.isGameStarted(configRoom)) {
-            Debug.display('PartCreationComponent', 'onCurrentConfigRoomUpdate', 'the game has started');
+            Debug.display('GameCreationComponent', 'onCurrentConfigRoomUpdate', 'the game has started');
             this.onGameStarted();
         }
     }
@@ -445,18 +446,6 @@ export class PartCreationComponent extends BaseWrapperComponent implements OnIni
     private userIsCreator(configRoom: ConfigRoom): boolean {
         const currentUserId: string = this.connectedUserService.user.get().id;
         return currentUserId === configRoom.creator.id;
-    }
-
-    private async didUserTimeout(userId: string, currentTime: Timestamp): Promise<boolean> {
-        const lastChangedOpt: MGPOptional<FirestoreTime> = await this.userService.getUserLastUpdateTime(userId);
-        if (lastChangedOpt.isAbsent()) {
-            const error: string = 'found no user while observing ' + userId + ' !';
-            Utils.logError('PartCreationComponent', error);
-            return true;
-        }
-        const lastUpdateTime: Timestamp = lastChangedOpt.get() as Timestamp;
-        const diff: number = getMillisecondsElapsed(lastUpdateTime, currentTime);
-        return diff > PartCreationComponent.TOKEN_TIMEOUT;
     }
 
     public acceptConfig(): Promise<void> {
