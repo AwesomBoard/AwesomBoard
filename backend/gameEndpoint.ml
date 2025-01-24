@@ -57,7 +57,7 @@ module Make
                 (* Write 1: create the game *)
                 let* game_id : string = Firestore.Game.create ~request ~game in
                 Stats.set_game_id request game_id;
-                let config_room : ConfigRoom.t = ConfigRoom.initial creator creator_elo in
+                let config_room : ConfigRoom.t = ConfigRoom.initial creator creator_elo game_name in
                 (* Write 2: create the config room *)
                 let* _ = Firestore.ConfigRoom.create ~request ~id:game_id ~config_room in
                 (* Write 3: create the chat *)

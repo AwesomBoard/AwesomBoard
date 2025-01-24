@@ -20,7 +20,7 @@
              (scroll)="updateCurrentScrollPosition()"
         >
             <p *ngFor="let msg of chat">
-                [{{ msg.postedTime | firestoreTime }}] <b class="chat-sender">{{ msg.sender.name }} : </b> <span class="chat-message">{{ msg.content }}</span>
+                [{{ msg.timestamp | timestamp }}] <b class="chat-sender">{{ msg.sender.name }} : </b> <span class="chat-message">{{ msg.content }}</span>
             </p>
         </div>
     </div>

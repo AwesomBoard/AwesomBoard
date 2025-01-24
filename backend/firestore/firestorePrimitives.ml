@@ -1,9 +1,11 @@
 open Utils
-open FirestoreUtils
 
 (** These are the primitive operations that we need to perform on firestore.
     It is a low-level API. *)
 module type FIRESTORE_PRIMITIVES = sig
+
+    (** [set_config project_name database_name base_endpoint] sets the firestore configuration *)
+    val set_config : string -> string -> string -> unit
 
     (** [get_doc ~request ~path] retrieves the Firestore document from [path] and returns is at a JSON.
         [request] is used to store read/write statistics.
@@ -46,6 +48,74 @@ module Make
         (Stats : Stats.STATS)
     : FIRESTORE_PRIMITIVES = struct
 
+    let project_name : string ref = ref ""
+    let database_name : string ref = ref ""
+    let base_endpoint : string ref = ref ""
+
+    let set_config = fun (project : string)
+                         (database : string)
+                         (base : string)
+                         : unit ->
+        project_name := project;
+        database_name := database;
+        base_endpoint := base
+
+
+    let path_in_project = fun (path : string) : string ->
+        Printf.sprintf "projects/%s/databases/%s/documents/%s"
+            !project_name
+            !database_name
+            path
+
+    (* The endpoint with which we can communicate with Firestore *)
+    let endpoint = fun ?(version = "v1beta1") ?(params = []) (path : string) : Uri.t ->
+        let url = Uri.of_string (Printf.sprintf "%s/%s/%s"
+                                     !base_endpoint
+                                     version
+                                     (path_in_project path)) in
+        Uri.with_query' url params
+
+    (** [of_firestore json] converts [json] from its Firestore encoding to a regular JSON *)
+    let rec of_firestore = fun (json : JSON.t) : JSON.t ->
+        let rec extract_field = fun ((key, value) : (string * JSON.t)) : (string * JSON.t) ->
+            (key, match value with
+             | `Assoc [("mapValue", v)] -> of_firestore v
+             | `Assoc [("integerValue", `String v)] -> `Int (int_of_string v)
+             | `Assoc [("arrayValue", `Assoc ["values", `List l])] -> `List (List.map (fun x -> snd (extract_field ("k", x))) l)
+             | `Assoc [(_, v)] -> v (* We just rely on the real type contained, not on the type name from firestore *)
+             | _-> raise (Errors.UnexpectedError ("Invalid firestore JSON: unexpected value when extracting field: " ^ (JSON.to_string value)))) in
+        match json with
+        | `Assoc [] -> `Assoc []
+        | `Assoc _ -> begin match JSON.Util.member "fields" json with
+            | `Assoc fields -> `Assoc (List.map extract_field fields)
+            | _ -> raise (Errors.UnexpectedError ("Invalid firestore JSON: not an object: " ^ (JSON.to_string json)))
+        end
+        | _ -> raise (Errors.UnexpectedError ("Invalid firestore JSON: not an object: " ^ (JSON.to_string json)))
+
+    (** [to_firestore json] converts a regular [json] to the Firestore JSON encoding *)
+    let to_firestore = fun ?(path : string option) (doc : JSON.t) : JSON.t  ->
+        (* Types of values are documented here: https://cloud.google.com/firestore/docs/reference/rest/Shared.Types/ArrayValue#Value *)
+        let rec transform_field = fun (v : JSON.t) : JSON.t ->
+            match v with
+            | `String v -> `Assoc [("stringValue", `String v)]
+            | `Bool v -> `Assoc [("booleanValue", `Bool v)]
+            | `Intlit v -> `Assoc [("integerValue", `String v)]
+            | `Null -> `Assoc [("nullValue", `Null)]
+            | `Assoc fields -> `Assoc [("mapValue", `Assoc [("fields", `Assoc (List.map transform_key_and_field fields))])]
+            | `List v -> `Assoc [("arrayValue", `Assoc [("values", `List (List.map transform_field v))])]
+            | `Float v -> `Assoc [("doubleValue", `Float v)]
+            | `Int v -> `Assoc [("integerValue", `String (string_of_int v))]
+            | _ -> raise (Errors.UnexpectedError ("Invalid object for firestore: unsupported field: " ^ (JSON.to_string v)))
+        and transform_key_and_field = fun ((key, field) : string * JSON.t) : (string * JSON.t) ->
+            (key, transform_field field) in
+        let doc_with_fields : JSON.t = match doc with
+            | `Assoc fields -> `Assoc (List.map transform_key_and_field fields)
+            | _ -> raise (Errors.UnexpectedError "Invalid object for firestore") in
+        let name = match path with
+            | Some p -> [("name", `String ("projects/" ^ !project_name ^ "/databases/" ^ !database_name ^ "/documents/" ^ p))]
+            | None -> [] in
+        `Assoc (name @ [("fields", doc_with_fields)])
+
     let logger : Dream.sub_log = Dream.sub_log "firestore"
 
     let is_error = fun (response : Cohttp.Response.t) ->
@@ -65,7 +135,7 @@ module Make
         let* doc = try_get_doc ~request ~path in
         match doc with
         | Some found -> Lwt.return found
-        | None -> raise (DocumentNotFound path)
+        | None -> raise (Errors.DocumentNotFound path)
 
     let create_doc = fun ~(request : Dream.request) ~(collection : string) ~(doc : JSON.t) : string Lwt.t ->
         let get_id_from_firestore_document_name (doc : JSON.t) : string =
@@ -83,14 +153,14 @@ module Make
         (* Note: We *can't* create a doc and retrieve its id in a transaction, so we just ignore whether we are in a transaction *)
         let* (response, body) = External.Http.post_json ~headers firestore_doc endpoint in
         if is_error response
-        then raise (UnexpectedError (Printf.sprintf "error on document creation for %s: %s" collection body))
+        then raise (Errors.UnexpectedError (Printf.sprintf "error on document creation for %s: %s" collection body))
         else Lwt.return (get_id_from_firestore_document_name (JSON.from_string body))
 
     let update_doc = fun ~(request : Dream.request) ~(path : string) ~(update : JSON.t) : unit Lwt.t ->
         let update_to_fields_and_firestore (update : JSON.t) : string list * JSON.t =
             let fields = match update with
                 | `Assoc key_values -> List.map fst key_values
-                | _ -> raise (UnexpectedError "invalid update: should be a Assoc") in
+                | _ -> raise (Errors.UnexpectedError "invalid update: should be a Assoc") in
             (fields, to_firestore update) in
         Stats.write request;
         logger.info (fun log -> log ~request "Updating %s with %s" path (JSON.to_string update));
@@ -102,7 +172,7 @@ module Make
         let* headers = TokenRefresher.header request in
         let* (response, body) = External.Http.patch_json ~headers firestore_update endpoint in
         if is_error response
-        then raise (UnexpectedError (Printf.sprintf "error on document update for %s: %s" path body))
+        then raise (Errors.UnexpectedError (Printf.sprintf "error on document update for %s: %s" path body))
         else Lwt.return ()
 
     let set_doc = fun ~(request : Dream.request) ~(collection : string) ~(id : string) ~(doc : JSON.t) : unit Lwt.t ->
@@ -114,7 +184,7 @@ module Make
         let* headers = TokenRefresher.header request in
         let* (response, body) = External.Http.delete ~headers (endpoint path) in
         if is_error response
-        then raise (UnexpectedError (Printf.sprintf "error on document deletion for %s: %s" path body))
+        then raise (Errors.UnexpectedError (Printf.sprintf "error on document deletion for %s: %s" path body))
         else Lwt.return ()
 
 end

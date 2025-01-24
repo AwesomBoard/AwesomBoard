@@ -1,5 +1,4 @@
 open Utils
-open CryptoUtils
 
 (** This module manages JSON Web Tokens (JWT), which are used to authentify
     ourselves to the firestore server, and to authentify users to ourselves. *)
@@ -18,7 +17,7 @@ module type JWT = sig
 
     (** [make email private_key scopes audience] creates a new token from an
         email, a private key, a set of scopes, and an audience *)
-    val make : string -> private_key -> string list -> string -> t
+    val make : string -> Crypto.private_key -> string list -> string -> t
 
     (** [parse str] parses an existing token from its string representation.
         The signature of the token is NOT validated at this point. *)
@@ -27,10 +26,12 @@ module type JWT = sig
     (** [verify_and_get_uid token kid certificates] verifies that a token has
         been signed by the certificates with key id [kid]. Return the user id in
         case of success, otherwise return [None]. *)
-    val verify_and_get_uid : t -> string -> (string * CryptoUtils.public_key) list -> string option
+    val verify_and_get_uid : t -> string -> (string * Crypto.public_key) list -> string option
 end
 
 module Make (External : External.EXTERNAL) : JWT = struct
+
+    let emulator = ref true (* TODO *)
 
     type t = {
         header: JSON.t; (** The header of the token *)
@@ -41,7 +42,7 @@ module Make (External : External.EXTERNAL) : JWT = struct
     let b64 = Dream.to_base64url
 
     (** Sign a string with RS256 *)
-    let sign = fun (private_key : private_key) (content : string) : string ->
+    let sign = fun (private_key : Crypto.private_key) (content : string) : string ->
         let pkcs1_sha256 = fun (m : string) : string ->
             Mirage_crypto_pk.Rsa.PKCS1.sign ~hash:`SHA256 ~key:private_key (`Message m) in
         content
@@ -49,7 +50,7 @@ module Make (External : External.EXTERNAL) : JWT = struct
 
     (** Construct a JWT from an email [iss] private key [pk], a set of scopes
         [scopes] and an audience [audience] *)
-    let make = fun (iss : string) (pk : private_key) (scopes : string list) (audience : string) : t ->
+    let make = fun (iss : string) (pk : Crypto.private_key) (scopes : string list) (audience : string) : t ->
         let open JSON in
         let now = External.now () in
         let exp = now + 3600 in
@@ -91,7 +92,7 @@ module Make (External : External.EXTERNAL) : JWT = struct
             end
         | _ -> None (* Token is invalid *)
 
-    let verify_signature = fun (token : t) (pk : CryptoUtils.public_key) : bool ->
+    let verify_signature = fun (token : t) (pk : Crypto.public_key) : bool ->
         let only_sha256 = function
             | `SHA256 -> true
             | _ -> false in
@@ -103,7 +104,7 @@ module Make (External : External.EXTERNAL) : JWT = struct
     (** Verify the signature of a JWT according to https://firebase.google.com/docs/auth/admin/verify-id-tokens.
         Depends on the public keys listed at https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com
         In case of success, the uid ("sub" field) is returned. *)
-    let verify_and_get_uid = fun (token : t) (project_id : string) (pks : (string * CryptoUtils.public_key) list) : string option ->
+    let verify_and_get_uid = fun (token : t) (project_id : string) (pks : (string * Crypto.public_key) list) : string option ->
         let check = fun (conditions : (string * (unit -> bool)) list) : bool ->
             List.for_all (fun (_field, cond) -> cond ()) conditions in
         let now = External.now () in
@@ -115,14 +116,14 @@ module Make (External : External.EXTERNAL) : JWT = struct
         let all_checks = [
             (* algorithm must be RS256 *)
             "alg", (fun () ->
-                if !Options.emulator then
+                if !emulator then
                     (* The emulator doesn't sign the tokens *)
                     str token.header "alg" = "none"
                 else
                     str token.header "alg" = "RS256");
             (* key must be one of the valid keys *)
             "kid", (fun () ->
-                if !Options.emulator then
+                if !emulator then
                     (* The emulator doesn't provide a key with the token *)
                     true
                 else
@@ -142,7 +143,7 @@ module Make (External : External.EXTERNAL) : JWT = struct
             (* check the signature against the key *)
             "signature", (fun () ->
                 (* We know the kid corresponds to an actual certificate from the kid check *)
-                if !Options.emulator then
+                if !emulator then
                     (* The emulator doesn't sign the tokens *)
                     true
                 else

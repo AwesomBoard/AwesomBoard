@@ -331,10 +331,6 @@ export class ConnectedUserService implements OnDestroy {
         await currentUser.getIdToken(true);
         await currentUser.reload();
     }
-    public sendPresenceToken(): Promise<void> {
-        Utils.assert(this.user.isPresent(), 'Should not call sendPresenceToken when not connected');
-        return this.userService.updatePresenceToken(this.user.get().id);
-    }
     public getIdToken(): Promise<string> {
         const currentUser: FireAuth.User = Utils.getNonNullable(this.auth.currentUser);
         return currentUser.getIdToken();

@@ -9,7 +9,7 @@ export type UserRoleInPart = 'Player' | 'Observer' | 'Creator' | 'ChosenOpponent
 // or they can be an observer. The role field indicates this.
 export type CurrentGame = {
     id: string,
-    typeGame: string,
+    gameName: string,
     opponent?: MinimalUser | null,
     role: UserRoleInPart,
 };

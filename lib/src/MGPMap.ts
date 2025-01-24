@@ -48,6 +48,33 @@ export class MGPMap<K extends NonNullable<Comparable>, V extends NonNullable<unk
         }
     }
 
+    // TODO: remove forEach and use this!
+    [Symbol.iterator](): IterableIterator<[K, V]> {
+        const entries: {key: K, value: V}[] = this.map; // cache the current entries
+        let index: number = 0;
+
+        return {
+            /* istanbul ignore next */
+            [Symbol.iterator](): IterableIterator<[K, V]> {
+                // No idea how this can be covered, because
+                return this;
+            },
+            next(): IteratorResult<[K, V]> {
+                if (index < entries.length) {
+                    const entry: {key: K, value: V} = entries[index];
+                    index += 1;
+                    return { value: [entry.key, entry.value], done: false };
+                }
+                return { value: undefined as unknown as [K, V], done: true };
+            },
+        };
+    }
+
+    public clear(): void {
+        this.assertImmutability('clear');
+        this.map = [];
+    }
+
     public putAll(m: MGPMap<K, V>): void {
         this.assertImmutability('putAll');
         for (const entry of m.map) {

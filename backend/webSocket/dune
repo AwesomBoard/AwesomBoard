@@ -1,0 +1,10 @@
+(library
+ (name webSocket)
+ (public_name everyboard.websocket)
+ (libraries everyboard.utils
+            everyboard.models
+            everyboard.persistence
+            everyboard.firestore
+            dream)
+ (modules WebSocketMessage WebSocketServer SubscriptionManager)
+ (preprocess (pps lwt_ppx ppx_deriving_yojson)))

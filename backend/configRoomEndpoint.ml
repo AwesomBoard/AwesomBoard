@@ -18,6 +18,7 @@ module Make
 
     (** Route to join a config-room.
         Performs 1 read and up to 1 write *)
+    (* TODO: now subscribe *)
     let join_game : Dream.route = Dream.post "config-room/:game_id/candidates" @@ fun (request : Dream.request) ->
         let game_id : string = Dream.param request "game_id" in
         Stats.set_action request (Printf.sprintf "POST config-room/candidates");
@@ -37,6 +38,7 @@ module Make
 
     (** Route to remove a candidate (usually ourselves) from a config-room.
         Performs 1 read and up to 2 writes. *)
+    (* TODO: now unsubscribe *)
     let remove_candidate : Dream.route = Dream.delete "config-room/:game_id/candidates/:candidate_id" @@ fun (request : Dream.request) ->
         let game_id : string = Dream.param request "game_id" in
         let candidate_id = Dream.param request "candidate_id" in
@@ -58,11 +60,11 @@ module Make
         Performs 1 write. *)
     let propose_config = fun (request : Dream.request) (game_id : string) ->
         (* The config is attached as a json parameter to the request, we extract it *)
-        match get_json_param request "config" >>= ConfigRoom.Updates.Proposal.of_yojson with
+        match get_json_param request "config" >>= ConfigRoom.Proposal.of_yojson with
         | Error _ -> raise (BadInput "Invalid config proposal")
         | Ok update ->
             (* Write 1: update the config *)
-            let update_json = ConfigRoom.Updates.Proposal.to_yojson update in
+            let update_json = ConfigRoom.Proposal.to_yojson update in
             let* _ = Firestore.ConfigRoom.update ~request ~id:game_id ~update:update_json in
             Dream.empty `OK
 
