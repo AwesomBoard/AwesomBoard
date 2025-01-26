@@ -48,8 +48,11 @@ module type CONFIG_ROOM = sig
 
     (** [review ~request ~game_id] changes the config of [game_id] from proposed
         to in progress, in the context of [request]. *)
-    val review : request:Dream.request -> game_id:int -> unit Lwt.t (* is change_status to config, simply? *)
+    val review : request:Dream.request -> game_id:int -> unit Lwt.t
 
+    (** [finish ~request ~game_id] changes the config of [game_id] to
+        "finished", in the context of [request]. *)
+    val finish : request:Dream.request -> game_id:int -> unit Lwt.t
 end
 
 module ConfigRoomSQL : CONFIG_ROOM = struct
@@ -252,4 +255,5 @@ module ConfigRoomSQL : CONFIG_ROOM = struct
 
     let review = change_status_to ConfigRoom.Status.Created
 
+    let finish = change_status_to ConfigRoom.Status.Finished
 end

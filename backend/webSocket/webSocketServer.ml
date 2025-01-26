@@ -113,7 +113,7 @@ module Make
             (* Someone is joining a game *)
             let game_id = Id.of_string game_id_str in
             if SubscriptionManager.is_subscribed user then
-                send_to client_id (Error { reason = "Already subscribed" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.AlreadySubscribed })
             else begin
                 SubscriptionManager.subscribe client_id user game_id;
                 let send_chat_messages =
@@ -130,7 +130,7 @@ module Make
                 else
                     (* Otherwise, send all current game infos *)
                     match%lwt ConfigRoom.get ~request ~game_id with
-                    | None -> send_to client_id (Error { reason = "Game does not exist" })
+                    | None -> send_to client_id (Error { reason = WebSocketOutgoingMessage.ConfigRoomDoesNotExist })
                     | Some config_room -> begin match config_room.status with
                         | Created | ConfigProposed ->
                             Dream.log "Subscribed, status is: %s" (JSON.to_string (Models.ConfigRoom.Status.to_yojson config_room.status));
@@ -179,7 +179,7 @@ module Make
         | Create { game_name } ->
             (** Someone is creating a new game [game_name] *)
             (* Retrieve elo of the creator *)
-            let* creator_elo_info : Models.User.EloInfo.t = Elo.get ~request ~user_id:user.id ~game_name in
+            let* creator_elo_info : Models.Elo.t = Elo.get ~request ~user_id:user.id ~game_name in
             let creator_elo : float = creator_elo_info.current_elo in
             (* Create the config room *)
             let config_room : Models.ConfigRoom.t = Models.ConfigRoom.initial user creator_elo game_name in
@@ -195,7 +195,7 @@ module Make
             let game_id = SubscriptionManager.subscription_of client_id in
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None ->
-                send_to client_id (Error { reason = "This game does not exist" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.ConfigRoomDoesNotExist })
             | Some config_room when user.id = config_room.creator.id ->
                 (* Add the opponent and send the update to everyone *)
                 let* () = ConfigRoom.select_opponent ~request ~game_id opponent in
@@ -208,14 +208,14 @@ module Make
                     broadcast Id.lobby update; (* need to notify the lobby too! *)
                 ]
             | _ ->
-                send_to client_id (Error { reason = "You can't select an opponent if you're not the creator!" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.NotAllowed })
             end
         | ProposeConfig { config } ->
             (** Creator proposes a config to the chosen opponent *)
             let game_id = SubscriptionManager.subscription_of client_id in
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None ->
-                send_to client_id (Error { reason = "This game does not exist" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.ConfigRoomDoesNotExist })
             | Some config_room when user.id = config_room.creator.id && config_room.status = Created ->
                 (* Change the config room and send the update to candidates only *)
                 let* () = ConfigRoom.propose_config ~request ~game_id config in
@@ -231,14 +231,14 @@ module Make
                     broadcast game_id update;
                 ]
             | _ ->
-                send_to client_id (Error { reason = "You can't propose the config if you're not creator of it's not created!" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.NotAllowed })
             end
         | ReviewConfig ->
             (** Creator wants to review the config *)
             let game_id = SubscriptionManager.subscription_of client_id in
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None ->
-                send_to client_id (Error { reason = "This game does not exist" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.ConfigRoomDoesNotExist })
             | Some config_room when user.id = config_room.creator.id && config_room.status = ConfigProposed ->
                 (* Change the config room and send the update to candidates only *)
                 let* () = ConfigRoom.review ~request ~game_id in
@@ -250,20 +250,17 @@ module Make
                     broadcast game_id update;
                 ]
             | _ ->
-                send_to client_id (Error { reason = "You can't review the config if you're not creator or if it's already proposed!" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.NotAllowed })
             end
         | AcceptConfig ->
             (** Selected opponent accepts the config *)
             let game_id = SubscriptionManager.subscription_of client_id in
             begin match%lwt ConfigRoom.get ~request ~game_id with
             | None ->
-                send_to client_id (Error { reason = "This game does not exist" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.ConfigRoomDoesNotExist })
             | Some config_room when Some user = config_room.chosen_opponent && config_room.status = ConfigProposed ->
-                Dream.log "ACCEPTING";
                 (* Change the config room and send the update to everyone *)
                 let* () = ConfigRoom.accept ~request ~game_id in
-                let* cr = ConfigRoom.get ~request ~game_id in
-                Dream.log "update done..., config room status is: %s" (Models.ConfigRoom.Status.to_yojson (Option.get cr).status |> JSON.to_string);
                 let config_room_update : WebSocketOutgoingMessage.t =
                     ConfigRoomUpdate { game_id = Id.to_string game_id;
                                        config_room = { config_room with
@@ -276,7 +273,37 @@ module Make
                     broadcast Id.lobby config_room_update;
                 ]
             | _ ->
-                send_to client_id (Error { reason = "You can't accept the config if you're not selected or if's already proposed!" })
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.NotAllowed })
+            end
+        | Resign ->
+            (** Player resigns *)
+            let game_id = SubscriptionManager.subscription_of client_id in
+            begin match%lwt Lwt.both (Game.get ~request ~game_id) (ConfigRoom.get ~request ~game_id) with
+            | Some game, Some config_room ->
+                let player = Models.Game.player_of game user in
+                (* Change the status to the appropriate one *)
+                let* () = Game.set_result ~request ~game_id (Models.Game.Result.Resign player) in
+                let game = { game with result = Models.Game.Result.Resign player } in
+                (* Add event *)
+                let event = Models.GameEvent.{ time = External.now (); user; data = EventData.Action Action.end_game } in
+                let* () = Game.add_event ~request ~game_id event in
+                (* Update Elo of both players *)
+                let _winner = Models.Game.opponent_of game user in
+                let _loser = user in
+                (* TODO: let* () = update_elo ~winner ~loser in *)
+                (* Update config room *)
+                let* () = ConfigRoom.finish ~request ~game_id in
+                let config_room = { config_room with status = Models.ConfigRoom.Status.Finished } in
+                (* Notify subscribers *)
+                Lwt.join [
+                    (* Game watchers get the game update + new event *)
+                    broadcast game_id (WebSocketOutgoingMessage.GameUpdate { game });
+                    broadcast game_id (WebSocketOutgoingMessage.GameEvent { event });
+                    (* Lobby watchers get the config room update *)
+                    broadcast Id.lobby (WebSocketOutgoingMessage.ConfigRoomUpdate { game_id = Id.to_string game_id; config_room });
+                ]
+            | _ ->
+                send_to client_id (Error { reason = WebSocketOutgoingMessage.GameDoesNotExist })
             end
         | m ->
             failwith (Printf.sprintf "TODO: %s" (m |> WebSocketIncomingMessage.to_yojson |> JSON.to_string))
@@ -297,7 +324,7 @@ module Make
                         handle_message request client_id user message
                     | Error e ->
                         Dream.log "ERROR: %s\n" e;
-                        send_to client_id (Error { reason = Printf.sprintf "Malformed message: %s" e }) in
+                        send_to client_id (Error { reason = WebSocketOutgoingMessage.NotUndestood }) in
                     Dream.log "done, looping";
                     loop ()
                 | None ->

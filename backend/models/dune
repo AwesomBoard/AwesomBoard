@@ -2,5 +2,5 @@
  (name models)
  (public_name everyboard.models)
  (libraries everyboard.utils)
- (modules Models Player Role MinimalUser CurrentGame User ConfigRoom Game GameEvent Message)
+ (modules Models Player Role MinimalUser CurrentGame User ConfigRoom Game GameEvent Message Elo)
  (preprocess (pps ppx_deriving_yojson ppx_deriving.show)))

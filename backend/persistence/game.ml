@@ -11,6 +11,10 @@ module type GAME = sig
 
     val iter_events : request:Dream.request -> game_id:int -> (Models.GameEvent.t -> unit Lwt.t) -> unit Lwt.t
 
+    val set_result : request:Dream.request -> game_id:int -> Game.Result.t -> unit Lwt.t
+
+    val add_event : request:Dream.request -> game_id:int -> Models.GameEvent.t -> unit Lwt.t
+
 end
 
 module GameSql : GAME = struct
@@ -79,5 +83,24 @@ module GameSql : GAME = struct
         Dream.sql request @@ fun (module Db : DB) -> check @@
         Db.iter_s get_events_query (fun event ->
             Lwt.map Result.ok (f event)) game_id
+
+    let set_result_query = t2 result int ->. unit @@ {|
+        UPDATE games
+        SET result = ?
+        WHERE id = ?
+    |}
+
+    let set_result = fun ~(request : Dream.request) ~(game_id : int) (result : Game.Result.t) : unit Lwt.t ->
+        Dream.sql request @@ fun (module Db : DB) -> check @@
+        Db.exec set_result_query (result, game_id)
+
+    let add_event_query = t2 int event ->. unit @@ {|
+        INSERT INTO game_events(game_id, time, user_id, user_name, data)
+        VALUES (?, ?, ?, ?, ?)
+    |}
+
+    let add_event = fun ~(request : Dream.request) ~(game_id : int) (event : GameEvent.t) : unit Lwt.t ->
+        Dream.sql request @@ fun (module Db : DB) -> check @@
+        Db.exec add_event_query (game_id, event)
 
 end

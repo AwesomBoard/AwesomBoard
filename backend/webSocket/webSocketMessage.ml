@@ -56,9 +56,22 @@ module WebSocketIncomingMessage = struct
 end
 
 module WebSocketOutgoingMessage = struct
+    type error =
+        | AlreadySubscribed
+        | ConfigRoomDoesNotExist
+        | GameDoesNotExist
+        | NotAllowed
+        | NotUndestood
+    [@@deriving to_yojson]
+
+    let error_to_yojson (e : error) =
+        match error_to_yojson e with
+        | `List [`String err] -> `String err
+        | _ -> `String "unexpected-error"
+
     type t =
         (** Meta messages *)
-        | Error of { reason : string }
+        | Error of { reason : error }
 
         (** Chat messages *)
         | ChatMessage of { message : Message.t }

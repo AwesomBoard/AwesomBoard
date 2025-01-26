@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS elos (
     user_name TEXT NOT NULL,
     game_name TEXT NOT NULL,
     current_elo REAL NOT NULL,
-    number_of_games_played INT NOT NULL
+    games_played INT NOT NULL
 );
 
 -- TODO: to "insert or update" elo:

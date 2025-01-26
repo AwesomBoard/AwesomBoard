@@ -7,3 +7,4 @@ module ConfigRoom = ConfigRoom
 module Game = Game
 module GameEvent = GameEvent
 module Message = Message
+module Elo = Elo

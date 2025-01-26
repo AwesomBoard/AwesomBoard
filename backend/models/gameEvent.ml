@@ -70,8 +70,9 @@ type t = {
 
 let to_yojson = fun (event: t) : JSON.t ->
     match EventData.to_yojson event.data with
-    | `Assoc [(_, `Assoc data)] ->
+    | `List [`String event_type; `Assoc data] ->
         `Assoc ([
+            ("eventType", `String event_type);
             ("time", `Int event.time);
             ("user", MinimalUser.to_yojson event.user);
         ] @ data)
