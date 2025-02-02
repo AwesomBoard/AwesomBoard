@@ -101,6 +101,38 @@ module Make
             Lwt.return ()
 
 
+    let end_game = fun ~(request : Dream.request)
+                       ~(client_id : int)
+                       ~(user : Models.MinimalUser.t)
+                       (get_result : Models.Game.t -> Models.Game.Result.t)
+                       (other_work : unit -> unit Lwt.t list)
+                       : unit Lwt.t ->
+        let game_id = SubscriptionManager.subscription_of client_id in
+        match%lwt Lwt.both (Game.get ~request ~game_id) (ConfigRoom.get ~request ~game_id) with
+        | Some game, Some config_room ->
+            (* Change the status to the appropriate one *)
+            let result = get_result game in
+            let* () = Game.set_result ~request ~game_id result in
+            let game = { game with result } in
+            (* Add event *)
+            let event = Models.GameEvent.{ time = External.now (); user; data = EventData.Action Action.end_game } in
+            let* () = Game.add_event ~request ~game_id event in
+            (* Update Elo of both players *)
+            (* TODO: let* () = update_elo ~winner ~loser in *)
+            (* Update config room *)
+            let* () = ConfigRoom.finish ~request ~game_id in
+            let config_room = { config_room with status = Models.ConfigRoom.Status.Finished } in
+            (* Notify subscribers and do other stuff needed by the caller *)
+            Lwt.join ([
+                (* Game watchers get the game update + new event *)
+                broadcast game_id (WebSocketOutgoingMessage.GameUpdate { game });
+                broadcast game_id (WebSocketOutgoingMessage.GameEvent { event });
+                (* Lobby watchers get the config room update *)
+                broadcast Id.lobby (WebSocketOutgoingMessage.ConfigRoomUpdate { game_id = Id.to_string game_id; config_room });
+            ] @ (other_work ()))
+        | _ ->
+            send_to client_id (Error { reason = WebSocketOutgoingMessage.GameDoesNotExist })
+
     (** Handle a message on a WebSocket *)
     let handle_message = fun (request : Dream.request)
                              (client_id : int)
@@ -277,36 +309,77 @@ module Make
             end
         | Resign ->
             (** Player resigns *)
+            end_game ~request ~client_id ~user
+                (fun game -> Models.Game.Result.Resign (Models.Game.player_of game user))
+                (fun () -> [])
+        | NotifyTimeout { timeouted_player } ->
+            end_game ~request ~client_id ~user
+                (fun _ -> Models.Game.Result.Timeout timeouted_player)
+                (fun () -> [])
+        | GameEnd { winner } ->
+            end_game ~request ~client_id ~user
+                (fun _ -> match winner with
+                     | Models.Player.OrNone.None -> Models.Game.Result.HardDraw
+                     | Models.Player.OrNone.Zero -> Models.Game.Result.Victory Models.Player.Zero
+                     | Models.Player.OrNone.One -> Models.Game.Result.Victory Models.Player.One)
+                (fun () -> [])
+        | Propose { proposition } ->
             let game_id = SubscriptionManager.subscription_of client_id in
-            begin match%lwt Lwt.both (Game.get ~request ~game_id) (ConfigRoom.get ~request ~game_id) with
-            | Some game, Some config_room ->
-                let player = Models.Game.player_of game user in
-                (* Change the status to the appropriate one *)
-                let* () = Game.set_result ~request ~game_id (Models.Game.Result.Resign player) in
-                let game = { game with result = Models.Game.Result.Resign player } in
-                (* Add event *)
-                let event = Models.GameEvent.{ time = External.now (); user; data = EventData.Action Action.end_game } in
-                let* () = Game.add_event ~request ~game_id event in
-                (* Update Elo of both players *)
-                let _winner = Models.Game.opponent_of game user in
-                let _loser = user in
-                (* TODO: let* () = update_elo ~winner ~loser in *)
-                (* Update config room *)
-                let* () = ConfigRoom.finish ~request ~game_id in
-                let config_room = { config_room with status = Models.ConfigRoom.Status.Finished } in
-                (* Notify subscribers *)
-                Lwt.join [
-                    (* Game watchers get the game update + new event *)
-                    broadcast game_id (WebSocketOutgoingMessage.GameUpdate { game });
-                    broadcast game_id (WebSocketOutgoingMessage.GameEvent { event });
-                    (* Lobby watchers get the config room update *)
-                    broadcast Id.lobby (WebSocketOutgoingMessage.ConfigRoomUpdate { game_id = Id.to_string game_id; config_room });
-                ]
-            | _ ->
-                send_to client_id (Error { reason = WebSocketOutgoingMessage.GameDoesNotExist })
+            let event = Models.GameEvent.{
+                time = External.now ();
+                user;
+                data = EventData.Request { request_type = proposition };
+            } in
+            let* () = Game.add_event ~request ~game_id event in
+            broadcast game_id (WebSocketOutgoingMessage.GameEvent { event });
+        | Reject { proposition } ->
+            let game_id = SubscriptionManager.subscription_of client_id in
+            let event = Models.GameEvent.{
+                time = External.now ();
+                user;
+                data = EventData.Reply { request_type = proposition; accept = false };
+            } in
+            let* () = Game.add_event ~request ~game_id event in
+            broadcast game_id (WebSocketOutgoingMessage.GameEvent { event });
+        | Accept { proposition } ->
+            let game_id = SubscriptionManager.subscription_of client_id in
+            let event = Models.GameEvent.{
+                time = External.now ();
+                user;
+                data = EventData.Reply { request_type = proposition; accept = true };
+            } in
+            let* () = Game.add_event ~request ~game_id event in
+            let send_event = broadcast game_id (WebSocketOutgoingMessage.GameEvent { event }) in
+            begin match proposition with
+                | TakeBack ->
+                    (* nothing to do for take back, players will take it into account when receiving the event *)
+                    send_event
+                | Draw ->
+                    end_game ~request ~client_id ~user
+                        (fun game -> Models.Game.Result.AgreedDrawBy (Models.Game.player_of game user))
+                        (fun () -> [send_event])
+                | Rematch ->
+                    (* TODO: create a config room + game and send it to the lobby / players *)
+                    failwith "TODO: rematch"
             end
-        | m ->
-            failwith (Printf.sprintf "TODO: %s" (m |> WebSocketIncomingMessage.to_yojson |> JSON.to_string))
+        | AddTime { kind } ->
+            let game_id = SubscriptionManager.subscription_of client_id in
+            let event = Models.GameEvent.{
+                time = External.now ();
+                user;
+                data = EventData.Action (Action.add_time kind);
+            } in
+            let* () = Game.add_event ~request ~game_id event in
+            broadcast game_id (WebSocketOutgoingMessage.GameEvent { event })
+        | Move { move } ->
+            let game_id = SubscriptionManager.subscription_of client_id in
+            let event = Models.GameEvent.{
+                time = External.now ();
+                user;
+                data = EventData.Move { move };
+            } in
+            let* () = Game.add_event ~request ~game_id event in
+            broadcast game_id (WebSocketOutgoingMessage.GameEvent { event })
 
     (** The main handler *)
     let handle : Dream.handler = fun (request : Dream.request) ->

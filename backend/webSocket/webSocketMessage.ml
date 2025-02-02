@@ -3,11 +3,6 @@ open Utils
 
 (** All the messages we can receive *)
 module WebSocketIncomingMessage = struct
-    type proposition =
-        | TakeBack
-        | Draw
-        | Rematch
-    [@@deriving yojson]
 
     (** Lifecycles of config rooms are as follows:
        - Game creation:
@@ -46,10 +41,10 @@ module WebSocketIncomingMessage = struct
         | Move of { move : JSON.t }
         | GameEnd of { winner : Player.OrNone.t }
         | Resign
-        | NotifyTimeout of { winner : Player.t }
-        | Propose of { proposition : proposition }
-        | Reject of { proposition : proposition }
-        | Accept of { proposition : proposition }
+        | NotifyTimeout of { timeouted_player : Player.t [@key "timeoutedPlayer"] }
+        | Propose of { proposition : GameEvent.Proposition.t  }
+        | Reject of { proposition : GameEvent.Proposition.t }
+        | Accept of { proposition : GameEvent.Proposition.t }
         | AddTime of { kind : [ `Turn | `Global ] }
     [@@deriving yojson]
 
@@ -85,11 +80,12 @@ module WebSocketOutgoingMessage = struct
               game_id : string [@key "gameId"];
               config_room : ConfigRoom.t  [@key "configRoom"]
           }
-        | ConfigRoomDeleted of { game_id : string [@key "gameId"] } (* TODO: use it! *)
+        | ConfigRoomDeleted of { game_id : string [@key "gameId"] }
 
         (** Game messages *)
         | GameEvent of { event : GameEvent.t }
         | GameUpdate of { game : Game.t }
+        | GameMove of { move : JSON.t }
 
     [@@deriving to_yojson]
 end

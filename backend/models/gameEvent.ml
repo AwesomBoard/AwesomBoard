@@ -1,30 +1,43 @@
 open Utils
 
+module Proposition = struct
+    type t =
+        | TakeBack
+        | Draw
+        | Rematch
+
+    let (to_yojson, of_yojson) =
+        JSON.for_enum [
+            TakeBack, `String "TakeBack";
+            Draw, `String "Draw";
+            Rematch, `String "Rematch";
+        ]
+end
+
 (** A request from a user *)
 module Request = struct
     type t = {
-        request_type: string [@key "requestType"];
+        request_type: Proposition.t [@key "requestType"];
     }
     [@@deriving yojson]
 
-    let draw : t = { request_type = "Draw" }
-    let rematch : t = { request_type = "Rematch" }
-    let take_back : t = { request_type = "TakeBack" }
+    let draw : t = { request_type = Draw }
+    let rematch : t = { request_type = Rematch }
+    let take_back : t = { request_type = TakeBack }
 end
 
 (** A reply to a request *)
 module Reply = struct
     type t = {
-        request_type: string [@key "requestType"];
-        reply: string;
-        data: JSON.t option;
+        request_type: Proposition.t [@key "requestType"];
+        accept: bool;
     }
     [@@deriving yojson]
 
-    let accept = fun ?(data: JSON.t option) (proposition : string) : t ->
-        { request_type = proposition; reply = "Accept"; data }
-    let refuse = fun ?(data: JSON.t option) (proposition : string) : t ->
-        { request_type = proposition; reply = "Reject"; data }
+    let accept = fun (proposition : Proposition.t) : t ->
+        { request_type = proposition; accept = true }
+    let refuse = fun (proposition : Proposition.t) : t ->
+        { request_type = proposition; accept = false }
 end
 
 (** An action event, such as adding time *)

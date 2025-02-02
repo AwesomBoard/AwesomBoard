@@ -19,7 +19,6 @@ export class GameService {
                              gameUpdate: (game: Game) => void,
                              gameEvent: (event: GameEvent) => void)
     : Promise<Subscription> {
-        const gameSubscription: Subscription = await this.webSocketManager.subscribeTo(gameId);
         const gameUpdateSubscription: Subscription =
             this.webSocketManager.setCallback('GameUpdate', (message: WebSocketMessage): void => {
                 gameUpdate(message.getArgument('game'));
@@ -28,6 +27,7 @@ export class GameService {
             this.webSocketManager.setCallback('GameEvent', (message: WebSocketMessage): void => {
                 gameEvent(message.getArgument('event'));
             });
+        const gameSubscription: Subscription = await this.webSocketManager.subscribeTo(gameId);
         return new Subscription(() => {
             gameSubscription.unsubscribe();
             gameUpdateSubscription.unsubscribe();
@@ -58,15 +58,15 @@ export class GameService {
     }
 
     private async propose(proposition: 'TakeBack' | 'Draw' | 'Rematch'): Promise<void> {
-        return this.gameAction(['Propose', { proposition: [proposition] }]);
+        return this.gameAction(['Propose', { proposition }]);
     }
 
     private async accept(proposition: 'TakeBack' | 'Draw' | 'Rematch'): Promise<void> {
-        return this.gameAction(['Accept', { proposition: [proposition] }]);
+        return this.gameAction(['Accept', { proposition }]);
     }
 
     private async reject(proposition: 'TakeBack' | 'Draw' | 'Rematch'): Promise<void> {
-        return this.gameAction(['Reject', { proposition: [proposition] }]);
+        return this.gameAction(['Reject', { proposition }]);
     }
 
     /** Propose a draw to the opponent */
