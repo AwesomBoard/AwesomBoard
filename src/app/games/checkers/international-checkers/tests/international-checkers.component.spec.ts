@@ -11,7 +11,6 @@ import { InternationalCheckersRules } from '../InternationalCheckersRules';
 import { PlayerMap, PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { DirectionFailure } from 'src/app/jscaip/Direction';
 import { CheckersComponentTestEntries, DoCheckersTests } from '../../common/tests/CheckersTest.spec';
-import { CheckersFailure } from '../../common/CheckersFailure';
 
 const zero: CheckersPiece = CheckersPiece.ZERO;
 const one: CheckersPiece = CheckersPiece.ONE;

@@ -2,7 +2,6 @@
 import { TestUtils } from '@everyboard/lib';
 
 import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
-import { TestUtils } from '@everyboard/lib';
 
 import { HexaDirection } from 'src/app/jscaip/HexaDirection';
 import { AbaloneMove } from '../AbaloneMove';

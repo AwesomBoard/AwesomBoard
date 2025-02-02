@@ -10,7 +10,7 @@ import { CheckersFailure } from '../../common/CheckersFailure';
 import { CheckersPiece, CheckersStack, CheckersState } from '../../common/CheckersState';
 import { InternationalCheckersRules } from '../InternationalCheckersRules';
 
-// If you modify this rule file, modify the other chess rules
+// If you modify this rule file, modify the other checkers rules tests
 describe('InternationalCheckersRules', () => {
 
     const zero: CheckersPiece = CheckersPiece.ZERO;

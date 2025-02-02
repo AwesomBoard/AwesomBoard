@@ -15,7 +15,6 @@ import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 import { Player } from 'src/app/jscaip/Player';
 import { CheckersFailure } from '../CheckersFailure';
 import { Direction, DirectionFailure } from 'src/app/jscaip/Direction';
-import { Localized } from 'src/app/utils/LocaleUtils';
 
 export class CheckersComponentTestEntries<C extends CheckersComponent<R>,
                                           R extends AbstractCheckersRules>

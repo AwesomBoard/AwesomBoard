@@ -36,10 +36,6 @@ export class MancalaState extends GameStateWithTable<number> {
 
     public feed(coord: Coord): MancalaState {
         return this.addPieceAt(coord, 1);
-        // TODO FOR REVIEW: genre là par exemple, feed(coord) seems fine as hell
-        // TODO FOR REVIEW: et là en l'absence de addPiece(x, y) addPiece is super fine je dirais
-        // TODO FOR REVIEW: pour moi le "at" est surtout pour distinguer atXY du At au lieu davoir blabla et blablaAt
-        // TODO FOR REVIEW: ouais d'ailleurs en fait on a getBlablaAt(coord) et getBlablaAtXY(x, y) donc mmh...
     }
 
     public addPieceAt(coord: Coord, value: number): MancalaState {
