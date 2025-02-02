@@ -212,7 +212,7 @@ describe('CheckersMove', () => {
             const stringification: string = move.toString();
 
             // Then it should look like this
-            expect(stringification).toBe('CheckersMove((0, 0), (2, 2))');
+            expect(stringification).toBe('CheckersCapture((0, 0), (2, 2))');
         });
 
     });
