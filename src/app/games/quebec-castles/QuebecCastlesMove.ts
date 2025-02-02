@@ -1,20 +1,45 @@
-import { Encoder, Set } from '@everyboard/lib';
+import { Encoder, MGPFallible, Set } from '@everyboard/lib';
 
 import { Coord } from 'src/app/jscaip/Coord';
 import { Move } from 'src/app/jscaip/Move';
 
-import { MoveCoord, TMPMoveCoord } from 'src/app/jscaip/MoveCoord';
-import { MoveCoordToCoord, TMPMoveCoordToCoord } from 'src/app/jscaip/MoveCoordToCoord';
+import { MoveCoordToCoord } from 'src/app/jscaip/MoveCoordToCoord';
 
-export type QuebecCastlesMove = TMPMoveCoordToCoord | QuebecCastlesDrop;
+export type QuebecCastlesMove = QuebecCastlesTranslation | QuebecCastlesDrop;
 
+export class QuebecCastlesTranslation extends MoveCoordToCoord {
+
+    public static of(start: Coord, end: Coord): QuebecCastlesTranslation {
+        return new QuebecCastlesTranslation(start, end);
+    }
+
+    public constructor(start: Coord, end: Coord) {
+        super(start, end);
+    }
+
+    public override toString(): string {
+        return 'QuebecCastlesTranslation(' + this.getStart().toString() + ' -> ' + this.getEnd().toString() + ')';
+    }
+}
 export class QuebecCastlesDrop extends Move {
 
-    public readonly coords: Set<Coord>;
+    public static readonly encoder: Encoder<QuebecCastlesDrop> = Encoder.tuple(
+        [Encoder.list(Coord.encoder)],
+        (move: QuebecCastlesDrop) => [move.coords.toList()],
+        (value: [Coord[]]) => QuebecCastlesDrop.from(value[0]).get(),
+    );
 
-    constructor(coords: Coord[]) {
+    public static from(coords: Coord[]): MGPFallible<QuebecCastlesDrop> {
+        const asSet: Set<Coord> = new Set(coords);
+        if (asSet.size() === coords.length) {
+            return MGPFallible.success(new QuebecCastlesDrop(asSet));
+        } else {
+            return MGPFallible.failure('Cannot have element twice in list');
+        }
+    }
+
+    private constructor(public readonly coords: Set<Coord>) {
         super();
-        this.coords = new Set(coords);
     }
 
     public override toString(): string {
@@ -30,23 +55,31 @@ export class QuebecCastlesDrop extends Move {
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export namespace QuebecCastlesMove {
 
-    export function isNormalMove(move: QuebecCastlesMove): move is TMPMoveCoordToCoord {
-        return move instanceof TMPMoveCoordToCoord;
+    export function isTranslation(move: QuebecCastlesMove): move is QuebecCastlesTranslation {
+        return move instanceof QuebecCastlesTranslation;
     }
 
     export function isDrop(move: QuebecCastlesMove): move is QuebecCastlesDrop {
         return move instanceof QuebecCastlesDrop;
     }
 
+    export function drop(coords: Coord[]): QuebecCastlesMove {
+        return QuebecCastlesDrop.from(coords).get();
+    }
+
+    export function translation(start: Coord, end: Coord): QuebecCastlesMove {
+        return QuebecCastlesTranslation.of(start, end);
+    }
+
     export const encoder: Encoder<QuebecCastlesMove> =
         Encoder.disjunction(
             [
-                QuebecCastlesMove.isNormalMove,
+                QuebecCastlesMove.isTranslation,
                 QuebecCastlesMove.isDrop,
             ],
             [
-                MoveCoordToCoord.getEncoder(TMPMoveCoordToCoord.of),
-                MoveCoord.getEncoder(TMPMoveCoord.of),
+                MoveCoordToCoord.getEncoder(QuebecCastlesTranslation.of),
+                QuebecCastlesDrop.encoder,
             ],
         );
 }

@@ -1,7 +1,7 @@
 import { MGPFallible, MGPOptional, MGPValidation } from '@everyboard/lib';
 
 import { GameNode } from 'src/app/jscaip/AI/GameNode';
-import { QuebecCastlesDrop, QuebecCastlesMove } from './QuebecCastlesMove';
+import { QuebecCastlesDrop, QuebecCastlesMove, QuebecCastlesTranslation } from './QuebecCastlesMove';
 import { QuebecCastlesState } from './QuebecCastlesState';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { ConfigurableRules } from 'src/app/jscaip/Rules';
@@ -12,7 +12,7 @@ import { Coord, CoordFailure } from 'src/app/jscaip/Coord';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { PlayerMap } from 'src/app/jscaip/PlayerMap';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
-import { MoveCoordToCoord, TMPMoveCoordToCoord } from 'src/app/jscaip/MoveCoordToCoord';
+import { MoveCoordToCoord } from 'src/app/jscaip/MoveCoordToCoord';
 import { DirectionFailure } from 'src/app/jscaip/Direction';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { Localized } from 'src/app/utils/LocaleUtils';
@@ -25,19 +25,29 @@ export class QuebecCastlesFailure {
 
     public static readonly MUST_DROP_IN_YOUR_TERRITORY: Localized = () => $localize`Must drop in your own territory`;
 
-    public static readonly CANNOT_DROP_iN_MOVE_PHASE: Localized = () => $localize`Cannot drop in move phase`;
+    public static readonly CANNOT_DROP_IN_MOVE_PHASE: Localized = () => $localize`Cannot drop in move phase`;
+
+    public static readonly CANNOT_MOVE_IN_DROP_PHASE: Localized = () => $localize`Cannot drop in move phase`;
 
     public static readonly MUST_DROP_ALL_YOUR_PIECES: Localized = () => $localize`Must drop all your pieces`;
 
+    public static readonly MUST_DROP_ALL_YOUR_REMAINING_PIECES: Localized = () => $localize`Must drop all your remaining pieces, not more not less`;
+
     public static readonly CANNOT_DROP_THAT_MUCH: Localized = () => $localize`Cannot drop that much pieces`;
 
-    public static readonly MUST_DROP_ONE_BY_ONE: Localized = () => $localize`TODO MUST_DROP_ONE_BY_ONE`;
+    public static readonly MUST_DROP_ONE_BY_ONE: Localized = () => $localize`Must drop pieces one by one`;
 
-    public static readonly CANNOT_LAND_IN_YOUR_TRONE: Localized = () => $localize`CANNOT_LAND_IN_YOUR_TRONE`;
+    public static readonly CANNOT_LAND_IN_YOUR_TRONE: Localized = () => $localize`You cannot land on your trone`;
 
-    public static readonly PLACE_ONLY_ONE_TRONE: Localized = () => $localize`PLACE_ONLY_ONE_TRONE`;
+    public static readonly PLACE_ONLY_ONE_TRONE: Localized = () => $localize`You must only place your trone`;
+
+    public static readonly CANNOT_PUT_THAT_MUCH_PIECE_IN_THERE: (max: number, line: number) => string = (max: number, line: number) => $localize`If you have ${ line } line, you can only have ${ max } pieces`;
+
+    public static readonly TOO_MUCH_LINES_FOR_TERRITORY: Localized = () => $localize`Too much lines for territory, your opponent lines would merged with yours!`;
 }
-
+// TODO show captures
+// TODO show score
+// TODO meilleur trone en cas de victoire
 export type QuebecCastlesConfig = {
 
     width: number;
@@ -66,7 +76,7 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
 
     private static singleton: MGPOptional<QuebecCastlesRules> = MGPOptional.empty();
 
-    public static readonly RULES_CONFIG_DESCRIPTION: RulesConfigDescription<QuebecCastlesConfig> =
+    public static readonly RULES_CONFIG_DESCRIPTION: RulesConfigDescription <QuebecCastlesConfig> =
         new RulesConfigDescription<QuebecCastlesConfig>(
             {
                 name: (): string => $localize`Quebec Castles`,
@@ -83,13 +93,13 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
                         if (value < (height / 2)) {
                             return MGPValidation.SUCCESS;
                         } else {
-                            return MGPValidation.failure("TODO LA JAAJ");
+                            return MGPValidation.failure(QuebecCastlesFailure.TOO_MUCH_LINES_FOR_TERRITORY());
                         }
                     }),
-                    invader: new NumberConfig<QuebecCastlesConfig>(10, () => $localize`Number of invader`, (value: number, config: QuebecCastlesConfig) => {
+                    invader: new NumberConfig<QuebecCastlesConfig>(14, () => $localize`Number of invader`, (value: number, config: QuebecCastlesConfig) => {
                         return QuebecCastlesRules.isThereEnoughPlaceForPiece(Player.ZERO, config, value);
                     }),
-                    defender: new NumberConfig(10, () => $localize`Number of defender`, (value: number, config: QuebecCastlesConfig) => {
+                    defender: new NumberConfig(9, () => $localize`Number of defender`, (value: number, config: QuebecCastlesConfig) => {
                         return QuebecCastlesRules.isThereEnoughPlaceForPiece(Player.ONE, config, value);
                     }),
                     isRhombic: new BooleanConfig(true, () => $localize`Is Rhombic`),
@@ -119,10 +129,11 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
     public static isThereEnoughPlaceForPiece(player: Player, config: QuebecCastlesConfig, numberOfPiece: number)
     : MGPValidation
     {
-        const spaceForPiece: number = QuebecCastlesRules.get().getLegalDropCoords(player, config).length;
-        // TODO include throne in calculs
+        // Got to substract 1 as the trone is not included
+        const spaceForPiece: number = QuebecCastlesRules.get().getValidDropCoords(player, config).length - 1;
         if (spaceForPiece < numberOfPiece) {
-            return MGPValidation.failure($localize`Dude, there is not enough place for this, augmente linesForTerritory`);
+            const line: number = config.linesForTerritory;
+            return MGPValidation.failure(QuebecCastlesFailure.CANNOT_PUT_THAT_MUCH_PIECE_IN_THERE(spaceForPiece, line));
         } else {
             return MGPValidation.SUCCESS;
         }
@@ -211,7 +222,6 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
         let direction: Ordinal;
         const coords: Coord[] = [];
         if (config.isRhombic) {
-            // TODO: get legal range index here instead of this calculation
             const xMax: number = config.width - 1;
             const yMax: number = config.height - 1;
             const max: number = xMax + yMax;
@@ -266,8 +276,8 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
     public isLegalDrop(move: QuebecCastlesMove, state: QuebecCastlesState, config: QuebecCastlesConfig)
     : MGPValidation
     {
-        if (QuebecCastlesMove.isNormalMove(move)) {
-            return MGPValidation.failure($localize`This move is a normal move, drop expected`);
+        if (QuebecCastlesMove.isTranslation(move)) {
+            return MGPValidation.failure(QuebecCastlesFailure.CANNOT_MOVE_IN_DROP_PHASE());
         }
         if (state.turn <= 2 && config.placeThroneYourself ) {
             return this.isLegalTronePlacement(move, state, config);
@@ -290,8 +300,18 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
     : MGPValidation {
         if (config.dropPieceYourself) {
             if (config.dropPieceByPiece) { // TODO: unify with enumConfig
-                if (move.coords.size() > 1) {
-                    return MGPFallible.failure(QuebecCastlesFailure.MUST_DROP_ONE_BY_ONE());
+                if (this.isLastDrop(state, config)) {
+                    const player: Player = state.getCurrentPlayer();
+                    const playerCount: number = state.count(player);
+                    const playerTotal: number = player === Player.ZERO ? config.defender : config.invader;
+                    const remainToDrop: number = playerTotal - playerCount;
+                    if (move.coords.size() !== remainToDrop) {
+                        return MGPFallible.failure(QuebecCastlesFailure.MUST_DROP_ALL_YOUR_REMAINING_PIECES());
+                    }
+                } else {
+                    if (move.coords.size() > 1) {
+                        return MGPFallible.failure(QuebecCastlesFailure.MUST_DROP_ONE_BY_ONE());
+                    }
                 }
             } else {
                 const numberToDrop: number =
@@ -313,6 +333,14 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
         return MGPValidation.SUCCESS;
     }
 
+    private isLastDrop(state: QuebecCastlesState, config: QuebecCastlesConfig): boolean {
+        const opponent: Player = state.getCurrentOpponent();
+        const opponentCount: number = state.count(opponent);
+        const opponentTotal: number = opponent === Player.ZERO ? config.defender : config.invader;
+        return opponentCount === opponentTotal; // If opponent dropped all its pieces (one by one)
+        // Then you must now dropped them all at once
+    }
+
     private getDropLegality(coord: Coord, state: QuebecCastlesState, config: QuebecCastlesConfig, isTrone: boolean)
     : MGPValidation
     {
@@ -327,19 +355,19 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
         if (state.thrones.get(player).equalsValue(coord) && isTrone === false) {
             return MGPValidation.failure(QuebecCastlesFailure.CANNOT_LAND_IN_YOUR_TRONE());
         }
-        if (this.isLegalDropCoord(coord, player, config)) {
+        if (this.isValidDropCoord(coord, player, config)) {
             return MGPValidation.SUCCESS;
         } else {
             return MGPValidation.failure(QuebecCastlesFailure.MUST_DROP_IN_YOUR_TERRITORY());
         }
     }
 
-    public getLegalDropCoords(player: Player, config: QuebecCastlesConfig): Coord[] {
+    public getValidDropCoords(player: Player, config: QuebecCastlesConfig): Coord[] {
         const drops: Coord[] = [];
         for (let y: number = 0; y < config.height; y++) {
             for (let x: number = 0; x < config.width; x++) {
                 const coord: Coord = new Coord(x, y);
-                if (this.isLegalDropCoord(coord, player, config)) {
+                if (this.isValidDropCoord(coord, player, config)) {
                     drops.push(coord);
                 }
             }
@@ -347,7 +375,7 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
         return drops;
     }
 
-    public isLegalDropCoord(coord: Coord, player: Player, config: QuebecCastlesConfig): boolean {
+    private isValidDropCoord(coord: Coord, player: Player, config: QuebecCastlesConfig): boolean {
         const y: number = coord.y;
         let metric: number = 0;
         if (config.isRhombic) {
@@ -384,7 +412,7 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
     : MGPValidation
     {
         if (QuebecCastlesMove.isDrop(move)) {
-            return MGPValidation.failure(QuebecCastlesFailure.CANNOT_DROP_iN_MOVE_PHASE());
+            return MGPValidation.failure(QuebecCastlesFailure.CANNOT_DROP_IN_MOVE_PHASE());
         }
         const startValidity: MGPValidation = this.getStartValidity(state, move.getStart());
         if (startValidity.isFailure()) {
@@ -517,22 +545,22 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
         let stepSize: number;
         const moves: QuebecCastlesMove[] = [];
         if (owner === Player.ZERO) {
-            stepSize = 2;
-        } else {
             stepSize = 1;
+        } else {
+            stepSize = 2;
         }
         for (const direction of Ordinal.ORDINALS) {
             const step: Coord = coord.getNext(direction);
             if (state.isOnBoard(step)) {
                 if (stepSize === 1) {
-                    if (state.getPieceAt(step) !== owner) {
-                        moves.push(TMPMoveCoordToCoord.of(coord, step));
+                    if (this.getLandingValidity(state, step).isSuccess()) {
+                        moves.push(QuebecCastlesTranslation.of(coord, step));
                     }
                 } else {
                     if (state.getPieceAt(step) === PlayerOrNone.NONE) {
                         const landing: Coord = coord.getNext(direction, 2);
-                        if (state.isOnBoard(landing) && state.getPieceAt(landing) !== owner) {
-                            moves.push(TMPMoveCoordToCoord.of(coord, landing));
+                        if (this.getLandingValidity(state, landing).isSuccess()) {
+                            moves.push(QuebecCastlesTranslation.of(coord, landing));
                         }
                     }
                 }

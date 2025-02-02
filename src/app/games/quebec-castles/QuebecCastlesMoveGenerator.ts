@@ -27,10 +27,10 @@ export class QuebecCastlesMoveGenerator extends MoveGenerator<QuebecCastlesMove,
     public getDropMoves(state: QuebecCastlesState, config: QuebecCastlesConfig): QuebecCastlesMove[] {
         const player: Player = state.getCurrentPlayer();
         const moves: QuebecCastlesMove[] = [];
-        for (const dropCoord of QuebecCastlesRules.get().getLegalDropCoords(player, config)) {
+        for (const dropCoord of QuebecCastlesRules.get().getValidDropCoords(player, config)) {
             const piece: PlayerOrNone = state.getPieceAt(dropCoord);
             if (piece.isNone() && state.thrones.get(player).equalsValue(dropCoord) === false) {
-                moves.push(new QuebecCastlesDrop([dropCoord]));
+                moves.push(QuebecCastlesDrop.from([dropCoord]).get());
             }
         }
         return moves;

@@ -49,11 +49,3 @@ export abstract class MoveCoordToCoord extends MoveWithTwoCoords {
     }
 
 }
-
-export class TMPMoveCoordToCoord extends MoveCoordToCoord {
-
-    public static of(start: Coord, end: Coord): TMPMoveCoordToCoord {
-        return new TMPMoveCoordToCoord(start, end);
-    }
-
-}

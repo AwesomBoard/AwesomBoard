@@ -98,7 +98,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public async onLegalUserMove(move: Move): Promise<void> {
         const config: MGPOptional<RulesConfig> = await this.getConfig();
-        console.log('JAAJ LGWC onLegalUserMove', move.toString())
         this.gameComponent.node = this.gameComponent.rules.choose(this.gameComponent.node, move, config).get();
         await this.applyNewMove();
     }
