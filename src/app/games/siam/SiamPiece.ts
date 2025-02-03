@@ -79,7 +79,7 @@ export class SiamPiece {
         return this.owner.isNone();
     }
 
-    public isPiece(): boolean {
+    public isPlayer(): boolean {
         return this.isEmptyOrMountain() === false;
     }
 
@@ -93,6 +93,10 @@ export class SiamPiece {
 
     public getDirection(): Orthogonal {
         return this.getOptionalDirection().get();
+    }
+
+    public equals(other: SiamPiece): boolean {
+        return this === other;
     }
 
     public toString(): string {

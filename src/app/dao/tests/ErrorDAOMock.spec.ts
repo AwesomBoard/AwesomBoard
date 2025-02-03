@@ -1,5 +1,6 @@
-import { FirestoreDAOMock } from 'src/app/dao/tests/FirestoreDAOMock.spec';
 import { JSONValue, MGPMap, MGPOptional, ObservableSubject } from '@everyboard/lib';
+
+import { FirestoreDAOMock } from 'src/app/dao/tests/FirestoreDAOMock.spec';
 import { ErrorDocument, MGPError } from '../ErrorDAO';
 
 type ErrorOS = ObservableSubject<MGPOptional<ErrorDocument>>;

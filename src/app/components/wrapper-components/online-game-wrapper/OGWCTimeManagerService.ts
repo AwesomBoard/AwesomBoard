@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { MGPOptional, Utils } from '@everyboard/lib';
+
 import { GameEventMove, GameEventAction } from '../../../domain/Part';
 import { CountDownComponent } from '../../normal-component/count-down/count-down.component';
 import { ConfigRoom } from 'src/app/domain/ConfigRoom';
 import { Player } from 'src/app/jscaip/Player';
 import { MinimalUser } from 'src/app/domain/MinimalUser';
-import { MGPOptional, Utils } from '@everyboard/lib';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 
 /**

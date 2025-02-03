@@ -1,6 +1,6 @@
 import { Coord } from 'src/app/jscaip/Coord';
 import { Vector } from 'src/app/jscaip/Vector';
-import { TriangularGameState } from 'src/app/jscaip/state/TriangularGameState';
+import { FourStatePieceTriangularGameState } from 'src/app/jscaip/state/TriangularGameState';
 import { TriangularCheckerBoard } from 'src/app/jscaip/state/TriangularCheckerBoard';
 import { Table } from 'src/app/jscaip/TableUtils';
 import { MGPOptional, Utils } from '@everyboard/lib';
@@ -12,7 +12,7 @@ import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { PlayerNumberTable } from 'src/app/jscaip/PlayerNumberTable';
 
 @Debug.log
-export class CoerceoState extends TriangularGameState<FourStatePiece> {
+export class CoerceoState extends FourStatePieceTriangularGameState {
 
     public static readonly NEIGHBORS_TILES_DIRECTIONS: ReadonlyArray<Vector> = [
         new Vector(+0, -2), // UP
@@ -79,7 +79,7 @@ export class CoerceoState extends TriangularGameState<FourStatePiece> {
         const opponent: Player = this.getCurrentOpponent();
         const neighbors: Coord[] = TriangularCheckerBoard.getNeighbors(coord);
         return neighbors.filter((neighbor: Coord) => {
-            if (this.isOnBoard(neighbor) === false) {
+            if (this.isNotOnBoard(neighbor)) {
                 return false;
             }
             if (this.getPieceAt(neighbor).is(opponent)) {
@@ -167,9 +167,7 @@ export class CoerceoState extends TriangularGameState<FourStatePiece> {
         for (let i: number = 0; i < 6; i++) {
             const vector: Vector = CoerceoState.NEIGHBORS_TILES_DIRECTIONS[i];
             const neighborTile: Coord = tile.getNext(vector, 1);
-            if (this.isOnBoard(neighborTile) &&
-                this.getPieceAt(neighborTile) !== FourStatePiece.UNREACHABLE)
-            {
+            if (this.hasInequalPieceAt(neighborTile, FourStatePiece.UNREACHABLE)) {
                 if (firstIndex.isAbsent()) {
                     firstIndex = MGPOptional.of(i);
                 }
@@ -206,12 +204,12 @@ export class CoerceoState extends TriangularGameState<FourStatePiece> {
         return legalLandings;
     }
 
-    public getPiecesByFreedom(state: CoerceoState): PlayerNumberTable {
+    public getPiecesByFreedom(): PlayerNumberTable {
         const playersScores: PlayerNumberTable = PlayerNumberTable.of(
             [0, 0, 0, 0],
             [0, 0, 0, 0],
         );
-        for (const coordAndContent of state.getCoordsAndContents()) {
+        for (const coordAndContent of this.getCoordsAndContents()) {
             const owner: PlayerOrNone = coordAndContent.content.getPlayer();
             if (owner.isPlayer()) {
                 const nbFreedom: number =

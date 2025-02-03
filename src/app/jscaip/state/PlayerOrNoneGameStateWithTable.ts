@@ -18,10 +18,8 @@ export class PlayerOrNoneGameStateWithTable extends GameStateWithTable<PlayerOrN
             });
     }
 
-    // public isCurrentPlayer(coord: Coord): boolean {
-    //     const currentPlayer: Player = this.getCurrentPlayer();
-    //     const piece: PlayerOrNone = this.getPieceAt(coord);
-    //     return piece.isPlayer() && piece.equals(currentPlayer);
-    // }
+    public isEmptyAt(coord: Coord): boolean {
+        return this.hasPieceAt(coord, PlayerOrNone.NONE);
+    }
 
 }

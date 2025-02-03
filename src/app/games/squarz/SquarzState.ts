@@ -3,8 +3,9 @@ import { GameStateWithTable } from 'src/app/jscaip/state/GameStateWithTable';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
 import { Table } from 'src/app/jscaip/TableUtils';
+import { PlayerOrNoneGameStateWithTable } from 'src/app/jscaip/state/PlayerOrNoneGameStateWithTable';
 
-export class SquarzState extends GameStateWithTable<PlayerOrNone> {
+export class SquarzState extends PlayerOrNoneGameStateWithTable {
 
     public static of(oldState: SquarzState, newBoard: Table<PlayerOrNone>): SquarzState {
         return new SquarzState(newBoard, oldState.turn);
@@ -45,7 +46,7 @@ export class SquarzState extends GameStateWithTable<PlayerOrNone> {
         for (let y: number = -jumpSize; y <= jumpSize; y++) {
             for (let x: number = -jumpSize; x <= jumpSize; x++) {
                 const landingCoord: Coord = new Coord(coord.x + x, coord.y + y);
-                if (this.isOnBoard(landingCoord) && this.getPieceAt(landingCoord).isNone()) {
+                if (this.isEmptyAt(landingCoord)) {
                     return true;
                 }
             }

@@ -36,7 +36,7 @@ export class KamisadoMoveGenerator extends MoveGenerator<KamisadoMove, KamisadoS
                 // For each direction, create a move of i in that direction
                 for (let stepSize: number = 1; stepSize < KamisadoBoard.SIZE; stepSize++) {
                     const endCoord: Coord = startCoord.getNext(dir, stepSize);
-                    if (state.isOnBoard(endCoord) && KamisadoBoard.isEmptyAt(state.board, endCoord)) {
+                    if (state.isEmptyAt(endCoord)) {
                         // Check if the move can be done, and if so,
                         // add the resulting state to the map to be returned
                         const move: KamisadoMove = KamisadoMove.of(startCoord, endCoord);

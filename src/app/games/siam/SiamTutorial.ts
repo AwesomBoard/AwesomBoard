@@ -94,7 +94,7 @@ export class SiamTutorial extends Tutorial {
         ),
         TutorialStep.fromMove(
             $localize`Victory`,
-            $localize`The game ends when a mountain is pushed out of the board. If you pushed it and nobody is in front of you, you're the winner. However, if you were pushing an opponent oriented in the same direction as you, your opponent will win because that piece is closer to the mountain. However, if that opponent is closer to the mountain but not oriented towards it, victory will be yours.<br/><br/>Here, playing Dark, you can push a mountain off the board and either win, or lose. Choose correctly!`,
+            $localize`The game ends when a mountain is pushed out of the board. If you pushed it and nobody is in front of you, you're the winner. However, if you were pushing an opponent oriented in the same direction as you, your opponent will win because that piece is closer to the mountain. However, if that opponent is closer to the mountain but not oriented toward it, victory will be yours.<br/><br/>Here, playing Dark, you can push a mountain off the board and either win, or lose. Choose correctly!`,
             new SiamState([
                 [_, _, _, _, _],
                 [_, _, _, _, _],

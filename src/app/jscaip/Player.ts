@@ -90,6 +90,10 @@ export class Player implements ComparableObject {
         }
     }
 
+    public getYDirection(): number {
+        return this.getScoreModifier();
+    }
+
     public getPreVictory(): number {
         return this.getVictoryValue() - this.getScoreModifier();
     }
