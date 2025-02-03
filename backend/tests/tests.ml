@@ -1,6 +1,6 @@
 let () =
     (* Need to initialize crypto for some tests *)
-    Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna);
+    Mirage_crypto_rng_unix.use_default ();
     Backend.Options.emulator := false;
     Lwt_main.run @@ Alcotest_lwt.run "unit tests" @@ List.concat [
         UtilsTests.tests;
