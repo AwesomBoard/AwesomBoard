@@ -1,11 +1,12 @@
 /* eslint-disable max-lines-per-function */
 import { fakeAsync, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { Observable, ReplaySubject } from 'rxjs';
+import { MGPValidation } from '@everyboard/lib';
+
 import { LoginComponent } from './login.component';
 import { ConnectedUserService, AuthUser } from 'src/app/services/ConnectedUserService';
 import { expectValidRouting, prepareUnsubscribeCheck, SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
-import { Router } from '@angular/router';
-import { MGPValidation } from '@everyboard/lib';
-import { Observable, ReplaySubject } from 'rxjs';
 import { LobbyComponent } from '../lobby/lobby.component';
 import { UserMocks } from 'src/app/domain/UserMocks.spec';
 

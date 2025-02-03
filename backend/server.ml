@@ -30,7 +30,7 @@ let start = fun () : unit ->
             [Dream.get "/time" ServerUtils.server_time];
         ];
     ] in
-    Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna); (* Required for token refresher and JWT *)
+    Mirage_crypto_rng_unix.use_default (); (* Required for token refresher and JWT *)
     Dream.initialize_log ~level:`Info ();
     Dream.run ~interface:!Options.address ~error_handler:ServerUtils.error_handler ~port:!Options.port
     @@ Dream.logger

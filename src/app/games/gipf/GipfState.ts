@@ -43,7 +43,8 @@ export class GipfState extends HexagonalGameState<FourStatePiece> {
     public override isOnBoard(coord: Coord): boolean {
         if (coord.isNotInRange(this.width, this.height)) {
             return false;
+        } else {
+            return this.getUnsafe(coord) !== FourStatePiece.UNREACHABLE;
         }
-        return this.board[coord.y][coord.x] !== FourStatePiece.UNREACHABLE;
     }
 }

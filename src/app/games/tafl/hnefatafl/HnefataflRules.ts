@@ -17,8 +17,8 @@ export class HnefataflRules extends TaflRules<HnefataflMove> {
         new RulesConfigDescription<TaflConfig>({
             name: (): string => $localize`Hnefatafl`,
             config: {
-                castleIsLeftForGood:
-                    new BooleanConfig(false, TaflRules.CASTLE_IS_LEFT_FOR_GOOD),
+                canReturnToCastle:
+                    new BooleanConfig(true, TaflRules.CAN_RETURN_TO_CASTLE),
                 edgesAreKingsEnnemy:
                     new BooleanConfig(true, TaflRules.EDGE_ARE_KING_S_ENNEMY),
                 centralThroneCanSurroundKing:
