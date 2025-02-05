@@ -98,7 +98,7 @@ export class ConspirateursRules extends Rules<ConspirateursMove, ConspirateursSt
 
     public jumpLegality(move: ConspirateursMoveJump, state: ConspirateursState): MGPValidation {
         for (const coord of move.coords) {
-            if (state.isOnBoard(coord) === false) {
+            if (state.isNotOnBoard(coord)) {
                 return MGPFallible.failure(CoordFailure.OUT_OF_RANGE(coord));
             }
         }

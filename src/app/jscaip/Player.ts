@@ -38,8 +38,11 @@ export class Player implements ComparableObject {
         (player: Player) => [player.getValue()],
         (fields: [0 | 1]) => Player.of(fields[0]),
     );
+
     public static readonly ZERO: Player = new Player(0);
+
     public static readonly ONE: Player = new Player(1);
+
     public static readonly PLAYERS: Player[] = [Player.ZERO, Player.ONE];
 
     public static of(value: number): Player {
@@ -85,6 +88,10 @@ export class Player implements ComparableObject {
         } else {
             return 1;
         }
+    }
+
+    public getYDirection(): number {
+        return this.getScoreModifier();
     }
 
     public getPreVictory(): number {

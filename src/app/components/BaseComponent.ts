@@ -1,4 +1,5 @@
 import { ArrayUtils, Utils } from '@everyboard/lib';
+
 import { Player, PlayerOrNone } from '../jscaip/Player';
 
 export abstract class BaseComponent {

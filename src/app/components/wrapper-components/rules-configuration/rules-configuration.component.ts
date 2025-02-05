@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { comparableEquals, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 
 import { ConfigDescriptionType, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
-import { comparableEquals, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { RulesConfigDescription, RulesConfigDescriptionLocalizable } from './RulesConfigDescription';
 import { BaseWrapperComponent } from '../BaseWrapperComponent';
 

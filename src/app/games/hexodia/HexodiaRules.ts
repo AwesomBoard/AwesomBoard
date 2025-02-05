@@ -124,7 +124,7 @@ export class HexodiaRules extends ConfigurableRules<HexodiaMove, HexodiaState, H
 
     public isLegalDrop(move: HexodiaMove, state: HexodiaState): MGPValidation {
         for (const coord of move.coords) {
-            if (state.isOnBoard(coord) === false) {
+            if (state.isNotOnBoard(coord)) {
                 return MGPValidation.failure(CoordFailure.OUT_OF_RANGE(coord));
             }
             if (state.getPieceAt(coord).isPlayer()) {

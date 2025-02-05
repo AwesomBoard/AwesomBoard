@@ -1,12 +1,13 @@
 /* eslint-disable max-lines-per-function */
 import { fakeAsync, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
+import * as FireAuth from '@firebase/auth';
 import { MGPFallible, MGPValidation } from '@everyboard/lib';
+
+import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
 import { expectValidRouting, SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { RegisterComponent } from './register.component';
 import { VerifyAccountComponent } from '../verify-account/verify-account.component';
-import * as FireAuth from '@firebase/auth';
 
 describe('RegisterComponent', () => {
     let testUtils: SimpleComponentTestUtils<RegisterComponent>;

@@ -188,7 +188,8 @@ implements AI<M, S, AIDepthLimitOptions, C>
         if (child.isAbsent()) {
             const legality: MGPFallible<L> = this.rules.isLegal(move, node.gameState, config);
             const moveString: string = move.toString();
-            Utils.assert(legality.isSuccess(), 'The minimax "' + this.name + '" has proposed an illegal move (' + moveString + '), refusal reason: ' + legality.getReasonOr('') + ' this should not happen.');
+            Utils.assert(legality.isSuccess(), 'The minimax "' + this.name + '" has proposed an illegal move at turn ' + node.gameState.turn + ' (' + moveString + '), ' +
+                                               'refusal reason: "' + legality.getReasonOr('') + '", this should not happen.');
             const state: S = this.rules.applyLegalMove(move, node.gameState, config, legality.get());
             const newChild: GameNode<M, S> = new GameNode(state,
                                                           MGPOptional.of(node),

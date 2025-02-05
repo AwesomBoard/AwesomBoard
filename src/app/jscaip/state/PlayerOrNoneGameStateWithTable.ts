@@ -17,4 +17,9 @@ export class PlayerOrNoneGameStateWithTable extends GameStateWithTable<PlayerOrN
                 };
             });
     }
+
+    public isEmptyAt(coord: Coord): boolean {
+        return this.hasPieceAt(coord, PlayerOrNone.NONE);
+    }
+
 }

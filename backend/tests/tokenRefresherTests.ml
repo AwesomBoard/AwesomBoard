@@ -69,7 +69,6 @@ let tests = [
 
         lwt_test "should request a token and bind it in the request" (fun () ->
             Options.emulator := false; (* need to not use the emulator to read the service-account file *)
-            Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna);
             (* Given a middleware and an access token that it will retrieve *)
             let middleware : Dream.middleware = TokenRefresher.middleware "test-data/service-account.json" in
             let response = response `OK in
@@ -92,7 +91,6 @@ let tests = [
 
         lwt_test "should request a new token if the old one is outdated" (fun () ->
             Options.emulator := false; (* need to not use the emulator to read the service-account file *)
-            Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna);
             (* Given a middleware where a token has already been requested but is now expired *)
             ExternalTests.Mock.current_time_seconds := 0;
             let middleware : Dream.middleware = TokenRefresher.middleware "test-data/service-account.json" in
@@ -145,7 +143,6 @@ let tests = [
         );
 
         lwt_test "should not request a token in the emulator" (fun () ->
-            Mirage_crypto_rng_lwt.initialize (module Mirage_crypto_rng.Fortuna);
             (* Given a middleware run with the emulator *)
             Options.emulator := true; (* by default *)
             let middleware : Dream.middleware = TokenRefresher.middleware "test-data/service-account.json" in

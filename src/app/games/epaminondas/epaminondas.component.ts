@@ -93,9 +93,7 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
         }
         const previousNode: EpaminondasNode = this.node.parent.get();
         const previousOpponent: Player = this.getState().getPreviousOpponent();
-        while (previousNode.gameState.isOnBoard(moved) &&
-               previousNode.gameState.getPieceAt(moved) === previousOpponent)
-        {
+        while (previousNode.gameState.hasPieceAt(moved, previousOpponent)) {
             this.capturedCoords.push(moved);
             moved = moved.getNext(move.direction, 1);
         }
@@ -218,7 +216,7 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
         let phalanxSize: number = 1;
         let coord: Coord = this.firstPiece.get().getNext(direction, 1);
         const currentPlayer: Player = this.getState().getCurrentPlayer();
-        while (this.getState().getOptionalPieceAt(coord).equalsValue(currentPlayer)) {
+        while (this.getState().hasPieceAt(coord, currentPlayer)) {
             phalanxSize++;
             coord = coord.getNext(direction, 1);
         }
