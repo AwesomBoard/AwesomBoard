@@ -260,7 +260,7 @@ describe('SixComponent', () => {
 
     });
 
-    fdescribe('score', () => {
+    describe('score', () => {
 
         it('should show the number of pieces to drop initially', fakeAsync(async() => {
             // Given the initial state
