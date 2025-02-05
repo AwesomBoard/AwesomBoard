@@ -14,6 +14,7 @@ import { CheckersScoreMinimax } from './CheckersScoreMinimax';
 import { MCTS } from 'src/app/jscaip/AI/MCTS';
 import { CheckersControlPlusDominationMinimax } from './CheckersControlPlusDominationMinimax';
 import { CheckersControlMinimax } from './CheckersControlMinimax';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 export abstract class CheckersComponent<R extends AbstractCheckersRules>
     extends ParallelogramGameComponent<R,
@@ -28,8 +29,6 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         offsetRatio: 0.4,
         pieceHeightRatio: 1,
         parallelogramHeight: 100,
-        abstractBoardWidth: 0, // Will be overriden in updateBoard
-        abstractBoardHeight: 0, // Will be overriden in updateBoard
     };
 
     private LEFT: number;
@@ -53,8 +52,8 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     protected moveGenerator: CheckersMoveGenerator;
 
     public override getViewBox(): ViewBox {
-        const abstractWidth: number = this.mode.abstractBoardWidth;
-        const abstractHeight: number = this.mode.abstractBoardHeight;
+        const abstractWidth: number = this.getState().getWidth();
+        const abstractHeight: number = this.getState().getHeight();
         this.LEFT = 0;
         this.UP = - this.SPACE_SIZE;
         this.basicWidth = abstractWidth * this.mode.parallelogramHeight;
@@ -80,10 +79,12 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
         this.hasAsymmetricBoard = true;
     }
 
+    public override getScoreName(): ScoreName {
+        return ScoreName.STACKS_UNDER_CONTROL;
+    }
+
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
-        this.constructedState = this.getState(); // AND SWITCH IT
-        this.mode.abstractBoardWidth = this.constructedState.getWidth();
-        this.mode.abstractBoardHeight = this.constructedState.getHeight();
+        this.constructedState = this.getState();
         this.legalMoves = this.moveGenerator.getListMoves(this.node, this.config);
         this.scores = this.constructedState.getScores();
         this.showPossibleClicks();

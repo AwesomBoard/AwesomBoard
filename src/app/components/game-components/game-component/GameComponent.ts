@@ -45,6 +45,10 @@ export class ScoreName {
                       () => $localize`1 protected piece`,
                       (n: number) => $localize`${n} protected pieces`);
 
+    public static readonly STACKS_UNDER_CONTROL: ScoreName =
+        new ScoreName(() => $localize`0 stacks under control`,
+                      () => $localize`1 stack under control`,
+                      (n: number) => $localize`${n} stacks under control`);
 
     /**
      * A score name might be differently written for zero, one, or more than one "points".

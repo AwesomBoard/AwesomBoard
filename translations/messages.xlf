@@ -50,6 +50,15 @@
       <trans-unit id="386205842328325911" datatype="html">
         <source><x id="PH" equiv-text="n"/> protected pieces</source>
       </trans-unit>
+      <trans-unit id="2259880720558443999" datatype="html">
+        <source>0 stacks under control</source>
+      </trans-unit>
+      <trans-unit id="3096894933609558247" datatype="html">
+        <source>1 stack under control</source>
+      </trans-unit>
+      <trans-unit id="6608381869213568684" datatype="html">
+        <source><x id="PH" equiv-text="n"/> stacks under control</source>
+      </trans-unit>
       <trans-unit id="6153797048311741939" datatype="html">
         <source>User settings</source>
       </trans-unit>
