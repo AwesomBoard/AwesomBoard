@@ -84,12 +84,10 @@ export class SixComponent
 
     private getScores(): MGPOptional<PlayerNumberMap> {
         const state: SixState = this.getState();
-        const config: SixConfig = this.getConfig().get();
-        const lastDropTurn: number = 2 * config.piecesPerPlayer;
-        if (state.turn <= lastDropTurn) {
-            return MGPOptional.of(state.countRemainingPieces(config));
+        if (this.rules.isInDropPhase(state, this.getConfig())) {
+            return MGPOptional.of(state.countPiecesToDrop(this.getConfig().get()));
         } else {
-            return MGPOptional.of(state.countPieces());
+            return MGPOptional.of(state.countPiecesOnBoard());
         }
     }
 

@@ -194,7 +194,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         if (this.isInDropPhase(state, config)) {
             return GameStatus.ONGOING;
         } else {
-            const pieces: PlayerNumberMap = state.countPieces();
+            const pieces: PlayerNumberMap = state.countPiecesOnBoard();
             const zeroPieces: number = pieces.get(Player.ZERO);
             const onePieces: number = pieces.get(Player.ONE);
             if (zeroPieces < 6 && onePieces < 6) {

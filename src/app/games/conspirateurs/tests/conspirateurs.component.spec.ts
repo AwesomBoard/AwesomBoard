@@ -407,4 +407,42 @@ describe('ConspirateursComponent', () => {
         testUtils.expectElementToHaveClass('#space_16_16', 'victory-fill');
     }));
 
+    describe('score', () => {
+        it('should show 0 protected pieces when there are none', fakeAsync(async() => {
+            // Given the initial state
+            // When displaying it
+            // Then it should show a score of 0
+            testUtils.expectTextToBe('#score-0', '0 protected pieces');
+            testUtils.expectTextToBe('#score-1', '0 protected pieces');
+        }));
+        it('should show protected piece when there are', fakeAsync(async() => {
+            // Given a state with two protected pieces for player 0 and one protected piece for player 1
+            const state: ConspirateursState = new ConspirateursState([
+                [X, O, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [O, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+            ], 40);
+            await testUtils.setupState(state);
+            // When displaying it
+            // Then it should show a score of 2 for player 0 and 1 for player 1
+            testUtils.expectTextToBe('#score-0', '2 protected pieces');
+            testUtils.expectTextToBe('#score-1', '1 protected piece');
+        }));
+    });
+
+
 });

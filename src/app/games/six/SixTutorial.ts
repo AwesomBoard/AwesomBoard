@@ -91,7 +91,7 @@ export class SixTutorial extends Tutorial {
             ], 40),
             SixMove.ofTranslation(new Coord(6, 1), new Coord(5, 1)),
             (_move: SixMove, _previousState: SixState, resultingState: SixState) => {
-                const pieces: PlayerNumberMap = resultingState.countPieces();
+                const pieces: PlayerNumberMap = resultingState.countPiecesOnBoard();
                 if (pieces.get(Player.ZERO) === 19) {
                     if (pieces.get(Player.ONE) === 18) {
                         return MGPValidation.SUCCESS;

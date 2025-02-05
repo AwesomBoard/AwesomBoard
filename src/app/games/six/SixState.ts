@@ -103,19 +103,18 @@ export class SixState extends OpenHexagonalGameState<Player> {
 
     }
 
-    public countPieces(): PlayerNumberMap {
+    public countPiecesOnBoard(): PlayerNumberMap {
         const pieces: ReversibleMap<Player, Set<Coord>> = this.pieces.reverse();
         const zeroPieces: Set<Coord> = pieces.get(Player.ZERO).getOrElse(new CoordSet());
         const onePieces: Set<Coord> = pieces.get(Player.ONE).getOrElse(new CoordSet());
         return PlayerNumberMap.of(zeroPieces.size(), onePieces.size());
     }
 
-    public countRemainingPieces(config: SixConfig): PlayerNumberMap {
+    public countPiecesToDrop(config: SixConfig): PlayerNumberMap {
         const total: number = config.piecesPerPlayer + 1;
-        const pieces: ReversibleMap<Player, Set<Coord>> = this.pieces.reverse();
-        const zeroPieces: Set<Coord> = pieces.get(Player.ZERO).getOrElse(new CoordSet());
-        const onePieces: Set<Coord> = pieces.get(Player.ONE).getOrElse(new CoordSet());
-        return PlayerNumberMap.of(total - zeroPieces.size(), total - onePieces.size());
+        const piecesOnBoard: PlayerNumberMap = this.countPiecesOnBoard();
+        return PlayerNumberMap.of(total - piecesOnBoard.get(Player.ZERO),
+                                  total - piecesOnBoard.get(Player.ONE));
     }
 
     public switchPiece(coord: Coord): SixState {
