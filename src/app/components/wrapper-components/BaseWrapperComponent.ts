@@ -1,5 +1,6 @@
 import { ActivatedRoute } from '@angular/router';
 import { MGPOptional, Utils } from '@everyboard/lib';
+
 import { BaseComponent } from '../BaseComponent';
 import { GameInfo } from '../normal-component/pick-game/pick-game.component';
 

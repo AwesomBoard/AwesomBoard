@@ -3,8 +3,8 @@ import { ChatService } from '../../../services/ChatService';
 import { Message } from '../../../domain/Message';
 import { faReply, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
+
 import { Debug } from 'src/app/utils/Debug';
-import { Utils } from '@everyboard/lib';
 
 @Component({
     selector: 'app-chat',

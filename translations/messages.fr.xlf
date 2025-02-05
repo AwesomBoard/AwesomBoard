@@ -214,6 +214,10 @@
         <source>You are in charge of a hive full of insects. Use the abilities of your insects to block the opponent&apos;s queen in order to win!</source>
         <target>Vous contrôlez une colonie d'insectes. Utilisez les capacités de vos insectes pour bloquer la reine de votre adversaire afin de gagner !</target>
       </trans-unit>
+      <trans-unit id="7855356453914220059" datatype="html">
+        <source>The famous checkers game (international version)</source>
+        <target>Le fameux jeu de dames (version internationale)</target>
+      </trans-unit>
       <trans-unit id="3910056094130316471" datatype="html">
         <source>Your goal is simple: reach the last line. But the piece you move depends on your opponent&apos;s last move!</source>
         <target>Votre but est simple : atteindre la dernière ligne. Mais la pièce que vous déplacez dépend du mouvement de votre adversaire !</target>
@@ -453,9 +457,9 @@
         <source>Number of empty rows</source>
         <target>Nombre de rangées vides</target>
       </trans-unit>
-      <trans-unit id="7516610645583911732" datatype="html">
-        <source>Number of soldier rows</source>
-        <target>Nombre de rangées de soldats</target>
+      <trans-unit id="4053624367526659457" datatype="html">
+        <source>Number of pieces rows</source>
+        <target>Nombre de rangées de pièces</target>
       </trans-unit>
       <trans-unit id="2969677193390047071" datatype="html">
         <source>19 x 19</source>
@@ -548,6 +552,10 @@
       <trans-unit id="6233664534580457703" datatype="html">
         <source>Trigo</source>
         <target>Trigo</target>
+      </trans-unit>
+      <trans-unit id="5226075040149407867" datatype="html">
+        <source>International Checkers</source>
+        <target>Dames Internationales</target>
       </trans-unit>
       <trans-unit id="1760292529513431093" datatype="html">
         <source>Trexo</source>
@@ -1157,8 +1165,8 @@
         <source>Pushing</source>
         <target>Pousser</target>
       </trans-unit>
-      <trans-unit id="2330775081318125963" datatype="html">
-        <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push towards the right is possible here, find it. (You&apos;re playing Dark).</source>
+      <trans-unit id="5786541673114174680" datatype="html">
+        <source>To push one opponent piece, you must move at least two of your pieces. To push two opponent pieces, you must move three of your pieces. If one of your pieces is in the way, it will be impossible to push. You cannot move more than three pieces.&lt;br/&gt;&lt;br/&gt; Only one push toward the right is possible here, find it. (You&apos;re playing Dark).</source>
         <target>Pour pousser une pièce de l'adversaire, vous devez déplacer au moins deux de vos pièces. Pour pousser deux pièces, vous devez déplacer trois de vos pièces. Si une de vos pièces est placée juste après une pièce adverse que vous poussez, pousser sera alors interdit. Vous ne pouvez pas déplacer plus de trois pièces.&lt;br/&gt;&lt;br/&gt; Une seule &quot;poussée&quot; vers la droite est possible ici, trouvez la (vous jouez Foncé).</target>
       </trans-unit>
       <trans-unit id="1578933364998292635" datatype="html">
@@ -1324,6 +1332,26 @@
       <trans-unit id="3104604410220998192" datatype="html">
         <source>Multiple captures</source>
         <target>Capture composée</target>
+      </trans-unit>
+      <trans-unit id="7023776270158690543" datatype="html">
+        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do a double capture.</source>
+        <target>Si, après le commencement de votre capture, la pièce que vous avez bougée peut encore capturer une autre pièce, vous devez le faire jusqu'à ce que la pièce ne puisse plus capturer. Pour ce faire, vous devez à nouveau cliquer sur la prochaine case d'atterissage. Notez que, vous ne pouvez pas sauter au dessus de la même case deux fois.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites une double capture !</target>
+      </trans-unit>
+      <trans-unit id="7360724816457427020" datatype="html">
+        <source>Maximum capture</source>
+        <target>Capture majoritaire</target>
+      </trans-unit>
+      <trans-unit id="8944110142689384190" datatype="html">
+        <source>If at some turn you have several capture choices, you have to capture the maximal number of pieces.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the maximal capture.</source>
+        <target>Si à un tour donné, vous avez plusieurs choix de captures, vous devez capturer le nombre maximal de pièces.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites la capture maximum !</target>
+      </trans-unit>
+      <trans-unit id="6705237401508801272" datatype="html">
+        <source>When a piece reaches the last line, it is promoted and becomes a king, and gains abilities that will be explained in next step! One of your piece could be promoted now.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark. Do it.</source>
+        <target>Quand une pièce atteint la dernière ligne, elle est promue et devient une dame, et gagne des capacités qui seront expliquées à l'étape suivante ! Une de vos pièces pourrait être promue maintenant.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé. Faites-le.</target>
+      </trans-unit>
+      <trans-unit id="2350466795039227682" datatype="html">
+        <source>You did not choose the correct piece, and got no promotion.</source>
+        <target>Vous n'avez pas choisi la bonne pièce, et n'avez pas eu de promotion.</target>
       </trans-unit>
       <trans-unit id="4514452777310919130" datatype="html">
         <source>By sowing from your leftmost house, you will end in the opponent&apos;s second leftmost house, which now contains 2 seeds, so this will be a capture. But now, the house right before it contains 3 seeds, which is also capturable, so, that house will get captured as well!&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture!</source>
@@ -2777,25 +2805,53 @@
          Dans ce cas, le dernier joueur à avoir déplacé une pièce perd la partie.
          Ici, votre adversaire a déplacé sa pièce verte en dernier, vous êtes donc vainqueur !</target>
       </trans-unit>
-      <trans-unit id="4481226927895530871" datatype="html">
-        <source>A capture should be a double diagonal step. Look at the green indicators to help you!</source>
-        <target>Les captures doivent être des sauts de deux pas en diagonale ! Regardez les indications en vert pour vous aider !</target>
+      <trans-unit id="3726954835052044930" datatype="html">
+        <source>Frisian capture must be of even length!</source>
+        <target>Une capture frisienne doit être un pas de longueur paire !</target>
       </trans-unit>
-      <trans-unit id="924257200871471773" datatype="html">
-        <source>You must move in a single diagonal step!</source>
-        <target>Les déplacements doivent être des simples pas en diagonale !</target>
+      <trans-unit id="3645639684924416367" datatype="html">
+        <source>This is an invalid orthogonal move, a frisian capture must be at least steps of 4. Look at the indicators to help you!</source>
+        <target>Ceci est un mouvement orthogonal invalide, les captures frisiennes doivent être au minimum des pas de 4 ! Regardez les indications pour vous aider !</target>
+      </trans-unit>
+      <trans-unit id="964675748683334375" datatype="html">
+        <source>Normal pieces cannot move like this!</source>
+        <target>Les pièces normales ne peuvent pas se déplacer comme ceci !</target>
+      </trans-unit>
+      <trans-unit id="4897086529827321658" datatype="html">
+        <source>Flying capture is forbidden for normal pieces!</source>
+        <target>Les pièces normales ne peuvent pas faire de capture volantes !</target>
+      </trans-unit>
+      <trans-unit id="5556528437720213364" datatype="html">
+        <source>No piece is allowed to do a long jump</source>
+        <target>Aucune pièce ne peut se déplacer de plus d'un pas !</target>
+      </trans-unit>
+      <trans-unit id="7678886963795480068" datatype="html">
+        <source>You cannot move orthogonally!</source>
+        <target>Vous ne pouvez pas faire de déplacements orthogonaux !</target>
       </trans-unit>
       <trans-unit id="8938938109993892899" datatype="html">
         <source>You cannot jump over the same square several times!</source>
         <target>Vous ne pouvez pas sauter au dessus d'une même case plusieurs fois !</target>
       </trans-unit>
+      <trans-unit id="8795923620032980614" datatype="html">
+        <source>You must do the longest capture possible!</source>
+        <target>Vous devez faire la plus grande capture possible !</target>
+      </trans-unit>
+      <trans-unit id="4849176470407657635" datatype="html">
+        <source>You cannot jump over several pieces!</source>
+        <target>Vous ne pouvez pas sauter par dessus plusieurs pièces !</target>
+      </trans-unit>
+      <trans-unit id="4596314344113953334" datatype="html">
+        <source>You have done a step after a capture. A move that starts with a capture can only contain captures.</source>
+        <target>Vous avez fait un pas après une captures, un mouvement qui commence par une capture ne doit contenir que des captures.</target>
+      </trans-unit>
+      <trans-unit id="1163551794419030546" datatype="html">
+        <source>The goal of checkers is to render the opponent unable to move, either by capturing all their pieces, or by blocking them.</source>
+        <target>Le but aux Dames est de rendre l'adversaire incapable de jouer, soit en capturant toutes ses pièces, soit en les bloquant.</target>
+      </trans-unit>
       <trans-unit id="3581037377692107358" datatype="html">
         <source>You cannot go backward with normal pieces!</source>
         <target>Vous ne pouvez pas aller en arrière avec une pièce normale !</target>
-      </trans-unit>
-      <trans-unit id="2164034395199252113" datatype="html">
-        <source>You cannot capture an empty square, nor jump over it!</source>
-        <target>Vous ne pouvez pas capturer une case vide, ni sauter par dessus !</target>
       </trans-unit>
       <trans-unit id="1347067654692503433" datatype="html">
         <source>You must capture when it is possible!</source>
@@ -2809,33 +2865,37 @@
         <source>Lasca: origins</source>
         <target>Lasca : les origines</target>
       </trans-unit>
-      <trans-unit id="3954016636522783040" datatype="html">
-        <source>Lasca is a game based on draughts created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
+      <trans-unit id="3082102783316586508" datatype="html">
+        <source>Lasca is a game based on checkers, created in 1911 by Emanuel Lasker, chess world champion. It&apos;s played on a 7x7 board, each player has 11 pieces.</source>
         <target>Lasca est un jeu basé sur le jeu de dames, créé en 1911 par Emanuel Lasker, champion du monde d'échecs. Lasca se joue sur un plateau de 7x7 cases, chaque joueur a 11 pièces.</target>
       </trans-unit>
-      <trans-unit id="4475600219932113977" datatype="html">
-        <source>The goal of Lasca is, like for draughts, to render the opponent unable to move, either by capturing all his pieces, either by blocking them.</source>
+      <trans-unit id="383124132464771052" datatype="html">
+        <source>The goal of Lasca is, like for checkers, to render the opponent unable to move, either by capturing all their pieces, or by blocking them.</source>
         <target>Le but de Lasca est, comme aux dames, de rendre l'adversaire incapable de jouer, soit en capturant toutes ses pièces, soit en les bloquant.</target>
       </trans-unit>
       <trans-unit id="1534367694207535197" datatype="html">
         <source>Steps</source>
         <target>Pas</target>
       </trans-unit>
-      <trans-unit id="5101419651122121441" datatype="html">
-        <source>A simple step is made by one diagonal move forward, left or right. Click on the chosen piece, then on its landing square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the first move.</source>
+      <trans-unit id="8375763259935871100" datatype="html">
+        <source>A simple step is made by one diagonal move forward left or forward right. Click on the chosen piece, then on its landing square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, do the first move.</source>
         <target>Un simple pas est un déplacement d'une case en diagonale, en avant, vers la gauche ou la droite. Pour faire un déplacement cliquez sur une pièce au choix, puis sur sa case d&apos;arrivée.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites le premier mouvement.</target>
       </trans-unit>
-      <trans-unit id="7013110290486741787" datatype="html">
-        <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, go ahead.</source>
+      <trans-unit id="5943278728548812168" datatype="html">
+        <source>A capture happens when you jump diagonally over an opponent piece to land right behind it. You have to capture when you can. It is the case here, so click on the piece that must capture, and then on its landing square.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture.</source>
         <target>Une capture arrive quand vous sautez diagonalement par dessus une pièce adverse et atterrissez immédiatement derrière. Vous devez capturer quand vous le pouvez. C'est le cas ici : cliquez sur la pièce qui doit capturer, et ensuite sur sa destination&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, faites une capture !</target>
+      </trans-unit>
+      <trans-unit id="7318689477424356735" datatype="html">
+        <source>Backward captures</source>
+        <target>Captures en arrière</target>
+      </trans-unit>
+      <trans-unit id="3186677422672219927" datatype="html">
+        <source>A capture can also be done backward&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, do a capture backward.</source>
+        <target>Un capture peut aussi être faite en arrière.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, vous devez faire une capture en arrière, Allez-y !</target>
       </trans-unit>
       <trans-unit id="3662184238859847370" datatype="html">
         <source>Congratulations, notice that the captured piece was not removed from the board, but put below the capturing pieces.</source>
         <target>Félicitations, constatez que la pièce capturée n'as pas été enlevée du plateau, mais placée en dessous de la pièce qui l'a capturé.</target>
-      </trans-unit>
-      <trans-unit id="8288645478824152244" datatype="html">
-        <source>If, after the beginning of your capture, the piece that you just moved can capture another piece, it has to capture until it can no longer capture. To do so, you must then click again on the next landing square. Note that, you cannot jump twice over the same stack.&lt;br/&gt;&lt;br/&gt;You are playing Dark, a double capture is possible, go ahead.</source>
-        <target>Si, après le début de la capture, la pièce que vous venez de bouger peut encore capturer une autre pièce, elle doit le faire tant qu'elle le peut. Pour ce faire, vous devez juste cliquer sur sa destination suivante. Notez que vous ne pouvez pas sauter deux fois au dessus de la même pile.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, une double capture est possible, faites-la.</target>
       </trans-unit>
       <trans-unit id="2693455583384082674" datatype="html">
         <source>Promotion</source>
@@ -2844,6 +2904,26 @@
       <trans-unit id="3052116389115675860" datatype="html">
         <source>You did not choose the correct stack, and got no promotion.</source>
         <target>Vous n'avez pas choisi la bonne pile, et vous n'avez pas causé de promotion.</target>
+      </trans-unit>
+      <trans-unit id="3494718669384677623" datatype="html">
+        <source>King move</source>
+        <target>Déplacement de la Reine</target>
+      </trans-unit>
+      <trans-unit id="7943272134877911783" datatype="html">
+        <source>Kings can, like any other piece, move forward and capture backward. They have extra abilities. First, they can move backward without capturing. Second, they are able to &quot;fly&quot;: they can move over multiple squares without jumping over any piece, or by jumping over exactly one opponent piece to capture it, and finally landing wherever in the same line.&lt;br/&gt;&lt;br/&gt;You&apos;re playing Dark, move your king!</source>
+        <target>Les Reines peuvent, comme tout autre pièce, se déplacer en avant, et capturer en arrière. Elles ont une capacité supplémentaire. Premièrement, elles peuvent se déplacer en arrière sans capturer. Deuxièmement, elles peuvent &quot;voler&quot;: elles peuvent se déplacer de plusieurs cases sans sauter par dessus d'autres pièces, ou en sautant exactement sur une autre pièce adverse pour la capturer, et finalement atterrir où n'importe où sur cette même ligne.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, déplacez votre Roi !</target>
+      </trans-unit>
+      <trans-unit id="6253946314470341234" datatype="html">
+        <source>You did not move your king.</source>
+        <target>Vous n'avez pas déplacé votre reine.</target>
+      </trans-unit>
+      <trans-unit id="2755311753913057003" datatype="html">
+        <source>Capture rule</source>
+        <target>Règles de capture</target>
+      </trans-unit>
+      <trans-unit id="606169029000365891" datatype="html">
+        <source>When you do multiple jumps, you cannot jump twice over neither the same piece nor the same empty space.&lt;br/&gt;Here you have to apply all the different capturing rules: backward, maximal, flying, and of course not jumping twice over the same square.&lt;br/&gt;&lt;br/&gt;You are playing Dark, go ahead.</source>
+        <target>Quand vous faites plusieurs sauts, vous ne pouvez pas sauter deux fois au dessus de la même pièce ni du même espace vide.&lt;br/&gt;Ici vous devez appliquer toutes les règles différentes de captures: en arrière, maximale, volante, et bien sur ne pas sauter deux fois au dessus de la même cases.&lt;br/&gt;&lt;br/&gt;Vous jouez Foncé, allez-y.</target>
       </trans-unit>
       <trans-unit id="4252782057421264089" datatype="html">
         <source>Officer move</source>
@@ -3177,8 +3257,8 @@
         <source>The attracting lodestone</source>
         <target>La pierre magnétique attractive</target>
       </trans-unit>
-      <trans-unit id="1840990354301535750" datatype="html">
-        <source>When the lodestone is on its attracting side it will pull your pieces one square towards it. In case one of your pieces encounters a lodestone on its way or another blocked piece, it is blocked. However, if it encounter an opponent&apos;s piece, it will capture it.</source>
+      <trans-unit id="3752096879908140751" datatype="html">
+        <source>When the lodestone is on its attracting side it will pull your pieces one square toward it. In case one of your pieces encounters a lodestone on its way or another blocked piece, it is blocked. However, if it encounter an opponent&apos;s piece, it will capture it.</source>
         <target>Quand la pierre magnétique est placée sur sa face attractive, elle attirera vos pièces d'une case dans sa direction. Si une de vos pièce croise le chemin d'une pierre magnétique ou d'une pièce bloquée, elle sera elle-même bloquée. Si elle croise le chemin d'une pièce adverse, celle-ci sera capturée.</target>
       </trans-unit>
       <trans-unit id="5747624424535894902" datatype="html">
@@ -3291,7 +3371,32 @@
       <trans-unit id="6535908388530528403" datatype="html">
         <source>Wrong choice, your opponent will win in the next turn no matter which piece is dropped!</source>
         <target>Mauvais choix, votre adversaire va gagner au prochain tour quelle que soit la pièce déposée !</target>
-      </trans-unit><trans-unit id="6434791622277704389" datatype="html">
+      </trans-unit>
+      <trans-unit id="2406587628849019715" datatype="html">
+        <source>Stack pieces instead of capturing them</source>
+        <target>Empiler les pièces plutôt que les capturer</target>
+      </trans-unit>
+      <trans-unit id="5703694246153191852" datatype="html">
+        <source>You must capture the highest number of pieces</source>
+        <target>Vous devez capturer le plus grand nombre de pièces</target>
+      </trans-unit>
+      <trans-unit id="5513887234495231304" datatype="html">
+        <source>Simple pieces can capture backward</source>
+        <target>Les simples pièces peuvent capturer en arrière</target>
+      </trans-unit>
+      <trans-unit id="5102353447213251496" datatype="html">
+        <source>Promoted pieces can travel long distance</source>
+        <target>Les pièces promies peuvent de déplacer sur de longues distances</target>
+      </trans-unit>
+      <trans-unit id="2785965642347214758" datatype="html">
+        <source>Occupy upper-left corner</source>
+        <target>Occuper le coin haut gauche</target>
+      </trans-unit>
+      <trans-unit id="3072414657519570345" datatype="html">
+        <source>Can do frisian captures</source>
+        <target>Peut-on faire des captures frisiennes</target>
+      </trans-unit>
+      <trans-unit id="6434791622277704389" datatype="html">
         <source>Rightmost Focus</source>
         <target>Priorité de droite</target>
       </trans-unit>
@@ -3897,8 +4002,8 @@
         <source>The goal at Siam is to be the first to push a mountain out of the board. The initial board contains three mountains, and no pieces are initially on the board. During its turn, a player can do one of the following actions:&lt;ol&gt;&lt;li&gt;Put a new piece on the board.&lt;/li&gt;&lt;li&gt;Change the orientation of one of its piece&lt;/li&gt;&lt;li&gt;Move one of its piece and optionally reorient it.&lt;/li&gt;&lt;li&gt;Take one of its pieces out of the board.&lt;/li&gt;&lt;/ol&gt;</source>
         <target>Le but du Siam est d&apos;être le premier à pousser une montagne hors du plateau. Le plateau de départ en contient trois, au centre, et aucun pion n&apos;est initialement sur le plateau. Durant son tour de jeu un joueur peut effectuer l&apos;une des actions suivantes :&lt;ol&gt;&lt;li&gt;Faire entrer une pièce sur le plateau.&lt;/li&gt;&lt;li&gt;Changer l&apos;orientation d&apos;une de ses pièces.&lt;/li&gt;&lt;li&gt;Déplacer une de ses pièces et éventuellement la réorienter.&lt;/li&gt;&lt;li&gt;Sortir un de ses pions du plateau.&lt;/li&gt;&lt;/ol&gt;</target>
       </trans-unit>
-      <trans-unit id="5290831626966707862" datatype="html">
-        <source>Cannot rotate piece outside the board: <x id="PH" equiv-text="move.toString()"/></source>
+      <trans-unit id="7963871986685218015" datatype="html">
+        <source>You cannot rotate piece outside the board: <x id="PH" equiv-text="move.toString()"/></source>
         <target>On ne peut pas rotationner une pièce hors du plateau: <x id="PH" equiv-text="move.toString()"/></target>
       </trans-unit>
       <trans-unit id="3925814099582230333" datatype="html">
@@ -3953,8 +4058,8 @@
         <source>Congratulations! Note that this move made you lose the game, you will see why in the next step.</source>
         <target>Bravo ! Notez que ce mouvement vous fait perdre, comme vous allez le voir dans l'étape suivante.</target>
       </trans-unit>
-      <trans-unit id="5917097999963707548" datatype="html">
-        <source>The game ends when a mountain is pushed out of the board. If you pushed it and nobody is in front of you, you&apos;re the winner. However, if you were pushing an opponent oriented in the same direction as you, your opponent will win because that piece is closer to the mountain. However, if that opponent is closer to the mountain but not oriented towards it, victory will be yours.&lt;br/&gt;&lt;br/&gt;Here, playing Dark, you can push a mountain off the board and either win, or lose. Choose correctly!</source>
+      <trans-unit id="7894393124871116843" datatype="html">
+        <source>The game ends when a mountain is pushed out of the board. If you pushed it and nobody is in front of you, you&apos;re the winner. However, if you were pushing an opponent oriented in the same direction as you, your opponent will win because that piece is closer to the mountain. However, if that opponent is closer to the mountain but not oriented toward it, victory will be yours.&lt;br/&gt;&lt;br/&gt;Here, playing Dark, you can push a mountain off the board and either win, or lose. Choose correctly!</source>
         <target>Pour rappel, la partie se termine quand une montagne est poussée hors du plateau. Si vous l&apos;avez poussé et que personne ne vous barre la route, vous êtes le vainqueur. Cependant, si vous poussez un adversaire orienté dans la même direction que vous, il sera considéré vainqueur. En revanche, si un adversaire est plus proche de la montagne, mais mal orienté, la victoire sera vôtre.&lt;br/&gt;&lt;br/&gt;Ici, en jouant Foncé, vous pouvez pousser une montagne hors du plateau et soit gagner, soit perdre. Choisissez consciencieusement !</target>
       </trans-unit>
       <trans-unit id="8309748811457759789" datatype="html">
@@ -3988,6 +4093,10 @@
       <trans-unit id="4110234759792602964" datatype="html">
         <source>You must put this piece next to another piece.</source>
         <target>Vous devez faire atterrir cette pièce à côté d&apos;une autre pièce.</target>
+      </trans-unit>
+      <trans-unit id="1431305578867281747" datatype="html">
+        <source>Number of pieces to drop per player</source>
+        <target>Nombre de pièces à déposer par joueur</target>
       </trans-unit>
       <trans-unit id="7208567678509553256" datatype="html">
         <source>This move does not disconnect your opponent&apos;s pieces. Try again with another piece.</source>

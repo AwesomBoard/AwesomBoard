@@ -82,11 +82,11 @@ export class DiaballikRules extends Rules<DiaballikMove, DiaballikState, Diaball
         let currentState: DiaballikState = state;
         for (const subMove of move.getSubMoves()) {
             const start: Coord = subMove.getStart();
-            if (state.isOnBoard(start) === false) {
+            if (state.isNotOnBoard(start)) {
                 return MGPFallible.failure(CoordFailure.OUT_OF_RANGE(start));
             }
             const end: Coord = subMove.getEnd();
-            if (state.isOnBoard(end) === false) {
+            if (state.isNotOnBoard(end)) {
                 return MGPFallible.failure(CoordFailure.OUT_OF_RANGE(end));
             }
             const legality: MGPFallible<DiaballikState> = this.isLegalSubMove(currentState, subMove);
@@ -300,11 +300,8 @@ export class DiaballikRules extends Rules<DiaballikMove, DiaballikState, Diaball
         }
         for (const direction of [Ordinal.LEFT, Ordinal.UP_LEFT, Ordinal.DOWN_LEFT]) {
             const neighbor: Coord = coord.getNext(direction);
-            if (state.isOnBoard(neighbor)) {
-                const piece: DiaballikPiece = state.getPieceAt(neighbor);
-                if (piece.owner === player) {
-                    return true;
-                }
+            if (state.coordIsOwnedBy(neighbor, player)) {
+                return true;
             }
         }
         return false;
@@ -318,11 +315,8 @@ export class DiaballikRules extends Rules<DiaballikMove, DiaballikState, Diaball
     {
         for (const direction of Orthogonal.factory.all) {
             const neighbor: Coord = coord.getNext(direction);
-            if (state.isOnBoard(neighbor)) {
-                const piece: DiaballikPiece = state.getPieceAt(neighbor);
-                if (piece.owner === player.getOpponent()) {
-                    opponentsConnected = opponentsConnected.addElement(neighbor);
-                }
+            if (state.coordIsOwnedBy(neighbor, player.getOpponent())) {
+                opponentsConnected = opponentsConnected.addElement(neighbor);
             }
         }
         return opponentsConnected;

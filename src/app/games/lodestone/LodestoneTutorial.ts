@@ -38,7 +38,7 @@ export class LodestoneTutorial extends Tutorial {
         ),
         TutorialStep.informational(
             $localize`The attracting lodestone`,
-            $localize`When the lodestone is on its attracting side it will pull your pieces one square towards it. In case one of your pieces encounters a lodestone on its way or another blocked piece, it is blocked. However, if it encounter an opponent's piece, it will capture it.`,
+            $localize`When the lodestone is on its attracting side it will pull your pieces one square toward it. In case one of your pieces encounters a lodestone on its way or another blocked piece, it is blocked. However, if it encounter an opponent's piece, it will capture it.`,
             LodestoneRules.get().getInitialState(),
         ),
         TutorialStep.informational(

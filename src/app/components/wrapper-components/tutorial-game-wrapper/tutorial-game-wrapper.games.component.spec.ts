@@ -26,6 +26,8 @@ import { ApagosMove } from 'src/app/games/apagos/ApagosMove';
 import { ApagosRules } from 'src/app/games/apagos/ApagosRules';
 import { ApagosTutorial } from 'src/app/games/apagos/ApagosTutorial';
 
+import { CheckersMove } from 'src/app/games/checkers/common/CheckersMove';
+
 import { ConspirateursMoveSimple, ConspirateursMoveJump } from 'src/app/games/conspirateurs/ConspirateursMove';
 import { ConspirateursRules } from 'src/app/games/conspirateurs/ConspirateursRules';
 import { ConspirateursTutorial } from 'src/app/games/conspirateurs/ConspirateursTutorial';
@@ -50,6 +52,9 @@ import { GipfTutorial } from 'src/app/games/gipf/GipfTutorial';
 import { HiveMove } from 'src/app/games/hive/HiveMove';
 import { HiveRules } from 'src/app/games/hive/HiveRules';
 import { HiveTutorial } from 'src/app/games/hive/HiveTutorial';
+
+import { InternationalCheckersRules } from 'src/app/games/checkers/international-checkers/InternationalCheckersRules';
+import { InternationalCheckersTutorial } from 'src/app/games/checkers/international-checkers/InternationalCheckersTutorial';
 
 import { KalahRules } from 'src/app/games/mancala/kalah/KalahRules';
 import { KalahTutorial } from 'src/app/games/mancala/kalah/KalahTutorial';
@@ -126,6 +131,7 @@ describe('TutorialGameWrapperComponent (games)', () => {
             const epaminondasTutorial: TutorialStep[] = new EpaminondasTutorial().tutorial;
             const gipfTutorial: TutorialStep[] = new GipfTutorial().tutorial;
             const hiveTutorial: TutorialStep[] = new HiveTutorial().tutorial;
+            const internationalCheckerTutorial: TutorialStep[] = new InternationalCheckersTutorial().tutorial;
             const kalahTutorial: TutorialStep[] = new KalahTutorial().tutorial;
             const linesOfActionTutorial: TutorialStep[] = new LinesOfActionTutorial().tutorial;
             const lodestoneTutorial: TutorialStep[] = new LodestoneTutorial().tutorial;
@@ -219,6 +225,11 @@ describe('TutorialGameWrapperComponent (games)', () => {
                     hiveTutorial[8],
                     HiveMove.move(new Coord(1, 0), new Coord(0, 1)).get(),
                     MGPValidation.failure('You have not freed your queen, try again!'),
+                ], [
+                    InternationalCheckersRules.get(),
+                    internationalCheckerTutorial[7],
+                    CheckersMove.fromStep(new Coord(2, 9), new Coord(3, 8)),
+                    MGPValidation.failure(`You did not move your king.`),
                 ], [
                     KalahRules.get(),
                     kalahTutorial[4],
@@ -317,22 +328,22 @@ describe('TutorialGameWrapperComponent (games)', () => {
                 ], [
                     SixRules.get(),
                     sixTutorial[4],
-                    SixMove.ofMovement(new Coord(6, 1), new Coord(7, 1)),
+                    SixMove.ofTranslation(new Coord(6, 1), new Coord(7, 1)),
                     MGPValidation.failure(SixTutorialMessages.MOVEMENT_NOT_DISCONNECTING()),
                 ], [
                     SixRules.get(),
                     sixTutorial[4],
-                    SixMove.ofMovement(new Coord(6, 1), new Coord(6, 0)),
+                    SixMove.ofTranslation(new Coord(6, 1), new Coord(6, 0)),
                     MGPValidation.failure(SixTutorialMessages.MOVEMENT_SELF_DISCONNECTING()),
                 ], [
                     SixRules.get(),
                     sixTutorial[5],
-                    SixMove.ofMovement(new Coord(0, 6), new Coord(1, 6)),
+                    SixMove.ofTranslation(new Coord(0, 6), new Coord(1, 6)),
                     MGPValidation.failure(`This move does not disconnect your opponent's pieces. Try again with another piece.`),
                 ], [
                     SixRules.get(),
                     sixTutorial[6],
-                    SixMove.ofMovement(new Coord(2, 3), new Coord(3, 3)),
+                    SixMove.ofTranslation(new Coord(2, 3), new Coord(3, 3)),
                     MGPValidation.failure(`This move has not cut the board in two equal halves.`),
                 ], [
                     SixRules.get(),

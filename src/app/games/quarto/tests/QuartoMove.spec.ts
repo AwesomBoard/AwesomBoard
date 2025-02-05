@@ -1,9 +1,9 @@
 /* eslint-disable max-lines-per-function */
-import { MGPOptional } from '@everyboard/lib';
+import { MGPOptional, EncoderTestUtils } from '@everyboard/lib';
+
 import { QuartoConfig, QuartoNode, QuartoRules } from '../QuartoRules';
 import { QuartoMove } from '../QuartoMove';
 import { QuartoPiece } from '../QuartoPiece';
-import { EncoderTestUtils } from '@everyboard/lib';
 import { QuartoMoveGenerator } from '../QuartoMoveGenerator';
 
 describe('QuartoMove', () => {

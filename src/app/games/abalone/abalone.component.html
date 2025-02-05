@@ -24,7 +24,7 @@
                      [attr.points]="getHexaPoints()"
                      stroke-linecap="round"
             />
-            <circle *ngIf="isPiece(coordAndContent.content)"
+            <circle *ngIf="coordAndContent.content.isPlayer()"
                     id="piece-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
                     (click)="onPieceClick(coordAndContent.coord)"
                     cx="0"

@@ -12,9 +12,9 @@ export class SixFilteredMoveGenerator extends SixMoveGenerator {
 
     private readonly heuristic: SixHeuristic = new SixHeuristic();
 
-    protected override getMovements(state: SixState, legalLandings: Coord[]): SixMove[] {
+    protected override getTranslations(state: SixState, legalLandings: Coord[]): SixMove[] {
         const safelyMovablePieceOrFirstOne: CoordSet = this.getSafelyMovablePieceOrFirstOne(state);
-        return this.getMovementsFrom(state, safelyMovablePieceOrFirstOne, legalLandings);
+        return this.getTranslationsFrom(state, safelyMovablePieceOrFirstOne, legalLandings);
     }
 
     private getSafelyMovablePieceOrFirstOne(state: SixState): CoordSet {

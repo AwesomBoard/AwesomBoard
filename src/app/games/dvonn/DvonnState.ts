@@ -1,3 +1,5 @@
+import { MGPOptional } from '@everyboard/lib';
+
 import { Coord } from 'src/app/jscaip/Coord';
 import { HexagonalGameState } from 'src/app/jscaip/state/HexagonalGameState';
 import { Table, TableUtils } from 'src/app/jscaip/TableUtils';
@@ -38,6 +40,10 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
         return DvonnState.balancedBoard()[coord.y][coord.x] !== DvonnPieceStack.UNREACHABLE;
     }
 
+    public static isNotOnBoard(coord: Coord): boolean {
+        return DvonnState.isOnBoard(coord) === false;
+    }
+
     public constructor(board: Table<DvonnPieceStack>,
                        turn: number,
                        // Did a PASS move have been performed on the last turn?
@@ -51,7 +57,7 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
         for (let y: number = 0; y < DvonnState.HEIGHT; y++) {
             for (let x: number = 0; x < DvonnState.WIDTH; x++) {
                 const coord: Coord = new Coord(x, y);
-                if (this.isOnBoard(coord) && this.getPieceAt(coord).hasPieces()) {
+                if (this.coordHasPieces(coord)) {
                     pieces.push(coord);
                 }
             }
@@ -62,7 +68,7 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
     public numberOfNeighbors(coord: Coord): number {
         const neighbors: Coord[] = HexagonalUtils.getNeighbors(coord, 1);
         const occupiedNeighbors: Coord[] = neighbors.filter((c: Coord): boolean =>
-            this.isOnBoard(c) && this.getPieceAt(c).hasPieces());
+            this.coordHasPieces(c));
         return occupiedNeighbors.length;
     }
 
@@ -75,7 +81,18 @@ export class DvonnState extends HexagonalGameState<DvonnPieceStack> {
     public override isOnBoard(coord: Coord): boolean {
         if (coord.isNotInRange(this.width, this.height)) {
             return false;
+        } else {
+            return this.getUnsafe(coord) !== DvonnPieceStack.UNREACHABLE;
         }
-        return this.board[coord.y][coord.x] !== DvonnPieceStack.UNREACHABLE;
     }
+
+    public coordHasPieces(coord: Coord): boolean {
+        const optional: MGPOptional<DvonnPieceStack> = this.getOptionalPieceAt(coord);
+        if (optional.isPresent()) {
+            return optional.get().hasPieces();
+        } else {
+            return false;
+        }
+    }
+
 }

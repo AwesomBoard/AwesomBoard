@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import { fakeAsync, tick } from '@angular/core/testing';
-
 import { MGPValidation } from '@everyboard/lib';
+
 import { ComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { AbstractGameComponent } from '../../game-components/game-component/GameComponent';
 import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
@@ -18,6 +18,7 @@ describe('OnlineGameWrapperComponent (games)', () => {
     let testUtils: ComponentTestUtils<AbstractGameComponent, MinimalUser>;
 
     for (const gameInfo of GameInfo.getAllGames()) {
+
         it(`click methods should refuse when observer clicks (${gameInfo.urlName})`, fakeAsync(async() => {
             // Given a online game
             const game: { [methodName: string]: unknown[] } | undefined = clickableMethods[gameInfo.urlName];
@@ -46,6 +47,7 @@ describe('OnlineGameWrapperComponent (games)', () => {
             }
             tick(wrapper.configRoom.totalPartDuration * 1000);
         }));
+
     }
 
 });

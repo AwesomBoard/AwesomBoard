@@ -26,10 +26,10 @@ export class MartianChessMove extends MoveCoordToCoord {
         (f: [Coord, Coord, boolean]): MartianChessMove => MartianChessMove.from(f[0], f[1], f[2]).get(),
     );
     public static from(start: Coord, end: Coord, calledTheClock: boolean = false): MGPFallible<MartianChessMove> {
-        if (MartianChessState.isOnBoard(start) === false) {
+        if (MartianChessState.isNotOnBoard(start)) {
             return MGPFallible.failure(MartianChessMoveFailure.START_COORD_OUT_OF_RANGE());
         }
-        if (MartianChessState.isOnBoard(end) === false) {
+        if (MartianChessState.isNotOnBoard(end)) {
             return MGPFallible.failure(MartianChessMoveFailure.END_COORD_OUT_OF_RANGE());
         }
         if (end.equals(start)) {
