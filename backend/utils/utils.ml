@@ -14,3 +14,4 @@ module DreamUtils = DreamUtils
 module External = External
 module Errors = Errors
 module Id = Id
+module GameId = GameId

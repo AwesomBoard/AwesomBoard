@@ -24,7 +24,9 @@ module WebSocketIncomingMessage = struct
 
     type t =
         (** Subscription messages *)
-        | Subscribe of { game_id : string [@key "gameId"] }
+        | SubscribeConfigRoom of { game_id : GameId.t [@key "gameId"] }
+        | SubscribeGame of { game_id : GameId.t [@key "gameId"] }
+        | SubscribeLobby
         | Unsubscribe
 
         (** Chat messages *)
@@ -72,15 +74,15 @@ module WebSocketOutgoingMessage = struct
         | ChatMessage of { message : Message.t }
 
         (** Config room messages *)
-        | GameCreated of { game_id : string [@key "gameId"] } (* TODO: Rename, it is an "ack" type of message *)
+        | GameCreated of { game_id : GameId.t [@key "gameId"] } (* TODO: Rename, it is an "ack" type of message *)
         | GameName of { game_name : string option [@key "gameName"] }
         | CandidateJoined of { candidate : MinimalUser.t }
         | CandidateLeft of { candidate : MinimalUser.t }
         | ConfigRoomUpdate of {
-              game_id : string [@key "gameId"];
+              game_id : GameId.t [@key "gameId"];
               config_room : ConfigRoom.t  [@key "configRoom"]
           }
-        | ConfigRoomDeleted of { game_id : string [@key "gameId"] }
+        | ConfigRoomDeleted of { game_id : GameId.t [@key "gameId"] }
 
         (** Game messages *)
         | GameEvent of { event : GameEvent.t }

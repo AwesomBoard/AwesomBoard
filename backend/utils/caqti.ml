@@ -15,3 +15,8 @@ let check = fun (result : ('a, Caqti_error.t) Result.t Lwt.t) : 'a Lwt.t ->
     | Result.Ok r -> Lwt.return r
     | Result.Error e ->
         raise (Errors.UnexpectedError (Printf.sprintf "db failure: %s" (Caqti_error.show e)))
+
+let game_id : GameId.t Caqti_type.t =
+    product (fun (id : int) : GameId.t -> GameId id)
+    @@ proj int GameId.to_int
+    @@ proj_end
