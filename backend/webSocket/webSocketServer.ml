@@ -68,8 +68,10 @@ module Make
     let unsubscribe = fun ~(request : Dream.request)
                            (user : Models.MinimalUser.t)
                            (client_id : int) : unit Lwt.t ->
+        Dream.log "is unsubscribing";
         if SubscriptionManager.is_subscribed user then begin
             let kind, game_id = SubscriptionManager.subscription_of ~client_id in
+            Dream.log "they were subscribed to game %s" (GameId.to_string game_id);
             SubscriptionManager.unsubscribe ~client_id;
             match kind with
             | Lobby | Game ->
@@ -79,7 +81,9 @@ module Make
                 (* Leaving a config room, we need to potentially remove the candidate or remove the config room *)
                 begin match%lwt ConfigRoom.get ~request game_id with
                 | Some config_room when Models.ConfigRoom.is_unstarted config_room ->
+                    Dream.log "leaving lobby!";
                     if config_room.creator = user then begin
+                        Dream.log "is creator, I'm removing the config room";
                         (* This is a creator of an unstarted game, remove the config room *)
                         let* () = ConfigRoom.delete ~request game_id in
                         let update : WebSocketOutgoingMessage.t = ConfigRoomDeleted { game_id } in
@@ -97,9 +101,11 @@ module Make
                        Either case, there's nothing to do. *)
                     Lwt.return ()
                 end
-        end else
+        end else begin
+            Dream.log "not subscribed to anything?!";
             (* If they're not subscribed, leave them be, there's nothing to do *)
             Lwt.return ()
+        end
 
 
     let end_game = fun ~(request : Dream.request)
@@ -154,6 +160,7 @@ module Make
         match message with
         | SubscribeLobby ->
             check_subscription ~client_id user @@ fun () ->
+            SubscriptionManager.subscribe ~client_id user GameId.lobby Lobby;
             (* Send all ongoing games info *)
             Lwt.join [
                 send_chat_messages ~request ~client_id GameId.lobby;
@@ -165,7 +172,9 @@ module Make
             check_subscription ~client_id user @@ fun () ->
             begin match%lwt ConfigRoom.get ~request game_id with
             | None -> send_to client_id (Error { reason = WebSocketOutgoingMessage.ConfigRoomDoesNotExist })
-            | Some config_room -> begin match config_room.status with
+            | Some config_room ->
+                SubscriptionManager.subscribe ~client_id user game_id ConfigRoom;
+                begin match config_room.status with
                 | Created | ConfigProposed ->
                     (* This config room is in progress *)
                     Dream.log "Subscribed, status is: %s" (JSON.to_string (Models.ConfigRoom.Status.to_yojson config_room.status));
@@ -201,11 +210,12 @@ module Make
                   (* It is important to send the game first and then the events,
                      so that the client knows about the game before receiving
                      events *)
-                            let* () = send_to client_id (GameUpdate { game }) in
-                            Lwt.join [
-                                send_chat_messages ~request ~client_id game_id;
-                                Game.iter_events ~request game_id (fun event -> send_to client_id (GameEvent { event }))
-                            ]
+                    SubscriptionManager.subscribe ~client_id user game_id Game;
+                    let* () = send_to client_id (GameUpdate { game }) in
+                    Lwt.join [
+                        send_chat_messages ~request ~client_id game_id;
+                        Game.iter_events ~request game_id (fun event -> send_to client_id (GameEvent { event }))
+                    ]
             end
         | Unsubscribe ->
             unsubscribe ~request user client_id
@@ -390,10 +400,8 @@ module Make
     (** The main handler *)
     let handle : Dream.handler = fun (request : Dream.request) ->
         Dream.websocket (fun (ws : Dream.websocket) ->
-            Dream.log "Got connection";
             let client_id = track ws in
             let rec loop = fun () ->
-                Dream.log "Waiting...";
                 let user = Auth.get_minimal_user request in
                 match%lwt Dream.receive ws with
                 | Some message ->
@@ -404,19 +412,12 @@ module Make
                     | Error e ->
                         Dream.log "ERROR: %s\n" e;
                         send_to client_id (Error { reason = WebSocketOutgoingMessage.NotUndestood }) in
-                    Dream.log "done, looping";
                     loop ()
                 | None ->
                     Dream.log "Closing connection to %d" client_id;
                     let* () = unsubscribe ~request user client_id in
-                    Dream.log "done with unsubscribe";
                     (* Client left, forget about it *)
                     forget client_id;
-                    Dream.log "done with forget, closing connection...";
-                    (* TODO: Dream.close_websocket not needed I think, the socket is already closed *)
-                    (* let* () = wrap @@ fun () -> Dream.close_websocket ws in *)
-                    ignore request;
-                    Dream.log "done, stopping";
                     Lwt.return ()
             in
             try loop ()

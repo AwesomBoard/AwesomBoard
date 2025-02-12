@@ -9,10 +9,14 @@ let of_yojson = fun (json : JSON.t) : (t, string) result ->
     | `String s -> Ok (GameId (Id.of_string s))
     | _ -> Error "invalid id"
 
-let to_yojson = fun (GameId game_id : t) : JSON.t ->
-    `String (Id.to_string game_id)
+let to_string = fun (GameId game_id : t) : string ->
+    Id.to_string game_id
+
+let to_yojson = fun (game_id : t) : JSON.t ->
+    `String (to_string game_id)
 
 let to_int = fun (GameId game_id : t) : int ->
     game_id
+
 
 let lobby = GameId Id.lobby

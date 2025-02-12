@@ -27,7 +27,7 @@ export class GameService {
             this.webSocketManager.setCallback('GameEvent', (message: WebSocketMessage): void => {
                 gameEvent(message.getArgument('event'));
             });
-        const gameSubscription: Subscription = await this.webSocketManager.subscribeTo(gameId);
+        const gameSubscription: Subscription = await this.webSocketManager.subscribeToGame(gameId);
         return new Subscription(() => {
             gameSubscription.unsubscribe();
             gameUpdateSubscription.unsubscribe();

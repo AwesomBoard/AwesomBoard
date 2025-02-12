@@ -85,9 +85,25 @@ export class WebSocketManagerService {
         });
     }
 
-    public async subscribeTo(gameId: string): Promise<Subscription> {
-        await this.send(['Subscribe', { gameId }]);
+    private async subscribeTo(subscription: string, gameId?: string): Promise<Subscription> {
+        if (gameId !== undefined) {
+            await this.send([subscription, { gameId }]);
+        } else {
+            await this.send([subscription]);
+        }
         return new Subscription(async() => this.send(['Unsubscribe']));
+    }
+
+    public subscribeToGame(gameId: string): Promise<Subscription> {
+        return this.subscribeTo('SubscribeGame', gameId);
+    }
+
+    public subscribeToConfigRoom(gameId: string): Promise<Subscription> {
+        return this.subscribeTo('SubscribeConfigRoom', gameId);
+    }
+
+    public subscribeToLobby(): Promise<Subscription> {
+        return this.subscribeTo('SubscribeLobby');
     }
 
     public async send(message: JSONValue): Promise<void> {

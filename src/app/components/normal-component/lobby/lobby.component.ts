@@ -57,7 +57,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
                 }
             });
 
-        this.lobbySubscription = await this.webSocketManager.subscribeTo('lobby');
+        this.lobbySubscription = await this.webSocketManager.subscribeToLobby();
     }
 
     public async ngOnDestroy(): Promise<void> {

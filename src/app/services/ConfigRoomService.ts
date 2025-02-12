@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { MGPOptional } from '@everyboard/lib';
 
-import { FirstPlayer, ConfigRoom, PartStatus, PartType } from '../domain/ConfigRoom';
+import { FirstPlayer, ConfigRoom, PartType } from '../domain/ConfigRoom';
 import { MinimalUser } from '../domain/MinimalUser';
 import { RulesConfig } from '../jscaip/RulesConfigUtil';
 import { WebSocketManagerService, WebSocketMessage } from './BackendService';
@@ -31,7 +31,7 @@ export class ConfigRoomService {
                       error: (reason: string) => void)
     : Promise<Subscription>
     {
-        const gameSubscription: Subscription = await this.webSocketManager.subscribeTo(gameId);
+        const gameSubscription: Subscription = await this.webSocketManager.subscribeToConfigRoom(gameId);
         const configRoomSubscription: Subscription =
             this.webSocketManager.setCallback('ConfigRoomUpdate', (message: WebSocketMessage): void => {
                 configRoomUpdate(message.getArgument('configRoom'));
