@@ -162,7 +162,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         await this.initializePlayersData(game);
         const turn: number = this.gameComponent.getTurn();
         Utils.assert(turn === 0, 'turn should always be 0 upon game start');
-        this.timeManager.onGameStart(this.configRoom, this.players);
+        this.timeManager.onGameStart(this.configRoom, game, this.players);
         this.requestManager.onGameStart();
         this.cdr.detectChanges();
     }

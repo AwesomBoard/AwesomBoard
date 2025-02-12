@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MGPOptional, Utils } from '@everyboard/lib';
 
-import { GameEventMove, GameEventAction } from '../../../domain/Part';
+import { GameEventMove, GameEventAction, Game } from '../../../domain/Part';
 import { CountDownComponent } from '../../normal-component/count-down/count-down.component';
 import { ConfigRoom } from 'src/app/domain/ConfigRoom';
 import { Player } from 'src/app/jscaip/Player';
@@ -56,9 +56,10 @@ export class OGWCTimeManagerService {
     }
 
     // At the beginning of a game, set up clocks and remember when the game started
-    public onGameStart(configRoom: ConfigRoom, players: MGPOptional<MinimalUser>[]): void {
+    public onGameStart(configRoom: ConfigRoom, game: Game, players: MGPOptional<MinimalUser>[]): void {
         this.configRoom = MGPOptional.of(configRoom);
         this.players = players;
+        this.lastMoveStartMs = MGPOptional.of(game.beginning);
         for (const player of Player.PLAYERS) {
             // We need to initialize the service's data
             // Otherwise if we go to another page and come back, the service stays alive and the data is off
@@ -91,9 +92,6 @@ export class OGWCTimeManagerService {
                 break;
             case 'AddGlobalTime':
                 this.addGlobalTime(this.playerOfMinimalUser(action.user));
-                break;
-            case 'StartGame':
-                this.lastMoveStartMs = MGPOptional.of(action.time);
                 break;
             case 'EndGame':
                 this.onGameEnd();

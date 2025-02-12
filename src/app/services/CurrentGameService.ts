@@ -11,6 +11,7 @@ import { Localized } from '../utils/LocaleUtils';
 @Injectable({
     providedIn: 'root',
 })
+// TODO: don't do validation here, only rely on server checking this
 export class CurrentGameService implements OnDestroy {
 
     public static roleToMessage: MGPMap<UserRoleInPart, Localized> = new MGPMap([
