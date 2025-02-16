@@ -816,6 +816,31 @@ fdescribe('QuebecCastlesRules', () => {
             RulesUtils.expectToBeOngoing(rules, node, defaultConfig);
         });
 
+        it('should recognize draw (in drop phase)', () => {
+            // Given any state in drop phase for player for Player.ONE
+            const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                ...defaultConfig.get(),
+                defender: 3,
+                dropPieceByPiece: false, dropPieceYourself: true,
+            });
+            const state: QuebecCastlesState = new QuebecCastlesState([
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, _, _],
+                [_, _, _, _, _, _, _, O, O],
+                [_, _, _, _, _, _, _, O, _],
+            ], 1, defaultThrones);
+
+            // When evaluating its value
+            // Then it should be a victory
+            const node: QuebecCastlesNode = new QuebecCastlesNode(state);
+            RulesUtils.expectToBeOngoing(rules, node, customConfig);
+        });
+
     });
 
     describe('custom config', () => {

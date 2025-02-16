@@ -304,8 +304,9 @@ export class GameInfo {
             new GameInfo($localize`Squarz`,                 'Squarz',                SquarzComponent,                new SquarzTutorial(),                SquarzRules.get(),                new Date('2024-05-08'), GameDescription.SQUARZ()                ), // 37:                             * Martin
             new GameInfo($localize`Hexodia`,                'Hexodia',               HexodiaComponent,               new HexodiaTutorial(),               HexodiaRules.get(),               new Date('2024-06-26'), GameDescription.HEXODIA()               ), // 38:                             * Martin
             new GameInfo($localize`Trigo`,                  'Trigo',                 TrigoComponent,                 new TrigoTutorial(),                 TrigoRules.get(),                 new Date('2024-06-29'), GameDescription.TRI_GO()                ), // 39:                             * Martin
-            new GameInfo($localize`International Checkers`, 'InternationalCheckers', InternationalCheckersComponent, new InternationalCheckersTutorial(), InternationalCheckersRules.get(), new Date('2024-10-08'), GameDescription.INTERNATIONAL_CHECKERS()), // 40:                             * Martin
-            new GameInfo($localize`Quebec Castles`,         'QuebecCastles',         QuebecCastlesComponent,         new QuebecCastlesTutorial(),         QuebecCastlesRules.get(),         new Date('2025-02-06'), GameDescription.QUEBEC_CASTLES()        ), // 41:                             * Martin
+
+            new GameInfo($localize`International Checkers`, 'InternationalCheckers', InternationalCheckersComponent, new InternationalCheckersTutorial(), InternationalCheckersRules.get(), new Date('2025-02-03'), GameDescription.INTERNATIONAL_CHECKERS()), // 40:                             * Martin
+            new GameInfo($localize`Quebec Castles`,         'QuebecCastles',         QuebecCastlesComponent,         new QuebecCastlesTutorial(),         QuebecCastlesRules.get(),         new Date('2025-02-21'), GameDescription.QUEBEC_CASTLES()        ), // 41:                             * Martin
         ].sort((a: GameInfo, b: GameInfo) => a.name.localeCompare(b.name));
         // After Apagos: median = 26d; average = 53d
         // 9d 10d 12d 13d 18d - 18d 20d 22d 25d 26d - (26d) - 49d 65d 71d 76d 93d - 94j 4m 4m 7m 11m

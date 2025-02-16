@@ -15,7 +15,7 @@ module ConfigRoomEndpoint = ConfigRoomEndpoint.Make(External)(Auth)(Firestore)(S
     - increase the last number if it is a minor change that doesn't break compatibility
     - increase the second number if it is a minor change that does break compatibility
     - increase the first number only for major changes *)
-let version_number : string = "1.0.0"
+let version_number : string = "1.0.1"
 
 let version_handler : Dream.handler = fun _ ->
     Dream.respond ~status:`OK version_number

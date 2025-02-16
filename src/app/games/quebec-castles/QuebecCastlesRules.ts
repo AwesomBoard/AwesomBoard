@@ -45,7 +45,6 @@ export class QuebecCastlesFailure {
 
     public static readonly TOO_MUCH_LINES_FOR_TERRITORY: Localized = () => $localize`Too much lines for territory, your opponent lines would merged with yours!`;
 }
-// TODO show captures
 // TODO show score
 // TODO meilleur trone en cas de victoire
 export type QuebecCastlesConfig = {
@@ -534,7 +533,7 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
             .incrementTurn();
     }
 
-    public override getGameStatus(node: QuebecCastlesNode, _config: MGPOptional<QuebecCastlesConfig>): GameStatus {
+    public override getGameStatus(node: QuebecCastlesNode, config: MGPOptional<QuebecCastlesConfig>): GameStatus {
         const state: QuebecCastlesState = node.gameState;
         const defender: MGPOptional<Coord> = state.thrones.get(Player.ONE);
         if (defender.isPresent() && state.getPieceAt(defender.get()).equals(PlayerOrNone.ZERO)) {
@@ -545,12 +544,14 @@ export class QuebecCastlesRules extends ConfigurableRules<QuebecCastlesMove, Que
             return GameStatus.ONE_WON; // Defender weird victory that I might want to rule out ? TODO
         }
         const playerZero: number = state.count(Player.ZERO);
-        if (playerZero === 0) {
-            return GameStatus.ONE_WON;
-        }
-        const playerOne: number = state.count(Player.ONE);
-        if (playerOne === 0) {
-            return GameStatus.ZERO_WON;
+        if (this.isDropPhase(state, config.get()) === false) {
+            if (playerZero === 0) {
+                return GameStatus.ONE_WON;
+            }
+            const playerOne: number = state.count(Player.ONE);
+            if (playerOne === 0) {
+                return GameStatus.ZERO_WON;
+            }
         }
         return GameStatus.ONGOING;
     }

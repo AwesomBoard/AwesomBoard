@@ -158,8 +158,7 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
     private async onMove(coord: Coord): Promise<MGPValidation> {
         if (this.selected.isPresent()) {
             if (this.selected.equalsValue(coord)) {
-                this.selected = MGPOptional.empty();
-                return MGPValidation.SUCCESS;
+                return this.cancelMove(); // TODO test ?
             } else {
                 return this.chooseMove(QuebecCastlesTranslation.of(this.selected.get(), coord));
             }
