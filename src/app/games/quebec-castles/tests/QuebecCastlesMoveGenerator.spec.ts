@@ -8,7 +8,6 @@ import { QuebecCastlesState } from '../QuebecCastlesState';
 import { PlayerOrNone } from 'src/app/jscaip/Player';
 import { Coord } from 'src/app/jscaip/Coord';
 import { PlayerMap } from 'src/app/jscaip/PlayerMap';
-import { RulesUtils } from 'src/app/jscaip/tests/RulesUtils.spec';
 
 const _: PlayerOrNone = PlayerOrNone.NONE;
 const O: PlayerOrNone = PlayerOrNone.ZERO;
@@ -40,7 +39,7 @@ fdescribe('QuebecCastlesMoveGenerator', () => {
         // When listing the moves
         const moves: QuebecCastlesMove[] = moveGenerator.getListMoves(node, defaultConfig);
 
-        // Then there should be this many moves
+        // Then there should be this 1 choice by available space in territory
         expect(moves.length).toBe(15);
     });
 
@@ -53,7 +52,7 @@ fdescribe('QuebecCastlesMoveGenerator', () => {
         // When listing the moves
         const moves: QuebecCastlesMove[] = moveGenerator.getListMoves(node, defaultConfig);
 
-        // Then there should be this many moves
+        // Then there should be one move by available space
         expect(moves.length).toBe(19);
     });
 
@@ -61,40 +60,62 @@ fdescribe('QuebecCastlesMoveGenerator', () => {
 
         describe('Custom Config', () => {
 
-            describe('drop yourself', () => {
+            describe('drop piece by piece', () => {
 
-                describe('piece by piece = true', () => { // TODO, should not have to put those two to true to work
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    dropPieceByPiece: true,
+                    dropPieceYourself: true,
+                    defender: 3,
+                    invader: 5,
+                });
 
-                    const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
-                        ...defaultConfig.get(),
-                        dropPieceByPiece: true,
-                        dropPieceYourself: true,
-                        defender: 3,
-                        invader: 5,
-                    });
+                it('should allow putting soldier in first turn', () => {
+                    // Given a node in drop phase (hence a custom config)
+                    const state: QuebecCastlesState = new QuebecCastlesState([
+                        [_, _, _, _, _, _, _, _, _],
+                        [_, _, _, _, _, _, _, _, _],
+                        [_, _, _, _, _, _, _, _, _],
+                        [_, _, _, _, _, _, _, _, _],
+                        [_, _, _, _, _, _, _, _, _],
+                        [_, _, _, _, _, _, _, _, _],
+                        [_, _, _, _, _, _, _, _, _],
+                        [_, _, _, _, _, _, _, O, _],
+                        [_, _, _, _, _, _, _, _, _],
+                    ], 1, defaultThrones);
+                    const node: QuebecCastlesNode = new QuebecCastlesNode(state);
 
-                    it('should allow putting soldier in first turn', () => {
-                        // Given a node in drop phase (hence a custom config)
-                        const state: QuebecCastlesState = new QuebecCastlesState([
-                            [_, _, _, _, _, _, _, _, _],
-                            [_, _, _, _, _, _, _, _, _],
-                            [_, _, _, _, _, _, _, _, _],
-                            [_, _, _, _, _, _, _, _, _],
-                            [_, _, _, _, _, _, _, _, _],
-                            [_, _, _, _, _, _, _, _, _],
-                            [_, _, _, _, _, _, _, _, _],
-                            [_, _, _, _, _, _, _, O, _],
-                            [_, _, _, _, _, _, _, _, _],
-                        ], 1, defaultThrones);
-                        const node: QuebecCastlesNode = new QuebecCastlesNode(state);
+                    // When listing the moves
+                    const moves: QuebecCastlesMove[] = moveGenerator.getListMoves(node, customConfig);
 
-                        // When listing the moves
-                        const moves: QuebecCastlesMove[] = moveGenerator.getListMoves(node, customConfig);
+                    // Then there should be this many moves
+                    expect(moves.length).toBe(14);
+                });
 
-                        // Then there should be this many moves
-                        expect(moves.length).toBe(14);
-                    });
+            });
 
+            describe('drop by batch', () => {
+
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    dropPieceByPiece: false,
+                    dropPieceYourself: true,
+                    defender: 3,
+                    invader: 5,
+                });
+
+                it('should drop like default config does', () => {
+                    // Given a first turn in drop-by-batch config
+                    const node: QuebecCastlesNode = QuebecCastlesRules.get().getInitialNode(customConfig);
+
+                    // When listing the moves
+                    const moves: QuebecCastlesMove[] = moveGenerator.getListMoves(node, customConfig);
+
+                    // Then there should be only one move, dropping 3 pieces
+                    expect(moves.length).toBe(1);
+                    const coords: Coord[] = [new Coord(7, 8), new Coord(8, 7), new Coord(7, 7)];
+                    const expectedMove: QuebecCastlesMove = QuebecCastlesMove.drop(coords);
+                    expect(moves[0]).toEqual(expectedMove);
                 });
 
             });

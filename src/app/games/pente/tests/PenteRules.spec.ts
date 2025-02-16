@@ -30,7 +30,7 @@ describe('PenteRules', () => {
         // When doing a drop on an empty space
         const move: PenteMove = PenteMove.of(new Coord(9, 8));
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: PenteState = new PenteState([
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],

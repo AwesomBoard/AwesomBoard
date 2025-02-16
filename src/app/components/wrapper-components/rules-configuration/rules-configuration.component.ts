@@ -81,7 +81,6 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
     }
 
     private getRulesConfigDescriptionValue(name: string, defaultValue: ConfigDescriptionType): ConfigDescriptionType {
-        console.log('getRulesConfigDescriptionValue(', name, ', ', defaultValue, ')')
         if (this.editable) {
             return defaultValue;
         } else {
@@ -110,7 +109,6 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
             if (this.isValid(parameterName)) {
                 rulesConfig[parameterName] = this.rulesConfigForm.controls[parameterName].value;
             } else {
-                console.log('jaaaaajduuuuur', this)
                 // This informs the parent component that an invalid update has been done
                 this.updateCallback.emit(MGPOptional.empty());
                 return; // In order not to send update when form is invalid

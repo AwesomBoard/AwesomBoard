@@ -43,7 +43,7 @@ describe('TrexoRules', () => {
         // When dropping the piece
         const move: TrexoMove = TrexoMove.from(new Coord(4, 4), new Coord(4, 3)).get();
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: TrexoState = TrexoState.of([
             [______, ______, ______, ______, ______, ______, ______, ______, ______, ______],
             [______, ______, ______, ______, ______, ______, ______, ______, ______, ______],
@@ -104,7 +104,7 @@ describe('TrexoRules', () => {
         // When dropping the new piece partially on the first piece partially on the second
         const move: TrexoMove = TrexoMove.from(new Coord(4, 4), new Coord(5, 4)).get();
 
-        // Then it should succeed
+        // Then the move should succeed
         LEFT = ArrayUtils.copy(LEFT);
         RIGHT = ArrayUtils.copy(RIGHT);
         LEFT.push(new TrexoPiece(Player.ZERO, 2));

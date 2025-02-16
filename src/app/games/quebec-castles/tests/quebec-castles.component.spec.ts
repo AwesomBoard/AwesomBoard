@@ -11,12 +11,23 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { QuebecCastlesState } from '../QuebecCastlesState';
 import { RulesConfigurationComponent } from 'src/app/components/wrapper-components/rules-configuration/rules-configuration.component';
 import { DebugElement } from '@angular/core';
+import { PlayerMap } from 'src/app/jscaip/PlayerMap';
+import { PlayerOrNone } from 'src/app/jscaip/Player';
 
-describe('QuebecCastlesComponent', () => {
+const _: PlayerOrNone = PlayerOrNone.NONE;
+const O: PlayerOrNone = PlayerOrNone.ZERO;
+const X: PlayerOrNone = PlayerOrNone.ONE;
+
+fdescribe('QuebecCastlesComponent', () => {
 
     let testUtils: ComponentTestUtils<QuebecCastlesComponent>;
     const rules: QuebecCastlesRules = QuebecCastlesRules.get();
     const defaultConfig: MGPOptional<QuebecCastlesConfig> = rules.getDefaultRulesConfig();
+    const defaultThrones: PlayerMap<MGPOptional<Coord>> = PlayerMap.ofValues(
+        MGPOptional.of(new Coord(8, 8)),
+        MGPOptional.of(new Coord(0, 0)),
+    );
+    defaultThrones.makeImmutable();
 
     beforeEach(fakeAsync(async() => {
         // This `testUtils` will be used throughout the test suites as a matcher for various test conditions
@@ -31,14 +42,38 @@ describe('QuebecCastlesComponent', () => {
         testUtils.expectElementToHaveClass('#piece-7-7', 'selected-stroke');
     }));
 
-    it('should should apply move on second click', fakeAsync(async() => {
+    it('should apply move on second click', fakeAsync(async() => {
         // Given any board in move phase where a piece is selected
         await testUtils.expectClickSuccess('#square-7-7');
 
         // When clicking on a case next to it
-        // Then the move should be legal
+        // Then the move should succeed
         const move: QuebecCastlesMove = QuebecCastlesMove.translation(new Coord(7, 7), new Coord(6, 6));
         await testUtils.expectMoveSuccess('#square-6-6', move);
+    }));
+
+    it('should show last capture', fakeAsync(async() => {
+        // Given any board in move phase where a piece is about to be captured
+        const state: QuebecCastlesState = new QuebecCastlesState([
+            [_, _, _, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _],
+            [_, _, X, _, _, _, _, _, _],
+            [_, _, _, _, _, _, _, _, _],
+            [_, _, _, _, O, _, _, _, _],
+            [_, _, _, _, _, _, _, _, O],
+            [_, _, _, _, _, _, _, O, O],
+            [_, _, _, _, _, _, _, O, O],
+            [_, _, _, _, _, O, O, O, _],
+        ], 3, defaultThrones);
+        await testUtils.setupState(state);
+        await testUtils.expectClickSuccess('#square-2-2');
+
+        // When doign the capture
+        const move: QuebecCastlesMove = QuebecCastlesMove.translation(new Coord(2, 2), new Coord(4, 4));
+        await testUtils.expectMoveSuccess('#square-4-4', move);
+
+        // Then the move capture should be highlighted
+        testUtils.expectElementToHaveClass('#square-4-4', 'captured-fill');
     }));
 
     it('should not select opponent piece', fakeAsync(async() => {
@@ -47,6 +82,13 @@ describe('QuebecCastlesComponent', () => {
         await testUtils.expectClickFailure('#square-2-2', RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_OPPONENT());
         // Then opponent piece should not be selected
         testUtils.expectElementNotToHaveClass('#piece-2-2', 'selected-stroke');
+    }));
+
+    it('should not select empty space', fakeAsync(async() => {
+        // Given any board in move phase
+        // When clicking on an empty space
+        // Then it should fail
+        await testUtils.expectClickFailure('#square-5-5', RulesFailure.MUST_CHOOSE_OWN_PIECE_NOT_EMPTY());
     }));
 
     it('should deselect when clicking on same piece again', fakeAsync(async() => {
@@ -58,9 +100,39 @@ describe('QuebecCastlesComponent', () => {
         testUtils.expectElementNotToHaveClass('#piece-7-7', 'selected-stroke');
     }));
 
+    it('should rotate', fakeAsync(async() => {
+        // Given a board in standard rhombic config
+        // When displaying it
+        // Then it should have a transform on the board
+        const board: DebugElement = testUtils.findElement('#quebec');
+        const boardTransform: string = board.attributes.transform as string;
+        expect(boardTransform).toBe('rotate(45, 450, 450)');
+    }));
+
     describe('custom config', () => {
 
-        describe('drop yourself = true', () => {
+        describe('isRhombic = false', () => {
+
+            it('should not rotate', fakeAsync(async() => {
+                // Given a board in non rhombic config
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    isRhombic: false,
+                });
+                const state: QuebecCastlesState = QuebecCastlesRules.get().getInitialState(customConfig);
+
+                // When displaying it
+                await testUtils.setupState(state, { config: customConfig });
+
+                // Then it should not have a transform on the board
+                const board: DebugElement = testUtils.findElement('#quebec');
+                const boardTransform: string = board.attributes.transform as string;
+                expect(boardTransform).toBe('');
+            }));
+
+        });
+
+        describe('drop by batch', () => {
 
             it('should allow dropping a second piece', fakeAsync(async() => {
                 // Given any board with a dropped piece
@@ -70,11 +142,73 @@ describe('QuebecCastlesComponent', () => {
                 });
                 await testUtils.setupState(rules.getInitialState(customConfig), { config: customConfig });
                 await testUtils.expectClickSuccess('#square-7-7');
+
                 // When dropping another one
                 await testUtils.expectClickSuccess('#square-6-6');
+
                 // Then the other piece should be dropped
                 testUtils.expectElementToHaveClasses('#piece-7-7', ['base', 'player0-fill', 'selected-stroke']);
                 testUtils.expectElementToHaveClasses('#piece-6-6', ['base', 'player0-fill', 'selected-stroke']);
+            }));
+
+            it('should forbid dropping outside territory', fakeAsync(async() => {
+                // Given any board in drop phase
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    dropPieceYourself: true,
+                });
+                await testUtils.setupState(rules.getInitialState(customConfig), { config: customConfig });
+
+                // When dropping outside territory
+                await testUtils.expectClickSuccess('#square-3-8');
+
+                // Then no piece should have been dropped
+                testUtils.expectElementNotToExist('#piece-3-8');
+            }));
+
+            it('should not display drop-validator when it is not your turn', fakeAsync(async() => {
+                // Given a board when it is not your turn to play
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    dropPieceYourself: true,
+                });
+                await testUtils.setupState(rules.getInitialState(customConfig), { config: customConfig });
+                await testUtils.getComponent().setInteractive(false);
+
+                // When displaying board
+                // Then it should not have drop-validator
+                testUtils.expectElementNotToExist('#drop-validator');
+            }));
+
+            it('should not display drop-validator when it is your turn but not all piece are dropped', fakeAsync(async() => {
+                // Given a board where it is your turn to play
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    dropPieceYourself: true,
+                });
+                await testUtils.setupState(rules.getInitialState(customConfig), { config: customConfig });
+
+                // When displaying board
+                // Then it should not have drop-validator
+                testUtils.expectElementNotToExist('#drop-validator');
+                testUtils.expectElementToExist('#remaining-piece-8');
+            }));
+
+            it('should display drop-validator when it is your turn and all piece have been dropped', fakeAsync(async() => {
+                // Given a board where it is your turn to play
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    dropPieceYourself: true,
+                    defender: 2,
+                });
+                await testUtils.setupState(rules.getInitialState(customConfig), { config: customConfig });
+                await testUtils.expectClickSuccess('#square-7-8');
+                await testUtils.expectClickSuccess('#square-8-7');
+
+                // When displaying board
+                // Then it should not have drop-validator
+                testUtils.expectElementToExist('#drop-validator');
+                testUtils.expectElementNotToExist('#remaining-piece-0');
             }));
 
             it('should deselect piece when clicking a second time', fakeAsync(async() => {
@@ -196,7 +330,7 @@ describe('QuebecCastlesComponent', () => {
 
         });
 
-        describe('drop yourself = true & drop piece by piece = true', () => {
+        describe('drop piece by piece = true', () => {
 
             it('should drop single piece', fakeAsync(async() => {
                 // Given any drop in a "drop yourself & piece by piece"
@@ -219,7 +353,7 @@ describe('QuebecCastlesComponent', () => {
 
 });
 
-describe('QuebecCastles Custom Configs', () => {
+fdescribe('QuebecCastles Custom Configs', () => {
 
     let testUtils: SimpleComponentTestUtils<RulesConfigurationComponent>;
     let component: RulesConfigurationComponent;

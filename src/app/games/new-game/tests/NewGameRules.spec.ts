@@ -26,7 +26,7 @@ describe('NewGameRules', () => {
         // When doing some move
         const move: NewGameMove = new NewGameMove();
 
-        // Then it should succeed (or fail)
+        // Then the move should succeed (or fail)
         const expectedState: NewGameState = new NewGameState(1);
         RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
     });

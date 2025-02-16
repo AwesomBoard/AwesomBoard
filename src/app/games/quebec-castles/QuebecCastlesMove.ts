@@ -26,16 +26,12 @@ export class QuebecCastlesDrop extends Move {
     public static readonly encoder: Encoder<QuebecCastlesDrop> = Encoder.tuple(
         [Encoder.list(Coord.encoder)],
         (move: QuebecCastlesDrop) => [move.coords.toList()],
-        (value: [Coord[]]) => QuebecCastlesDrop.from(value[0]).get(),
+        (value: [Coord[]]) => QuebecCastlesDrop.of(value[0]),
     );
 
-    public static from(coords: Coord[]): MGPFallible<QuebecCastlesDrop> {
+    public static of(coords: Coord[]): QuebecCastlesDrop {
         const asSet: Set<Coord> = new Set(coords);
-        if (asSet.size() === coords.length) {
-            return MGPFallible.success(new QuebecCastlesDrop(asSet));
-        } else {
-            return MGPFallible.failure('Cannot have element twice in list');
-        }
+        return new QuebecCastlesDrop(asSet);
     }
 
     private constructor(public readonly coords: Set<Coord>) {
@@ -64,7 +60,7 @@ export namespace QuebecCastlesMove {
     }
 
     export function drop(coords: Coord[]): QuebecCastlesMove {
-        return QuebecCastlesDrop.from(coords).get();
+        return QuebecCastlesDrop.of(coords);
     }
 
     export function translation(start: Coord, end: Coord): QuebecCastlesMove {

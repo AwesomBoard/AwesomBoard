@@ -15,6 +15,8 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 
+    // TODO: if available space === number of soldier to put --> autofill
+    // TODO: show droppable territory else
 @Component({
     selector: 'app-quebec-castles',
     templateUrl: './quebec-castles.component.html',
@@ -30,6 +32,7 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
     // Last Move
     private leftSquare: MGPOptional<Coord> = MGPOptional.empty();
     private landingSquare: MGPOptional<Coord> = MGPOptional.empty();
+    private isCaptured: boolean = false;
     private lastDropped: Coord[] = [];
 
     // Current Move Attempt
@@ -38,9 +41,12 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     // Board
     public constructedState: QuebecCastlesState;
-    private missingPieces: PlayerNumberMap;
+    public missingPieces: PlayerNumberMap;
     public isDroppingGroup: boolean = false;
-
+    public unextendedHeight: number = 0;
+    private minX: number = 0;
+    private maxX: number = 0;
+    private minY: number = 0;
 
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
         super(messageDisplayer, cdr);
@@ -58,19 +64,46 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
         let viewBox: ViewBox = super.getViewBox();
         if (this.getConfig().get().isRhombic) {
             const state: QuebecCastlesState = this.constructedState;
-            const minSize: number = Math.min(state.getWidth(), state.getHeight());
-            const maxSize: number = Math.max(state.getWidth(), state.getHeight());
-            const sizeDepassement: number = maxSize - minSize;
-            const big: number = Math.sqrt(2);
-            const newSize: number = minSize + (sizeDepassement / 2);
-            const concreteDepassement: number = newSize * this.SPACE_SIZE * (big - 1) * 0.5;
-            const concreteSize: number = newSize * this.SPACE_SIZE * big;
-            viewBox = new ViewBox(-concreteDepassement, -concreteDepassement, concreteSize, concreteSize);
+            const width: number = state.getWidth();
+            const height: number = state.getHeight();
+            const rotationInRadius: number = -45 * Math.PI / 180;
+            const upperCoord: Coord = new Coord(0, 0);
+            const leftCoord: Coord = upperCoord.getNext(new Coord(0, height), this.SPACE_SIZE);
+            const rightCoord: Coord = upperCoord.getNext(new Coord(width, 0), this.SPACE_SIZE);
+            const lowerCoord: Coord = upperCoord.getNext(new Coord(width, height), this.SPACE_SIZE);
+            const rotationCenter: Coord = new Coord(
+                width * 0.5 * this.SPACE_SIZE,
+                height * 0.5 * this.SPACE_SIZE,
+            );
+            const minY: number = this.getRotated(upperCoord, rotationCenter, rotationInRadius).y;
+            const minX: number = this.getRotated(leftCoord, rotationCenter, rotationInRadius).x;
+            const maxX: number = this.getRotated(rightCoord, rotationCenter, rotationInRadius).x;
+            const maxY: number = this.getRotated(lowerCoord, rotationCenter, rotationInRadius).y;
+            viewBox = ViewBox.fromLimits(minX, maxX, minY, maxY);
+            this.unextendedHeight = maxY;
+            this.maxX = maxX;
+            this.minX = minX;
+            this.minY = minY;
         }
-        if (this.isDroppingGroup) {
-            viewBox = viewBox.expandAll(this.SPACE_SIZE);
+        if (this.isPlayerDropping()) {
+            viewBox = viewBox.expandAbove(this.SPACE_SIZE);
+            viewBox = viewBox.expandBelow(this.SPACE_SIZE);
         }
         return viewBox;
+    }
+
+    public isPlayerDropping(): boolean {
+        return this.isInteractive() && this.isDroppingGroup;
+    }
+
+    private getRotated(coord: Coord, center: Coord, rotationInRadius: number): Coord {
+        let x: number = center.x;
+        x += Math.cos(rotationInRadius) * (coord.x - center.x);
+        x += Math.sin(rotationInRadius) * (coord.y - center.y);
+        let y: number = center.y;
+        y -= Math.sin(rotationInRadius) * (coord.x - center.x);
+        y += Math.cos(rotationInRadius) * (coord.y - center.y);
+        return new Coord(x, y);
     }
 
     private updateMissingPieces(): void {
@@ -83,7 +116,6 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
         );
         // this.isDroppingGroup = this.missingPieces.get(Player.ZERO) > 0 ||
         //                        this.missingPieces.get(Player.ONE) > 0;
-        console.log('içi', config, this.constructedState)
         this.isDroppingGroup = this.rules.isDropPhase(this.constructedState, config);
     }
 
@@ -103,7 +135,7 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
     private async onDrop(coord: Coord, config: QuebecCastlesConfig): Promise<MGPValidation> {
         Utils.assert(config.dropPieceYourself, 'enterred "onDrop" on a non-dropping-config');
         if (config.dropPieceByPiece) {
-            const chosenMove: QuebecCastlesDrop = QuebecCastlesDrop.from([coord]).get();
+            const chosenMove: QuebecCastlesDrop = QuebecCastlesDrop.of([coord]);
             return await this.chooseMove(chosenMove);
         } else {
             const currentPlayer: Player = this.constructedState.getCurrentPlayer();
@@ -111,9 +143,12 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
                 this.constructedState = this.constructedState.setPieceAt(coord, PlayerOrNone.NONE);
                 this.dropped = this.dropped.removeElement(coord);
             } else {
-                if (this.dropped.size() < this.getNumberOfAwaitedDrop()) {
-                    this.constructedState = this.constructedState.setPieceAt(coord, currentPlayer);
-                    this.dropped = this.dropped.addElement(coord);
+                if (0 < this.getNumberOfAwaitedDrop()) {
+                    const dropValidity: boolean = this.rules.isValidDropCoord(coord, currentPlayer, config);
+                    if (dropValidity) {
+                        this.constructedState = this.constructedState.setPieceAt(coord, currentPlayer);
+                        this.dropped = this.dropped.addElement(coord);
+                    }
                 }
             }
             return MGPValidation.SUCCESS;
@@ -143,13 +178,12 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
         }
     }
 
-    public async validateGroupDrop(): Promise<MGPValidation> { // TODO: hidden if you're not player
+    public async validateGroupDrop(): Promise<MGPValidation> {
         const clickValidity: MGPValidation = await this.canUserPlay('#drop-validator');
         if (clickValidity.isFailure()) {
             return this.cancelMove(clickValidity.getReason());
         }
-        // TODO ensure in rule unicity of dropped coords
-        const move: QuebecCastlesDrop = QuebecCastlesDrop.from(this.dropped.toList()).get();
+        const move: QuebecCastlesDrop = QuebecCastlesDrop.of(this.dropped.toList());
         return this.chooseMove(move);
     }
 
@@ -162,10 +196,15 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     public override async showLastMove(move: QuebecCastlesMove): Promise<void> {
         if (move instanceof QuebecCastlesTranslation) {
+            console.log('show last move is translation')
             this.leftSquare = MGPOptional.of(move.getStart());
             this.landingSquare = MGPOptional.of(move.getEnd());
+            this.isCaptured = this.getPreviousState().getPieceAt(move.getEnd()).isPlayer();
+            console.log(this.landingSquare.toString(), this.isCaptured)
         } else {
+            console.log('show last move is drop')
             this.lastDropped = move.coords.toList();
+            this.isCaptured = false;
         }
     }
 
@@ -173,6 +212,7 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
         this.leftSquare = MGPOptional.empty();
         this.landingSquare = MGPOptional.empty();
         this.lastDropped = [];
+        this.isCaptured = false;
     }
 
     public override cancelMoveAttempt(): void {
@@ -182,11 +222,17 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     public getRectClasses(coord: Coord): string[] {
         const classes: string[] = [];
-        if (this.leftSquare.equalsValue(coord) || this.landingSquare.equalsValue(coord)) {
+        if (this.leftSquare.equalsValue(coord) ||
+            this.lastDropped.some((c: Coord) => coord.equals(c)))
+        {
             classes.push('moved-fill');
         }
-        if (this.lastDropped.some((c: Coord) => coord.equals(c))) {
-            classes.push('moved-fill');
+        if (this.landingSquare.equalsValue(coord)) {
+            if (this.isCaptured) {
+                classes.push('captured-fill');
+            } else {
+                classes.push('moved-fill');
+            }
         }
         return classes;
     }
@@ -221,9 +267,51 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
         return classes;
     }
 
-    private getNumberOfAwaitedDrop(): number {
-        const config: QuebecCastlesConfig = this.config.get(); // TODO this vs this.getConfig() ?
-        return config.defender;
+    private getTotalPieceToDrop(): number {
+        const player: Player = this.constructedState.getCurrentPlayer();
+        if (player === Player.ZERO) {
+            return this.getConfig().get().defender;
+        } else {
+            return this.getConfig().get().invader;
+        }
+    }
+
+    public getNumberOfAwaitedDrop(): number {
+        const player: Player = this.constructedState.getCurrentPlayer();
+        const totalPieceToDrop: number = this.getTotalPieceToDrop();
+        return totalPieceToDrop - this.constructedState.count(player);
+
+    }
+
+    public getRemainingCx(i: number): number {
+        const remainingPieceToDrop: number = this.getNumberOfAwaitedDrop();
+        const availableSpace: number = (this.maxX - this.minX);
+        if (remainingPieceToDrop === 1) {
+            return this.minX + (availableSpace / 2);
+        } else {
+            const interSpace: number = (availableSpace - this.SPACE_SIZE) / (remainingPieceToDrop - 1);
+            return this.minX + (this.SPACE_SIZE / 2) + (i * interSpace);
+        }
+    }
+
+    public getRemaininPieceClasses(): string[] {
+        return [
+            this.constructedState.getCurrentPlayer().getHTMLClass('-fill'),
+        ];
+    }
+
+    public getGroupValidatorTransform(): string {
+        const y: number = this.getRemainingCy();
+        const x: number = (this.maxX + this.minX) / 2;
+        return 'translate(' + x + ', ' + y + ')';
+    }
+
+    public getRemainingCy(): number {
+        if (this.getCurrentPlayer() === Player.ZERO) {
+            return this.unextendedHeight + (this.SPACE_SIZE * 0.5);
+        } else {
+            return this.minY - (this.SPACE_SIZE * 0.5);
+        }
     }
 
 }

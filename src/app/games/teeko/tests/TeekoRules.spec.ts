@@ -87,7 +87,7 @@ describe('TeekoRules', () => {
             // When dropping a piece
             const move: TeekoMove = drop(new Coord(2, 2));
 
-            // Then it should be a success
+            // Then the move should succeed
             const expectedBoard: Table<PlayerOrNone> = [
                 [_, _, _, _, _],
                 [_, _, _, _, _],
@@ -113,7 +113,7 @@ describe('TeekoRules', () => {
             // When dropping the fourth O in alignment with the 3 others
             const move: TeekoMove = drop(new Coord(1, 2));
 
-            // Then it should be legal and marked as victory
+            // Then the move should succeed and marked as victory
             const expectedBoard: Table<PlayerOrNone> = [
                 [_, _, _, _, _],
                 [_, _, _, _, _],
@@ -141,7 +141,7 @@ describe('TeekoRules', () => {
             // When dropping the fourth O in alignment with the 3 others
             const move: TeekoMove = drop(new Coord(3, 3));
 
-            // Then it should be legal and marked as victory
+            // Then the move should succeed and marked as victory
             const expectedBoard: Table<PlayerOrNone> = [
                 [O, _, _, _, _],
                 [X, O, _, _, _],
@@ -169,7 +169,7 @@ describe('TeekoRules', () => {
             // When dropping the fourth O in alignment with the 3 others
             const move: TeekoMove = drop(new Coord(2, 3));
 
-            // Then it should be legal and marked as victory
+            // Then the move should succeed and marked as victory
             const expectedBoard: Table<PlayerOrNone> = [
                 [_, _, O, X, _],
                 [_, _, O, X, _],
@@ -197,7 +197,7 @@ describe('TeekoRules', () => {
             // When dropping the fourth O forming a square with the 3 others
             const move: TeekoMove = drop(new Coord(1, 0));
 
-            // Then it should be legal and marked as victory
+            // Then the move should succeed and marked as victory
             const expectedBoard: Table<PlayerOrNone> = [
                 [O, O, _, _, _],
                 [O, O, _, _, _],
@@ -347,7 +347,7 @@ describe('TeekoRules', () => {
             // When doing legal translation
             const move: TeekoMove = translate(new Coord(1, 1), new Coord(2, 1));
 
-            // Then it should be a success
+            // Then the move should succeed
             const expectedBoard: Table<PlayerOrNone> = [
                 [O, X, _, _, _],
                 [O, _, O, _, _],
@@ -395,7 +395,7 @@ describe('TeekoRules', () => {
             // When doing a teleportation
             const move: TeekoMove = translate(new Coord(0, 0), new Coord(2, 1));
 
-            // Then it should be a success
+            // Then the move should succeed
             const expectedBoard: Table<PlayerOrNone> = [
                 [_, X, _, _, _],
                 [O, O, O, _, _],

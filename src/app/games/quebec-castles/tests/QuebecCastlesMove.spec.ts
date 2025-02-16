@@ -7,7 +7,7 @@ import { QuebecCastlesMoveGenerator } from '../QuebecCastlesMoveGenerator';
 import { Coord } from 'src/app/jscaip/Coord';
 import { QuebecCastlesRules } from '../QuebecCastlesRules';
 
-describe('QuebecCastlesMove', () => {
+fdescribe('QuebecCastlesMove', () => {
 
     const rule: QuebecCastlesRules = QuebecCastlesRules.get();
     const moveGenerator: QuebecCastlesMoveGenerator = new QuebecCastlesMoveGenerator();
@@ -15,7 +15,7 @@ describe('QuebecCastlesMove', () => {
     it('should have a bijective encoder', () => {
         const moves: QuebecCastlesMove[] = [
             QuebecCastlesTranslation.of(new Coord(0, 0), new Coord(1, 1)),
-            QuebecCastlesDrop.from([new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)]).get(),
+            QuebecCastlesDrop.of([new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)]),
         ];
         for (const move of moves) {
             EncoderTestUtils.expectToBeBijective(QuebecCastlesMove.encoder, move);
@@ -26,10 +26,18 @@ describe('QuebecCastlesMove', () => {
     it('should stringify nicely', () => {
         const moves: QuebecCastlesMove[] = [
             QuebecCastlesTranslation.of(new Coord(0, 0), new Coord(1, 1)),
-            QuebecCastlesDrop.from([new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)]).get(),
+            QuebecCastlesDrop.of([new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)]),
         ];
         expect(moves[0].toString()).toBe('QuebecCastlesTranslation((0, 0) -> (1, 1))');
         expect(moves[1].toString()).toBe('QuebecCastlesDrop([(0, 0), (1, 1), (2, 2)])');
+    });
+
+    describe('equals', () => {
+
+        it('should return true for equal moves');
+
+        it('should return false for equal moves');
+
     });
 
 });

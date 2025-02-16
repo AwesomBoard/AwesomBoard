@@ -12,7 +12,7 @@ import { minimaxTest, SlowTest } from 'src/app/utils/tests/TestUtils.spec';
  * These are the tests for the minimax.
  * We want to test that it selects a certain move on a specific board.
  */
-describe('QuebecCastlesMinimax', () => {
+fdescribe('QuebecCastlesMinimax', () => {
 
     let minimax: Minimax<QuebecCastlesMove, QuebecCastlesState, QuebecCastlesConfig>;
     const defaultConfig: MGPOptional<QuebecCastlesConfig> = QuebecCastlesRules.get().getDefaultRulesConfig();

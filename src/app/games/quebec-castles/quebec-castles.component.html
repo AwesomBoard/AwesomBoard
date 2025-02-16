@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      class="board"
      [attr.viewBox]="getViewBox().toSVGString()"
-     [attr.transform]="rotation"
+
      preserveAspectRatio="xMidYMid meet">
     <rect [attr.x]="getViewBox().left"
           [attr.y]="getViewBox().up"
@@ -9,7 +9,7 @@
           [attr.height]="getViewBox().height"
           fill="purple"
     />
-    <g #board
+    <g id="quebec"
        [attr.transform]="getBoardTransform()">
         <g *ngFor="let coordAndContent of constructedState.getCoordsAndContents()">
             <rect id="square-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
@@ -39,19 +39,31 @@
                 </g>
             </g>
         </g>
-        <g *ngIf="isDroppingGroup"
-           id="drop-validator"
+    </g>
+    <g *ngIf="isPlayerDropping()">
+        <g id="drop-validator"
+           *ngIf="getNumberOfAwaitedDrop() === 0 else remainingPieces"
            (click)="validateGroupDrop()"
-           [attr.transform]="getTranslationAtXY(9, 9)">
-            <circle [attr.cx]="STROKE_WIDTH / 2"
-                    [attr.cy]="STROKE_WIDTH / 2"
-                    [attr.r]="SPACE_SIZE / 2"
-                    fill="red"
-                    class="base-no-fill mid-stroke"
-                    [ngClass]="getGroupDropValidationButtonClasses()"/>
-            <polygon points="-32.5,-2.5 -32.5,12.5 -10,35 -2.5,35 35,-21.25 25,-21.275 -5,25 -32.5,-2.5"
-                     fill="green"
-                     class="base-no-fill mid-stroke"/>
+           [attr.transform]="getGroupValidatorTransform()">
+           <circle [attr.cx]="STROKE_WIDTH / 2"
+                   [attr.cy]="STROKE_WIDTH / 2"
+                   [attr.r]="SPACE_SIZE / 2"
+                   fill="red"
+                   class="base-no-fill mid-stroke"
+                   [ngClass]="getGroupDropValidationButtonClasses()"/>
+           <polygon points="-32.5,-2.5 -32.5,12.5 -10,35 -2.5,35 35,-21.25 25,-21.275 -5,25 -32.5,-2.5"
+                    fill="green"
+                    class="base-no-fill mid-stroke"/>
         </g>
+        <ng-template #remainingPieces>
+            <circle *ngFor="let i of ArrayUtils.range(getNumberOfAwaitedDrop())"
+                    id="remaining-piece-{{ i }}"
+                    [attr.cx]="getRemainingCx(i)"
+                    [attr.cy]="getRemainingCy()"
+                    class="base"
+                    [ngClass]="getRemaininPieceClasses()"
+                    [attr.r]="SPACE_SIZE / 2"
+            />
+        </ng-template>
     </g>
 </svg>

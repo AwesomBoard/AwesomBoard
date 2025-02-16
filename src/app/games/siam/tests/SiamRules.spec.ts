@@ -80,7 +80,7 @@ describe('SiamRules', () => {
         const state: SiamState = SiamRules.get().getInitialState(defaultConfig);
         // When performing an insertion
         const move: SiamMove = SiamMove.of(-1, 4, MGPOptional.of(Orthogonal.RIGHT), Orthogonal.RIGHT);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -104,7 +104,7 @@ describe('SiamRules', () => {
         const state: SiamState = new SiamState(board, 0);
         // When moving a piece forward
         const move: SiamMove = SiamMove.of(2, 4, MGPOptional.of(Orthogonal.UP), Orthogonal.UP);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -159,7 +159,7 @@ describe('SiamRules', () => {
         const state: SiamState = new SiamState(board, 0);
         // When pushing the opponent's piece with the player's piece
         const move: SiamMove = SiamMove.of(0, 4, MGPOptional.of(Orthogonal.UP), Orthogonal.UP);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -183,7 +183,7 @@ describe('SiamRules', () => {
         const state: SiamState = new SiamState(board, 0);
         // When performing a rotation
         const move: SiamMove = SiamMove.of(0, 4, MGPOptional.empty(), Orthogonal.RIGHT);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -207,7 +207,7 @@ describe('SiamRules', () => {
         const state: SiamState = new SiamState(board, 0);
         // When performing a half-turn rotation
         const move: SiamMove = SiamMove.of(0, 4, MGPOptional.empty(), Orthogonal.DOWN);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -231,7 +231,7 @@ describe('SiamRules', () => {
         const state: SiamState = new SiamState(board, 0);
         // When rotating the piece and moving it forward at the same time
         const move: SiamMove = SiamMove.of(0, 4, MGPOptional.of(Orthogonal.UP), Orthogonal.DOWN);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -275,7 +275,7 @@ describe('SiamRules', () => {
 
         // When moving the piece in a different direction than its orientation
         const move: SiamMove = SiamMove.of(0, 4, MGPOptional.of(Orthogonal.RIGHT), Orthogonal.LEFT);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -337,7 +337,7 @@ describe('SiamRules', () => {
         const state: SiamState = new SiamState(board, 0);
         // When pushing the one piece
         const move: SiamMove = SiamMove.of(0, 4, MGPOptional.of(Orthogonal.UP), Orthogonal.UP);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [D, _, _, _, _],
@@ -437,7 +437,7 @@ describe('SiamRules', () => {
         const state: SiamState = new SiamState(board, 0);
         // When pushing two mountains
         const move: SiamMove = SiamMove.of(0, 2, MGPOptional.of(Orthogonal.RIGHT), Orthogonal.RIGHT);
-        // Then it should succeed
+        // Then the move should succeed
         const expectedBoard: Table<SiamPiece> = [
             [_, _, _, _, _],
             [_, _, _, _, _],
@@ -465,7 +465,7 @@ describe('SiamRules', () => {
             // When pushing the mountain out of the board
             const move: SiamMove = SiamMove.of(2, 2, MGPOptional.of(Orthogonal.UP), Orthogonal.UP);
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<SiamPiece> = [
                 [_, _, U, _, _],
                 [_, _, U, _, _],
@@ -495,7 +495,7 @@ describe('SiamRules', () => {
             // When pushing the mountain out of the board
             const move: SiamMove = SiamMove.of(2, 2, MGPOptional.of(Orthogonal.UP), Orthogonal.UP);
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<SiamPiece> = [
                 [_, _, u, _, _],
                 [_, _, U, _, _],
@@ -525,7 +525,7 @@ describe('SiamRules', () => {
             // When pushing the mountain out of the board vertically
             const move: SiamMove = SiamMove.of(2, 5, MGPOptional.of(Orthogonal.UP), Orthogonal.UP);
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<SiamPiece> = [
                 [_, _, l, _, _],
                 [_, _, R, _, _],
@@ -602,7 +602,7 @@ describe('SiamRules', () => {
             // When trying to insert a 6th piece
             const move: SiamMove = SiamMove.of(0, -1, MGPOptional.of(Orthogonal.DOWN), Orthogonal.DOWN);
 
-            // Then it should be a success
+            // Then the move should succeed
             const expectedBard: Table<SiamPiece> = [
                 [D, _, _, _, _],
                 [_, _, _, _, _],
@@ -632,7 +632,7 @@ describe('SiamRules', () => {
             // When pushing the mountain out of the board vertically
             const move: SiamMove = SiamMove.of(2, 5, MGPOptional.of(Orthogonal.UP), Orthogonal.UP);
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<SiamPiece> = [
                 [_, _, l, _, _],
                 [_, _, R, _, _],

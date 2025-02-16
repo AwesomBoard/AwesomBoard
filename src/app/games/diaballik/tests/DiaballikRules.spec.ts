@@ -100,7 +100,7 @@ describe('DiaballikRules', () => {
                               MGPOptional.of(DiaballikTranslation.from(new Coord(1, 5), new Coord(1, 4)).get()),
                               MGPOptional.of(DiaballikBallPass.from(new Coord(3, 6), new Coord(1, 4)).get()));
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: DiaballikState = new DiaballikState([
             [X, X, X, Ẋ, X, X, X],
             [_, _, _, _, _, _, _],
@@ -123,7 +123,7 @@ describe('DiaballikRules', () => {
                               MGPOptional.of(DiaballikTranslation.from(new Coord(0, 6), new Coord(0, 5)).get()),
                               MGPOptional.of(DiaballikBallPass.from(new Coord(3, 6), new Coord(2, 6)).get()));
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: DiaballikState = new DiaballikState([
             [X, X, X, Ẋ, X, X, X],
             [_, _, _, _, _, _, _],
@@ -146,7 +146,7 @@ describe('DiaballikRules', () => {
                               MGPOptional.of(DiaballikBallPass.from(new Coord(3, 6), new Coord(2, 6)).get()),
                               empty);
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: DiaballikState = new DiaballikState([
             [X, X, X, Ẋ, X, X, X],
             [_, _, _, _, _, _, _],
@@ -169,7 +169,7 @@ describe('DiaballikRules', () => {
                               empty,
                               empty);
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: DiaballikState = new DiaballikState([
             [X, X, X, Ẋ, X, X, X],
             [_, _, _, _, _, _, _],
@@ -192,7 +192,7 @@ describe('DiaballikRules', () => {
                               MGPOptional.of(DiaballikTranslation.from(new Coord(0, 6), new Coord(0, 5)).get()),
                               empty);
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: DiaballikState = new DiaballikState([
             [X, X, X, Ẋ, X, X, X],
             [_, _, _, _, _, _, _],
@@ -212,7 +212,7 @@ describe('DiaballikRules', () => {
         // When doing a move containing one translation and no pass
         const move: DiaballikMove = getTranslationMove(new Coord(1, 6), new Coord(1, 5));
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: DiaballikState = new DiaballikState([
             [X, X, X, Ẋ, X, X, X],
             [_, _, _, _, _, _, _],
@@ -235,7 +235,7 @@ describe('DiaballikRules', () => {
                               MGPOptional.of(DiaballikBallPass.from(new Coord(3, 6), new Coord(2, 5)).get()),
                               MGPOptional.of(DiaballikTranslation.from(new Coord(3, 6), new Coord(3, 5)).get()));
 
-        // Then it should succeed
+        // Then the move should succeed
         const expectedState: DiaballikState = new DiaballikState([
             [X, X, X, Ẋ, X, X, X],
             [_, _, _, _, _, _, _],

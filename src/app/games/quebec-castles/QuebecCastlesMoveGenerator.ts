@@ -5,6 +5,7 @@ import { QuebecCastlesDrop, QuebecCastlesMove } from './QuebecCastlesMove';
 import { QuebecCastlesConfig, QuebecCastlesNode, QuebecCastlesRules } from './QuebecCastlesRules';
 import { QuebecCastlesState } from './QuebecCastlesState';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
+import { Coord } from 'src/app/jscaip/Coord';
 
 export class QuebecCastlesMoveGenerator extends MoveGenerator<QuebecCastlesMove,
                                                               QuebecCastlesState,
@@ -22,16 +23,20 @@ export class QuebecCastlesMoveGenerator extends MoveGenerator<QuebecCastlesMove,
             return this.getNormalMoves(state, config);
         }
     }
-    // TODO: if available space === number of soldier to put --> autofill
-    // TODO: show droppable territory else
     public getDropMoves(state: QuebecCastlesState, config: QuebecCastlesConfig): QuebecCastlesMove[] {
         const player: Player = state.getCurrentPlayer();
         const moves: QuebecCastlesMove[] = [];
-        for (const dropCoord of QuebecCastlesRules.get().getValidDropCoords(player, config)) {
-            const piece: PlayerOrNone = state.getPieceAt(dropCoord);
-            if (piece.isNone() && state.thrones.get(player).equalsValue(dropCoord) === false) {
-                moves.push(QuebecCastlesDrop.from([dropCoord]).get());
+        if (config.dropPieceByPiece && config.dropPieceYourself) {
+            for (const dropCoord of QuebecCastlesRules.get().getValidDropCoords(player, config)) {
+                const piece: PlayerOrNone = state.getPieceAt(dropCoord);
+                if (piece.isNone() && state.thrones.get(player).equalsValue(dropCoord) === false) {
+                    moves.push(QuebecCastlesDrop.of([dropCoord]));
+                }
             }
+        } else {
+            const initialCoords: Coord[] = QuebecCastlesRules.get().getInitialCoords(player, state, config)
+            const move: QuebecCastlesMove = QuebecCastlesMove.drop(initialCoords);
+            moves.push(move);
         }
         return moves;
     }

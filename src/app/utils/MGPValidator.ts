@@ -11,12 +11,19 @@ export class MGPValidators {
                 return MGPValidation.failure($localize`This value is mandatory`);
             }
             if (value < min) {
-                return MGPValidation.failure($localize`${ value } is too small, the minimum is ${ min }`);
+                return MGPValidation.failure(MGPValidatorsFailure.VALUE_IS_TOO_SMALL(value, min));
             } else if (max < value) {
-                return MGPValidation.failure($localize`${ value } is too big, the maximum is ${ max }`);
+                return MGPValidation.failure(MGPValidatorsFailure.VALUE_IS_TOO_HIGH(value, min));
             } else {
                 return MGPValidation.SUCCESS;
             }
         };
     }
+}
+
+export class MGPValidatorsFailure {
+
+    public static readonly VALUE_IS_TOO_SMALL: (value: number, minimum: number) => string = (v: number, m: number) => $localize`${ v } is too small, the minimum is ${ m }`;
+
+    public static readonly VALUE_IS_TOO_HIGH: (value: number, maximum: number) => string = (v: number, m: number) => $localize`${ v } is too big, the maximum is ${ m }`;
 }
