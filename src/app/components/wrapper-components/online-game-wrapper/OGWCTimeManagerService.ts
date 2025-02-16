@@ -26,10 +26,7 @@ export class OGWCTimeManagerService {
     private globalClocks: [CountDownComponent, CountDownComponent]; // Initialized by setClocks
     // All clocks managed by this time manager
     private allClocks: CountDownComponent[]; // Initialized by setClocks
-    /*
-     * The configRoom, which is set when starting the clocks.
-     * We need it to know the maximal game and move durations.
-     */
+    // The configRoom, which is set when starting the game. We need it to know the maximal game and move durations.
     private configRoom: MGPOptional<ConfigRoom> = MGPOptional.empty();
 
     // The players, as we need to map between minimal users and player values
@@ -45,6 +42,12 @@ export class OGWCTimeManagerService {
 
     // The time at which the current move started
     private lastMoveStartMs: MGPOptional<number> = MGPOptional.empty();
+
+    // Whether we are synchronized with the server, i.e., we received all events of the past
+    private synchronized: boolean = false;
+
+    // Whether the game is finished
+    private gameEnd: boolean = false;
 
     public setClocks(turnClocks: [CountDownComponent, CountDownComponent],
                      globalClocks: [CountDownComponent, CountDownComponent])
@@ -85,7 +88,7 @@ export class OGWCTimeManagerService {
         return this.configRoom.get().maximalMoveDuration * 1000;
     }
 
-    public onReceivedAction(action: GameEventAction): void {
+    public onReceivedAction(currentPlayer: Player, action: GameEventAction): void {
         switch (action.action) {
             case 'AddTurnTime':
                 this.addTurnTime(this.playerOfMinimalUser(action.user));
@@ -97,6 +100,7 @@ export class OGWCTimeManagerService {
                 this.onGameEnd();
                 break;
         }
+        this.afterEvent(currentPlayer, action.time);
     }
 
     public playerOfMinimalUser(user: MinimalUser): Player {
@@ -124,6 +128,7 @@ export class OGWCTimeManagerService {
         const nextPlayerTakenGlobalTime: number = this.takenGlobalTime.get(nextPlayer);
         const nextPlayerAdaptedGlobalTime: number = this.getPartDurationInMs() - nextPlayerTakenGlobalTime;
         this.globalClocks[nextPlayer.getValue()].changeDuration(nextPlayerAdaptedGlobalTime);
+        this.afterEvent(nextPlayer, move.time);
     }
 
     private getMsElapsedSinceLastMoveStart(moveTimeMs: number): number {
@@ -132,6 +137,7 @@ export class OGWCTimeManagerService {
 
     // Stops all clocks that are running
     public onGameEnd(): void {
+        this.gameEnd = true;
         for (const clock of this.allClocks) {
             if (clock.isStarted()) {
                 clock.stop();
@@ -141,28 +147,26 @@ export class OGWCTimeManagerService {
         this.updateClocks();
     }
 
-    // Pauses all clocks before handling new events
-    public beforeEventsBatch(gameEnd: boolean): void {
-        if (gameEnd === false) {
-            this.pauseAllClocks();
-        }
-    }
-
+    // Called when we are becoming in sync with the server
     public onSync(): void {
-        // TODO
+        this.synchronized = true;
     }
 
     // Continue the current player clock after receiving events
-    public afterEventsBatch(gameEnd: boolean, player: Player, currentTimeMs: number): void {
+    private afterEvent(currentPlayer: Player, currentTimeMs: number): void {
+        if (this.synchronized === false) {
+            // We'll wait until we are synchronized to do anything
+            return;
+        }
         this.updateClocks();
-        if (gameEnd === false) {
+        if (this.gameEnd === false) {
             // The drift is how long has passed since the last event occurred
             // It can be only a few ms, or a much longer time in case we join mid-game
             const driftMs: number = this.getMsElapsedSinceLastMoveStart(currentTimeMs);
             // We need to subtract the time to take the drift into account
-            this.turnClocks[player.getValue()].subtract(driftMs);
-            this.globalClocks[player.getValue()].subtract(driftMs);
-            this.resumeClocks(player);
+            this.turnClocks[currentPlayer.getValue()].subtract(driftMs);
+            this.globalClocks[currentPlayer.getValue()].subtract(driftMs);
+            this.resumeClocks(currentPlayer);
         }
     }
 

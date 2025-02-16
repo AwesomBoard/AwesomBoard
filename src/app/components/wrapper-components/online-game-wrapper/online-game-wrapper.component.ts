@@ -182,16 +182,11 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
                     await this.handleReply(event);
                 }
                 break;
-            case 'Synced':
-                this.isSynced = true;
-                this.timeManager.onSync();
-                break;
             default:
                 Utils.expectToBe(event.eventType, 'Action', 'Event should be an action');
-                this.timeManager.onReceivedAction(event);
+                this.timeManager.onReceivedAction(Player.ofTurn(this.gameComponent.getTurn()), event);
                 if (event.action === 'EndGame') await this.onGameEnd();
-                else console.warn('useless event: ', event.action);
-                // else if (event.action === 'StartGame') await this.onGameStart();
+                else if (event.action === 'Sync') this.isSynced = true;
                 break;
         }
     }
@@ -250,15 +245,15 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         );
     }
 
-    private beforeEventsBatch(): void {
-        this.timeManager.beforeEventsBatch(this.endGame);
-    }
+    // private beforeEventsBatch(): void {
+    //     this.timeManager.beforeEventsBatch(this.endGame);
+    // }
 
-    private async afterEventsBatch(): Promise<void> {
-        const player: Player = Player.ofTurn(this.gameComponent.getTurn());
-        const serverTimeMs: number = await this.serverTimeService.getServerTimeInMs();
-        this.timeManager.afterEventsBatch(this.endGame, player, serverTimeMs);
-    }
+    // private async afterEventsBatch(): Promise<void> {
+    //     const player: Player = Player.ofTurn(this.gameComponent.getTurn());
+    //     const serverTimeMs: number = await this.serverTimeService.getServerTimeInMs();
+    //     this.timeManager.afterEventsBatch(this.endGame, player, serverTimeMs);
+    // }
 
     private async takeBackToPreviousPlayerTurn(player: Player): Promise<void> {
         // Take back once, in any case

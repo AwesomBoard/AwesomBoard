@@ -53,6 +53,7 @@ module Action = struct
         | `Global -> { action = "AddGlobalTime" }
     let start_game : t = { action = "StartGame" }
     let end_game : t = { action = "EndGame" }
+    let sync : t = { action = "Sync" }
 end
 
 (** The crucial part of any game: a move *)

@@ -212,10 +212,13 @@ module Make
                      events *)
                     SubscriptionManager.subscribe ~client_id user game_id Game;
                     let* () = send_to client_id (GameUpdate { game }) in
-                    Lwt.join [
+                    let* () = Lwt.join [
                         send_chat_messages ~request ~client_id game_id;
                         Game.iter_events ~request game_id (fun event -> send_to client_id (GameEvent { event }))
-                    ]
+                    ] in
+                    (* Finally, send the sync event to let them know they're up to date *)
+                    let event : Models.GameEvent.t = { time = External.now (); user; data = Action Models.GameEvent.Action.sync } in
+                    send_to client_id (GameEvent { event })
             end
         | Unsubscribe ->
             unsubscribe ~request user client_id
@@ -239,8 +242,8 @@ module Make
             let* game_id : GameId.t = ConfigRoom.create ~request config_room in
             (* Send the id to the creator, and the config room to the observers of the lobby *)
             Lwt.join [
-                send_to client_id (WebSocketOutgoingMessage.GameCreated { game_id });
-                broadcast Lobby GameId.lobby (WebSocketOutgoingMessage.ConfigRoomUpdate { game_id; config_room });
+                send_to client_id (GameCreated { game_id });
+                broadcast Lobby GameId.lobby (ConfigRoomUpdate { game_id; config_room });
             ]
 
         | SelectOpponent { opponent } ->
