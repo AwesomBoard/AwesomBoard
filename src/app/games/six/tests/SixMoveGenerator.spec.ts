@@ -16,7 +16,7 @@ describe('SixMoveGenerator', () => {
     const defaultConfig: MGPOptional<SixConfig> = SixRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
-        moveGenerator = new SixMoveGenerator();
+        moveGenerator = new SixMoveGenerator(SixRules.get());
     });
 
     it(`should propose all movements`, () => {

@@ -22,6 +22,7 @@ import { GipfMoveGenerator } from './GipfMoveGenerator';
 import { GipfCapture } from 'src/app/jscaip/GipfProjectHelper';
 import { GipfScoreMinimax } from './GipfScoreMinimax';
 import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-gipf',
@@ -86,6 +87,10 @@ export class GipfComponent extends HexagonalGameComponent<GipfRules,
         this.constructedState = this.getState();
         this.scores = MGPOptional.of(this.constructedState.getScores());
         this.moveToInitialCaptureOrPlacementPhase();
+    }
+
+    public override getScoreName(): ScoreName {
+        return ScoreName.CAPTURES;
     }
 
     public override async showLastMove(move: GipfMove): Promise<void> {

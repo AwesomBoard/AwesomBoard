@@ -63,14 +63,18 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         return SixState.ofRepresentation(board, 0);
     }
 
+    public isInDropPhase(state: SixState, config: MGPOptional<SixConfig>): boolean {
+        const totalDroppablePieces: number = 2 * config.get().piecesPerPlayer;
+        return state.turn < totalDroppablePieces;
+    }
+
     public override applyLegalMove(move: SixMove,
                                    state: SixState,
                                    config: MGPOptional<SixConfig>,
                                    kept: SixLegalityInformation)
     : SixState
     {
-        const totalDroppablePieces: number = 2 * config.get().piecesPerPlayer;
-        if (state.turn < totalDroppablePieces) {
+        if (this.isInDropPhase(state, config)) {
             return state.applyLegalDrop(move.landing);
         } else {
             return state.applyLegalTranslation(move, kept);
@@ -84,15 +88,14 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         if (landingLegality.isFailure()) {
             return landingLegality.toOtherFallible();
         }
-        const totalDroppablePieces: number = 2 * config.get().piecesPerPlayer;
-        if (state.turn < totalDroppablePieces) {
+        if (this.isInDropPhase(state, config)) {
             return this.isLegalDrop(move, state);
         } else {
-            return SixRules.isLegalPhaseTwoMove(move, state);
+            return this.isLegalPhaseTwoMove(move, state);
         }
     }
 
-    public static getLegalLandings(state: SixState): Coord[] {
+    public getLegalLandings(state: SixState): Coord[] {
         let neighbors: CoordSet = new CoordSet();
         for (const piece of state.getPieceCoords()) {
             for (const dir of HexaDirection.factory.all) {
@@ -112,7 +115,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         return MGPFallible.success(new CoordSet(state.getPieceCoords()));
     }
 
-    public static isLegalPhaseTwoMove(move: SixMove, state: SixState): MGPFallible<SixLegalityInformation> {
+    public isLegalPhaseTwoMove(move: SixMove, state: SixState): MGPFallible<SixLegalityInformation> {
         if (move.isDrop()) {
             return MGPFallible.failure(SixFailure.CAN_NO_LONGER_DROP());
         }
@@ -124,7 +127,7 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         }
         const stateAfterMove: SixState = state.movePiece(move);
         const groupsAfterMove: Set<CoordSet> = stateAfterMove.getGroups();
-        if (SixRules.isSplit(groupsAfterMove)) {
+        if (this.isSplit(groupsAfterMove)) {
             const biggerGroups: Set<CoordSet> = this.getLargestGroups(groupsAfterMove);
             if (biggerGroups.size() === 1) {
                 if (move.keep.isPresent()) {
@@ -140,11 +143,11 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         }
     }
 
-    public static isSplit(groups: Set<CoordSet>): boolean {
+    public isSplit(groups: Set<CoordSet>): boolean {
         return groups.size() > 1;
     }
 
-    public static getLargestGroups(groups: Set<CoordSet>): Set<CoordSet> {
+    public getLargestGroups(groups: Set<CoordSet>): Set<CoordSet> {
         let biggerSize: number = 0;
         let biggerGroups: Set<CoordSet> = new Set();
         for (const group of groups) {
@@ -159,9 +162,9 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
         return biggerGroups;
     }
 
-    public static moveKeepBiggerGroup(keep: MGPOptional<Coord>,
-                                      biggerGroups: Set<CoordSet>,
-                                      state: SixState)
+    public moveKeepBiggerGroup(keep: MGPOptional<Coord>,
+                               biggerGroups: Set<CoordSet>,
+                               state: SixState)
     : MGPFallible<SixLegalityInformation>
     {
         if (keep.isAbsent()) {
@@ -182,16 +185,16 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
     public override getGameStatus(node: SixNode, config: MGPOptional<SixConfig>): GameStatus {
         const state: SixState = node.gameState;
         const previousPlayer: Player = state.getPreviousPlayer();
-        let shapeVictory: Coord[] = [];
         if (node.previousMove.isPresent()) {
-            shapeVictory = this.getShapeVictory(node.previousMove.get(), state);
+            const shapeVictory: Coord[] = this.getShapeVictory(node.previousMove.get(), state);
+            if (shapeVictory.length === 6) {
+                return GameStatus.getVictory(previousPlayer);
+            }
         }
-        if (shapeVictory.length === 6) {
-            return GameStatus.getVictory(previousPlayer);
-        }
-        const lastDropTurn: number = (2 * config.get().piecesPerPlayer) - 1;
-        if (state.turn > lastDropTurn) {
-            const pieces: PlayerNumberMap = state.countPieces();
+        if (this.isInDropPhase(state, config)) {
+            return GameStatus.ONGOING;
+        } else {
+            const pieces: PlayerNumberMap = state.countPiecesOnBoard();
             const zeroPieces: number = pieces.get(Player.ZERO);
             const onePieces: number = pieces.get(Player.ONE);
             if (zeroPieces < 6 && onePieces < 6) {
@@ -210,7 +213,6 @@ export class SixRules extends ConfigurableRules<SixMove, SixState, SixConfig, Si
                 return GameStatus.ONGOING;
             }
         }
-        return GameStatus.ONGOING;
     }
 
     private startSearchingVictorySources(): void {

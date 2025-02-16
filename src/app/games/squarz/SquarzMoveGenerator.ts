@@ -8,7 +8,9 @@ import { Coord } from 'src/app/jscaip/Coord';
 
 export class SquarzMoveGenerator extends MoveGenerator<SquarzMove, SquarzState, SquarzConfig> {
 
-    public rules: SquarzRules = SquarzRules.get();
+    public constructor(private readonly rules: SquarzRules) {
+        super();
+    }
 
     public override getListMoves(node: SquarzNode, config: MGPOptional<SquarzConfig>): SquarzMove[] {
         const player: Player = node.gameState.getCurrentPlayer();

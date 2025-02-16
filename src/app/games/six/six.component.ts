@@ -18,6 +18,7 @@ import { SixMoveGenerator } from './SixMoveGenerator';
 import { CoordSet } from 'src/app/jscaip/CoordSet';
 import { SixMinimax } from './SixMinimax';
 import { PlayerNumberMap } from 'src/app/jscaip/PlayerMap';
+import { ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 
 type CoordAndClass = {
     coord: Coord,
@@ -51,13 +52,21 @@ export class SixComponent
         this.setRulesAndNode('Six');
         this.availableAIs = [
             new SixMinimax(),
-            new MCTS($localize`MCTS`, new SixMoveGenerator(), this.rules),
+            new MCTS($localize`MCTS`, new SixMoveGenerator(this.rules), this.rules),
         ];
         this.encoder = SixMove.encoder;
         this.SPACE_SIZE = 30;
         this.hexaLayout = new HexaLayout(this.SPACE_SIZE * 1.50,
                                          new Coord(this.SPACE_SIZE * 2, 0),
                                          FlatHexaOrientation.INSTANCE);
+    }
+
+    public override getScoreName(): ScoreName {
+        if (this.rules.isInDropPhase(this.getState(), this.getConfig())) {
+            return ScoreName.PIECES_TO_DROP;
+        } else {
+            return ScoreName.REMAINING_PIECES;
+        }
     }
 
     public override async cancelMoveAttempt(): Promise<void> {
@@ -75,12 +84,10 @@ export class SixComponent
 
     private getScores(): MGPOptional<PlayerNumberMap> {
         const state: SixState = this.getState();
-        const config: SixConfig = this.getConfig().get();
-        const lastDropTurn: number = 2 * config.piecesPerPlayer;
-        if (state.turn <= lastDropTurn) {
-            return MGPOptional.of(state.countRemainingPieces(config));
+        if (this.rules.isInDropPhase(state, this.getConfig())) {
+            return MGPOptional.of(state.countPiecesToDrop(this.getConfig().get()));
         } else {
-            return MGPOptional.of(state.countPieces());
+            return MGPOptional.of(state.countPiecesOnBoard());
         }
     }
 
@@ -151,7 +158,7 @@ export class SixComponent
     }
 
     public getEmptyNeighbors(): Coord[] {
-        let legalLandings: Coord[] = SixRules.getLegalLandings(this.state);
+        let legalLandings: Coord[] = this.rules.getLegalLandings(this.state);
         if (this.chosenLanding.isPresent()) {
             const chosenLanding: Coord = this.chosenLanding.get();
             legalLandings = legalLandings.filter((c: Coord) => c.equals(chosenLanding) === false);
@@ -208,7 +215,7 @@ export class SixComponent
             } else {
                 const movement: SixMove = SixMove.ofTranslation(this.selectedPiece.get(), neighbor);
                 const legality: MGPFallible<SixLegalityInformation> =
-                    SixRules.isLegalPhaseTwoMove(movement, this.state);
+                    this.rules.isLegalPhaseTwoMove(movement, this.state);
                 if (this.neededCutting(legality)) {
                     this.chosenLanding = MGPOptional.of(neighbor);
                     this.moveVirtuallyPiece();
@@ -236,7 +243,7 @@ export class SixComponent
         const movement: SixMove = SixMove.ofTranslation(this.selectedPiece.get(), this.chosenLanding.get());
         const stateAfterMove: SixState = this.state.movePiece(movement);
         const groupsAfterMove: Set<CoordSet> = stateAfterMove.getGroups();
-        const biggerGroups: Set<CoordSet> = SixRules.getLargestGroups(groupsAfterMove);
+        const biggerGroups: Set<CoordSet> = this.rules.getLargestGroups(groupsAfterMove);
         this.cuttableGroups = [];
         for (const cuttableGroup of biggerGroups) {
             this.cuttableGroups.push(cuttableGroup.toList());

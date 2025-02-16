@@ -16,7 +16,7 @@
                          stroke-linecap="round"/>
                 <g id="pieceGroup_{{ x }}_{{ y }}"
                    [ngClass]="getPieceGroupClasses(x, y)"
-                   [attr.transform]="getTranslationAt(getCenterAtXY(x, y))"
+                   [attr.transform]="getSVGTranslationAt(getCenterAtXY(x, y))"
                 >
                     <g *ngIf="isRing(x, y)">
                         <circle [attr.r]="viewInfo.ringOuterSize"
@@ -57,7 +57,7 @@
     </g>
     <rect *ngFor="let coord of viewInfo.targets"
           id="indicator_{{ coord.x }}_{{ coord.y }}"
-          [attr.transform]="getTranslationAt(getCenterAt(coord))"
+          [attr.transform]="getSVGTranslationAt(getCenterAt(coord))"
           [attr.x]=" - viewInfo.indicatorSize/2"
           [attr.y]=" - viewInfo.indicatorSize/2"
           [attr.width]="viewInfo.indicatorSize"

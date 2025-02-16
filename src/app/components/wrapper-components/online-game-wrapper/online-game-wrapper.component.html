@@ -24,9 +24,9 @@
                    class="has-text-black player0-bg-darker is-size-5"
                    *ngIf="players[0].isPresent()">{{ players[0].get().name }}</p>
                 <p id="scoreZeroIndicator"
-                   *ngIf="currentPart !== null && gameComponent && gameComponent.scores.isPresent()"
+                   *ngIf="currentPart !== null && gameComponent && gameComponent.hasScores()"
                    class="has-text-black"
-                   i18n>{{ gameComponent.scores.get().get(Player.ZERO) }} points</p>
+                   >{{ gameComponent.getScoreName().getString(gameComponent.getScore(Player.ZERO))}}</p>
                 <app-count-down #chronoZeroGlobal
                                 id="chrono-zero-global"
                                 [dangerTimeLimit]="60*1000"
@@ -59,8 +59,9 @@
                    class="has-text-black player1-bg-darker is-size-5"
                    *ngIf="players[1].isPresent()">{{ players[1].get().name }}</p>
                 <p id="scoreOneIndicator"
-                   *ngIf="currentPart !== null && gameComponent && gameComponent.scores.isPresent()"
-                   class="has-text-black" i18n>{{ gameComponent.scores.get().get(Player.ONE) }} points</p>
+                   *ngIf="currentPart !== null && gameComponent && gameComponent.hasScores()"
+                   class="has-text-black"
+                   >{{ gameComponent.getScoreName().getString(gameComponent.getScore(Player.ONE)) }}</p>
                 <app-count-down #chronoOneGlobal
                                 id="chrono-one-global"
                                 [dangerTimeLimit]="60*1000"

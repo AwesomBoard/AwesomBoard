@@ -19,7 +19,7 @@ describe('SixFilteredMoveGenerator', () => {
     const defaultConfig: MGPOptional<SixConfig> = SixRules.get().getDefaultRulesConfig();
 
     beforeEach(() => {
-        moveGenerator = new SixFilteredMoveGenerator();
+        moveGenerator = new SixFilteredMoveGenerator(SixRules.get());
     });
 
     it(`should propose only one starting piece when all pieces are blocking an opponent's victory (lines)`, () => {

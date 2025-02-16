@@ -260,6 +260,48 @@ describe('SixComponent', () => {
 
     });
 
+    describe('score', () => {
+
+        it('should show the number of pieces to drop initially', fakeAsync(async() => {
+            // Given the initial state
+            // When displaying it
+            // Then the score should be the number of pieces to drop
+            testUtils.expectTextToBe('#score-0', '20 pieces to drop');
+            testUtils.expectTextToBe('#score-1', '20 pieces to drop');
+        }));
+
+        it('should show 1, 0 pieces to drop before last drop', fakeAsync(async() => {
+            // Given a state before the last drop
+            const board: Table<PlayerOrNone> = [
+                [O, _, _, _, _, _, _, _, _, _],
+                [O, O, O, O, O, X, X, X, X, X],
+                [_, _, _, _, _, _, _, _, _, _],
+            ];
+            const state: SixState = SixState.ofRepresentation(board, 9);
+            const config: MGPOptional<SixConfig> = MGPOptional.of({ piecesPerPlayer: 5 });
+            await testUtils.setupState(state, { config });
+            // When displaying it
+            // Then the score should be 0 and 1 pieces to drop
+            testUtils.expectTextToBe('#score-0', '0 pieces to drop');
+            testUtils.expectTextToBe('#score-1', '1 piece to drop');
+        }));
+
+        it('should show remaining pieces in second phase', fakeAsync(async() => {
+            // Given a state in the second phase
+            const board: Table<PlayerOrNone> = [
+                [O, _, _, _, _, _, _, _, _, _],
+                [O, O, O, O, O, X, X, X, X, X],
+                [_, _, _, _, _, _, _, _, _, X],
+            ];
+            const state: SixState = SixState.ofRepresentation(board, 40);
+            await testUtils.setupState(state);
+            // When displaying it
+            // Then the score should be the number of remaining pieces
+            testUtils.expectTextToBe('#score-0', '6 remaining pieces');
+            testUtils.expectTextToBe('#score-1', '6 remaining pieces');
+        }));
+    });
+
     describe('Custom Config', () => {
 
         it('should cancel move when clicking on empty space as first click after 10th turn on shorter configs', fakeAsync(async() => {

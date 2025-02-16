@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { GameComponent } from 'src/app/components/game-components/game-component/GameComponent';
+import { GameComponent, ScoreName } from 'src/app/components/game-components/game-component/GameComponent';
 import { Coord } from 'src/app/jscaip/Coord';
 import { Ordinal } from 'src/app/jscaip/Ordinal';
 import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
@@ -139,6 +139,10 @@ export class LodestoneComponent
         this.PIECE_RADIUS = (this.SPACE_SIZE - (2 * this.STROKE_WIDTH)) * 0.5;
         this.displayedState = this.getState();
         this.scores = MGPOptional.of(PlayerNumberMap.of(0, 0));
+    }
+
+    public override getScoreName(): ScoreName {
+        return ScoreName.CAPTURES;
     }
 
     public getViewBox(): ViewBox {
