@@ -45,6 +45,11 @@ export class ScoreName {
                       () => $localize`1 protected piece`,
                       (n: number) => $localize`${n} protected pieces`);
 
+    public static readonly PIECES_UNDER_CONTROL: ScoreName =
+        new ScoreName(() => $localize`0 pieces under control`,
+                      () => $localize`1 piece under control`,
+                      (n: number) => $localize`${n} pieces under control`);
+
     public static readonly STACKS_UNDER_CONTROL: ScoreName =
         new ScoreName(() => $localize`0 stacks under control`,
                       () => $localize`1 stack under control`,
@@ -59,7 +64,7 @@ export class ScoreName {
                         public readonly plural: (n: number) => string) {
     }
 
-    public toString(count: number): string {
+    public getString(count: number): string {
         switch (count) {
             case 0:
                 return this.zero();

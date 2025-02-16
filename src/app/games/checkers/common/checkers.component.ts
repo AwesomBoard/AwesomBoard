@@ -47,7 +47,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     public possibleClicks: Set<Coord> = new Set();
     private selectedStack: MGPOptional<Coord> = MGPOptional.empty();
     private capturedCoords: Coord[] = []; // Only the coords capture by active player during this turn
-    private flyiedOverCoords: Coord[] = []; // Coord that where flewed over during ongoing turn
+    private flyiedOverCoords: Coord[] = []; // Coord that where flyied over during ongoing turn
     private legalMoves: CheckersMove[] = [];
     protected moveGenerator: CheckersMoveGenerator;
 
@@ -80,7 +80,7 @@ export abstract class CheckersComponent<R extends AbstractCheckersRules>
     }
 
     public override getScoreName(): ScoreName {
-        return ScoreName.STACKS_UNDER_CONTROL;
+        return ScoreName.PIECES_UNDER_CONTROL;
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {

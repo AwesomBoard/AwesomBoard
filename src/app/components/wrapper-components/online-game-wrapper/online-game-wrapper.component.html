@@ -26,7 +26,7 @@
                 <p id="scoreZeroIndicator"
                    *ngIf="currentPart !== null && gameComponent && gameComponent.hasScores()"
                    class="has-text-black"
-                   >{{ gameComponent.getScoreName().toString(gameComponent.getScore(Player.ZERO))}}</p>
+                   >{{ gameComponent.getScoreName().getString(gameComponent.getScore(Player.ZERO))}}</p>
                 <app-count-down #chronoZeroGlobal
                                 id="chrono-zero-global"
                                 [dangerTimeLimit]="60*1000"
@@ -61,7 +61,7 @@
                 <p id="scoreOneIndicator"
                    *ngIf="currentPart !== null && gameComponent && gameComponent.hasScores()"
                    class="has-text-black"
-                   >{{ gameComponent.getScoreName().toString(gameComponent.getScore(Player.ONE)) }}</p>
+                   >{{ gameComponent.getScoreName().getString(gameComponent.getScore(Player.ONE)) }}</p>
                 <app-count-down #chronoOneGlobal
                                 id="chrono-one-global"
                                 [dangerTimeLimit]="60*1000"
