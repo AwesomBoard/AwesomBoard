@@ -65,12 +65,17 @@ export class LocalGameConfigurationComponent extends BaseWrapperComponent {
     public async startGame(): Promise<void> {
         if (this.rulesConfig.isPresent()) {
             const rulesConfig: RulesConfig = this.rulesConfig.get();
-            const queryParams: { [key: string]: string } =
-                Object.fromEntries(Object.entries(rulesConfig)
-                    .map((configElement: [string, ConfigDescriptionType]) => {
-                        return [configElement[0], JSON.stringify(configElement[1])];
-                    }));
-            await this.router.navigate(['/local', this.getGameUrlName()], { queryParams: queryParams });
+            const defaultConfig: RulesConfig = this.getRulesConfigDescription().get().getDefaultConfig().config;
+            if (JSON.stringify(rulesConfig) === JSON.stringify(defaultConfig)) {
+                await this.router.navigate(['/local', this.getGameUrlName()]);
+            } else {
+                const queryParams: { [key: string]: string } =
+                    Object.fromEntries(Object.entries(rulesConfig)
+                        .map((configElement: [string, ConfigDescriptionType]) => {
+                            return [configElement[0], JSON.stringify(configElement[1])];
+                        }));
+                await this.router.navigate(['/local', this.getGameUrlName()], { queryParams: queryParams });
+            }
         } else {
             await this.router.navigate(['/local', this.getGameUrlName()]);
         }
