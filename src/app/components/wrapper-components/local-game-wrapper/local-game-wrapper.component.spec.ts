@@ -61,7 +61,7 @@ describe('LocalGameWrapperComponent (game without config)', () => {
     let testUtils: ComponentTestUtils<GipfComponent>;
 
     beforeEach(fakeAsync(async() => {
-        testUtils = await ComponentTestUtils.forGame<GipfComponent>('Gipf', true, false);
+        testUtils = await ComponentTestUtils.forGame<GipfComponent>('Gipf', true);
         ConnectedUserServiceMock.setUser(UserMocks.CONNECTED_AUTH_USER);
         TestBed.inject(ErrorLoggerService);
     }));
@@ -272,7 +272,7 @@ describe('LocalGameWrapperComponent (game phase)', () => {
 
             // When selecting player zero as AI and letting it play
             const component: LocalGameWrapperComponent = testUtils.getWrapper() as LocalGameWrapperComponent;
-            await testUtils.choosingAIOrHuman(Player.ZERO, 'AI');
+            testUtils.choosingAIOrHuman(Player.ZERO, 'AI');
             spyOn(component, 'proposeAIToPlay').and.callThrough();
             await testUtils.choosingAILevel(Player.ZERO);
             tick(LocalGameWrapperComponent.AI_TIMEOUT);
@@ -302,7 +302,7 @@ describe('LocalGameWrapperComponent (game phase)', () => {
             tick(LocalGameWrapperComponent.AI_TIMEOUT);
 
             // When chosing the human as player zero again
-            await testUtils.choosingAIOrHuman(Player.ZERO, 'human');
+            testUtils.choosingAIOrHuman(Player.ZERO, 'human');
 
             // Then the board should have been rotated so that player zero is below again
             const rotation: string = testUtils.getGameComponent().rotation;

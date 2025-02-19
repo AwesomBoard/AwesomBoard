@@ -61,15 +61,24 @@ export class BlankComponent {}
 export class ActivatedRouteStub {
 
     private route: {[key: string]: string} = {};
-    public snapshot: { paramMap: { get: (str: string) => string } };
+    private params: {[key: string]: string} = {};
+
+    public snapshot: {
+        paramMap: { get: (str: string) => string },
+        queryParamMap: { get: (str: string) => string, keys: string[] },
+    };
     public constructor(game?: string, id?: string) {
         this.snapshot = {
             paramMap: {
-                get: (str: string): string => {
+                get: (name: string): string => {
                     // Returns null in case the route does not exist.
                     // This is the same behavior than ActivatedRoute
-                    return this.route[str];
+                    return this.route[name];
                 },
+            },
+            queryParamMap: {
+                keys: [],
+                get: (name: string): string => this.params[name],
             },
         };
         if (game != null) {
@@ -81,6 +90,10 @@ export class ActivatedRouteStub {
     }
     public setRoute(key: string, value: string): void {
         this.route[key] = value;
+    }
+    public setParam(key: string, value: string): void {
+        this.params[key] = value;
+        this.snapshot.queryParamMap.keys.push(key);
     }
 }
 export class SimpleComponentTestUtils<T> {
@@ -332,10 +345,10 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
 
     public static async forGame<Component extends AbstractGameComponent>(
         game: string,
-        configureTestingModule: boolean = true,
-        chooseDefaultConfig: boolean = true)
+        configureTestingModule: boolean = true)
     : Promise<ComponentTestUtils<Component>>
     {
+        console.log('forGame...')
         const optionalGameInfo: MGPOptional<GameInfo> =
             MGPOptional.ofNullable(GameInfo.getAllGames().find((gameInfo: GameInfo) => gameInfo.urlName === game));
         if (optionalGameInfo.isAbsent()) {
@@ -344,37 +357,26 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         return ComponentTestUtils.forGameWithWrapper(game,
                                                      LocalGameWrapperComponent,
                                                      AuthUser.NOT_CONNECTED,
-                                                     configureTestingModule,
-                                                     chooseDefaultConfig);
+                                                     configureTestingModule);
     }
 
     public static async forGameWithWrapper<Component extends AbstractGameComponent, Actor extends Comparable>(
         game: string,
         wrapperKind: Type<GameWrapper<Actor>>,
         user: AuthUser = AuthUser.NOT_CONNECTED,
-        configureTestingModule: boolean = true,
-        chooseDefaultConfig: boolean = true)
+        configureTestingModule: boolean = true)
     : Promise<ComponentTestUtils<Component, Actor>>
     {
+        console.log('forGameWithWrapper...')
         const testUtils: ComponentTestUtils<Component, Actor> =
             await ComponentTestUtils.basic(game, configureTestingModule);
         ConnectedUserServiceMock.setUser(user);
         testUtils.prepareFixture(wrapperKind);
         testUtils.detectChanges();
         tick(1); // Need to be at least 1ms
-        if (chooseDefaultConfig) {
-            const wrapperIsLocal: boolean = testUtils.getWrapper() instanceof LocalGameWrapperComponent;
-            const config: MGPOptional<RulesConfig> = GameInfo.getByUrlName(game).get().getRulesConfig();
-            if (wrapperIsLocal && config.isPresent()) {
-                await testUtils.acceptDefaultConfig();
-            }
-            /**
-             * If we just choose default config, here, the local game wrapper is not yet in playing phase
-             * so most things are not spyable
-             */
-            testUtils.bindGameComponent();
-            testUtils.prepareSpies();
-        }
+        testUtils.bindGameComponent();
+        testUtils.prepareSpies();
+        console.log('done...')
         return testUtils;
     }
 
@@ -390,11 +392,6 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         const testUtils: ComponentTestUtils<Component, Actor> = new ComponentTestUtils<Component, Actor>();
         testUtils.prepareMessageDisplayerSpies();
         return testUtils;
-    }
-
-    public async acceptDefaultConfig(): Promise<void> {
-        await this.clickElement('#start-game-with-config');
-        tick(1);
     }
 
     public bindGameComponent(): void {
@@ -418,7 +415,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
 
     public expectToBeCreated(): void {
         expect(this.getWrapper()).withContext('Wrapper should be created').toBeTruthy();
-        expect(this.getGameComponent()).withContext('Component should be created').toBeTruthy();
+        expect(this.getGameComponent()).withContext('Game component should be created').toBeTruthy();
     }
 
     public override forceChangeDetection(): void {
@@ -440,9 +437,8 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         const config: MGPOptional<RulesConfig> = this.getConfigFrom(params.config);
         if (config.isPresent()) {
             const wrapper: LocalGameWrapperComponent = this.getWrapper() as unknown as LocalGameWrapperComponent;
-            wrapper.updateConfig(config);
+            // TestBed.inject(ActivatedRouteStub).setRoute(TODOconfig)
             this.gameComponent.config = config;
-            wrapper.markConfigAsFilled();
             tick(0);
         }
         this.gameComponent.node = new GameNode(

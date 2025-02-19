@@ -39,6 +39,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
                        private readonly cdr: ChangeDetectorRef)
     {
         super(activatedRoute, router, messageDisplayer);
+        console.log('creating LGWC')
         this.players = [MGPOptional.of(this.playerSelection[0]), MGPOptional.of(this.playerSelection[1])];
         this.role = Player.ZERO; // The user is playing, not observing
         this.setDefaultRulesConfig();
@@ -46,7 +47,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     // Will set the default rules config.
     // Will set it to MGPOptional.empty() if the game doesn't exist, but an error will be handled by another function.
-    // ConfiglessRules have MGPOptional.empty() value.
+    // ConfiglessRules have rulesConfig set to MGPOptional.empty().
     private setDefaultRulesConfig(): void {
         const urlName: string = this.getGameUrlName();
         this.rulesConfig = RulesConfigUtils.getGameDefaultConfig(urlName);
@@ -73,9 +74,10 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     /**
      * Reads the URL to get the config from query parameters (e.g., /P4?width=5&height=5)
-     * If the config is invalid, redirect to page that lets the user select the config
+     * If the config is invalid, redirect to page that lets the user select the config.
+     * Public for being able to trigger it from tests.
      */
-    private async setConfigFromParams(): Promise<void> {
+    public async setConfigFromParams(): Promise<void> {
         const params: ParamMap = this.activatedRoute.snapshot.queryParamMap;
         const noConfigIsProvided: boolean = params.keys.length === 0;
 
