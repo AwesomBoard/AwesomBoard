@@ -540,7 +540,7 @@ describe('TutorialGameWrapperComponent (wrapper)', () => {
             await testUtils.clickElement('#playLocallyButton');
 
             // expect navigator to have been called
-            expectValidRouting(router, ['/local', 'Quarto'], LocalGameWrapperComponent);
+            expectValidRouting(router, ['/local', 'Quarto', 'config'], LocalGameWrapperComponent);
         }));
 
         it('should redirect to online game when asking for it when finished and user is online', fakeAsync(async() => {

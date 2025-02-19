@@ -11,6 +11,6 @@ export class LocalGameCreationComponent {
     }
 
     public async pickGame(pickedGame: string): Promise<void> {
-        await this.router.navigate(['local/', pickedGame, 'config']);
+        await this.router.navigate(['/local', pickedGame, 'config']);
     }
 }

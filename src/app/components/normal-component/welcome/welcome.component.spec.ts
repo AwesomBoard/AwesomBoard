@@ -117,7 +117,7 @@ describe('WelcomeComponent', () => {
             testUtils.detectChanges();
 
             // Then we should be redirected to the game
-            expectValidRouting(router, ['/local', 'Awale'], LocalGameWrapperComponent);
+            expectValidRouting(router, ['/local', 'Awale', 'config'], LocalGameWrapperComponent);
         }));
 
         it('should redirect to tutorial when clicking on the corresponding button', fakeAsync(async() => {

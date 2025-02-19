@@ -202,7 +202,7 @@ describe('PartCreationComponent', () => {
                 });
                 // Then it should cancel game and navigate to local game
                 expect(gameService.deleteGame).toHaveBeenCalledOnceWith('configRoomId');
-                expectValidRouting(router, ['/local', 'P4'], LocalGameWrapperComponent);
+                expectValidRouting(router, ['/local', 'P4', 'config'], LocalGameWrapperComponent);
             }));
         });
 

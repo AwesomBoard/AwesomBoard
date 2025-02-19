@@ -17,6 +17,6 @@ describe('LocalGameCreationComponent', () => {
         // When picking a game
         await testUtils.getComponent().pickGame('whateverGame');
         // Then we should navigate to that game
-        expect(testUtils.getComponent().router.navigate).toHaveBeenCalledOnceWith(['local/whateverGame']);
+        expect(testUtils.getComponent().router.navigate).toHaveBeenCalledOnceWith(['/local', 'whateverGame', 'config']);
     }));
 });
