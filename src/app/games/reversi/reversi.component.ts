@@ -65,8 +65,7 @@ export class ReversiComponent extends RectangularGameComponent<ReversiRules,
         const opponent: Player = this.getState().getCurrentOpponent();
         for (const dir of Ordinal.ORDINALS) {
             let captured: Coord = move.coord.getNext(dir, 1);
-            while (this.getState().isOnBoard(captured) &&
-                   this.getState().getPieceAt(captured) === opponent &&
+            while (this.getState().hasPieceAt(captured, opponent) &&
                    this.getPreviousState().getPieceAt(captured) === player)
             {
                 this.capturedCoords.push(captured);

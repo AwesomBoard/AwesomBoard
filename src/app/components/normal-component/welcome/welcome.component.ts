@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ThemeService } from 'src/app/services/ThemeService';
-import { GameInfo } from '../pick-game/pick-game.component';
 import { faNetworkWired, faDesktop, faBookOpen, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { MGPOptional, MGPValidation } from '@everyboard/lib';
+
+import { ThemeService } from 'src/app/services/ThemeService';
+import { GameInfo } from '../pick-game/pick-game.component';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 

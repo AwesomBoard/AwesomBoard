@@ -57,7 +57,7 @@ describe('SiamRules', () => {
             const move: SiamMove = SiamMove.of(-1, 2, MGPOptional.empty(), Orthogonal.UP);
 
             // Then the move should be illegal
-            const reason: string = 'Cannot rotate piece outside the board: SiamMove(-1, 2, -, UP)';
+            const reason: string = 'You cannot rotate piece outside the board: SiamMove(-1, 2, -, UP)';
             RulesUtils.expectMoveFailure(rules, state, move, reason, defaultConfig);
         });
 

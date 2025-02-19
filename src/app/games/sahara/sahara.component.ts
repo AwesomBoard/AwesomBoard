@@ -89,7 +89,7 @@ export class SaharaComponent extends TriangularGameComponent<SaharaRules,
 
     private selectPiece(coord: Coord): void {
         this.chosenCoord = MGPOptional.of(coord);
-        this.possibleLandings = this.rules.getLandingCoords(this.board, coord);
+        this.possibleLandings = this.rules.getLandingCoords(this.getState(), coord);
     }
 
     private async chooseLandingCoord(x: number, y: number): Promise<MGPValidation> {
@@ -106,7 +106,7 @@ export class SaharaComponent extends TriangularGameComponent<SaharaRules,
     }
 
     public getPlayerClassAtXY(x: number, y: number): string {
-        const piece: FourStatePiece = this.board[y][x];
+        const piece: FourStatePiece = this.getState().getPieceAtXY(x, y);
         return this.getPlayerClass(piece.getPlayer());
     }
 

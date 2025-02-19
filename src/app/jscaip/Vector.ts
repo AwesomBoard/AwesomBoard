@@ -18,7 +18,8 @@ export class Vector implements ComparableObject {
     }
 
     public isDiagonal(): boolean {
-        return this.x !== 0 && this.y !== 0;
+        return this.x !== 0 &&
+               Math.abs(this.x) === Math.abs(this.y);
     }
 
     public isDiagonalOfLength(length: number): boolean {

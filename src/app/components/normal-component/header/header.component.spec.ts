@@ -2,6 +2,8 @@
 import { DebugElement } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { MGPOptional, Utils } from '@everyboard/lib';
+
 import { UserDAO } from 'src/app/dao/UserDAO';
 import { CurrentGameMocks } from 'src/app/domain/mocks/CurrentGameMocks.spec';
 import { CurrentGame } from 'src/app/domain/User';
@@ -10,7 +12,6 @@ import { AuthUser, ConnectedUserService } from 'src/app/services/ConnectedUserSe
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { ConnectedUserServiceMock } from 'src/app/services/tests/ConnectedUserService.spec';
 import { CurrentGameServiceMock } from 'src/app/services/tests/CurrentGameService.spec';
-import { MGPOptional, Utils } from '@everyboard/lib';
 import { expectValidRoutingLink, prepareUnsubscribeCheck, SimpleComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { AccountComponent } from '../account/account.component';
 import { HeaderComponent } from './header.component';

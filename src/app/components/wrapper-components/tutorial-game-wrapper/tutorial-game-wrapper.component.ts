@@ -1,9 +1,11 @@
-import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
 import { GameWrapper } from 'src/app/components/wrapper-components/GameWrapper';
 import { AbstractNode, GameNode } from 'src/app/jscaip/AI/GameNode';
 import { Move } from 'src/app/jscaip/Move';
-import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
 import { Click, TutorialStep, TutorialStepClick, TutorialStepMove, TutorialStepWithSolution } from './TutorialStep';
 import { TutorialFailure } from './TutorialFailure';
 import { GameState } from 'src/app/jscaip/state/GameState';
@@ -17,6 +19,7 @@ export class TutorialGameWrapperMessages {
     public static readonly COMPLETED_TUTORIAL_MESSAGE: Localized = () => $localize`Congratulations, you completed the tutorial.`;
 
     public static readonly THIS_IS_A_DEMO: Localized = () => $localize`You cannot click, this is a demo.`;
+
 }
 
 type TutorialPlayer = 'tutorial-player';
@@ -24,6 +27,7 @@ type TutorialPlayer = 'tutorial-player';
 @Component({
     selector: 'app-tutorial-game-wrapper',
     templateUrl: './tutorial-game-wrapper.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 @Debug.log
 export class TutorialGameWrapperComponent extends GameWrapper<TutorialPlayer> implements AfterViewInit {
@@ -112,6 +116,7 @@ export class TutorialGameWrapperComponent extends GameWrapper<TutorialPlayer> im
             Utils.assert(currentStep.isClick(), 'Here, we should have a click');
         }
         // We don't cover the click case here, it is covered in canUserPlay
+        await this.setInteractive(false);
         this.cdr.detectChanges();
     }
 

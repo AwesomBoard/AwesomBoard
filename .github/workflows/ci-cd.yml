@@ -77,7 +77,7 @@ jobs:
           pip install lxml pandas
       - name: Archive code coverage results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report
           path: coverage/
@@ -105,7 +105,7 @@ jobs:
       run: cd backend && make test
     - name: Archive code coverage results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: backend-code-coverage-report
         path: backend/_coverage/

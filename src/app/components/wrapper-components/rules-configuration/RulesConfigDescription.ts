@@ -1,7 +1,7 @@
-import { MGPValidator, MGPValidators } from 'src/app/utils/MGPValidator';
-
-import { ConfigDescriptionType, DefaultConfigDescription, EmptyRulesConfig, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { MGPValidation, Set, Utils } from '@everyboard/lib';
+
+import { MGPValidator, MGPValidators } from 'src/app/utils/MGPValidator';
+import { ConfigDescriptionType, DefaultConfigDescription, EmptyRulesConfig, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { GobanConfig } from 'src/app/jscaip/GobanConfig';
 import { Localized } from 'src/app/utils/LocaleUtils';
 
@@ -18,6 +18,10 @@ export class RulesConfigDescriptionLocalizable {
     public static readonly ALIGNMENT_SIZE: () => string = () => $localize`Number of aligned pieces needed to win`;
 
     public static readonly NUMBER_OF_DROPS: () => string = () => $localize`Number of pieces dropped per turn`;
+
+    public static readonly NUMBER_OF_EMPTY_ROWS: () => string = () => $localize`Number of empty rows`;
+
+    public static readonly NUMBER_OF_PIECES_ROWS: () => string = () => $localize`Number of pieces rows`;
 
 }
 

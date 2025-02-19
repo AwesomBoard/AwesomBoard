@@ -34,8 +34,14 @@ export class EpaminondasRules extends ConfigurableRules<EpaminondasMove,
             name: (): string => $localize`Epaminondas`,
             config: {
                 width: new NumberConfig(14, RulesConfigDescriptionLocalizable.WIDTH, MGPValidators.range(1, 99)),
-                emptyRows: new NumberConfig(8, () => $localize`Number of empty rows`, MGPValidators.range(1, 99)),
-                rowsOfSoldiers: new NumberConfig(2, () => $localize`Number of soldier rows`, MGPValidators.range(1, 99)),
+                emptyRows:
+                    new NumberConfig(8,
+                                     RulesConfigDescriptionLocalizable.NUMBER_OF_EMPTY_ROWS,
+                                     MGPValidators.range(1, 99)),
+                rowsOfSoldiers:
+                    new NumberConfig(2,
+                                     RulesConfigDescriptionLocalizable.NUMBER_OF_PIECES_ROWS,
+                                     MGPValidators.range(1, 99)),
             },
         });
 
@@ -67,12 +73,12 @@ export class EpaminondasRules extends ConfigurableRules<EpaminondasMove,
 
     private static getPhalanxValidity(state: EpaminondasState, move: EpaminondasMove): MGPValidation {
         let coord: Coord = move.coord;
-        if (state.isOnBoard(coord) === false) {
+        if (state.isNotOnBoard(coord)) {
             return MGPValidation.failure(CoordFailure.OUT_OF_RANGE(coord));
         }
         const opponent: Player = state.getCurrentOpponent();
         for (let soldierIndex: number = 0; soldierIndex < move.phalanxSize; soldierIndex++) {
-            if (state.isOnBoard(coord) === false) {
+            if (state.isNotOnBoard(coord)) {
                 return MGPValidation.failure(EpaminondasFailure.PHALANX_CANNOT_CONTAIN_PIECES_OUTSIDE_BOARD());
             }
             const spaceContent: PlayerOrNone = state.getPieceAt(coord);
@@ -97,7 +103,7 @@ export class EpaminondasRules extends ConfigurableRules<EpaminondasMove,
         while (landingIndex + 1 < move.stepSize) {
             newBoard[emptied.y][emptied.x] = PlayerOrNone.NONE;
             newBoard[landingCoord.y][landingCoord.x] = currentPlayer;
-            if (state.isOnBoard(landingCoord) === false) {
+            if (state.isNotOnBoard(landingCoord)) {
                 return MGPFallible.failure(EpaminondasFailure.PHALANX_IS_LEAVING_BOARD());
             }
             if (state.getPieceAt(landingCoord).isPlayer()) {
@@ -107,7 +113,7 @@ export class EpaminondasRules extends ConfigurableRules<EpaminondasMove,
             landingCoord = landingCoord.getNext(move.direction, 1);
             emptied = emptied.getNext(move.direction, 1);
         }
-        if (state.isOnBoard(landingCoord) === false) {
+        if (state.isNotOnBoard(landingCoord)) {
             return MGPFallible.failure(EpaminondasFailure.PHALANX_IS_LEAVING_BOARD());
         }
         if (state.getPieceAt(landingCoord) === currentPlayer) {
@@ -126,9 +132,7 @@ export class EpaminondasRules extends ConfigurableRules<EpaminondasMove,
     {
         let capturedSoldier: Coord = move.coord.getNext(move.direction, move.phalanxSize + move.stepSize - 1);
         let captured: number = 0;
-        while (oldState.isOnBoard(capturedSoldier) &&
-               oldState.getPieceAt(capturedSoldier) === opponent)
-        {
+        while (oldState.hasPieceAt(capturedSoldier, opponent)) {
             // Capture
             if (captured > 0) {
                 board[capturedSoldier.y][capturedSoldier.x] = PlayerOrNone.NONE;

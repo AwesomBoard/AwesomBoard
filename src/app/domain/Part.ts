@@ -1,4 +1,5 @@
 import { JSONValue, MGPOptional, Utils } from '@everyboard/lib';
+
 import { FirestoreTime } from './Time';
 import { MinimalUser } from './MinimalUser';
 import { FirestoreDocument } from '../dao/FirestoreDAO';

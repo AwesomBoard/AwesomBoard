@@ -2,16 +2,15 @@
 import { AIDepthLimitOptions } from 'src/app/jscaip/AI/AI';
 import { SaharaRules } from '../SaharaRules';
 import { minimaxTest, SlowTest } from 'src/app/utils/tests/TestUtils.spec';
-import { MGPOptional } from '@everyboard/lib';
 import { SaharaMinimax } from '../SaharaMinimax';
-import { EmptyRulesConfig } from 'src/app/jscaip/RulesConfigUtil';
+import { NoConfig } from 'src/app/jscaip/RulesConfigUtil';
 
 describe('SaharaMinimax', () => {
 
     const rules: SaharaRules = SaharaRules.get();
     const minimax: SaharaMinimax = new SaharaMinimax();
     const minimaxOptions: AIDepthLimitOptions = { name: 'Level 1', maxDepth: 1 };
-    const defaultConfig: MGPOptional<EmptyRulesConfig> = SaharaRules.get().getDefaultRulesConfig();
+    const defaultConfig: NoConfig = SaharaRules.get().getDefaultRulesConfig();
 
     SlowTest.it('should be able play against itself', () => {
         minimaxTest({
