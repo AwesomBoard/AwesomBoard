@@ -22,8 +22,8 @@ export type GameEventMove = GameEventBase & {
 
 // The StartGame action is a dummy action to ensure that at least one event occurs at game start.
 // This is required because the clock logic relies on at least one event happening at the start of the game.
-// TODO: we could maybe get rid of "start" (as well as "end")
-export type Action = 'AddTurnTime' | 'AddGlobalTime' | 'StartGame' | 'EndGame';
+// The Sync action is another dummy action to ensure that we when we're in sync with the server
+export type Action = 'AddTurnTime' | 'AddGlobalTime' | 'StartGame' | 'EndGame' | 'Sync';
 
 export type GameEventAction = GameEventBase & {
     readonly eventType: 'Action';
@@ -46,12 +46,7 @@ export type GameEventReply = GameEventBase & {
     readonly data?: JSONValue;
 }
 
-// This is an event to let us know that we are in sync with all events from the game
-export type GameEventSync = GameEventBase & {
-    readonly eventType: 'Synced';
-}
-
-export type GameEvent = GameEventReply | GameEventRequest | GameEventAction | GameEventMove | GameEventSync;
+export type GameEvent = GameEventReply | GameEventRequest | GameEventAction | GameEventMove;
 
 export type GameResult = 'InProgress'
     | 'ResignOfZero' | 'ResignOfOne' | 'VictoryOfZero' | 'VictoryOfOne' | 'TimeoutOfZero' | 'TimeoutOfOne'

@@ -150,25 +150,38 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     private async startPart(): Promise<void> {
+        // This mutex will ensure that we receive one update/event at a time.
+        // Without it, it could be the case that async operations are scheduled at the wrong time
+        const mutex: Mutex = new Mutex();
         this.gameSubscription =
             await this.gameService.subscribeTo(this.gameId,
-                                               (game: Game) => this.onGameUpdate(game),
-                                               (event: GameEvent) => this.onGameEvent(event));
+                                               (game: Game) => {
+                                                   return mutex.runExclusive(async() => {
+                                                       await this.onGameUpdate(game);
+                                                   });
+                                               },
+                                               (event: GameEvent) => {
+                                                   return mutex.runExclusive(async() => {
+                                                       await this.onGameEvent(event);
+                                                   });
+                                               });
     }
 
     private async onGameUpdate(game: Game): Promise<void> {
+        console.log('OGWC.onGameUpdate')
         // The only game update we get is the initial one, everything else goes through events
         this.game = game;
-        await this.initializePlayersData(game);
         const turn: number = this.gameComponent.getTurn();
         Utils.assert(turn === 0, 'turn should always be 0 upon game start');
+        await this.initializePlayersData(game);
         this.timeManager.onGameStart(this.configRoom, game, this.players);
         this.requestManager.onGameStart();
         this.cdr.detectChanges();
     }
 
-    // TODO: old code was using mutex. If needed, add it back
+    // TODO: old code was using mutex. If needed, add it back: YES, share it with onGameUpdate
     private async onGameEvent(event: GameEvent): Promise<void> {
+        console.log('OGWC.onGameEvent')
         switch (event.eventType) {
             case 'Move':
                 await this.onReceivedMove(event);

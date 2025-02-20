@@ -16,16 +16,18 @@ export class GameService {
     }
 
     public async subscribeTo(gameId: string,
-                             gameUpdate: (game: Game) => void,
-                             gameEvent: (event: GameEvent) => void)
+                             gameUpdate: (game: Game) => Promise<void>,
+                             gameEvent: (event: GameEvent) => Promise<void>)
     : Promise<Subscription> {
         const gameUpdateSubscription: Subscription =
             this.webSocketManager.setCallback('GameUpdate', (message: WebSocketMessage): void => {
-                gameUpdate(message.getArgument('game'));
+                console.log('gameUpdate')
+                void gameUpdate(message.getArgument('game'));
             });
         const gameEventSubscription: Subscription =
             this.webSocketManager.setCallback('GameEvent', (message: WebSocketMessage): void => {
-                gameEvent(message.getArgument('event'));
+                console.log('gameEvent')
+                void gameEvent(message.getArgument('event'));
             });
         const gameSubscription: Subscription = await this.webSocketManager.subscribeToGame(gameId);
         return new Subscription(() => {

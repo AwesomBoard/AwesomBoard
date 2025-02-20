@@ -60,6 +60,7 @@ export class OGWCTimeManagerService {
 
     // At the beginning of a game, set up clocks and remember when the game started
     public onGameStart(configRoom: ConfigRoom, game: Game, players: MGPOptional<MinimalUser>[]): void {
+        console.log('onGameStart')
         this.configRoom = MGPOptional.of(configRoom);
         this.players = players;
         this.lastMoveStartMs = MGPOptional.of(game.beginning);
@@ -89,6 +90,7 @@ export class OGWCTimeManagerService {
     }
 
     public onReceivedAction(currentPlayer: Player, action: GameEventAction): void {
+        console.log(action)
         switch (action.action) {
             case 'AddTurnTime':
                 this.addTurnTime(this.playerOfMinimalUser(action.user));
@@ -99,15 +101,20 @@ export class OGWCTimeManagerService {
             case 'EndGame':
                 this.onGameEnd();
                 break;
+            default:
+                Utils.expectToBe(action.action, 'Sync');
+                this.onSync();
+                break;
         }
         this.afterEvent(currentPlayer, action.time);
     }
 
     public playerOfMinimalUser(user: MinimalUser): Player {
+        console.log({user, playerZero: this.players[0], playerOne: this.players[1]})
         if (this.players[0].equalsValue(user)) {
             return Player.ZERO;
         } else {
-            Utils.assert(this.players[1].equalsValue(user), 'MinimalUser should match player one');
+            Utils.assert(this.players[1].equalsValue(user), 'MinimalUser should match a player');
             return Player.ONE;
         }
     }
@@ -190,6 +197,7 @@ export class OGWCTimeManagerService {
 
     // Update clocks with the available time
     private updateClocks(): void {
+        console.log('updateClocks')
         for (const player of Player.PLAYERS) {
             this.turnClocks[player.getValue()].changeDuration(this.availableTurnTime.get(player));
             const playerTakenGlobalTime: number = this.takenGlobalTime.get(player);
