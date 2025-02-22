@@ -769,8 +769,8 @@
         <source>Start a new game</source>
         <target>Commencer une nouvelle partie</target>
       </trans-unit>
-      <trans-unit id="342909021169073473" datatype="html">
-        <source>Start with this config</source>
+      <trans-unit id="5171566373349249449" datatype="html">
+        <source>Start with this configuration</source>
         <target>Commencer avec cette configuration</target>
       </trans-unit>
       <trans-unit id="960848013465225718" datatype="html">
