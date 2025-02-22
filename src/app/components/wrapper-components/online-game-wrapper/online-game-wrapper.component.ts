@@ -138,9 +138,10 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     public async ngOnInit(): Promise<void> {
 
         this.routerEventsSubscription = this.router.events.subscribe(async(ev: Event) => {
-            if (ev instanceof NavigationEnd) {
-                await this.setCurrentPartIdOrRedirect();
-            }
+            // TODO: needed? uncovered by tests
+            // if (ev instanceof NavigationEnd) {
+            //     await this.setCurrentPartIdOrRedirect();
+            // }
         });
         this.userSubscription = this.connectedUserService.subscribeToUser(async(user: AuthUser) => {
             // player should be authenticated and have a username to be here

@@ -1,6 +1,7 @@
 <div class="columns is-vcentered is-align-items-stretch">
     <div class="column is-one-third">
-        <div id="infos"
+        <div *ngIf="gameComponent"
+             id="infos"
              class="box is-fullheight">
             <app-view-config [rulesConfig]="getConfig()"
                              [rulesConfigDescription]="getRulesConfigDescription()"

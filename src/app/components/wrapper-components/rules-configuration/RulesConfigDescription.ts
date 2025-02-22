@@ -116,7 +116,16 @@ export class RulesConfigDescription<R extends RulesConfig = EmptyRulesConfig> {
     }
 
     public isValid(fieldName: string, value: unknown): boolean {
-        return value != null && this.defaultConfigDescription.config[fieldName].checkValidity(value).isSuccess();
+        if (value == null) {
+            // no value was provided, it is invalid
+            return false;
+        }
+        const configLine: ConfigLine = this.defaultConfigDescription.config[fieldName];
+        if (configLine == null) {
+            // this does not match an element from the config, it is invalid
+            return false;
+        }
+        return configLine.checkValidity(value).isSuccess();
     }
 
     public getValidityError(fieldName: string, value: unknown): string {

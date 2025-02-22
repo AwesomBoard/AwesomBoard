@@ -84,11 +84,8 @@ describe('P4Component', () => {
             const state: P4State = P4Rules.get().getInitialState(config);
             await testUtils.setupState(state, { config });
 
-            // When playing in the new positions
-            const move: P4Move = P4Move.of(5);
-
-            // Then the move should succeed
-            await testUtils.expectElementNotToExist('#click-5-0');
+            // Then invalid moves (that are valid on the default board) should not be available
+            testUtils.expectElementNotToExist('#click-5-0');
         }));
     });
 });

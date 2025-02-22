@@ -615,7 +615,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
     }
 
     public async selectAIPlayer(player: Player): Promise<void> {
-        await this.choosingAIOrHuman(player, 'AI');
+        this.choosingAIOrHuman(player, 'AI');
         await this.choosingAILevel(player);
     }
 
