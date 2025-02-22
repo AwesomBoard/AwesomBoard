@@ -37,7 +37,7 @@ const X: PlayerOrNone = PlayerOrNone.ONE;
 
 describe('LocalGameWrapperComponent for non-existing game', () => {
 
-    fit('should redirect to /notFound', fakeAsync(async() => {
+    it('should redirect to /notFound', fakeAsync(async() => {
         // Given a game wrapper for a game that does not exist
         const testUtils: ComponentTestUtils<AbstractGameComponent> = await ComponentTestUtils.basic('invalid-game', true);
         ConnectedUserServiceMock.setUser(AuthUser.NOT_CONNECTED);

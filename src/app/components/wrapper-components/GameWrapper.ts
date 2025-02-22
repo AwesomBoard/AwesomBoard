@@ -71,16 +71,20 @@ export abstract class GameWrapper<P extends Comparable> extends BaseWrapperCompo
         const componentType: MGPOptional<Type<AbstractGameComponent>> =
             await this.getMatchingComponentAndNavigateOutIfAbsent();
         if (componentType.isPresent()) {
-            await this.createGameComponent(componentType.get());
-            const config: MGPOptional<RulesConfig> = this.getConfig();
-            this.gameComponent.config = config;
-            this.gameComponent.node = this.gameComponent.rules.getInitialNode(config);
-            await this.setRole(this.role);
-            await this.gameComponent.updateBoardAndRedraw(false);
+            await this.createGameComponentAndSetConfig(componentType.get());
             return true;
         } else {
             return false;
         }
+    }
+
+    protected async createGameComponentAndSetConfig(componentType: Type<AbstractGameComponent>): Promise<void> {
+        await this.createGameComponent(componentType);
+        const config: MGPOptional<RulesConfig> = this.getConfig();
+        this.gameComponent.config = config;
+        this.gameComponent.node = this.gameComponent.rules.getInitialNode(config);
+        await this.setRole(this.role);
+        await this.gameComponent.updateBoardAndRedraw(false);
     }
 
     private async getMatchingComponentAndNavigateOutIfAbsent(): Promise<MGPOptional<Type<AbstractGameComponent>>> {

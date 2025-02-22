@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Type } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
@@ -15,6 +15,7 @@ import { ConfigDescriptionType, RulesConfig, RulesConfigUtils } from 'src/app/js
 import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
 import { SuperRules } from 'src/app/jscaip/Rules';
 import { RulesConfigDescription } from '../rules-configuration/RulesConfigDescription';
+import { AbstractGameComponent } from '../../game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -43,15 +44,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         console.log('creating LGWC')
         this.players = [MGPOptional.of(this.playerSelection[0]), MGPOptional.of(this.playerSelection[1])];
         this.role = Player.ZERO; // The user is playing, not observing
-        this.setDefaultRulesConfig();
-    }
-
-    // Will set the default rules config.
-    // Will set it to MGPOptional.empty() if the game doesn't exist, but an error will be handled by another function.
-    // ConfiglessRules have rulesConfig set to MGPOptional.empty().
-    private setDefaultRulesConfig(): void {
-        const urlName: string = this.getGameUrlName();
-        this.rulesConfig = RulesConfigUtils.getGameDefaultConfig(urlName);
     }
 
     public getCreatedNodes(): number {
@@ -63,7 +55,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     }
 
     public async ngAfterViewInit(): Promise<void> {
-        await this.setConfigFromParams();
         window.setTimeout(async() => {
             const createdSuccessfully: boolean = await this.createMatchingGameComponent();
             if (createdSuccessfully) {
@@ -71,6 +62,11 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
                 this.cdr.detectChanges();
             }
         }, 1);
+    }
+
+    protected override async createGameComponentAndSetConfig(componentType: Type<AbstractGameComponent>): Promise<void> {
+        await this.setConfigFromParams();
+        await super.createGameComponentAndSetConfig(componentType);
     }
 
     /**
