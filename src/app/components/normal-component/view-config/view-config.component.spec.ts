@@ -38,7 +38,7 @@ describe('ViewConfigComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should show config when clicking on "view config" (default config)', fakeAsync(async() => {
+    it('should show config when clicking on "show config" (default config)', fakeAsync(async() => {
         // Given a game with default config
         component.rulesConfig = MGPOptional.of(defaultConfig);
         testUtils.expectElementNotToExist('#rules-config-component');
@@ -63,10 +63,10 @@ describe('ViewConfigComponent', () => {
         testUtils.expectElementNotToExist('#rules-config-component');
     }));
 
-    it('should show config when clicking on "view config" (custom config)', fakeAsync(async() => {
+    it('should show config when clicking on "show config" (custom config)', fakeAsync(async() => {
         // Given a game with custom config
         component.rulesConfig = MGPOptional.of(customConfig);
-        // When clicking on "view config" button
+        // When clicking on "show config" button
         await testUtils.clickElement('#show-config');
         // Then it should rules config, with the custom config selected
         const rulesConfigurationComponent: RulesConfigurationComponent =
