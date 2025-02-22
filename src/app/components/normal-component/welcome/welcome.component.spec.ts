@@ -12,6 +12,7 @@ import { LobbyComponent } from '../lobby/lobby.component';
 import { OnlineGameCreationComponent } from '../online-game-creation/online-game-creation.component';
 import { OnlineGameSelectionComponent } from '../online-game-selection/online-game-selection.component';
 import { WelcomeComponent } from './welcome.component';
+import { LocalGameConfigurationComponent } from '../../wrapper-components/local-game-configuration/local-game-configuration.component';
 
 describe('WelcomeComponent', () => {
 
@@ -118,7 +119,7 @@ describe('WelcomeComponent', () => {
             testUtils.detectChanges();
 
             // Then we should be redirected to the game
-            expectValidRouting(router, ['/local', 'Awale', 'config'], LocalGameWrapperComponent);
+            expectValidRouting(router, ['/local', 'Awale', 'config'], LocalGameConfigurationComponent);
         }));
 
         it('should redirect to tutorial when clicking on the corresponding button', fakeAsync(async() => {

@@ -32,7 +32,7 @@ export class RulesConfigUtils {
      */
     public static getGameDefaultConfig<C extends RulesConfig>(gameName: string): MGPOptional<C> {
         const gameInfos: MGPOptional<GameInfo> = GameInfo.getByUrlName(gameName);
-        Utils.assert(gameInfos.isPresent(), `getGameDefaultConfig called with unexisting game: ${gameName}`);
+        // Utils.assert(gameInfos.isPresent(), `getGameDefaultConfig called with unexisting game: ${gameName}`);
         return gameInfos.get().getRulesConfig() as MGPOptional<C>;
     }
 

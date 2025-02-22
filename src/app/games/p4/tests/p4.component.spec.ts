@@ -1,6 +1,10 @@
 /* eslint-disable max-lines-per-function */
 import { fakeAsync } from '@angular/core/testing';
+
+import { MGPOptional } from '@everyboard/lib';
+
 import { P4Component } from '../p4.component';
+import { P4Rules, P4Config } from 'src/app/games/p4/P4Rules';
 import { P4Move } from 'src/app/games/p4/P4Move';
 import { ComponentTestUtils } from 'src/app/utils/tests/TestUtils.spec';
 import { PlayerOrNone } from 'src/app/jscaip/Player';
@@ -10,6 +14,7 @@ import { Table } from 'src/app/jscaip/TableUtils';
 describe('P4Component', () => {
 
     let testUtils: ComponentTestUtils<P4Component>;
+    const defaultConfig: MGPOptional<P4Config> = P4Rules.get().getDefaultRulesConfig();
 
     const _: PlayerOrNone = PlayerOrNone.NONE;
     const O: PlayerOrNone = PlayerOrNone.ZERO;
@@ -48,4 +53,42 @@ describe('P4Component', () => {
         testUtils.expectElementToHaveClass('#victory-coord-3-4', 'victory-stroke');
         testUtils.expectElementToHaveClass('#victory-coord-3-5', 'victory-stroke');
     }));
+
+    describe('custom config', () => {
+        // The following tests are mostly there to ensure that the config is properly loaded
+
+        it('should allow moves in extra board positions', fakeAsync(async() => {
+            // Given a P4 config with extra board positions
+            const config: MGPOptional<P4Config> = MGPOptional.of({
+                ...defaultConfig.get(),
+                width: 10,
+                height: 10,
+            });
+            const state: P4State = P4Rules.get().getInitialState(config);
+            await testUtils.setupState(state, { config });
+
+            // When playing in the new positions
+            const move: P4Move = P4Move.of(9);
+
+            // Then the move should succeed
+            await testUtils.expectMoveSuccess('#click-9-0', move);
+        }));
+
+        it('should disallow moves outside of board', fakeAsync(async() => {
+            // Given a P4 config with a small board
+            const config: MGPOptional<P4Config> = MGPOptional.of({
+                ...defaultConfig.get(),
+                width: 4,
+                height: 4,
+            });
+            const state: P4State = P4Rules.get().getInitialState(config);
+            await testUtils.setupState(state, { config });
+
+            // When playing in the new positions
+            const move: P4Move = P4Move.of(5);
+
+            // Then the move should succeed
+            await testUtils.expectElementNotToExist('#click-5-0');
+        }));
+    });
 });

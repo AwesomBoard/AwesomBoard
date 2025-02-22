@@ -42,7 +42,7 @@ import { CurrentGameServiceMock } from 'src/app/services/tests/CurrentGameServic
 import { GameInfo } from 'src/app/components/normal-component/pick-game/pick-game.component';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { Player } from 'src/app/jscaip/Player';
-import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
+import { ConfigDescriptionType, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { TestVars } from 'src/TestVars.spec';
 import { Minimax } from 'src/app/jscaip/AI/Minimax';
 import { AIDepthLimitOptions } from 'src/app/jscaip/AI/AI';
@@ -160,7 +160,7 @@ export class SimpleComponentTestUtils<T> {
 
     private failOn(typeOfMessage: string): (message: string) => void {
         return (message: string) => {
-            fail(`MessageDisplayer: ${typeOfMessage} was called with '${message}' but no toast was expected, use expectToDisplay"!`);
+            fail(`MessageDisplayer: ${typeOfMessage} was called with '${message}' but no toast was expected, use expectToDisplay!`);
         };
     }
 
@@ -354,7 +354,6 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         configureTestingModule: boolean = true)
     : Promise<ComponentTestUtils<Component>>
     {
-        console.log('forGame...')
         const optionalGameInfo: MGPOptional<GameInfo> =
             MGPOptional.ofNullable(GameInfo.getAllGames().find((gameInfo: GameInfo) => gameInfo.urlName === game));
         if (optionalGameInfo.isAbsent()) {
@@ -373,7 +372,6 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         configureTestingModule: boolean = true)
     : Promise<ComponentTestUtils<Component, Actor>>
     {
-        console.log('forGameWithWrapper...')
         const testUtils: ComponentTestUtils<Component, Actor> =
             await ComponentTestUtils.basic(game, configureTestingModule);
         ConnectedUserServiceMock.setUser(user);
@@ -382,7 +380,6 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         tick(1); // Need to be at least 1ms
         testUtils.bindGameComponent();
         testUtils.prepareSpies();
-        console.log('done...')
         return testUtils;
     }
 
@@ -429,21 +426,20 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         this.detectChanges();
     }
 
-    public setRoute(id: string, value: string): void {
-        TestBed.inject(ActivatedRouteStub).setRoute(id, value);
-    }
-
     public async setupState(state: GameState,
                             params: { previousState?: GameState,
                                       previousMove?: Move,
-                                      config?: MGPOptional<RulesConfig>
-                            } = {})
+                                      config?: MGPOptional<RulesConfig> } = {})
     : Promise<void>
     {
         const config: MGPOptional<RulesConfig> = this.getConfigFrom(params.config);
         if (config.isPresent()) {
             const wrapper: LocalGameWrapperComponent = this.getWrapper() as unknown as LocalGameWrapperComponent;
-            // TestBed.inject(ActivatedRouteStub).setRoute(TODOconfig)
+            Object.entries(config.get())
+                .map((configElement: [string, ConfigDescriptionType]) => {
+                    TestBed.inject(ActivatedRouteStub).setParam(configElement[0], JSON.stringify(configElement[1]))
+                });
+            await wrapper.setConfigFromParams();
             this.gameComponent.config = config;
             tick(0);
         }
@@ -658,6 +654,7 @@ export class ConfigureTestingModuleUtils {
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
             providers: [
                 { provide: ActivatedRoute, useValue: activatedRouteStub },
+                { provide: ActivatedRouteStub, useValue: activatedRouteStub },
                 { provide: UserDAO, useClass: UserDAOMock },
                 { provide: ConnectedUserService, useClass: ConnectedUserServiceMock },
                 { provide: CurrentGameService, useClass: CurrentGameServiceMock },

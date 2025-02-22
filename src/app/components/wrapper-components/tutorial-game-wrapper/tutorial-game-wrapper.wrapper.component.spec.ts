@@ -21,6 +21,7 @@ import { Player } from 'src/app/jscaip/Player';
 import { RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
 import { QuartoConfig, QuartoRules } from 'src/app/games/quarto/QuartoRules';
 import { TutorialStepMessage } from './TutorialStepMessage';
+import { LocalGameConfigurationComponent } from '../local-game-configuration/local-game-configuration.component';
 
 describe('TutorialGameWrapperComponent for non-existing game', () => {
 
@@ -543,7 +544,7 @@ describe('TutorialGameWrapperComponent (wrapper)', () => {
             await testUtils.clickElement('#playLocallyButton');
 
             // expect navigator to have been called
-            expectValidRouting(router, ['/local', 'Quarto', 'config'], LocalGameWrapperComponent);
+            expectValidRouting(router, ['/local', 'Quarto', 'config'], LocalGameConfigurationComponent);
         }));
 
         it('should redirect to online game when asking for it when finished and user is online', fakeAsync(async() => {

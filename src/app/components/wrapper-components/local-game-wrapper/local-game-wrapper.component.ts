@@ -93,6 +93,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             const config: RulesConfig = {};
             for (const key of params.keys) {
                 const value: unknown = JSON.parse(Utils.getNonNullable(params.get(key)));
+                console.log(key, value)
                 if (rulesConfigDescription.isValid(key, value)) {
                     config[key] = value as ConfigDescriptionType;
                 } else {
