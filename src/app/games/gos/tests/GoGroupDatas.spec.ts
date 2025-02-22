@@ -11,7 +11,7 @@ describe('GoGroupData', () => {
     const coord: Coord = new Coord(0, 0);
 
     // dead wrapping => that wrapping alive opposite
-    // dead wrapping and his opposite => that opposing
+    // dead wrapping and its opposite => that opposing
     // two alive wrapping => error
 
     it('should throw when getWrapped is called on a multi wrapped group', () => {

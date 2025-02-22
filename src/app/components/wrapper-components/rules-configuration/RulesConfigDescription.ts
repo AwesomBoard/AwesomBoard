@@ -1,4 +1,4 @@
-import { Set, Utils } from '@everyboard/lib';
+import { MGPValidation, Set, Utils } from '@everyboard/lib';
 
 import { MGPValidator, MGPValidators } from 'src/app/utils/MGPValidator';
 import { ConfigDescriptionType, DefaultConfigDescription, EmptyRulesConfig, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
@@ -25,22 +25,30 @@ export class RulesConfigDescriptionLocalizable {
 
 }
 
-export class ConfigLine {
+export abstract class ConfigLine {
 
     protected constructor(public readonly value: ConfigDescriptionType,
-                          public readonly title: Localized,
-                          public readonly validator?: MGPValidator)
+                          public readonly title: Localized)
     {
     }
+
+    // Should check if the value is valid
+    public abstract checkValidity(value: unknown): MGPValidation;
+
 }
 
 export class NumberConfig extends ConfigLine {
 
     public constructor(value: number,
                        title: Localized,
-                       validator: MGPValidator)
+                       private readonly validator: MGPValidator)
     {
-        super(value, title, validator);
+        super(value, title);
+    }
+
+    public checkValidity(value: unknown): MGPValidation {
+        Utils.assert(typeof value === 'number', 'NumberConfig expects a number value');
+        return this.validator(value);
     }
 
 }
@@ -50,6 +58,11 @@ export class BooleanConfig extends ConfigLine {
     public constructor(value: boolean, title: Localized)
     {
         super(value, title);
+    }
+
+    public checkValidity(value: unknown): MGPValidation {
+        Utils.assert(typeof value === 'boolean', 'BooleanConfig expects a boolean value');
+        return MGPValidation.SUCCESS;
     }
 
 }
@@ -102,9 +115,24 @@ export class RulesConfigDescription<R extends RulesConfig = EmptyRulesConfig> {
         return rulesConfig.config;
     }
 
-    public getValidator(fieldName: string): MGPValidator {
-        Utils.assert(fieldName in this.defaultConfigDescription.config, fieldName + ' is not a validator!');
-        return this.defaultConfigDescription.config[fieldName].validator as MGPValidator;
+    public isValid(fieldName: string, value: unknown): boolean {
+        if (value == null) {
+            // no value was provided, it is invalid
+            return false;
+        }
+        const configLine: ConfigLine = this.defaultConfigDescription.config[fieldName];
+        if (configLine == null) {
+            // this does not match an element from the config, it is invalid
+            return false;
+        }
+        return configLine.checkValidity(value).isSuccess();
+    }
+
+    public getValidityError(fieldName: string, value: unknown): string {
+        if (value === null) {
+            return $localize`This value is mandatory`;
+        }
+        return this.defaultConfigDescription.config[fieldName].checkValidity(value).getReason();
     }
 
 }

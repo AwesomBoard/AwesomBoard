@@ -32,7 +32,7 @@ import { FirestoreTime } from 'src/app/domain/Time';
 import { UserService } from 'src/app/services/UserService';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { addCandidate } from '../online-game-wrapper/online-game-wrapper.quarto.component.spec';
-import { LocalGameWrapperComponent } from '../local-game-wrapper/local-game-wrapper.component';
+import { LocalGameConfigurationComponent } from '../local-game-configuration/local-game-configuration.component';
 
 describe('PartCreationComponent', () => {
 
@@ -202,7 +202,7 @@ describe('PartCreationComponent', () => {
                 });
                 // Then it should cancel game and navigate to local game
                 expect(gameService.deleteGame).toHaveBeenCalledOnceWith('configRoomId');
-                expectValidRouting(router, ['/local', 'P4'], LocalGameWrapperComponent);
+                expectValidRouting(router, ['/local', 'P4', 'config'], LocalGameConfigurationComponent);
             }));
         });
 
@@ -289,9 +289,9 @@ describe('PartCreationComponent', () => {
 
                 // When the candidate token becomes too old
                 spyOn(currentGameService, 'updateCurrentGame').and.callThrough();
-                // Creator update his last presence token
+                // Creator update their last presence token
                 await userService.updatePresenceToken(UserMocks.CREATOR_AUTH_USER.id);
-                // but chosenOpponent don't update his last presence token
+                // but chosenOpponent don't update their last presence token
                 const infoMessage: string = UserMocks.OPPONENT.username + ' left the game, please pick another opponent.';
                 await testUtils.expectToDisplayInfoMessage(infoMessage, async() => {
                     tick(PartCreationComponent.TOKEN_TIMEOUT); // two token time pass and timeout is reached

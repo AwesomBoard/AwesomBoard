@@ -145,7 +145,7 @@ export class SixComponent
             disconnecteds.push({
                 coord: lastDrop,
                 class: this.getCurrentOpponent().getHTMLClass('-fill'),
-            }); // Dummy captured his own piece
+            }); // Dummy captured their own piece
         }
         return disconnecteds;
     }

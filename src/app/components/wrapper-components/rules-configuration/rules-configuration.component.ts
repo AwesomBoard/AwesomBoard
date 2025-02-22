@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { comparableEquals, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
+
+import { comparableEquals, MGPOptional, Utils } from '@everyboard/lib';
 
 import { ConfigDescriptionType, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { RulesConfigDescription, RulesConfigDescriptionLocalizable } from './RulesConfigDescription';
@@ -129,23 +130,12 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
     }
 
     public isValid(field: string): boolean {
-        const config: RulesConfig = this.rulesConfigDescription.getDefaultConfig().config;
-        const value: ConfigDescriptionType = config[field];
-        if (typeof value === 'number') {
-            const fieldValue: number = this.rulesConfigForm.controls[field].value;
-            const validity: MGPValidation = this.rulesConfigDescription.getValidator(field)(fieldValue);
-            return validity.isSuccess();
-        } else {
-            Utils.expectToBe(typeof value, 'boolean');
-            // Angular makes those controls invalid when they are booleans, not sure why
-            return true; // So we return true because they are always valid
-        }
+        return this.rulesConfigDescription.isValid(field, this.rulesConfigForm.controls[field].value);
     }
 
     public getErrorMessage(field: string): string {
         const fieldValue: number | null = this.rulesConfigForm.controls[field].value;
-        const validity: MGPValidation = this.rulesConfigDescription.getValidator(field)(fieldValue);
-        return validity.getReason();
+        return this.rulesConfigDescription.getValidityError(field, fieldValue);
     }
 
     public getFields(): string[] {

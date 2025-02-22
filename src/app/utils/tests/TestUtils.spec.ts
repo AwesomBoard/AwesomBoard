@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement, Typ
 import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { GameState } from '../../jscaip/state/GameState';
@@ -42,7 +42,7 @@ import { CurrentGameServiceMock } from 'src/app/services/tests/CurrentGameServic
 import { GameInfo } from 'src/app/components/normal-component/pick-game/pick-game.component';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { Player } from 'src/app/jscaip/Player';
-import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
+import { ConfigDescriptionType, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { TestVars } from 'src/TestVars.spec';
 import { Minimax } from 'src/app/jscaip/AI/Minimax';
 import { AIDepthLimitOptions } from 'src/app/jscaip/AI/AI';
@@ -53,6 +53,7 @@ import { ConfigRoomService } from 'src/app/services/ConfigRoomService';
 import { ServerTimeService } from 'src/app/services/ServerTimeService';
 import { ServerTimeServiceMock } from 'src/app/services/tests/ServerTimeServiceMock.spec';
 import { ConfigRoomServiceMock } from 'src/app/services/tests/ConfigRoomServiceMock.spec';
+import { RulesConfigurationComponent } from 'src/app/components/wrapper-components/rules-configuration/rules-configuration.component';
 
 @Component({})
 export class BlankComponent {}
@@ -60,19 +61,28 @@ export class BlankComponent {}
 export class ActivatedRouteStub {
 
     private route: {[key: string]: string} = {};
-    public snapshot: { paramMap: { get: (str: string) => string } };
-    public constructor(compo?: string, id?: string) {
+    private params: {[key: string]: string} = {};
+
+    public snapshot: {
+        paramMap: { get: (str: string) => string },
+        queryParamMap: { get: (str: string) => string, keys: string[] },
+    };
+    public constructor(game?: string, id?: string) {
         this.snapshot = {
             paramMap: {
-                get: (str: string): string => {
+                get: (name: string): string => {
                     // Returns null in case the route does not exist.
                     // This is the same behavior than ActivatedRoute
-                    return this.route[str];
+                    return this.route[name];
                 },
             },
+            queryParamMap: {
+                keys: [],
+                get: (name: string): string => this.params[name],
+            },
         };
-        if (compo != null) {
-            this.setRoute('compo', compo);
+        if (game != null) {
+            this.setRoute('game', game);
         }
         if (id != null) {
             this.setRoute('id', id);
@@ -80,6 +90,10 @@ export class ActivatedRouteStub {
     }
     public setRoute(key: string, value: string): void {
         this.route[key] = value;
+    }
+    public setParam(key: string, value: string): void {
+        this.params[key] = value;
+        this.snapshot.queryParamMap.keys.push(key);
     }
 }
 export class SimpleComponentTestUtils<T> {
@@ -146,7 +160,7 @@ export class SimpleComponentTestUtils<T> {
 
     private failOn(typeOfMessage: string): (message: string) => void {
         return (message: string) => {
-            fail(`MessageDisplayer: ${typeOfMessage} was called with '${message}' but no toast was expected, use expectToDisplay"!`);
+            fail(`MessageDisplayer: ${typeOfMessage} was called with '${message}' but no toast was expected, use expectToDisplay!`);
         };
     }
 
@@ -337,8 +351,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
 
     public static async forGame<Component extends AbstractGameComponent>(
         game: string,
-        configureTestingModule: boolean = true,
-        chooseDefaultConfig: boolean = true)
+        configureTestingModule: boolean = true)
     : Promise<ComponentTestUtils<Component>>
     {
         const optionalGameInfo: MGPOptional<GameInfo> =
@@ -349,16 +362,14 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         return ComponentTestUtils.forGameWithWrapper(game,
                                                      LocalGameWrapperComponent,
                                                      AuthUser.NOT_CONNECTED,
-                                                     configureTestingModule,
-                                                     chooseDefaultConfig);
+                                                     configureTestingModule);
     }
 
     public static async forGameWithWrapper<Component extends AbstractGameComponent, Actor extends Comparable>(
         game: string,
         wrapperKind: Type<GameWrapper<Actor>>,
         user: AuthUser = AuthUser.NOT_CONNECTED,
-        configureTestingModule: boolean = true,
-        chooseDefaultConfig: boolean = true)
+        configureTestingModule: boolean = true)
     : Promise<ComponentTestUtils<Component, Actor>>
     {
         const testUtils: ComponentTestUtils<Component, Actor> =
@@ -367,19 +378,8 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         testUtils.prepareFixture(wrapperKind);
         testUtils.detectChanges();
         tick(1); // Need to be at least 1ms
-        if (chooseDefaultConfig) {
-            const wrapperIsLocal: boolean = testUtils.getWrapper() instanceof LocalGameWrapperComponent;
-            const config: MGPOptional<RulesConfig> = GameInfo.getByUrlName(game).get().getRulesConfig();
-            if (wrapperIsLocal && config.isPresent()) {
-                await testUtils.acceptDefaultConfig();
-            }
-            /**
-             * If we just choose default config, here, the local game wrapper is not yet in playing phase
-             * so most things are not spyable
-             */
-            testUtils.bindGameComponent();
-            testUtils.prepareSpies();
-        }
+        testUtils.bindGameComponent();
+        testUtils.prepareSpies();
         return testUtils;
     }
 
@@ -395,11 +395,6 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         const testUtils: ComponentTestUtils<Component, Actor> = new ComponentTestUtils<Component, Actor>();
         testUtils.prepareMessageDisplayerSpies();
         return testUtils;
-    }
-
-    public async acceptDefaultConfig(): Promise<void> {
-        await this.clickElement('#start-game-with-config');
-        tick(1);
     }
 
     public bindGameComponent(): void {
@@ -423,7 +418,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
 
     public expectToBeCreated(): void {
         expect(this.getWrapper()).withContext('Wrapper should be created').toBeTruthy();
-        expect(this.getGameComponent()).withContext('Component should be created').toBeTruthy();
+        expect(this.getGameComponent()).withContext('Game component should be created').toBeTruthy();
     }
 
     public override forceChangeDetection(): void {
@@ -431,23 +426,21 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         this.detectChanges();
     }
 
-    public setRoute(id: string, value: string): void {
-        TestBed.inject(ActivatedRouteStub).setRoute(id, value);
-    }
-
     public async setupState(state: GameState,
                             params: { previousState?: GameState,
                                       previousMove?: Move,
-                                      config?: MGPOptional<RulesConfig>
-                            } = {})
+                                      config?: MGPOptional<RulesConfig> } = {})
     : Promise<void>
     {
         const config: MGPOptional<RulesConfig> = this.getConfigFrom(params.config);
         if (config.isPresent()) {
             const wrapper: LocalGameWrapperComponent = this.getWrapper() as unknown as LocalGameWrapperComponent;
-            wrapper.updateConfig(config);
+            Object.entries(config.get())
+                .map((configElement: [string, ConfigDescriptionType]) => {
+                    TestBed.inject(ActivatedRouteStub).setParam(configElement[0], JSON.stringify(configElement[1]));
+                });
+            await wrapper.setConfigFromParams();
             this.gameComponent.config = config;
-            wrapper.markConfigAsFilled();
             tick(0);
         }
         this.gameComponent.node = new GameNode(
@@ -622,7 +615,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
     }
 
     public async selectAIPlayer(player: Player): Promise<void> {
-        await this.choosingAIOrHuman(player, 'AI');
+        this.choosingAIOrHuman(player, 'AI');
         await this.choosingAILevel(player);
     }
 
@@ -661,6 +654,7 @@ export class ConfigureTestingModuleUtils {
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
             providers: [
                 { provide: ActivatedRoute, useValue: activatedRouteStub },
+                { provide: ActivatedRouteStub, useValue: activatedRouteStub },
                 { provide: UserDAO, useClass: UserDAOMock },
                 { provide: ConnectedUserService, useClass: ConnectedUserServiceMock },
                 { provide: CurrentGameService, useClass: CurrentGameServiceMock },
@@ -693,6 +687,7 @@ export class ConfigureTestingModuleUtils {
                 FirestoreTimePipe,
                 HumanDurationPipe,
                 ToggleVisibilityDirective,
+                RulesConfigurationComponent,
             ],
             schemas: [
                 CUSTOM_ELEMENTS_SCHEMA,
@@ -750,7 +745,9 @@ function getComponentClassName(component: Type<any>): string {
 export function expectValidRouting(router: Router,
                                    path: string[],
                                    component: Type<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
-                                   options?: { otherRoutes?: boolean, skipLocationChange?: boolean})
+                                   options?: { otherRoutes?: boolean,
+                                               skipLocationChange?: boolean,
+                                               queryParams?: Record<string, string> })
 : void
 {
     expect(path[0][0]).withContext('Routings should start with /').toBe('/');
@@ -764,20 +761,21 @@ export function expectValidRouting(router: Router,
     const expectedComponent: string = getComponentClassName(component);
     expect(routedToComponent).withContext('It should route to the expected component').toEqual(expectedComponent);
     const otherRoutes: boolean = options != null && options.otherRoutes != null && options.otherRoutes;
-    const skipLocationChange: boolean =
-        options != null && options.skipLocationChange != null && options.skipLocationChange;
+    const args: [string[], ...NavigationExtras[]] = [path];
+    const extraArgs: NavigationExtras = {};
+    if (options != null && options.queryParams != null) {
+        extraArgs['queryParams'] = options.queryParams;
+    }
+    if (options != null && options.skipLocationChange != null) {
+        extraArgs['skipLocationChange'] = options.skipLocationChange;
+    }
+    if (Object.keys(extraArgs).length > 0) {
+        args.push(extraArgs);
+    }
     if (otherRoutes) {
-        if (skipLocationChange) {
-            expect(router.navigate).toHaveBeenCalledWith(path, { skipLocationChange: true });
-        } else {
-            expect(router.navigate).toHaveBeenCalledWith(path);
-        }
+        expect(router.navigate).toHaveBeenCalledWith(...args);
     } else {
-        if (skipLocationChange) {
-            expect(router.navigate).toHaveBeenCalledOnceWith(path, { skipLocationChange: true });
-        } else {
-            expect(router.navigate).toHaveBeenCalledOnceWith(path);
-        }
+        expect(router.navigate).toHaveBeenCalledOnceWith(...args);
     }
 }
 

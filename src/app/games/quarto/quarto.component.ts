@@ -71,7 +71,7 @@ export class QuartoComponent extends RectangularGameComponent<QuartoRules,
                 const chosenMove: QuartoMove = new QuartoMove(clicked.x, clicked.y, QuartoPiece.EMPTY);
                 return this.chooseMove(chosenMove);
             } else if (this.pieceToGive.isAbsent()) {
-                return MGPValidation.SUCCESS; // the user has just chosen his coord
+                return MGPValidation.SUCCESS; // the user has just chosen their coord
             } else {
                 // the user has already chosen his piece before his coord
                 const chosenMove: QuartoMove = new QuartoMove(clicked.x, clicked.y, this.pieceToGive.get());
@@ -93,7 +93,7 @@ export class QuartoComponent extends RectangularGameComponent<QuartoRules,
         }
         this.pieceToGive = MGPOptional.of(QuartoPiece.ofInt(givenPiece));
         if (this.chosen.isAbsent()) {
-            return MGPValidation.SUCCESS; // the user has just chosen his piece
+            return MGPValidation.SUCCESS; // the user has just chosen their piece
         } else {
             // the user has chosen the coord before the piece
             const chosen: Coord = this.chosen.get();

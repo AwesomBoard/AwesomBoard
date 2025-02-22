@@ -26,7 +26,7 @@ export class OnlineGameCreationComponent implements OnInit {
         await this.createGameAndRedirectOrShowError(this.extractGameFromURL());
     }
     private extractGameFromURL(): string {
-        return Utils.getNonNullable(this.route.snapshot.paramMap.get('compo'));
+        return Utils.getNonNullable(this.route.snapshot.paramMap.get('game'));
     }
     private async createGameAndRedirectOrShowError(game: string): Promise<boolean> {
         const authUser: AuthUser = this.connectedUserService.user.get();

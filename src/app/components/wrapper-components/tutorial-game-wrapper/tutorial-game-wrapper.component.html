@@ -1,7 +1,12 @@
 <div class="columns is-vcentered is-align-items-stretch">
     <div class="column is-one-third">
-        <div id="infos"
+        <div *ngIf="gameComponent"
+             id="infos"
              class="box is-fullheight">
+            <app-view-config [rulesConfig]="getConfig()"
+                             [rulesConfigDescription]="getRulesConfigDescription()"
+                             [gameName]="getGameName().getOrElse('')">
+            </app-view-config>
             <progress class="progress is-primary" [attr.value]="successfulSteps" [attr.max]="getNumberOfSteps()"></progress>
             <div class="content is-medium">
                 <p class="title">{{ getCurrentStepTitle() }} [{{stepIndex + 1}}/{{ getNumberOfSteps() }}]</p>

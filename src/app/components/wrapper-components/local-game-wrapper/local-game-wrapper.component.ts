@@ -1,10 +1,9 @@
-import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { Component, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Type } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+
 import { MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 
-import { AbstractNode, GameNode, GameNodeStats } from 'src/app/jscaip/AI/GameNode';
-import { ConnectedUserService } from 'src/app/services/ConnectedUserService';
+import { AbstractNode, GameNodeStats } from 'src/app/jscaip/AI/GameNode';
 import { GameWrapper } from 'src/app/components/wrapper-components/GameWrapper';
 import { Move } from 'src/app/jscaip/Move';
 import { GameState } from 'src/app/jscaip/state/GameState';
@@ -12,11 +11,11 @@ import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { Player } from 'src/app/jscaip/Player';
 import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { Debug } from 'src/app/utils/Debug';
-import { RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
+import { ConfigDescriptionType, RulesConfig, RulesConfigUtils } from 'src/app/jscaip/RulesConfigUtil';
 import { AIOptions, AIStats, AbstractAI } from 'src/app/jscaip/AI/AI';
-import { GameInfo } from '../../normal-component/pick-game/pick-game.component';
 import { SuperRules } from 'src/app/jscaip/Rules';
-import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
+import { RulesConfigDescription } from '../rules-configuration/RulesConfigDescription';
+import { AbstractGameComponent } from '../../game-components/game-component/GameComponent';
 
 @Component({
     selector: 'app-local-game-wrapper',
@@ -34,35 +33,16 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
 
     public winnerMessage: MGPOptional<string> = MGPOptional.empty();
 
-    public displayAIMetrics: boolean = false;
-
-    public configIsSet: boolean = false;
-
-    public configDemo: DemoNodeInfo;
-
-    public rulesConfig: MGPOptional<RulesConfig> = MGPOptional.empty();
-
-    private readonly configBS: BehaviorSubject<MGPOptional<RulesConfig>> = new BehaviorSubject(MGPOptional.empty());
-    private readonly configObs: Observable<MGPOptional<RulesConfig>> = this.configBS.asObservable();
+    public rulesConfig: MGPOptional<RulesConfig>; // Set in constructor and in ngAfterViewInit
 
     public constructor(activatedRoute: ActivatedRoute,
-                       connectedUserService: ConnectedUserService,
                        router: Router,
                        messageDisplayer: MessageDisplayer,
                        private readonly cdr: ChangeDetectorRef)
     {
-        super(activatedRoute, connectedUserService, router, messageDisplayer);
+        super(activatedRoute, router, messageDisplayer);
         this.players = [MGPOptional.of(this.playerSelection[0]), MGPOptional.of(this.playerSelection[1])];
         this.role = Player.ZERO; // The user is playing, not observing
-        this.setDefaultRulesConfig();
-    }
-
-    // Will set the default rules config.
-    // Will set it to MGPOptional.empty() if the game doesn't exist, but an error will be handled by another function.
-    // ConfiglessRules have MGPOptional.empty() value.
-    private setDefaultRulesConfig(): void {
-        const urlName: string = this.getGameUrlName();
-        this.rulesConfig = RulesConfigUtils.getGameDefaultConfig(urlName);
     }
 
     public getCreatedNodes(): number {
@@ -73,7 +53,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         return AIStats.aiTime;
     }
 
-    public ngAfterViewInit(): void {
+    public async ngAfterViewInit(): Promise<void> {
         window.setTimeout(async() => {
             const createdSuccessfully: boolean = await this.createMatchingGameComponent();
             if (createdSuccessfully) {
@@ -81,6 +61,48 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
                 this.cdr.detectChanges();
             }
         }, 1);
+    }
+
+    protected override async createGameComponentAndSetConfig(componentType: Type<AbstractGameComponent>)
+    : Promise<void>
+    {
+        await this.setConfigFromParams();
+        await super.createGameComponentAndSetConfig(componentType);
+    }
+
+    /**
+     * Reads the URL to get the config from query parameters (e.g., /P4?width=5&height=5)
+     * If the config is invalid, redirect to page that lets the user select the config.
+     * Public for being able to trigger it from tests.
+     */
+    public async setConfigFromParams(): Promise<void> {
+        const params: ParamMap = this.activatedRoute.snapshot.queryParamMap;
+        const noConfigIsProvided: boolean = params.keys.length === 0;
+
+        const defaultConfig: MGPOptional<RulesConfig> = RulesConfigUtils.getGameDefaultConfig(this.getGameUrlName());
+        const gameIsNotConfigurable: boolean = defaultConfig.isAbsent();
+
+        if (noConfigIsProvided || gameIsNotConfigurable) {
+            this.rulesConfig = defaultConfig;
+        } else {
+            // Extract the configuration from the query parameters and validate it
+            const rulesConfigDescription: RulesConfigDescription<RulesConfig> = this.getRulesConfigDescription().get();
+            const config: RulesConfig = {};
+            for (const key of params.keys) {
+                const value: unknown = JSON.parse(Utils.getNonNullable(params.get(key)));
+                if (rulesConfigDescription.isValid(key, value)) {
+                    config[key] = value as ConfigDescriptionType;
+                } else {
+                    // If anything is invalid, go back to configuration page
+                    return this.redirectToConfiguration();
+                }
+            }
+            this.rulesConfig = MGPOptional.of(config);
+        }
+    }
+
+    private async redirectToConfiguration(): Promise<void> {
+        await this.router.navigate(['/local', this.getGameUrlName(), 'config']);
     }
 
     public async updatePlayer(player: Player): Promise<void> {
@@ -96,13 +118,13 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     }
 
     public async onLegalUserMove(move: Move): Promise<void> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         this.gameComponent.node = this.gameComponent.rules.choose(this.gameComponent.node, move, config).get();
         await this.applyNewMove();
     }
 
     private async updateWrapper(): Promise<void> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const gameStatus: GameStatus = this.gameComponent.rules.getGameStatus(this.gameComponent.node, config);
         if (gameStatus.isEndGame) {
             this.endGame = true;
@@ -138,7 +160,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             const playingAI: MGPOptional<{ ai: AbstractAI, options: AIOptions }> = this.getPlayingAI();
             if (playingAI.isPresent()) {
                 window.setTimeout(async() => {
-                    const config: MGPOptional<RulesConfig> = await this.getConfig();
+                    const config: MGPOptional<RulesConfig> = this.getConfig();
                     const gameIsOngoing: boolean =
                         this.gameComponent.rules.getGameStatus(this.gameComponent.node, config) === GameStatus.ONGOING;
                     if (gameIsOngoing) {
@@ -157,7 +179,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
      *          true if an AI is selected even if its option is not selected yet
      */
     private async hasSelectedAI(): Promise<boolean> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         if (this.gameComponent.rules.getGameStatus(this.gameComponent.node, config).isEndGame) {
             // No AI is playing when the game is finished
             return false;
@@ -205,14 +227,10 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             }));
     }
 
-    public getStateProvider(): MGPOptional<(config: MGPOptional<RulesConfig>) => GameState> {
-        return GameInfo.getStateProvider(this.getGameUrlName());
-    }
-
     public async doAIMove(playingAI: AbstractAI, options: AIOptions): Promise<MGPValidation> {
         // called only when it's AI's Turn
         const ruler: SuperRules<Move, GameState, RulesConfig, unknown> = this.gameComponent.rules;
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const gameStatus: GameStatus = ruler.getGameStatus(this.gameComponent.node, config);
         Utils.assert(gameStatus === GameStatus.ONGOING, 'AI should not try to play when game is over!');
         const aiMove: Move = playingAI.chooseNextMove(this.gameComponent.node, options, config);
@@ -274,7 +292,7 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
     }
 
     public async restartGame(): Promise<void> {
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         this.gameComponent.node = this.gameComponent.rules.getInitialNode(config);
         this.gameComponent.cancelMoveAttempt();
         this.gameComponent.hideLastMove();
@@ -296,63 +314,12 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         }
     }
 
-    public override async getConfig(): Promise<MGPOptional<RulesConfig>> {
-        let subcription: MGPOptional<Subscription> = MGPOptional.empty();
-        const rulesConfigPromise: Promise<RulesConfig> =
-            new Promise((resolve: (value: RulesConfig) => void) => {
-                subcription = MGPOptional.of(
-                    this.configObs.subscribe((response: MGPOptional<RulesConfig>) => {
-                        if (response.isPresent()) {
-                            resolve(response.get());
-                        }
-                    }),
-                );
-            });
-        const rulesConfig: RulesConfig = await rulesConfigPromise;
-        // Subscription will never be empty at this point
-        // but this is needed to prevent linter from complaining that:
-        // "subscription is used before it is set"
-        subcription.get().unsubscribe();
-        return MGPOptional.of(rulesConfig);
-    }
-
-    public updateConfig(rulesConfig: MGPOptional<RulesConfig>): void {
-        this.rulesConfig = rulesConfig;
-        // If there is no config for this game, then rulesConfig value will be MGPOptional.empty()
-        if (rulesConfig.isPresent()) {
-            this.setConfigDemo(rulesConfig.get());
-            if (Object.keys(rulesConfig.get()).length === 0) {
-                // There is nothing to configure for this game!
-                this.markConfigAsFilled();
-            }
-        }
-    }
-
-    public markConfigAsFilled(): void {
-        this.configIsSet = true;
-        this.configBS.next(this.rulesConfig);
-        this.cdr.detectChanges();
+    public override getConfig(): MGPOptional<RulesConfig> {
+        return this.rulesConfig;
     }
 
     public displayAIInfo(): boolean {
         return localStorage.getItem('displayAIInfo') === 'true';
-    }
-
-    private setConfigDemo(config: RulesConfig): void {
-        const stateProvider: MGPOptional<(config: MGPOptional<RulesConfig>) => GameState> = this.getStateProvider();
-        if (stateProvider.isPresent()) {
-            const node: AbstractNode = new GameNode(stateProvider.get()(MGPOptional.of(config)));
-            this.configDemo = {
-                click: MGPOptional.empty(),
-                name: this.getGameUrlName(),
-                node,
-            };
-            this.cdr.detectChanges();
-        }
-    }
-
-    public getConfigDemo(): DemoNodeInfo {
-        return this.configDemo;
     }
 
 }

@@ -1,0 +1,36 @@
+<div class="columns is-vcentered is-align-items-stretch">
+
+    <div class="column">
+        <div class="box is-fullheight">
+            <p class="title">{{ getGameName().getOrElse('') }}</p>
+            <app-rules-configuration id="rules-config-component"
+                                     [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
+                                     [editable]="true"
+                                     (updateCallback)="updateConfig($event)">
+            </app-rules-configuration>
+
+            <div class="field is-horizontal">
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">
+                            <button id="start-game-with-config"
+                                    class="button is-primary is-fullwidth mt-2"
+                                    [disabled]="rulesConfig.isAbsent()"
+                                    (click)="startGame()"
+                                    i18n>Start with this configuration</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="box is-fullheight">
+            <app-demo-card id="demo-card"
+                           *ngIf="getConfigDemo() !== undefined"
+                           [demoNodeInfo]="getConfigDemo()"></app-demo-card>
+        </div>
+    </div>
+
+</div>

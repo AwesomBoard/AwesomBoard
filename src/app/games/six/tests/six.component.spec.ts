@@ -263,7 +263,7 @@ describe('SixComponent', () => {
     describe('Custom Config', () => {
 
         it('should cancel move when clicking on empty space as first click after 10th turn on shorter configs', fakeAsync(async() => {
-            // Given a part with shorter config, on second phase
+            // Given a game with shorter config, on second phase
             const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
                 piecesPerPlayer: 5,
@@ -277,14 +277,15 @@ describe('SixComponent', () => {
                 [X],
             ];
             const state: SixState = SixState.ofRepresentation(board, 10);
+            // When clicking on empty space after first click of 10th turn
             await testUtils.setupState(state, { config: customConfig });
 
+            // Then it should fail
             await testUtils.expectClickFailure('#neighbor-1-1', SixFailure.CAN_NO_LONGER_DROP());
         }));
 
         it('should do movement after the 9th turn on shorter configs', fakeAsync(async() => {
-            // Given a board in phase two
-            // And a shorter config
+            // Given a game with shorter config, on second phase
             const customConfig: MGPOptional<SixConfig> = MGPOptional.of({
                 ...defaultConfig.get(),
                 piecesPerPlayer: 5,
@@ -300,9 +301,12 @@ describe('SixComponent', () => {
             const state: SixState = SixState.ofRepresentation(board, 10);
             await testUtils.setupState(state, { config: customConfig });
 
+            // When moving a piece after 10th turn
             await testUtils.expectClickSuccess('#piece-0-0');
             testUtils.expectElementToExist('#selected-piece-0-0');
             const move: SixMove = SixMove.ofTranslation(new Coord(0, 0), new Coord(0, 6));
+
+            // Then it should succeed
             await testUtils.expectMoveSuccess('#neighbor-0-6', move);
         }));
 

@@ -1,12 +1,13 @@
-<div *ngIf="configIsSet" class="columns is-vcentered is-align-items-stretch">
+<div class="columns is-vcentered is-align-items-stretch">
     <div class="column is-one-quarter has-text-centered">
         <div *ngIf="gameComponent"
-             id="info"
+             id="infos"
              class="box is-fullheight">
-            <div class="mb-5">
-                <p class="title">{{ getGameName().getOrElse('') }}</p>
-                <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
-            </div>
+            <app-view-config [rulesConfig]="rulesConfig"
+                             [rulesConfigDescription]="getRulesConfigDescription()"
+                             [gameName]="getGameName().getOrElse('')">
+            </app-view-config>
+            <p class="subtitle" i18n>Turn n°{{ gameComponent.getTurn() + 1 }}</p>
             <div *ngIf="endGame"
                  id="game-result"
                  class="block">
@@ -90,43 +91,4 @@
             </div>
         </div>
     </div>
-</div>
-
-<div *ngIf="configIsSet === false"
-     class="columns is-vcentered is-align-items-stretch">
-
-    <div class="column">
-        <div class="box is-fullheight">
-            <p class="title">{{ getGameName().getOrElse('') }}</p>
-            <app-rules-configuration id="rules-config-component"
-                                     [rulesConfigDescriptionOptional]="getRulesConfigDescription()"
-                                     [editable]="true"
-                                     (updateCallback)="updateConfig($event)">
-            </app-rules-configuration>
-
-            <div class="field is-horizontal">
-                <div class="field-body">
-                    <div class="field">
-                        <div class="control">
-                            <button id="start-game-with-config"
-                                    class="button is-primary is-fullwidth mt-2"
-                                    [disabled]="rulesConfig.isAbsent()"
-                                    (click)="markConfigAsFilled()"
-                                    i18n>Start with this config</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="column">
-        <div class="box is-fullheight">
-            <app-demo-card id="demo-card"
-                           *ngIf="getConfigDemo() !== undefined"
-                           [demoNodeInfo]="getConfigDemo()"></app-demo-card>
-        </div>
-    </div>
-
 </div>
