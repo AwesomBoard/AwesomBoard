@@ -32,7 +32,6 @@ import { FirestoreTime } from 'src/app/domain/Time';
 import { UserService } from 'src/app/services/UserService';
 import { CurrentGameService } from 'src/app/services/CurrentGameService';
 import { addCandidate } from '../online-game-wrapper/online-game-wrapper.quarto.component.spec';
-import { LocalGameWrapperComponent } from '../local-game-wrapper/local-game-wrapper.component';
 import { LocalGameConfigurationComponent } from '../local-game-configuration/local-game-configuration.component';
 
 describe('PartCreationComponent', () => {

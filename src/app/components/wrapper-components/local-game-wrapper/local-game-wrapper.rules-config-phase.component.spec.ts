@@ -23,7 +23,7 @@ describe('LocalGameWrapperComponent (rules config phase)', () => {
         TestBed.inject(ErrorLoggerService);
     }));
 
-    fit('should redirect to configuration if the provided config is invalid', fakeAsync(async() => {
+    it('should redirect to configuration if the provided config is invalid', fakeAsync(async() => {
         // Given a game configured with an invalid config
         const config: MGPOptional<RulesConfig> = MGPOptional.of({
             invalid: true,
