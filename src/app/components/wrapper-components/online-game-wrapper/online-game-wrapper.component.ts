@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, Event } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Mutex } from 'async-mutex';
 import { Subscription } from 'rxjs';
 import { faCog, IconDefinition } from '@fortawesome/free-solid-svg-icons';
@@ -66,7 +66,6 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     public currentGame: MGPOptional<CurrentGame> = MGPOptional.empty();
     private userLinkedToThisPart: boolean = true;
 
-    private routerEventsSubscription!: Subscription; // Initialized in ngOnInit
     private userSubscription!: Subscription; // Initialized in ngOnInit
     private partSubscription: Subscription = new Subscription();
     private gameEventsSubscription: Subscription = new Subscription();
@@ -119,12 +118,10 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
             const partValidity: MGPValidation =
                 await this.gameService.getGameValidity(this.currentPartId, urlName);
             if (partValidity.isFailure()) {
-                this.routerEventsSubscription.unsubscribe();
                 const message: string = OnlineGameWrapperMessages.NO_MATCHING_PART();
                 await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
             }
         } else {
-            this.routerEventsSubscription.unsubscribe();
             const message: string = GameWrapperMessages.NO_MATCHING_GAME(urlName);
             await this.router.navigate(['/notFound', message], { skipLocationChange: true } );
         }
@@ -137,12 +134,6 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
 
     public async ngOnInit(): Promise<void> {
 
-        this.routerEventsSubscription = this.router.events.subscribe(async(ev: Event) => {
-            // TODO: needed? uncovered by tests
-            // if (ev instanceof NavigationEnd) {
-            //     await this.setCurrentPartIdOrRedirect();
-            // }
-        });
         this.userSubscription = this.connectedUserService.subscribeToUser(async(user: AuthUser) => {
             // player should be authenticated and have a username to be here
             this.authUser = user;
@@ -458,7 +449,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         // First, show the move in the component
         await this.applyMove(move, false); // Move was already animated by its game component, no need to animate again
         // Then, send the move
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const gameStatus: GameStatus = this.gameComponent.rules.getGameStatus(this.gameComponent.node, config);
         const encodedMove: JSONValue = this.gameComponent.encoder.encode(move);
         const partId: string = this.currentPartId;
@@ -474,7 +465,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     private async applyMove(move: Move, triggerAnimation: boolean): Promise<void> {
         const oldNode: AbstractNode = this.gameComponent.node;
         const state: GameState = oldNode.gameState;
-        const config: MGPOptional<RulesConfig> = await this.getConfig();
+        const config: MGPOptional<RulesConfig> = this.getConfig();
         const legality: MGPFallible<unknown> = this.gameComponent.rules.isLegal(move, state, config);
         Utils.assert(legality.isSuccess(), 'OGWC.applyMove called with an illegal move');
         const stateAfterMove: GameState = this.gameComponent.rules.applyLegalMove(move, state, config, legality.get());
@@ -568,7 +559,6 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     public async ngOnDestroy(): Promise<void> {
-        this.routerEventsSubscription.unsubscribe();
         this.userSubscription.unsubscribe();
         this.currentGameSubscription.unsubscribe();
         if (this.isPlaying() === false && this.userLinkedToThisPart && this.connectedUserService.user.isPresent()) {

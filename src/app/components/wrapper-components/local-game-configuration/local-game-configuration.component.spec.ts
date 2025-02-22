@@ -22,9 +22,10 @@ describe('LocalGameConfigurationComponent', () => {
         // Given a configuration component
         const router: Router = TestBed.inject(Router);
         spyOn(router, 'navigate').and.resolveTo();
+        testUtils.detectChanges();
 
         // When we directly click on "start"
-        testUtils.clickElement('#start-game-with-config');
+        await testUtils.clickElement('#start-game-with-config');
 
         // Then it should start the game with the default config
         const expectedRoute: string[] = ['/local', 'P4'];
@@ -35,29 +36,33 @@ describe('LocalGameConfigurationComponent', () => {
         // Given a configuration component with a custom config
         const router: Router = TestBed.inject(Router);
         spyOn(router, 'navigate').and.resolveTo();
+        testUtils.detectChanges();
+
         // custom config happens through updateConfig, called by RulesConfigurationComponent
-        await testUtils.getComponent().updateConfig(MGPOptional.of({
+        const config: P4Config = {
             ...defaultConfig.get(),
             width: 4,
             height: 4,
-        }));
+        };
+        await testUtils.getComponent().updateConfig(MGPOptional.of(config));
 
         // When starting the game
-        testUtils.clickElement('#start-game-with-config');
+        await testUtils.clickElement('#start-game-with-config');
 
         // Then it should start the game with the custom config
         const expectedRoute: string[] = ['/local', 'P4'];
-        expectValidRouting(router, expectedRoute, LocalGameWrapperComponent);
+        expectValidRouting(router, expectedRoute, LocalGameWrapperComponent, { queryParams: { width: '4', height: '4' } });
     }));
 
     it('should start with the default config if we change the config and end up with the same as the default', fakeAsync(async() => {
         // Given a configuration component with a custom config, which happens to be the same as the default config
         const router: Router = TestBed.inject(Router);
         spyOn(router, 'navigate').and.resolveTo();
-        await testUtils.getComponent().updateConfig(defaultConfig)
+        await testUtils.getComponent().updateConfig(defaultConfig);
+        testUtils.detectChanges();
 
         // When starting the game
-        testUtils.clickElement('#start-game-with-config');
+        await testUtils.clickElement('#start-game-with-config');
 
         // Then it should start the game with the custom config
         const expectedRoute: string[] = ['/local', 'P4'];

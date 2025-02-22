@@ -52,7 +52,6 @@ export class LocalGameConfigurationComponent extends BaseWrapperComponent {
 
     public async updateConfig(rulesConfig: MGPOptional<RulesConfig>): Promise<void> {
         this.rulesConfig = rulesConfig;
-        console.log('config updated')
         // If there is no config for this game, then rulesConfig value will be {}
         Utils.assert(rulesConfig.isPresent(), 'There should always be a config. Configless games have {}');
         this.setConfigDemo(rulesConfig.get());

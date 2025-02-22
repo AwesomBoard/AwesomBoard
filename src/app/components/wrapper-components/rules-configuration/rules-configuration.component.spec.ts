@@ -16,14 +16,14 @@ describe('RulesConfigurationComponent', () => {
     let component: RulesConfigurationComponent;
 
     async function chooseConfig(configName: string): Promise<void> {
-        const selectAI: HTMLSelectElement = testUtils.findElement('#ruleSelect').nativeElement;
-        const option: HTMLOptionElement | undefined = Array.from(selectAI.options)
+        const selectElement: HTMLSelectElement = testUtils.findElement('#ruleSelect').nativeElement;
+        const option: HTMLOptionElement | undefined = Array.from(selectElement.options)
             .find((opt: HTMLOptionElement) => {
                 return opt.value === configName;
             });
         expect(option).withContext('No config found with name "' + configName + '"').toBeDefined();
-        selectAI.value = option?.value as string;
-        selectAI.dispatchEvent(new Event('change'));
+        selectElement.value = option?.value as string;
+        selectElement.dispatchEvent(new Event('change'));
         testUtils.detectChanges();
     }
 

@@ -1,5 +1,6 @@
 /* eslint-disable no-multi-spaces */
-import { MGPOptional, Utils } from '@everyboard/lib';
+import { MGPOptional } from '@everyboard/lib';
+
 import { GameInfo } from '../components/normal-component/pick-game/pick-game.component';
 import { ConfigLine } from '../components/wrapper-components/rules-configuration/RulesConfigDescription';
 import { Localized } from '../utils/LocaleUtils';

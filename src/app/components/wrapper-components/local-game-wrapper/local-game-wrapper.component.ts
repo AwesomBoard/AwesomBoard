@@ -41,7 +41,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
                        private readonly cdr: ChangeDetectorRef)
     {
         super(activatedRoute, router, messageDisplayer);
-        console.log('creating LGWC')
         this.players = [MGPOptional.of(this.playerSelection[0]), MGPOptional.of(this.playerSelection[1])];
         this.role = Player.ZERO; // The user is playing, not observing
     }
@@ -64,7 +63,9 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
         }, 1);
     }
 
-    protected override async createGameComponentAndSetConfig(componentType: Type<AbstractGameComponent>): Promise<void> {
+    protected override async createGameComponentAndSetConfig(componentType: Type<AbstractGameComponent>)
+    : Promise<void>
+    {
         await this.setConfigFromParams();
         await super.createGameComponentAndSetConfig(componentType);
     }
@@ -89,7 +90,6 @@ export class LocalGameWrapperComponent extends GameWrapper<string> implements Af
             const config: RulesConfig = {};
             for (const key of params.keys) {
                 const value: unknown = JSON.parse(Utils.getNonNullable(params.get(key)));
-                console.log(key, value)
                 if (rulesConfigDescription.isValid(key, value)) {
                     config[key] = value as ConfigDescriptionType;
                 } else {

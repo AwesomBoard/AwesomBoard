@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement, Typ
 import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { GameState } from '../../jscaip/state/GameState';
@@ -437,7 +437,7 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
             const wrapper: LocalGameWrapperComponent = this.getWrapper() as unknown as LocalGameWrapperComponent;
             Object.entries(config.get())
                 .map((configElement: [string, ConfigDescriptionType]) => {
-                    TestBed.inject(ActivatedRouteStub).setParam(configElement[0], JSON.stringify(configElement[1]))
+                    TestBed.inject(ActivatedRouteStub).setParam(configElement[0], JSON.stringify(configElement[1]));
                 });
             await wrapper.setConfigFromParams();
             this.gameComponent.config = config;
@@ -745,7 +745,9 @@ function getComponentClassName(component: Type<any>): string {
 export function expectValidRouting(router: Router,
                                    path: string[],
                                    component: Type<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
-                                   options?: { otherRoutes?: boolean, skipLocationChange?: boolean})
+                                   options?: { otherRoutes?: boolean,
+                                               skipLocationChange?: boolean,
+                                               queryParams?: Record<string, string> })
 : void
 {
     expect(path[0][0]).withContext('Routings should start with /').toBe('/');
@@ -759,20 +761,21 @@ export function expectValidRouting(router: Router,
     const expectedComponent: string = getComponentClassName(component);
     expect(routedToComponent).withContext('It should route to the expected component').toEqual(expectedComponent);
     const otherRoutes: boolean = options != null && options.otherRoutes != null && options.otherRoutes;
-    const skipLocationChange: boolean =
-        options != null && options.skipLocationChange != null && options.skipLocationChange;
+    const args: [string[], ...NavigationExtras[]] = [path];
+    const extraArgs: NavigationExtras = {};
+    if (options != null && options.queryParams != null) {
+        extraArgs['queryParams'] = options.queryParams;
+    }
+    if (options != null && options.skipLocationChange != null) {
+        extraArgs['skipLocationChange'] = options.skipLocationChange;
+    }
+    if (Object.keys(extraArgs).length > 0) {
+        args.push(extraArgs);
+    }
     if (otherRoutes) {
-        if (skipLocationChange) {
-            expect(router.navigate).toHaveBeenCalledWith(path, { skipLocationChange: true });
-        } else {
-            expect(router.navigate).toHaveBeenCalledWith(path);
-        }
+        expect(router.navigate).toHaveBeenCalledWith(...args);
     } else {
-        if (skipLocationChange) {
-            expect(router.navigate).toHaveBeenCalledOnceWith(path, { skipLocationChange: true });
-        } else {
-            expect(router.navigate).toHaveBeenCalledOnceWith(path);
-        }
+        expect(router.navigate).toHaveBeenCalledOnceWith(...args);
     }
 }
 
