@@ -31,6 +31,24 @@ let tests = [
             Lwt.return ()
         );
 
+        lwt_test "should TODO when config-room does not exists" (fun () ->
+            FirestoreTests.Mock.clear_calls ();
+            AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
+            (* Given a game without any config room existing *)
+            (* TODO FOR REVIEW: comment on dit explicitement de vider ConfigRoom *)
+
+            (* When joining the game *)
+            let target = "config-room/unexisting-game-id/candidates" in
+            let request = Dream.request ~method_:`POST ~target "" in
+            let* result = handler request in
+
+            (* Then it should return Not_Found and not add candidate *)
+            check status "response status" `Not_Found (Dream.status result);
+            let expected = [] in
+            check (list FirestoreTests.call) "calls" expected !FirestoreTests.Mock.calls;
+            Lwt.return ()
+        );
+
         lwt_test "should not add user to candidates if they are creator" (fun () ->
             FirestoreTests.Mock.clear_calls ();
             AuthTests.Mock.set DomainTests.a_minimal_user.id DomainTests.a_user;
