@@ -15,8 +15,7 @@ import { Coord } from 'src/app/jscaip/Coord';
 import { ViewBox } from 'src/app/components/game-components/GameComponentUtils';
 import { RulesFailure } from 'src/app/jscaip/RulesFailure';
 
-    // TODO: if available space === number of soldier to put --> autofill
-    // TODO: show droppable territory else
+// TODO: if available space === number of soldier to put --> autofill
 @Component({
     selector: 'app-quebec-castles',
     templateUrl: './quebec-castles.component.html',
@@ -133,8 +132,8 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
     }
 
     private async onDrop(coord: Coord, config: QuebecCastlesConfig): Promise<MGPValidation> {
-        Utils.assert(config.dropPieceYourself, 'enterred "onDrop" on a non-dropping-config');
-        if (config.dropPieceByPiece) {
+        Utils.assert(config.dropPieceYourself || config.placeThroneYourself, 'enterred "onDrop" on a non-dropping-config');
+        if (config.dropPieceByPiece || config.placeThroneYourself) {
             const chosenMove: QuebecCastlesDrop = QuebecCastlesDrop.of([coord]);
             return await this.chooseMove(chosenMove);
         } else {
@@ -195,13 +194,10 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     public override async showLastMove(move: QuebecCastlesMove): Promise<void> {
         if (move instanceof QuebecCastlesTranslation) {
-            console.log('show last move is translation')
             this.leftSquare = MGPOptional.of(move.getStart());
             this.landingSquare = MGPOptional.of(move.getEnd());
             this.isCaptured = this.getPreviousState().getPieceAt(move.getEnd()).isPlayer();
-            console.log(this.landingSquare.toString(), this.isCaptured)
         } else {
-            console.log('show last move is drop')
             this.lastDropped = move.coords.toList();
             this.isCaptured = false;
         }
@@ -221,6 +217,14 @@ export class QuebecCastlesComponent extends RectangularGameComponent<QuebecCastl
 
     public getRectClasses(coord: Coord): string[] {
         const classes: string[] = [];
+        const config: QuebecCastlesConfig = this.getConfig().get();
+        if (this.rules.isDropPhase(this.constructedState, config)) {
+            if (this.rules.isValidDropCoord(coord, Player.ZERO, config)) {
+                classes.push(Player.ZERO.getHTMLClass('-fill'), 'semi-transparent');
+            } else if (this.rules.isValidDropCoord(coord, Player.ONE, config)) {
+                classes.push(Player.ONE.getHTMLClass('-fill'), 'semi-transparent');
+            }
+        }
         if (this.leftSquare.equalsValue(coord) ||
             this.lastDropped.some((c: Coord) => coord.equals(c)))
         {

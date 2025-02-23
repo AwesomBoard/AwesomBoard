@@ -7,7 +7,7 @@ import { QuebecCastlesMoveGenerator } from '../QuebecCastlesMoveGenerator';
 import { Coord } from 'src/app/jscaip/Coord';
 import { QuebecCastlesRules } from '../QuebecCastlesRules';
 
-fdescribe('QuebecCastlesMove', () => {
+describe('QuebecCastlesMove', () => {
 
     const rule: QuebecCastlesRules = QuebecCastlesRules.get();
     const moveGenerator: QuebecCastlesMoveGenerator = new QuebecCastlesMoveGenerator();

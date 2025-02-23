@@ -22,7 +22,7 @@ const defaultThrones: PlayerMap<MGPOptional<Coord>> = PlayerMap.ofValues(
  * We want to test that it gives us the expected moves.
  * Typically, this can be done by checking the number of moves available on the first turn of a game.
  */
-fdescribe('QuebecCastlesMoveGenerator', () => {
+describe('QuebecCastlesMoveGenerator', () => {
 
     let moveGenerator: QuebecCastlesMoveGenerator;
     const defaultConfig: MGPOptional<QuebecCastlesConfig> = QuebecCastlesRules.get().getDefaultRulesConfig();

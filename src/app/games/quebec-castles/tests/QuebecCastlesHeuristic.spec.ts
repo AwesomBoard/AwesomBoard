@@ -14,7 +14,7 @@ import { Coord } from 'src/app/jscaip/Coord';
  * compared to another one.
  * We can rely on HeuristicUtils' functions to achieve this.
  */
-fdescribe('QuebecCastlesHeuristic', () => {
+describe('QuebecCastlesHeuristic', () => {
 
     let heuristic: QuebecCastlesHeuristic;
     const defaultConfig: MGPOptional<QuebecCastlesConfig> = QuebecCastlesRules.get().getDefaultRulesConfig();

@@ -1,21 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      class="board"
      [attr.viewBox]="getViewBox().toSVGString()"
-
      preserveAspectRatio="xMidYMid meet">
-    <rect [attr.x]="getViewBox().left"
-          [attr.y]="getViewBox().up"
-          [attr.width]="getViewBox().width"
-          [attr.height]="getViewBox().height"
-          fill="purple"
-    />
     <g id="quebec"
        [attr.transform]="getBoardTransform()">
-        <g *ngFor="let coordAndContent of constructedState.getCoordsAndContents()">
+        <g *ngFor="let coordAndContent of constructedState.getCoordsAndContents()"
+           [attr.transform]="getTranslationAt(coordAndContent.coord)">
             <rect id="square-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
                   (click)="onClick(coordAndContent.coord)"
-                  [attr.x]="SPACE_SIZE * coordAndContent.coord.x"
-                  [attr.y]="SPACE_SIZE * coordAndContent.coord.y"
+                  x="0"
+                  y="0"
                   [attr.width]="SPACE_SIZE"
                   [attr.height]="SPACE_SIZE"
                   [ngClass]="getRectClasses(coordAndContent.coord)"
@@ -25,20 +19,21 @@
                     id="piece-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
                     (click)="onClick(coordAndContent.coord)"
                     [attr.r]="(SPACE_SIZE / 2) - STROKE_WIDTH"
-                    [attr.cx]="(SPACE_SIZE * coordAndContent.coord.x) + (SPACE_SIZE / 2)"
-                    [attr.cy]="(SPACE_SIZE * coordAndContent.coord.y) + (SPACE_SIZE / 2)"
+                    [attr.cx]="SPACE_SIZE / 2"
+                    [attr.cy]="SPACE_SIZE / 2"
                     [ngClass]="getPieceClasses(coordAndContent.coord)"
                     class="base"
             />
-            <g *ngFor="let player of Player.PLAYERS"
-               id="throne-{{ player.toString() }}">
-                <g *ngIf="getState().thrones.get(player).equalsValue(coordAndContent.coord)">
-                    <polygon [attr.transform]="getTranslationAt(getState().thrones.get(player).get())"
-                             points="0 0, 100 100, 0 100, 100 0, 50 0, 50 100, 0 100, 0 50, 100 50, 100 0"
-                             class="base"/>
-                </g>
-            </g>
         </g>
+        <ng-container *ngFor="let player of Player.PLAYERS">
+            <g *ngIf="getState().thrones.get(player).isPresent()"
+               id="throne-{{ player.toString() }}-{{ getState().thrones.get(player).get().x }}-{{ getState().thrones.get(player).get().y }}"
+               style="pointer-events: none">
+                <polyline [attr.transform]="getTranslationAt(getState().thrones.get(player).get())"
+                          points="0 0, 100 100, 50 50, 100 0, 0, 100, 50 50, 0 50, 100 50, 50 50, 50 0, 50 100, 50 50"
+                          class="base-no-fill"/>
+            </g>
+        </ng-container>
     </g>
     <g *ngIf="isPlayerDropping()">
         <g id="drop-validator"

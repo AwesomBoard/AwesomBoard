@@ -94,8 +94,10 @@ fdescribe('QuebecCastlesComponent', () => {
     it('should deselect when clicking on same piece again', fakeAsync(async() => {
         // Given any board with a selected piece
         await testUtils.expectClickSuccess('#square-7-7');
+
         // When clicking on the piece again
-        await testUtils.expectClickSuccess('#square-7-7');
+        await testUtils.expectClickFailure('#square-7-7');
+
         // Then the piece should no longer be selected
         testUtils.expectElementNotToHaveClass('#piece-7-7', 'selected-stroke');
     }));
@@ -149,6 +151,12 @@ fdescribe('QuebecCastlesComponent', () => {
                 // Then the other piece should be dropped
                 testUtils.expectElementToHaveClasses('#piece-7-7', ['base', 'player0-fill', 'selected-stroke']);
                 testUtils.expectElementToHaveClasses('#piece-6-6', ['base', 'player0-fill', 'selected-stroke']);
+            }));
+
+            it('should make your territory visible', fakeAsync(async() => {
+                // Given any state in drop phase
+                // When displaying it
+                // Then territory should be visible
             }));
 
             it('should forbid dropping outside territory', fakeAsync(async() => {
@@ -266,6 +274,8 @@ fdescribe('QuebecCastlesComponent', () => {
                     dropPieceYourself: true,
                     defender: 3,
                 });
+                // TODO: not show BOTH territory as one
+                // TODO: la couleur du trone est weird en drop phase
                 await testUtils.setupState(rules.getInitialState(customConfig), { config: customConfig });
                 await testUtils.expectClickSuccess('#square-7-8');
                 await testUtils.expectClickSuccess('#square-6-8');
@@ -277,9 +287,9 @@ fdescribe('QuebecCastlesComponent', () => {
                 await testUtils.expectMoveSuccess('#drop-validator', move);
 
                 // Then the dropped should be marked as last-moved
-                testUtils.expectElementToHaveClasses('#square-7-8', ['base', 'moved-fill']);
-                testUtils.expectElementToHaveClasses('#square-6-8', ['base', 'moved-fill']);
-                testUtils.expectElementToHaveClasses('#square-5-8', ['base', 'moved-fill']);
+                testUtils.expectElementToHaveClasses('#square-7-8', ['base', 'player0-fill', 'moved-fill', 'semi-transparent']);
+                testUtils.expectElementToHaveClasses('#square-6-8', ['base', 'player0-fill', 'moved-fill', 'semi-transparent']);
+                testUtils.expectElementToHaveClasses('#square-5-8', ['base', 'player0-fill', 'moved-fill', 'semi-transparent']);
                 testUtils.expectElementToHaveClasses('#piece-7-8', ['base', 'player0-fill']);
                 testUtils.expectElementToHaveClasses('#piece-6-8', ['base', 'player0-fill']);
                 testUtils.expectElementToHaveClasses('#piece-5-8', ['base', 'player0-fill']);
@@ -330,7 +340,7 @@ fdescribe('QuebecCastlesComponent', () => {
 
         });
 
-        describe('drop piece by piece = true', () => {
+        describe('drop piece by piece', () => {
 
             it('should drop single piece', fakeAsync(async() => {
                 // Given any drop in a "drop yourself & piece by piece"
@@ -349,11 +359,33 @@ fdescribe('QuebecCastlesComponent', () => {
 
         });
 
+        describe('place throne yourself', () => {
+
+            it('should have first click being king drop', fakeAsync(async() => {
+                // Given the initial board in "drop king yourself" config
+                const customConfig: MGPOptional<QuebecCastlesConfig> = MGPOptional.of({
+                    ...defaultConfig.get(),
+                    placeThroneYourself: true,
+                });
+                const state: QuebecCastlesState = rules.getInitialState(customConfig);
+                await testUtils.setupState(state, { config: customConfig });
+
+                // When clicking inside territory
+                const throne: Coord = new Coord(7, 7);
+                const move: QuebecCastlesMove = QuebecCastlesMove.drop([throne]);
+                await testUtils.expectMoveSuccess('#square-7-7', move);
+
+                // Then the throne should be drawn there now
+                testUtils.expectElementToExist('#throne-PLAYER_ZERO-7-7');
+            }));
+
+        });
+
     });
 
 });
 
-fdescribe('QuebecCastles Custom Configs', () => {
+describe('QuebecCastles Custom Configs', () => {
 
     let testUtils: SimpleComponentTestUtils<RulesConfigurationComponent>;
     let component: RulesConfigurationComponent;
