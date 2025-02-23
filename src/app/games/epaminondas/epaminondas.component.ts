@@ -42,14 +42,13 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
 
     public NONE: PlayerOrNone = PlayerOrNone.NONE;
 
+    // Data linked to the move attempt
     public firstPiece: MGPOptional<Coord> = MGPOptional.empty();
-
+    public lastPiece: MGPOptional<Coord> = MGPOptional.empty();
     public possibleMoves: PossibleMove[] = [];
 
-    public lastPiece: MGPOptional<Coord> = MGPOptional.empty();
-
+    // Data linked to the last move
     private moveds: Coord[] = [];
-
     private capturedCoords: Coord[] = [];
 
     public constructor(messageDisplayer: MessageDisplayer, cdr: ChangeDetectorRef) {
@@ -66,6 +65,7 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
     }
 
     public async updateBoard(_triggerAnimation: boolean): Promise<void> {
+        console.log('epaminonde updateBoard')
         this.board = this.getState().getCopiedBoard();
         this.scores = this.getScores();
     }
@@ -80,6 +80,8 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
     }
 
     public override async showLastMove(move: EpaminondasMove): Promise<void> {
+        console.log('epaminonde showLastMove')
+        this.capturedCoords = [];
         let moved: Coord = move.coord;
         this.moveds = [moved];
         for (let i: number = 1; i < (move.stepSize + move.phalanxSize); i++) {
@@ -123,6 +125,7 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
     }
 
     public override hideLastMove(): void {
+        console.log('epaminondas hideLastMove')
         this.capturedCoords = [];
         this.moveds = [];
     }
@@ -166,6 +169,7 @@ export class EpaminondasComponent extends RectangularGameComponent<EpaminondasRu
     }
 
     public override cancelMoveAttempt(): void {
+        console.log('epaminondas cancelMoveAttempt')
         this.firstPiece = MGPOptional.empty();
         this.possibleMoves = [];
         this.lastPiece = MGPOptional.empty();
