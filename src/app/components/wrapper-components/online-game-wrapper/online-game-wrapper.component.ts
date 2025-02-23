@@ -25,7 +25,6 @@ import { GameStatus } from 'src/app/jscaip/GameStatus';
 import { OGWCRequestManagerService, RequestInfo } from './OGWCRequestManagerService';
 import { RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { Debug } from 'src/app/utils/Debug';
-import { ServerTimeService } from 'src/app/services/ServerTimeService';
 
 export class OnlineGameWrapperMessages {
 
@@ -83,7 +82,6 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
                        private readonly gameService: GameService,
                        private readonly timeManager: OGWCTimeManagerService,
                        private readonly requestManager: OGWCRequestManagerService,
-                       private readonly serverTimeService: ServerTimeService,
                        private readonly cdr: ChangeDetectorRef)
     {
         super(activatedRoute, connectedUserService, router, messageDisplayer);
@@ -168,18 +166,24 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     private async onGameUpdate(game: Game): Promise<void> {
-        console.log('OGWC.onGameUpdate')
-        // The only game update we get is the initial one, everything else goes through events
         this.game = game;
-        const turn: number = this.gameComponent.getTurn();
-        Utils.assert(turn === 0, 'turn should always be 0 upon game start');
-        await this.initializePlayersData(game);
-        this.timeManager.onGameStart(this.configRoom, game, this.players);
-        this.requestManager.onGameStart();
+        if (game.result === 'InProgress') {
+            await this.onGameStart();
+        } else {
+            // Game has ended!
+            await this.onGameEnd();
+        }
         this.cdr.detectChanges();
     }
 
-    // TODO: old code was using mutex. If needed, add it back: YES, share it with onGameUpdate
+    private async onGameStart(): Promise<void> {
+        const turn: number = this.gameComponent.getTurn();
+        Utils.assert(turn === 0, 'turn should always be 0 upon game start');
+        await this.initializePlayersData();
+        this.timeManager.onGameStart(this.configRoom, Utils.getNonNullable(this.game), this.players);
+        this.requestManager.onGameStart();
+    }
+
     private async onGameEvent(event: GameEvent): Promise<void> {
         console.log('OGWC.onGameEvent')
         switch (event.eventType) {
@@ -198,10 +202,11 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
             default:
                 Utils.expectToBe(event.eventType, 'Action', 'Event should be an action');
                 this.timeManager.onReceivedAction(Player.ofTurn(this.gameComponent.getTurn()), event);
-                if (event.action === 'EndGame') await this.onGameEnd();
-                else if (event.action === 'Sync') this.isSynced = true;
+                // if (event.action === 'EndGame') await this.onGameEnd();
+                if (event.action === 'Sync') this.isSynced = true;
                 break;
         }
+        this.cdr.detectChanges();
     }
 
     private async handleReply(reply: GameEventReply): Promise<void> {
@@ -225,7 +230,6 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         await this.currentGameService.removeCurrentGame();
         await this.setInteractive(false);
         this.endGame = true;
-        this.cdr.detectChanges();
     }
 
     private async onReceivedMove(moveEvent: GameEventMove): Promise<void> {
@@ -243,7 +247,6 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         await this.setCurrentPlayerAccordingToCurrentTurn();
         this.timeManager.onReceivedMove(moveEvent);
         this.requestManager.onReceivedMove();
-        this.cdr.detectChanges();
     }
 
     public getTurn(): number {
@@ -365,7 +368,8 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         }
     }
 
-    private async initializePlayersData(game: Game): Promise<void> {
+    private async initializePlayersData(): Promise<void> {
+        const game: Game = Utils.getNonNullable(this.game);
         this.players = [
             MGPOptional.of(game.playerZero),
             MGPOptional.ofNullable(game.playerOne),
@@ -432,8 +436,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         if (this.isPlaying() === false) {
             return;
         }
-        // opponent on time-outee wins
-        await this.gameService.notifyTimeout(player.getOpponent());
+        await this.gameService.notifyTimeout(player);
     }
 
     // Called by the corresponding button

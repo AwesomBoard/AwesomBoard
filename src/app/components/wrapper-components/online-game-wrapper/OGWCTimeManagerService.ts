@@ -91,6 +91,7 @@ export class OGWCTimeManagerService {
 
     public onReceivedAction(currentPlayer: Player, action: GameEventAction): void {
         console.log(action)
+        this.beforeEvent();
         switch (action.action) {
             case 'AddTurnTime':
                 this.addTurnTime(this.playerOfMinimalUser(action.user));
@@ -120,6 +121,7 @@ export class OGWCTimeManagerService {
     }
 
     public onReceivedMove(move: GameEventMove): void {
+        this.beforeEvent();
         const player: Player = this.playerOfMinimalUser(move.user);
 
         const moveTimeMs: number = move.time;
@@ -159,6 +161,10 @@ export class OGWCTimeManagerService {
         this.synchronized = true;
     }
 
+    // Pause all clocks before receiving events
+    private beforeEvent(): void {
+        this.pauseAllClocks();
+    }
     // Continue the current player clock after receiving events
     private afterEvent(currentPlayer: Player, currentTimeMs: number): void {
         if (this.synchronized === false) {
