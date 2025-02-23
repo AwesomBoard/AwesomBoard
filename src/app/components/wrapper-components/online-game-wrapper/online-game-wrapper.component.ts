@@ -553,11 +553,11 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     public getWinner(): MinimalUser {
         const result: GameResult = Utils.getNonNullable(this.game).result;
         switch (result) {
-            case 'VictoryOfZero':
+            case 'VictoryOfOne':
             case 'TimeoutOfZero':
             case 'ResignOfZero':
                 return Utils.getNonNullable(this.game).playerZero;
-            case 'VictoryOfOne':
+            case 'VictoryOfZero':
             case 'TimeoutOfOne':
             case 'ResignOfOne':
                 return Utils.getNonNullable(this.game).playerOne;
@@ -569,11 +569,11 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     public getLoser(): MinimalUser {
         const result: GameResult = Utils.getNonNullable(this.game).result;
         switch (result) {
-            case 'VictoryOfZero':
+            case 'VictoryOfOne':
             case 'TimeoutOfZero':
             case 'ResignOfZero':
                 return Utils.getNonNullable(this.game).playerOne;
-            case 'VictoryOfOne':
+            case 'VictoryOfZero':
             case 'TimeoutOfOne':
             case 'ResignOfOne':
                 return Utils.getNonNullable(this.game).playerZero;
