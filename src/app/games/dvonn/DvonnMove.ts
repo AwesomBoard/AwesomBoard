@@ -47,7 +47,7 @@ export class DvonnMove extends MoveCoordToCoord {
         }
         return 'DvonnMove(' + this.getStart() + '->' + this.getEnd() + ')';
     }
-    public override length(): number {
+    public override getDistance(): number {
         if (this.getStart().y === this.getEnd().y) {
             return Math.abs(this.getStart().x - this.getEnd().x);
         } else if (this.getStart().x === this.getEnd().x) {

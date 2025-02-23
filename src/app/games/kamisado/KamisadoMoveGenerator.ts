@@ -20,7 +20,7 @@ export class KamisadoMoveGenerator extends MoveGenerator<KamisadoMove, KamisadoS
             return [KamisadoMove.PASS];
         } else {
             const moves: KamisadoMove[] = this.getListMovesFromNonBlockedState(state, movablePieces);
-            ArrayUtils.sortByDescending(moves, (move: KamisadoMove): number => move.length());
+            ArrayUtils.sortByDescending(moves, (move: KamisadoMove): number => move.getDistance());
             return moves;
         }
     }

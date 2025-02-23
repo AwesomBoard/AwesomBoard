@@ -107,7 +107,7 @@ describe('ReversiRules', () => {
         // When passing
         const move: ReversiMove = ReversiMove.PASS;
 
-        // Then it should be legal
+        // Then the move should succeed
         const expectedState: ReversiState = new ReversiState(board, 2);
         RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
     });

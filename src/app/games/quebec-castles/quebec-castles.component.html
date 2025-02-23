@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     class="board"
+     [attr.viewBox]="getViewBox().toSVGString()"
+     preserveAspectRatio="xMidYMid meet">
+    <g id="quebec"
+       [attr.transform]="getBoardTransform()">
+        <g *ngFor="let coordAndContent of constructedState.getCoordsAndContents()"
+           [attr.transform]="getTranslationAt(coordAndContent.coord)">
+            <rect id="square-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
+                  (click)="onClick(coordAndContent.coord)"
+                  x="0"
+                  y="0"
+                  [attr.width]="SPACE_SIZE"
+                  [attr.height]="SPACE_SIZE"
+                  [ngClass]="getRectClasses(coordAndContent.coord)"
+                  class="base"
+            />
+            <circle *ngIf="coordAndContent.content !== PlayerOrNone.NONE"
+                    id="piece-{{ coordAndContent.coord.x }}-{{ coordAndContent.coord.y }}"
+                    (click)="onClick(coordAndContent.coord)"
+                    [attr.r]="(SPACE_SIZE / 2) - STROKE_WIDTH"
+                    [attr.cx]="SPACE_SIZE / 2"
+                    [attr.cy]="SPACE_SIZE / 2"
+                    [ngClass]="getPieceClasses(coordAndContent.coord)"
+                    class="base"
+            />
+        </g>
+        <ng-container *ngFor="let player of Player.PLAYERS">
+            <g *ngIf="getState().thrones.get(player).isPresent()"
+               id="throne-{{ player.toString() }}-{{ getState().thrones.get(player).get().x }}-{{ getState().thrones.get(player).get().y }}"
+               style="pointer-events: none">
+                <polyline [attr.transform]="getTranslationAt(getState().thrones.get(player).get())"
+                          points="0 0, 100 100, 50 50, 100 0, 0, 100, 50 50, 0 50, 100 50, 50 50, 50 0, 50 100, 50 50"
+                          class="base-no-fill"/>
+            </g>
+        </ng-container>
+    </g>
+    <g *ngIf="isPlayerDropping()">
+        <g id="drop-validator"
+           *ngIf="getNumberOfAwaitedDrop() === 0 else remainingPieces"
+           (click)="validateGroupDrop()"
+           [attr.transform]="getGroupValidatorTransform()">
+           <circle [attr.cx]="STROKE_WIDTH / 2"
+                   [attr.cy]="STROKE_WIDTH / 2"
+                   [attr.r]="SPACE_SIZE / 2"
+                   fill="red"
+                   class="base-no-fill mid-stroke"
+                   [ngClass]="getGroupDropValidationButtonClasses()"/>
+           <polygon points="-32.5,-2.5 -32.5,12.5 -10,35 -2.5,35 35,-21.25 25,-21.275 -5,25 -32.5,-2.5"
+                    fill="green"
+                    class="base-no-fill mid-stroke"/>
+        </g>
+        <ng-template #remainingPieces>
+            <circle *ngFor="let i of ArrayUtils.range(getNumberOfAwaitedDrop())"
+                    id="remaining-piece-{{ i }}"
+                    [attr.cx]="getRemainingCx(i)"
+                    [attr.cy]="getRemainingCy()"
+                    class="base"
+                    [ngClass]="getRemaininPieceClasses()"
+                    [attr.r]="SPACE_SIZE / 2"
+            />
+        </ng-template>
+    </g>
+</svg>

@@ -258,6 +258,10 @@
         <source>Create a winning alignment. The problem: you don&apos;t pick the piece that you&apos;re placing on the board!</source>
         <target>Faites un alignement gagnant. La difficulté : vous ne choisissez pas la pièce que vous placez !</target>
       </trans-unit>
+      <trans-unit id="9125171545429867484" datatype="html">
+        <source>Everyboard first game: one player attack, the other defend, none have similar pieces!</source>
+        <target>Le premier jeu inventé par EveryBoard: un joueur attaque, l'autre défend, chaque joueur a des pièces différentes!</target>
+      </trans-unit>
       <trans-unit id="7277920626199847666" datatype="html">
         <source>Duplicate yourself to conquer the board!</source>
         <target>Dupliquez-vous pour conquérir le plateau !</target>
@@ -556,6 +560,10 @@
       <trans-unit id="5226075040149407867" datatype="html">
         <source>International Checkers</source>
         <target>Dames Internationales</target>
+      </trans-unit>
+      <trans-unit id="7549008463336671286" datatype="html">
+        <source>Quebec Castles</source>
+        <target>Chateaux Québecquois</target>
       </trans-unit>
       <trans-unit id="1760292529513431093" datatype="html">
         <source>Trexo</source>
@@ -3726,6 +3734,81 @@
       <trans-unit id="2467449610168621115" datatype="html">
         <source>Wrong, you could have won by making a square.</source>
         <target>Raté, vous auriez pu gagner en formant un carré.</target>
+      </trans-unit><trans-unit id="5604193951980576244" datatype="html">
+        <source>Move distance must be 2 for invader, not <x id="PH" equiv-text="distance"/></source>
+        <target>La distance du déplacement doit être de 2 pour l'envahisseur, pas <x id="PH" equiv-text="distance"/></target>
+      </trans-unit>
+      <trans-unit id="4809301322027947242" datatype="html">
+        <source>Move distance must be 1 for defender, not <x id="PH" equiv-text="distance"/></source>
+        <target>La distance du déplacement doit être de 1 pour le défenseur, pas <x id="PH" equiv-text="distance"/></target>
+      </trans-unit>
+      <trans-unit id="2959814997167125267" datatype="html">
+        <source>Must drop in your own territory</source>
+        <target>Déposez la pièce dans votre territoire</target>
+      </trans-unit>
+      <trans-unit id="2475404961590913083" datatype="html">
+        <source>Cannot drop in move phase</source>
+        <target>Vous ne pouvez pas déposer de pièce dans la phase de déplacement</target>
+      </trans-unit>
+      <trans-unit id="404272838313740209" datatype="html">
+        <source>Must drop all your pieces</source>
+        <target>Vous devez déposer toutes vos pièces</target>
+      </trans-unit>
+      <trans-unit id="6659641459805346810" datatype="html">
+        <source>Must drop all your remaining pieces, not more not less</source>
+        <target>Vous devez déposez toutes vos pièces restantes, ni plus ni moins</target>
+      </trans-unit>
+      <trans-unit id="5322605018323433422" datatype="html">
+        <source>Cannot drop that much pieces</source>
+        <target>Vous ne pouvez déposer autant de pièces</target>
+      </trans-unit>
+      <trans-unit id="5513539435671245592" datatype="html">
+        <source>Must drop pieces one by one</source>
+        <target>Vous devez déposer les pièces une par une</target>
+      </trans-unit>
+      <trans-unit id="4497796084315768977" datatype="html">
+        <source>You cannot land on your throne</source>
+        <target>Vous ne pouvez atterrir sur votre trône</target>
+      </trans-unit>
+      <trans-unit id="9041250493266709397" datatype="html">
+        <source>You must only place your throne</source>
+        <target>Vous venez seulement placer votre trône</target>
+      </trans-unit>
+      <trans-unit id="8315714596123969207" datatype="html">
+        <source>If you have <x id="PH" equiv-text="line"/> line, you can only have <x id="PH_1" equiv-text="max"/> pieces</source>
+        <target>Si vous avez <x id="PH" equiv-text="line"/> lignes, vous ne pouvez avoir que <x id="PH_1" equiv-text="max"/> pièces</target>
+      </trans-unit>
+      <trans-unit id="8286688479132880016" datatype="html">
+        <source>Too much lines for territory, your opponent lines would merged with yours!</source>
+        <target>Trop de lignes pour le territoire, les lignes adverses et les vôtres se chevauchent!</target>
+      </trans-unit>
+      <trans-unit id="7732765787483081988" datatype="html">
+        <source>Lines for territory</source>
+        <target>Lignes pour le territoire</target>
+      </trans-unit>
+      <trans-unit id="2486177343036470230" datatype="html">
+        <source>Number of invader</source>
+        <target>Nombre d'envahisseur</target>
+      </trans-unit>
+      <trans-unit id="6786719847987867536" datatype="html">
+        <source>Number of defender</source>
+        <target>Nombre de défenseurs</target>
+      </trans-unit>
+      <trans-unit id="859693719600901508" datatype="html">
+        <source>Is Rhombic</source>
+        <target>Plateau losange</target>
+      </trans-unit>
+      <trans-unit id="6581099810354955272" datatype="html">
+        <source>Place throne yourself</source>
+        <target>Placer le trône vous-même</target>
+      </trans-unit>
+      <trans-unit id="259564981194593684" datatype="html">
+        <source>Drop piece by piece</source>
+        <target>Déposer pièce par pièce</target>
+      </trans-unit>
+      <trans-unit id="2483425139774462991" datatype="html">
+        <source>Drop piece yourself</source>
+        <target>Déposer les pièces vous-même</target>
       </trans-unit>
       <trans-unit id="8819839276456625538" datatype="html">
         <source>You must pick a space from the edge of the board.</source>

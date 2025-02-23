@@ -198,9 +198,11 @@ describe('ConspirateursRules', () => {
                 [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             ], 42);
+
             // When moving the piece
             const move: ConspirateursMove = simpleMove(new Coord(7, 7), new Coord(7, 6));
-            // Then the move succeeds
+
+            // Then the move should succeed
             const expectedState: ConspirateursState = new ConspirateursState([
                 [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
@@ -384,8 +386,10 @@ describe('ConspirateursRules', () => {
                 [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
                 [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             ], 42);
+
             // When performing a jump
             const move: ConspirateursMove = jump([new Coord(7, 7), new Coord(7, 5)]);
+
             // Then the move should succeed and the piece should be moved
             const expectedState: ConspirateursState = new ConspirateursState([
                 [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],

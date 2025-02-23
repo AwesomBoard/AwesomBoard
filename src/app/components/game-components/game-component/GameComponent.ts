@@ -3,7 +3,7 @@ import { Encoder, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 
 import { Move } from '../../../jscaip/Move';
 import { SuperRules } from '../../../jscaip/Rules';
-import { Player } from 'src/app/jscaip/Player';
+import { Player, PlayerOrNone } from 'src/app/jscaip/Player';
 import { MessageDisplayer } from 'src/app/services/MessageDisplayer';
 import { TutorialStep } from '../../wrapper-components/tutorial-game-wrapper/TutorialStep';
 import { GameState } from 'src/app/jscaip/state/GameState';
@@ -60,6 +60,8 @@ export abstract class GameComponent<R extends SuperRules<M, S, C, L>,
     public encoder: Encoder<M>;
 
     public Player: typeof Player = Player;
+
+    public PlayerOrNone: typeof PlayerOrNone = PlayerOrNone;
 
     public rules: R;
 

@@ -110,7 +110,7 @@ describe('LascaRules', () => {
             // When doing a simple move
             const move: CheckersMove = CheckersMove.fromStep(new Coord(2, 4), new Coord(3, 3));
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [__V, ___, __V, ___, __V, ___, __V],
                 [___, __V, ___, __V, ___, __V, ___],
@@ -368,7 +368,7 @@ describe('LascaRules', () => {
             // When doing the small capture
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, ___, ___, ___, ___],
@@ -397,7 +397,7 @@ describe('LascaRules', () => {
             const capture: Coord[] = [new Coord(2, 2), new Coord(4, 4), new Coord(6, 6)];
             const move: CheckersMove = CheckersMove.fromCapture(capture).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const stack: CheckersPiece[] = [CheckersPiece.ONE_PROMOTED, CheckersPiece.ZERO, CheckersPiece.ZERO];
             const Xoo: CheckersStack = new CheckersStack(stack);
             const expectedState: CheckersState = CheckersState.of([
@@ -427,7 +427,7 @@ describe('LascaRules', () => {
             // When capturing the single piece
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [__V, ___, __V, ___, __V, ___, __V],
                 [___, __V, ___, __V, ___, __V, ___],
@@ -455,7 +455,7 @@ describe('LascaRules', () => {
             // When capturing the commander of the stack
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [__V, ___, __V, ___, __V, ___, __V],
                 [___, __V, ___, __V, ___, __V, ___],
@@ -486,7 +486,7 @@ describe('LascaRules', () => {
                 new Coord(4, 2),
                 new Coord(6, 4)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const vuu: CheckersStack = new CheckersStack([CheckersPiece.ONE, CheckersPiece.ZERO, CheckersPiece.ZERO]);
             const expectedState: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
@@ -537,7 +537,7 @@ describe('LascaRules', () => {
                 // When doing it
                 const move: CheckersMove = CheckersMove.fromCapture([new Coord(4, 2), new Coord(6, 0)]).get();
 
-                // Then it should be a success
+                // Then the move should succeed
                 const expectedState: CheckersState = CheckersState.of([
                     [___, ___, ___, ___, ___, ___, _OV],
                     [___, ___, ___, ___, ___, ___, ___],
@@ -674,7 +674,7 @@ describe('LascaRules', () => {
             // When doing the move
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(2, 2), new Coord(0, 4)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, ___, ___, ___, ___],
@@ -729,7 +729,7 @@ describe('LascaRules', () => {
             // When doing the move
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(3, 5), new Coord(3, 1)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, _UV, ___, ___, ___],
@@ -761,7 +761,7 @@ describe('LascaRules', () => {
             // When doing the move
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(1, 3), new Coord(5, 3)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, ___, ___, ___, ___],
@@ -794,7 +794,7 @@ describe('LascaRules', () => {
             // When doing the move
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(3, 1), new Coord(3, 5)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, ___, ___, ___, ___],
@@ -875,7 +875,7 @@ describe('LascaRules', () => {
             // When doing the move
             const move: CheckersMove = CheckersMove.fromCapture([new Coord(0, 0), new Coord(0, 6)]).get();
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedState: CheckersState = CheckersState.of([
                 [___, ___, ___, ___, ___, ___, ___],
                 [___, ___, ___, ___, ___, ___, ___],

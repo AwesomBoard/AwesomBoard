@@ -25,27 +25,27 @@ export class RulesConfigDescriptionLocalizable {
 
 }
 
-export class ConfigLine {
+export class ConfigLine<R extends RulesConfig = EmptyRulesConfig> {
 
     protected constructor(public readonly value: ConfigDescriptionType,
                           public readonly title: Localized,
-                          public readonly validator?: MGPValidator)
+                          public readonly validator?: MGPValidator<R>)
     {
     }
 }
 
-export class NumberConfig extends ConfigLine {
+export class NumberConfig<R extends RulesConfig = EmptyRulesConfig> extends ConfigLine<R> {
 
     public constructor(value: number,
                        title: Localized,
-                       validator: MGPValidator)
+                       validator: MGPValidator<R>)
     {
         super(value, title, validator);
     }
 
 }
 
-export class BooleanConfig extends ConfigLine {
+export class BooleanConfig<R extends RulesConfig = EmptyRulesConfig> extends ConfigLine<R> {
 
     public constructor(value: boolean, title: Localized)
     {
@@ -53,6 +53,7 @@ export class BooleanConfig extends ConfigLine {
     }
 
 }
+
 
 export class RulesConfigDescription<R extends RulesConfig = EmptyRulesConfig> {
 

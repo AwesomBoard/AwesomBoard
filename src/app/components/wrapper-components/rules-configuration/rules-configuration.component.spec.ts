@@ -15,18 +15,6 @@ describe('RulesConfigurationComponent', () => {
 
     let component: RulesConfigurationComponent;
 
-    async function chooseConfig(configName: string): Promise<void> {
-        const selectAI: HTMLSelectElement = testUtils.findElement('#ruleSelect').nativeElement;
-        const option: HTMLOptionElement | undefined = Array.from(selectAI.options)
-            .find((opt: HTMLOptionElement) => {
-                return opt.value === configName;
-            });
-        expect(option).withContext('No config found with name "' + configName + '"').toBeDefined();
-        selectAI.value = option?.value as string;
-        selectAI.dispatchEvent(new Event('change'));
-        testUtils.detectChanges();
-    }
-
     function expectConfigToBeSelected(selectedConfigName: string): void {
         testUtils.expectDropdownOptionToBeSelected('#ruleSelect', selectedConfigName);
     }
@@ -103,7 +91,7 @@ describe('RulesConfigurationComponent', () => {
             spyOn(component.updateCallback, 'emit').and.callThrough();
 
             // When changing the chosen config
-            await chooseConfig('the_other_config_name');
+            await testUtils.chooseConfig('the_other_config_name');
             expect(component.updateCallback.emit).toHaveBeenCalledOnceWith(MGPOptional.of(secondConfig));
             expectConfigToBeSelected('the_other_config_name');
         }));
@@ -145,7 +133,7 @@ describe('RulesConfigurationComponent', () => {
                 it('should propose a number input when given a config of type number', fakeAsync(async() => {
                     // Given a chosen customizable config
                     component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
-                    await chooseConfig('Custom');
+                    await testUtils.chooseConfig('Custom');
 
                     // When rendering component
                     testUtils.detectChanges();
@@ -157,7 +145,7 @@ describe('RulesConfigurationComponent', () => {
                 it('should emit new config when changing value', fakeAsync(async() => {
                     // Given a chosen customizable config
                     component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
-                    await chooseConfig('Custom');
+                    await testUtils.chooseConfig('Custom');
                     testUtils.detectChanges();
 
                     // When modifying config
@@ -174,7 +162,7 @@ describe('RulesConfigurationComponent', () => {
                 it('should emit default value of the non modified fields when modifying another field', fakeAsync(async() => {
                     // Given a chosen customizable config
                     component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
-                    await chooseConfig('Custom');
+                    await testUtils.chooseConfig('Custom');
                     testUtils.detectChanges();
 
                     // When modifying another config
@@ -191,7 +179,7 @@ describe('RulesConfigurationComponent', () => {
                 it('should emit an empty optional when applying invalid change', fakeAsync(async() => {
                     // Given a chosen customizable config
                     component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
-                    await chooseConfig('Custom');
+                    await testUtils.chooseConfig('Custom');
                     testUtils.detectChanges();
 
                     // When modifying config to zero or negative
@@ -208,7 +196,7 @@ describe('RulesConfigurationComponent', () => {
                     it('should display custom validation error when making the value too small', fakeAsync(async() => {
                         // Given a chosen customizable config
                         component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
-                        await chooseConfig('Custom');
+                        await testUtils.chooseConfig('Custom');
                         testUtils.detectChanges();
 
                         // When modifying config to below the validator lower bound
@@ -225,7 +213,7 @@ describe('RulesConfigurationComponent', () => {
                     it('should display custom validation error when making the value too big', fakeAsync(async() => {
                         // Given a chosen customizable config
                         component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
-                        await chooseConfig('Custom');
+                        await testUtils.chooseConfig('Custom');
                         testUtils.detectChanges();
 
                         // When modifying config to above the validator upper bound
@@ -242,7 +230,7 @@ describe('RulesConfigurationComponent', () => {
                     it('should display custom validation error when erasing value', fakeAsync(async() => {
                         // Given a chosen customizable config
                         component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
-                        await chooseConfig('Custom');
+                        await testUtils.chooseConfig('Custom');
                         testUtils.detectChanges();
 
                         // When erasing value
@@ -265,7 +253,7 @@ describe('RulesConfigurationComponent', () => {
                 it('should propose a boolean input when given a config of type boolean', fakeAsync(async() => {
                     // Given an editable component with a boolean config option
                     component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithBooleans);
-                    await chooseConfig('Custom');
+                    await testUtils.chooseConfig('Custom');
 
                     // When rendering component
                     testUtils.detectChanges();
@@ -277,7 +265,7 @@ describe('RulesConfigurationComponent', () => {
                 it('should emit new value when changing value', fakeAsync(async() => {
                     // Given an editable component with a boolean config option
                     component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithBooleans);
-                    await chooseConfig('Custom');
+                    await testUtils.chooseConfig('Custom');
                     testUtils.detectChanges();
 
                     // When modifying config
@@ -293,7 +281,7 @@ describe('RulesConfigurationComponent', () => {
                 it('should emit default value of the non modified fields when modifying another field', fakeAsync(async() => {
                     // Given an editable component with a boolean config option
                     component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithBooleans);
-                    await chooseConfig('Custom');
+                    await testUtils.chooseConfig('Custom');
 
                     // When modifying another config
                     spyOn(component.updateCallback, 'emit').and.callThrough();
@@ -467,7 +455,7 @@ describe('RulesConfigurationComponent', () => {
         component.editable = true;
         component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
         component.rulesConfigToDisplay = rulesConfigDescriptionWithNumber.getDefaultConfig().config;
-        await chooseConfig('Custom');
+        await testUtils.chooseConfig('Custom');
 
         // When switching to non-editable
         component.setEditable(false);
@@ -481,7 +469,7 @@ describe('RulesConfigurationComponent', () => {
         component.editable = false;
         component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
         component.rulesConfigToDisplay = rulesConfigDescriptionWithNumber.getDefaultConfig().config;
-        await chooseConfig('Custom');
+        await testUtils.chooseConfig('Custom');
 
         // When switching to editable
         component.setEditable(true);
@@ -495,7 +483,7 @@ describe('RulesConfigurationComponent', () => {
         component.editable = false;
         component.rulesConfigDescriptionOptional = MGPOptional.of(rulesConfigDescriptionWithNumber);
         component.rulesConfigToDisplay = rulesConfigDescriptionWithNumber.getDefaultConfig().config;
-        await chooseConfig('Custom');
+        await testUtils.chooseConfig('Custom');
 
         // When switching to non-editable
         component.setEditable(false);

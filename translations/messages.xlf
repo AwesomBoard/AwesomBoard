@@ -230,6 +230,9 @@
       <trans-unit id="3383193846061013912" datatype="html">
         <source>Create a winning alignment. The problem: you don&apos;t pick the piece that you&apos;re placing on the board!</source>
       </trans-unit>
+      <trans-unit id="9125171545429867484" datatype="html">
+        <source>Everyboard first game: one player attack, the other defend, none have similar pieces!</source>
+      </trans-unit>
       <trans-unit id="3529667957993318888" datatype="html">
         <source>Align 5 of your pieces on a board where pieces slide!</source>
       </trans-unit>
@@ -385,6 +388,9 @@
       </trans-unit>
       <trans-unit id="5226075040149407867" datatype="html">
         <source>International Checkers</source>
+      </trans-unit>
+      <trans-unit id="7549008463336671286" datatype="html">
+        <source>Quebec Castles</source>
       </trans-unit>
       <trans-unit id="2218572265318708454" datatype="html">
         <source>Registering</source>
@@ -2715,6 +2721,63 @@
       <trans-unit id="2467449610168621115" datatype="html">
         <source>Wrong, you could have won by making a square.</source>
       </trans-unit>
+      <trans-unit id="5604193951980576244" datatype="html">
+        <source>Move distance must be 2 for invader, not <x id="PH" equiv-text="distance"/></source>
+      </trans-unit>
+      <trans-unit id="4809301322027947242" datatype="html">
+        <source>Move distance must be 1 for defender, not <x id="PH" equiv-text="distance"/></source>
+      </trans-unit>
+      <trans-unit id="2959814997167125267" datatype="html">
+        <source>Must drop in your own territory</source>
+      </trans-unit>
+      <trans-unit id="2475404961590913083" datatype="html">
+        <source>Cannot drop in move phase</source>
+      </trans-unit>
+      <trans-unit id="404272838313740209" datatype="html">
+        <source>Must drop all your pieces</source>
+      </trans-unit>
+      <trans-unit id="6659641459805346810" datatype="html">
+        <source>Must drop all your remaining pieces, not more not less</source>
+      </trans-unit>
+      <trans-unit id="5322605018323433422" datatype="html">
+        <source>Cannot drop that much pieces</source>
+      </trans-unit>
+      <trans-unit id="5513539435671245592" datatype="html">
+        <source>Must drop pieces one by one</source>
+      </trans-unit>
+      <trans-unit id="4497796084315768977" datatype="html">
+        <source>You cannot land on your throne</source>
+      </trans-unit>
+      <trans-unit id="9041250493266709397" datatype="html">
+        <source>You must only place your throne</source>
+      </trans-unit>
+      <trans-unit id="8315714596123969207" datatype="html">
+        <source>If you have <x id="PH" equiv-text="line"/> line, you can only have <x id="PH_1" equiv-text="max"/> pieces</source>
+      </trans-unit>
+      <trans-unit id="8286688479132880016" datatype="html">
+        <source>Too much lines for territory, your opponent lines would merged with yours!</source>
+      </trans-unit>
+      <trans-unit id="7732765787483081988" datatype="html">
+        <source>Lines for territory</source>
+      </trans-unit>
+      <trans-unit id="2486177343036470230" datatype="html">
+        <source>Number of invader</source>
+      </trans-unit>
+      <trans-unit id="6786719847987867536" datatype="html">
+        <source>Number of defender</source>
+      </trans-unit>
+      <trans-unit id="859693719600901508" datatype="html">
+        <source>Is Rhombic</source>
+      </trans-unit>
+      <trans-unit id="6581099810354955272" datatype="html">
+        <source>Place throne yourself</source>
+      </trans-unit>
+      <trans-unit id="259564981194593684" datatype="html">
+        <source>Drop piece by piece</source>
+      </trans-unit>
+      <trans-unit id="2483425139774462991" datatype="html">
+        <source>Drop piece yourself</source>
+      </trans-unit>
       <trans-unit id="8819839276456625538" datatype="html">
         <source>You must pick a space from the edge of the board.</source>
       </trans-unit>
@@ -3411,10 +3474,10 @@
         <source>This value is mandatory</source>
       </trans-unit>
       <trans-unit id="4408456168772857996" datatype="html">
-        <source><x id="PH" equiv-text="value"/> is too small, the minimum is <x id="PH_1" equiv-text="min"/></source>
+        <source><x id="PH" equiv-text="v"/> is too small, the minimum is <x id="PH_1" equiv-text="m"/></source>
       </trans-unit>
       <trans-unit id="701935636628882602" datatype="html">
-        <source><x id="PH" equiv-text="value"/> is too big, the maximum is <x id="PH_1" equiv-text="max"/></source>
+        <source><x id="PH" equiv-text="v"/> is too big, the maximum is <x id="PH_1" equiv-text="m"/></source>
       </trans-unit>
     </body>
   </file>

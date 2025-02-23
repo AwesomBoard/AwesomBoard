@@ -26,7 +26,7 @@ import { DemoNodeInfo } from '../demo-card-wrapper/demo-card-wrapper.component';
 @Debug.log
 export class LocalGameWrapperComponent extends GameWrapper<string> implements AfterViewInit {
 
-    public static readonly AI_TIMEOUT: number = 1500;
+    public static readonly AI_TIMEOUT: number = 1;
 
     public aiOptions: [string, string] = ['none', 'none'];
 

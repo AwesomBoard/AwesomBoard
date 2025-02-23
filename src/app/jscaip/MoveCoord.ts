@@ -26,3 +26,15 @@ export abstract class MoveCoord extends Move {
         return this === other || this.coord.equals(other.coord);
     }
 }
+
+export class TMPMoveCoord extends MoveCoord {
+
+    public static of(coord: Coord): TMPMoveCoord {
+        return new TMPMoveCoord(coord.x, coord.y);
+    }
+
+    public override toString(): string {
+        return 'TMPMoveCoord(' + this.coord.x + ', ' + this.coord.y + ')';
+    }
+
+}

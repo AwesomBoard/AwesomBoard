@@ -30,7 +30,7 @@ describe('SquarzRules', () => {
         // When applying duplication move
         const move: SquarzMove = SquarzMove.from(new Coord(0, 0), new Coord(1, 1)).get();
 
-        // Then it should be legal
+        // Then the move should succeed
         const expectedState: SquarzState = new SquarzState([
             [O, _, _, _, _, _, _, X],
             [_, O, _, _, _, _, _, _],
@@ -51,7 +51,7 @@ describe('SquarzRules', () => {
         // When doing a jump
         const move: SquarzMove = SquarzMove.from(new Coord(0, 0), new Coord(2, 2)).get();
 
-        // Then it should be legal
+        // Then the move should succeed
         const expectedState: SquarzState = new SquarzState([
             [_, _, _, _, _, _, _, X],
             [_, _, _, _, _, _, _, _],
@@ -102,7 +102,7 @@ describe('SquarzRules', () => {
         // When doing a knight jump
         const move: SquarzMove = SquarzMove.from(new Coord(0, 0), new Coord(1, 2)).get();
 
-        // Then it should be legal
+        // Then the move should succeed
         const expectedState: SquarzState = new SquarzState([
             [_, _, _, _, _, _, _, X],
             [_, _, _, _, _, _, _, _],
@@ -260,7 +260,7 @@ describe('SquarzRules', () => {
             // When trying to create a jump of 3
             const move: SquarzMove = SquarzMove.from(new Coord(0, 0), new Coord(3, 3)).get();
 
-            // Then it should be legal
+            // Then the move should succeed
             const expectedState: SquarzState = new SquarzState([
                 [_, _, _, _, _, _, _, X],
                 [_, _, _, _, _, _, _, _],

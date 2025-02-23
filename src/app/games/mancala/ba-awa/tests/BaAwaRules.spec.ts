@@ -326,7 +326,7 @@ describe('BaAwaRules', () => {
             // When applying that move
             const move: MancalaMove = MancalaMove.of(MancalaDistribution.of(3), [MancalaDistribution.of(4)]);
 
-            // Then it should be legal
+            // Then the move should succeed
             const expectedState: MancalaState = new MancalaState([
                 [0, 2, 2, 10, 2, 0],
                 [3, 1, 0, 1, 0, 0],

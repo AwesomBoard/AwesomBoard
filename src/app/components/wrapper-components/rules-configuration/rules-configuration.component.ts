@@ -6,6 +6,7 @@ import { comparableEquals, MGPOptional, MGPValidation, Utils } from '@everyboard
 import { ConfigDescriptionType, NamedRulesConfig, RulesConfig } from 'src/app/jscaip/RulesConfigUtil';
 import { RulesConfigDescription, RulesConfigDescriptionLocalizable } from './RulesConfigDescription';
 import { BaseWrapperComponent } from '../BaseWrapperComponent';
+import { MGPValidator } from 'src/app/utils/MGPValidator';
 
 type ConfigFormJSON = {
     [member: string]: FormControl<ConfigDescriptionType>;
@@ -133,7 +134,8 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
         const value: ConfigDescriptionType = config[field];
         if (typeof value === 'number') {
             const fieldValue: number = this.rulesConfigForm.controls[field].value;
-            const validity: MGPValidation = this.rulesConfigDescription.getValidator(field)(fieldValue);
+            const validator: MGPValidator<RulesConfig> = this.rulesConfigDescription.getValidator(field);
+            const validity: MGPValidation = validator(fieldValue, this.rulesConfigForm.value);
             return validity.isSuccess();
         } else {
             Utils.expectToBe(typeof value, 'boolean');
@@ -144,7 +146,10 @@ export class RulesConfigurationComponent extends BaseWrapperComponent implements
 
     public getErrorMessage(field: string): string {
         const fieldValue: number | null = this.rulesConfigForm.controls[field].value;
-        const validity: MGPValidation = this.rulesConfigDescription.getValidator(field)(fieldValue);
+        const validator: MGPValidator<RulesConfig> = this.rulesConfigDescription.getValidator(field);
+        // TODO check for creator too ? well.. WAHT
+        const config: RulesConfig = this.rulesConfigForm.value;
+        const validity: MGPValidation = validator(fieldValue, config);
         return validity.getReason();
     }
 

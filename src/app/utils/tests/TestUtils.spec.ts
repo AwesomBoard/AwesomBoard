@@ -323,6 +323,18 @@ export class SimpleComponentTestUtils<T> {
         tick();
     }
 
+    public async chooseConfig(configName: string): Promise<void> {
+        const selectAI: HTMLSelectElement = this.findElement('#ruleSelect').nativeElement;
+        const option: HTMLOptionElement | undefined = Array.from(selectAI.options)
+            .find((opt: HTMLOptionElement) => {
+                return opt.value === configName;
+            });
+        expect(option).withContext('No config found with name "' + configName + '"').toBeDefined();
+        selectAI.value = option?.value as string;
+        selectAI.dispatchEvent(new Event('change'));
+        this.detectChanges();
+    }
+
 }
 
 export class ComponentTestUtils<C extends AbstractGameComponent, P extends Comparable = string>
@@ -341,10 +353,11 @@ export class ComponentTestUtils<C extends AbstractGameComponent, P extends Compa
         chooseDefaultConfig: boolean = true)
     : Promise<ComponentTestUtils<Component>>
     {
-        const optionalGameInfo: MGPOptional<GameInfo> =
-            MGPOptional.ofNullable(GameInfo.getAllGames().find((gameInfo: GameInfo) => gameInfo.urlName === game));
+        const gameInfos: GameInfo[] = GameInfo.getAllGames();
+        const nullableGameInfo: GameInfo | undefined = gameInfos.find((info: GameInfo) => info.urlName === game);
+        const optionalGameInfo: MGPOptional<GameInfo> = MGPOptional.ofNullable(nullableGameInfo);
         if (optionalGameInfo.isAbsent()) {
-            throw new Error(game + ' is not a game developed on EveryBoard, check if its name is in the second param of GameInfo');
+            throw new Error(game + ' is not a game developed on EveryBoard, check if its name is in the second param of GameInfo (in pick-game.component.ts)');
         }
         return ComponentTestUtils.forGameWithWrapper(game,
                                                      LocalGameWrapperComponent,

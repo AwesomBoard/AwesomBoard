@@ -33,17 +33,17 @@ class PlayerNone implements ComparableObject {
 
 export class Player implements ComparableObject {
 
-    public static encoder: Encoder<Player> = Encoder.tuple(
-        [Encoder.identity<0 | 1>()],
-        (player: Player) => [player.getValue()],
-        (fields: [0 | 1]) => Player.of(fields[0]),
-    );
-
     public static readonly ZERO: Player = new Player(0);
 
     public static readonly ONE: Player = new Player(1);
 
     public static readonly PLAYERS: Player[] = [Player.ZERO, Player.ONE];
+
+    public static encoder: Encoder<Player> = Encoder.tuple(
+        [Encoder.identity<0 | 1>()],
+        (player: Player) => [player.getValue()],
+        (fields: [0 | 1]) => Player.of(fields[0]),
+    );
 
     public static of(value: number): Player {
         switch (value) {
@@ -143,4 +143,5 @@ export namespace PlayerOrNone {
             return Player.of(encoded as 0|1);
         }
     };
+
 }

@@ -471,7 +471,7 @@ describe('AbaloneRules', () => {
             // When moving five pieces
             const move: AbaloneMove = AbaloneMove.ofSingleCoord(new Coord(1, 4), HexaDirection.RIGHT);
 
-            // Then the move should be legal
+            // Then the move should succeed
             const expectedBoard: FourStatePiece[][] = [
                 [N, N, N, N, X, X, X, X, X],
                 [N, N, N, X, X, X, X, X, X],

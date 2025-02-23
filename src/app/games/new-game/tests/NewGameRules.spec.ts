@@ -21,12 +21,12 @@ describe('NewGameRules', () => {
         // This is how you would test a particular rule:
 
         // Given a state
-        const state: NewGameState = NewGameRules.get().getInitialState();
+        const state: NewGameState = NewGameRules.get().getInitialState(defaultConfig);
 
         // When doing some move
         const move: NewGameMove = new NewGameMove();
 
-        // Then it should succeed (or fail)
+        // Then the move should succeed (or fail)
         const expectedState: NewGameState = new NewGameState(1);
         RulesUtils.expectMoveSuccess(rules, state, move, expectedState, defaultConfig);
     });

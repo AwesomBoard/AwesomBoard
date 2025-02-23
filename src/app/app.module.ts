@@ -56,10 +56,10 @@ import { DirArrowComponent } from './components/game-components/arrow-component/
 import { HexArrowComponent } from './components/game-components/arrow-component/hex-arrow.component';
 
 import { AbaloneComponent } from './games/abalone/abalone.component';
-import { BaAwaComponent } from './games/mancala/ba-awa/ba-awa.component';
 import { ApagosComponent } from './games/apagos/apagos.component';
 import { AwaleComponent } from './games/mancala/awale/awale.component';
 
+import { BaAwaComponent } from './games/mancala/ba-awa/ba-awa.component';
 import { BrandhubComponent } from './games/tafl/brandhub/brandhub.component';
 
 import { CoerceoComponent } from './games/coerceo/coerceo.component';
@@ -104,6 +104,7 @@ import { PenteComponent } from './games/pente/pente.component';
 import { PylosComponent } from './games/pylos/pylos.component';
 
 import { QuartoComponent } from './games/quarto/quarto.component';
+import { QuebecCastlesComponent } from './games/quebec-castles/quebec-castles.component';
 import { QuixoComponent } from './games/quixo/quixo.component';
 
 import { ReversiComponent } from './games/reversi/reversi.component';
@@ -225,6 +226,7 @@ export const routes: Route[] = [
         PenteComponent,
         PylosComponent,
         QuartoComponent,
+        QuebecCastlesComponent,
         QuixoComponent,
         ReversiComponent,
         SaharaComponent,

@@ -11,7 +11,7 @@ export abstract class MoveCoordToCoord extends MoveWithTwoCoords {
         if (start.equals(end)) throw new Error(RulesFailure.MOVE_CANNOT_BE_STATIC());
     }
 
-    public length(): number {
+    public getDistance(): number {
         return this.getStart().getLinearDistanceToward(this.getEnd());
     }
 
@@ -29,6 +29,11 @@ export abstract class MoveCoordToCoord extends MoveWithTwoCoords {
 
     public getMovedOverCoords(): Coord[] {
         return this.getStart().getAllCoordsToward(this.getEnd());
+    }
+
+    public getJumpedOverCoords(): Coord[] {
+        return this.getStart().getCoordsToward(this.getEnd());
+        // TODO, reuse that method with [], wherever it is in branch
     }
 
     public equals(other: this): boolean {

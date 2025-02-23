@@ -1,5 +1,6 @@
-import { Move } from 'src/app/jscaip/Move';
 import { Encoder } from '@everyboard/lib';
+
+import { Move } from 'src/app/jscaip/Move';
 
 /**
   * This class represents the moves of your game.

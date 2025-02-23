@@ -37,7 +37,7 @@ describe('YinshRules', () => {
             // When placing a ring
             const move: YinshMove = new YinshMove([], new Coord(3, 2), MGPOptional.empty(), []);
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<YinshPiece> = [
                 [N, N, N, N, N, N, _, _, _, _, N],
                 [N, N, N, N, _, _, _, _, _, _, _],
@@ -100,7 +100,7 @@ describe('YinshRules', () => {
             // When placing a marker and moving the ring
             const move: YinshMove = new YinshMove([], new Coord(3, 2), MGPOptional.of(new Coord(3, 3)), []);
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<YinshPiece> = [
                 [N, N, N, N, N, N, _, _, _, _, N],
                 [N, N, N, N, _, _, _, _, _, _, _],
@@ -188,7 +188,7 @@ describe('YinshRules', () => {
             // When moving a ring over markers
             const move: YinshMove = new YinshMove([], new Coord(3, 2), MGPOptional.of(new Coord(3, 5)), []);
 
-            // Then it should succeed and flip all markers it went over
+            // Then the move should succeed and flip all markers it went over
             const expectedBoard: Table<YinshPiece> = [
                 [N, N, N, N, N, N, _, _, _, _, N],
                 [N, N, N, N, _, _, _, _, _, _, _],
@@ -226,7 +226,7 @@ describe('YinshRules', () => {
             // When moving the ring over the empty space and then over markers
             const move: YinshMove = new YinshMove([], new Coord(3, 2), MGPOptional.of(new Coord(3, 6)), []);
 
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<YinshPiece> = [
                 [N, N, N, N, N, N, _, _, _, _, N],
                 [N, N, N, N, _, _, _, _, _, _, _],
@@ -373,7 +373,7 @@ describe('YinshRules', () => {
                                                   [YinshCapture.of(new Coord(3, 2),
                                                                    new Coord(3, 6),
                                                                    MGPOptional.of(new Coord(5, 3)))]);
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<YinshPiece> = [
                 [N, N, N, N, N, N, _, _, _, _, N],
                 [N, N, N, N, _, _, _, _, _, _, _],
@@ -415,7 +415,7 @@ describe('YinshRules', () => {
             ],
                                                   new Coord(5, 2), MGPOptional.of(new Coord(5, 3)),
                                                   []);
-            // Then it should succeed
+            // Then the move should succeed
             const expectedBoard: Table<YinshPiece> = [
                 [N, N, N, N, N, N, _, _, _, _, N],
                 [N, N, N, N, _, _, _, _, _, _, _],
