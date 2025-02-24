@@ -185,7 +185,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     private async onGameEvent(event: GameEvent): Promise<void> {
-        console.log('OGWC.onGameEvent')
+        console.log('OGWC.onGameEvent: ' + JSON.stringify(event))
         switch (event.eventType) {
             case 'Move':
                 await this.onReceivedMove(event);
@@ -210,6 +210,7 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
     }
 
     private async handleReply(reply: GameEventReply): Promise<void> {
+        console.log('handleReply: ' + JSON.stringify(reply));
         switch (reply.requestType) {
             case 'TakeBack':
                 const accepter: Player = this.timeManager.playerOfMinimalUser(reply.user);
@@ -261,21 +262,11 @@ export class OnlineGameWrapperComponent extends GameWrapper<MinimalUser> impleme
         );
     }
 
-    // private beforeEventsBatch(): void {
-    //     this.timeManager.beforeEventsBatch(this.endGame);
-    // }
-
-    // private async afterEventsBatch(): Promise<void> {
-    //     const player: Player = Player.ofTurn(this.gameComponent.getTurn());
-    //     const serverTimeMs: number = await this.serverTimeService.getServerTimeInMs();
-    //     this.timeManager.afterEventsBatch(this.endGame, player, serverTimeMs);
-    // }
-
     private async takeBackToPreviousPlayerTurn(player: Player): Promise<void> {
         // Take back once, in any case
         this.gameComponent.node = this.gameComponent.node.parent.get();
         if (this.gameComponent.getCurrentPlayer() !== player) {
-            Utils.assert(this.gameComponent.getTurn() > 0, 'Should not allow player that never played to take back');
+            Utils.assert(this.gameComponent.getTurn() > 0, 'Should not allow player that never moved to take back');
             // Take back a second time to make sure it end up on player's turn
             this.gameComponent.node = this.gameComponent.node.parent.get();
         }

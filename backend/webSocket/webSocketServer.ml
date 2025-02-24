@@ -400,6 +400,7 @@ module Make
             let* () = Game.add_event ~request game_id event in
             broadcast Game game_id (WebSocketOutgoingMessage.GameEvent { event })
 
+
     (** The main handler *)
     let handle : Dream.handler = fun (request : Dream.request) ->
         Dream.websocket (fun (ws : Dream.websocket) ->

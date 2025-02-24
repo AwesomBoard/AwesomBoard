@@ -37,11 +37,9 @@ export type GameEventRequest = GameEventBase & {
     readonly requestType: RequestType;
 }
 
-export type Reply = 'Accept' | 'Reject';
-
 export type GameEventReply = GameEventBase & {
     readonly eventType: 'Reply';
-    readonly reply: Reply;
+    readonly accept: boolean;
     readonly requestType: RequestType;
     readonly data?: JSONValue;
 }

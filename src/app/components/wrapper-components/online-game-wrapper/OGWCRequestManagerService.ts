@@ -75,20 +75,20 @@ export class OGWCRequestManagerService {
      * @returns true if the request has been accepted and must be handled by the OGWC
      */
     public async onReceivedReply(reply: GameEventReply): Promise<boolean> {
+        console.log('onReceivedReply: ' + JSON.stringify(reply));
         this.requestAwaitingReply = MGPOptional.empty();
-        switch (reply.reply) {
-            case 'Accept':
-                // The request has been accepted by the opponent, we give it back to OGWC
-                return true;
-            case 'Reject':
-                // When one of our requests is rejected, we cannot make this request until the next turn
-                const user: MinimalUser = this.connectedUserService.user.get().toMinimalUser();
-                if (reply.user.id !== user.id) {
-                    // Opponent denied our request
-                    this.lastDeniedRequest = MGPOptional.of(reply.requestType);
-                    this.forbiddenRequests = this.forbiddenRequests.addElement(reply.requestType);
-                }
-                return false;
+        if (reply.accept) {
+            // The request has been accepted by the opponent, we give it back to OGWC
+            return true;
+        } else {
+            // When one of our requests is rejected, we cannot make this request until the next turn
+            const user: MinimalUser = this.connectedUserService.user.get().toMinimalUser();
+            if (reply.user.id !== user.id) {
+                // Opponent denied our request
+                this.lastDeniedRequest = MGPOptional.of(reply.requestType);
+                this.forbiddenRequests = this.forbiddenRequests.addElement(reply.requestType);
+            }
+            return false;
         }
     }
     public canMakeRequest(request: RequestType): boolean {
