@@ -1,13 +1,18 @@
-module External = External.Impl
+(* TODO: rename some modules and module types *)
+module External = Utils.External.Impl
 module ServerUtils = ServerUtils.Make(External)
-module Stats = Stats.Impl
-module GoogleCertificates = GoogleCertificates.Make(External)
-module Jwt = Jwt.Make(External)
-module TokenRefresher = TokenRefresher.Make(External)(Jwt)
-module Firestore = Firestore.Make(FirestorePrimitives.Make(External)(TokenRefresher)(Stats))
-module Auth = Auth.Make(Firestore)(GoogleCertificates)(Stats)(Jwt)
-module GameEndpoint = GameEndpoint.Make(External)(Auth)(Firestore)(Stats)
-module ConfigRoomEndpoint = ConfigRoomEndpoint.Make(External)(Auth)(Firestore)(Stats)
+module Stats = Firestore.Stats.Impl
+module GoogleCertificates = Firestore.GoogleCertificates.Make(External)
+module Jwt = Firestore.Jwt.Make(External)
+module TokenRefresher = Firestore.TokenRefresher.Make(External)(Jwt)
+module FirestorePrimitives = Firestore.FirestorePrimitives.Make(External)(TokenRefresher)(Stats)
+module FirestoreOps = Firestore.FirestoreOps.Make(FirestorePrimitives)
+module Auth = Firestore.Auth.Make(FirestoreOps)(GoogleCertificates)(Stats)(Jwt)
+module Chat = Persistence.Chat.ChatSQL
+module ConfigRoom = Persistence.ConfigRoom.ConfigRoomSQL
+module Game = Persistence.Game.GameSql
+module Elo = Persistence.Elo.EloSql
+module WebSocketServer = WebSocket.WebSocketServer.Make(Auth)(External)(Chat)(ConfigRoom)(Game)(Elo)(Stats)
 
 (** The version number of this server. Used to avoid redeploying when there are no changes.
     If a redeployment is needed, just change the version number. Any difference will trigger redeployment.
@@ -22,19 +27,24 @@ let version_handler : Dream.handler = fun _ ->
 
 (** The actual backend server, dispatching to various endpoints *)
 let start = fun () : unit ->
+    FirestorePrimitives.set_config !Options.project_name !Options.database_name !Options.base_endpoint;
     let api = [
-        Dream.scope "/" [TokenRefresher.middleware !Options.service_account_file; Auth.middleware]
+        Dream.scope "/" [TokenRefresher.middleware !Options.service_account_file !Options.emulator; Auth.middleware !Options.project_id]
         @@ List.concat [
-            GameEndpoint.routes;
-            ConfigRoomEndpoint.routes;
             [Dream.get "/time" ServerUtils.server_time];
+            [Dream.get "/ws" WebSocketServer.handle];
         ];
     ] in
     Mirage_crypto_rng_unix.use_default (); (* Required for token refresher and JWT *)
     Dream.initialize_log ~level:`Info ();
-    Dream.run ~interface:!Options.address ~error_handler:ServerUtils.error_handler ~port:!Options.port
+    Dream.run
+        ~interface:!Options.address
+        ~error_handler:ServerUtils.error_handler
+        ~port:!Options.port
+    (* TODO: set tls: ~tls:true ~certificate_file:"localhost.crt" ~key_file:"localhost.key" *)
+    @@ Dream.sql_pool "sqlite3:everyboard.db"
     @@ Dream.logger
-    @@ Cors.middleware
+    @@ Cors.middleware !Options.frontend_origin
     @@ Dream.router (List.concat [
         (Dream.get "/stats" Stats.summary) ::
         (Dream.get "/version" version_handler) ::

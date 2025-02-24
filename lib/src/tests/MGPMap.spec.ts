@@ -41,6 +41,38 @@ describe('MGPMap', () => {
         });
     });
 
+    describe('iterator', () => {
+        it('should iterate over all elements of the map', () => {
+            // Given a map with elements
+            const map: MGPMap<string, number> = MGPMap.from({ first: 1, second: 2 });
+
+            // When iterating over it
+            let sum: number = 0;
+            const keysSeen: string[] = [];
+            for (const [key, value] of map) {
+                keysSeen.push(key);
+                sum += value;
+            }
+
+            // Then all elements should have been iterated over
+            expect(sum).toBe(3);
+            expect(keysSeen).toEqual(['first', 'second']);
+        });
+    });
+
+    describe('clear', () => {
+        it('should clear the map', () => {
+            // Given a map with elements
+            const map: MGPMap<string, number> = MGPMap.from({ first: 1, second: 2 });
+
+            // When clearing it
+            map.clear();
+
+            // Then it should have no elements
+            expect(map).toEqual(new MGPMap());
+        });
+    });
+
     describe('putAll', () => {
         it('should concatenate two maps, erasing the overlapping content on the receiver', () => {
             const receiver: MGPMap<string, number> = MGPMap.from({ first: 0, second: 1 });

@@ -17,7 +17,6 @@ import { UserService } from './services/UserService';
 import { ConnectedUserService } from './services/ConnectedUserService';
 import { GameService } from './services/GameService';
 import { ConfigRoomService } from './services/ConfigRoomService';
-import { GameEventService } from './services/GameEventService';
 import { ThemeService } from './services/ThemeService';
 
 import { AppComponent } from './app.component';
@@ -28,7 +27,7 @@ import { LoginComponent } from './components/normal-component/login/login.compon
 import { LobbyComponent } from './components/normal-component/lobby/lobby.component';
 import { AccountComponent } from './components/normal-component/account/account.component';
 import { PickGameComponent } from './components/normal-component/pick-game/pick-game.component';
-import { PartCreationComponent } from './components/wrapper-components/part-creation/part-creation.component';
+import { GameCreationComponent } from './components/wrapper-components/part-creation/part-creation.component';
 import { NotFoundComponent } from './components/normal-component/not-found/not-found.component';
 import { ChatComponent } from './components/normal-component/chat/chat.component';
 import { CountDownComponent } from './components/normal-component/count-down/count-down.component';
@@ -131,7 +130,7 @@ import { NotConnectedGuard } from './guard/not-connected.guard';
 
 import { HumanDurationPipe } from './pipes-and-directives/human-duration.pipe';
 import { AutofocusDirective } from './pipes-and-directives/autofocus.directive';
-import { FirestoreTimePipe } from './pipes-and-directives/firestore-time.pipe';
+import { TimestampPipe } from './pipes-and-directives/firestore-time.pipe';
 
 import { ToggleVisibilityDirective } from './pipes-and-directives/toggle-visibility.directive';
 import { RulesConfigurationComponent } from './components/wrapper-components/rules-configuration/rules-configuration.component';
@@ -171,7 +170,7 @@ export const routes: Route[] = [
         LobbyComponent,
         PickGameComponent,
         ChatComponent,
-        PartCreationComponent,
+        GameCreationComponent,
         RegisterComponent,
         NotFoundComponent,
         NextGameLoadingComponent,
@@ -238,14 +237,14 @@ export const routes: Route[] = [
         YinshComponent,
 
         HumanDurationPipe,
-        FirestoreTimePipe,
+        TimestampPipe,
         AutofocusDirective,
         ToggleVisibilityDirective,
         RulesConfigurationComponent,
     ],
     imports: [
         BrowserModule,
-        HttpClientModule,
+        HttpClientModule, // TODO: safe to remove ?
         RouterModule.forRoot(routes, { useHash: false }),
         ReactiveFormsModule,
         FormsModule,
@@ -255,7 +254,6 @@ export const routes: Route[] = [
     providers: [
         ConnectedUserService,
         GameService,
-        GameEventService,
         ConfigRoomService,
         UserService,
         ChatService,

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MGPOptional, Utils } from '@everyboard/lib';
 
-import { GameEventMove, GameEventAction } from '../../../domain/Part';
+import { GameEventMove, GameEventAction, Game } from '../../../domain/Part';
 import { CountDownComponent } from '../../normal-component/count-down/count-down.component';
 import { ConfigRoom } from 'src/app/domain/ConfigRoom';
 import { Player } from 'src/app/jscaip/Player';
@@ -26,10 +26,7 @@ export class OGWCTimeManagerService {
     private globalClocks: [CountDownComponent, CountDownComponent]; // Initialized by setClocks
     // All clocks managed by this time manager
     private allClocks: CountDownComponent[]; // Initialized by setClocks
-    /*
-     * The configRoom, which is set when starting the clocks.
-     * We need it to know the maximal game and move durations.
-     */
+    // The configRoom, which is set when starting the game. We need it to know the maximal game and move durations.
     private configRoom: MGPOptional<ConfigRoom> = MGPOptional.empty();
 
     // The players, as we need to map between minimal users and player values
@@ -46,6 +43,12 @@ export class OGWCTimeManagerService {
     // The time at which the current move started
     private lastMoveStartMs: MGPOptional<number> = MGPOptional.empty();
 
+    // Whether we are synchronized with the server, i.e., we received all events of the past
+    private synchronized: boolean = false;
+
+    // Whether the game is finished
+    private gameEnd: boolean = false;
+
     public setClocks(turnClocks: [CountDownComponent, CountDownComponent],
                      globalClocks: [CountDownComponent, CountDownComponent])
     : void
@@ -56,9 +59,11 @@ export class OGWCTimeManagerService {
     }
 
     // At the beginning of a game, set up clocks and remember when the game started
-    public onGameStart(configRoom: ConfigRoom, players: MGPOptional<MinimalUser>[]): void {
+    public onGameStart(configRoom: ConfigRoom, game: Game, players: MGPOptional<MinimalUser>[]): void {
+        console.log('onGameStart')
         this.configRoom = MGPOptional.of(configRoom);
         this.players = players;
+        this.lastMoveStartMs = MGPOptional.of(game.beginning);
         for (const player of Player.PLAYERS) {
             // We need to initialize the service's data
             // Otherwise if we go to another page and come back, the service stays alive and the data is off
@@ -84,7 +89,9 @@ export class OGWCTimeManagerService {
         return this.configRoom.get().maximalMoveDuration * 1000;
     }
 
-    public onReceivedAction(action: GameEventAction): void {
+    public onReceivedAction(currentPlayer: Player, action: GameEventAction): void {
+        console.log(action)
+        this.beforeEvent();
         switch (action.action) {
             case 'AddTurnTime':
                 this.addTurnTime(this.playerOfMinimalUser(action.user));
@@ -92,25 +99,29 @@ export class OGWCTimeManagerService {
             case 'AddGlobalTime':
                 this.addGlobalTime(this.playerOfMinimalUser(action.user));
                 break;
-            case 'StartGame':
-                this.lastMoveStartMs = MGPOptional.of(action.time);
-                break;
             case 'EndGame':
                 this.onGameEnd();
                 break;
+            default:
+                Utils.expectToBe(action.action, 'Sync');
+                this.onSync();
+                break;
         }
+        this.afterEvent(currentPlayer, action.time);
     }
 
     public playerOfMinimalUser(user: MinimalUser): Player {
+        console.log({user, playerZero: this.players[0], playerOne: this.players[1]})
         if (this.players[0].equalsValue(user)) {
             return Player.ZERO;
         } else {
-            Utils.assert(this.players[1].equalsValue(user), 'MinimalUser should match player one');
+            Utils.assert(this.players[1].equalsValue(user), 'MinimalUser should match a player');
             return Player.ONE;
         }
     }
 
     public onReceivedMove(move: GameEventMove): void {
+        this.beforeEvent();
         const player: Player = this.playerOfMinimalUser(move.user);
 
         const moveTimeMs: number = move.time;
@@ -126,6 +137,7 @@ export class OGWCTimeManagerService {
         const nextPlayerTakenGlobalTime: number = this.takenGlobalTime.get(nextPlayer);
         const nextPlayerAdaptedGlobalTime: number = this.getPartDurationInMs() - nextPlayerTakenGlobalTime;
         this.globalClocks[nextPlayer.getValue()].changeDuration(nextPlayerAdaptedGlobalTime);
+        this.afterEvent(nextPlayer, move.time);
     }
 
     private getMsElapsedSinceLastMoveStart(moveTimeMs: number): number {
@@ -134,6 +146,7 @@ export class OGWCTimeManagerService {
 
     // Stops all clocks that are running
     public onGameEnd(): void {
+        this.gameEnd = true;
         for (const clock of this.allClocks) {
             if (clock.isStarted()) {
                 clock.stop();
@@ -143,24 +156,30 @@ export class OGWCTimeManagerService {
         this.updateClocks();
     }
 
-    // Pauses all clocks before handling new events
-    public beforeEventsBatch(gameEnd: boolean): void {
-        if (gameEnd === false) {
-            this.pauseAllClocks();
-        }
+    // Called when we are becoming in sync with the server
+    public onSync(): void {
+        this.synchronized = true;
     }
 
+    // Pause all clocks before receiving events
+    private beforeEvent(): void {
+        this.pauseAllClocks();
+    }
     // Continue the current player clock after receiving events
-    public afterEventsBatch(gameEnd: boolean, player: Player, currentTimeMs: number): void {
+    private afterEvent(currentPlayer: Player, currentTimeMs: number): void {
+        if (this.synchronized === false) {
+            // We'll wait until we are synchronized to do anything
+            return;
+        }
         this.updateClocks();
-        if (gameEnd === false) {
+        if (this.gameEnd === false) {
             // The drift is how long has passed since the last event occurred
             // It can be only a few ms, or a much longer time in case we join mid-game
             const driftMs: number = this.getMsElapsedSinceLastMoveStart(currentTimeMs);
             // We need to subtract the time to take the drift into account
-            this.turnClocks[player.getValue()].subtract(driftMs);
-            this.globalClocks[player.getValue()].subtract(driftMs);
-            this.resumeClocks(player);
+            this.turnClocks[currentPlayer.getValue()].subtract(driftMs);
+            this.globalClocks[currentPlayer.getValue()].subtract(driftMs);
+            this.resumeClocks(currentPlayer);
         }
     }
 
@@ -184,6 +203,7 @@ export class OGWCTimeManagerService {
 
     // Update clocks with the available time
     private updateClocks(): void {
+        console.log('updateClocks')
         for (const player of Player.PLAYERS) {
             this.turnClocks[player.getValue()].changeDuration(this.availableTurnTime.get(player));
             const playerTakenGlobalTime: number = this.takenGlobalTime.get(player);

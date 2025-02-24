@@ -1,5 +1,4 @@
 open Utils
-open CryptoUtils
 
 (** The token refresher manages the admin token of the backend. When a request
     need to be done to firestore, the token can be passed in the header with the
@@ -10,8 +9,9 @@ module type TOKEN_REFRESHER = sig
     (** [header request] returns the header required to pass the token along with a query *)
     val header : Dream.request -> Cohttp.Header.t Lwt.t
 
-    (** The middleware that has to be installed in order to use the token refresher *)
-    val middleware : string -> Dream.middleware
+    (** [middleware service_account_file emulator] returns the middleware that
+        has to be installed in order to use the token refresher *)
+    val middleware : string -> bool -> Dream.middleware
 
 end
 
@@ -24,14 +24,14 @@ module Make (External : External.EXTERNAL) (Jwt : Jwt.JWT) : TOKEN_REFRESHER = s
 
     type service_account = {
         email : string;
-        private_key : private_key;
+        private_key : Crypto.private_key;
     }
 
     let read_service_account_from_file = fun (file : string) : service_account ->
         let open JSON.Util in
         let json =
             try JSON.from_file file
-            with Sys_error e -> raise (UnexpectedError ("Cannot read service account from file: " ^ e))
+            with Sys_error e -> raise (Errors.UnexpectedError ("Cannot read service account from file: " ^ e))
         in
         let private_key = json
                           |> member "private_key"
@@ -41,7 +41,7 @@ module Make (External : External.EXTERNAL) (Jwt : Jwt.JWT) : TOKEN_REFRESHER = s
         | Ok (`RSA pk) ->
             let email = json |> member "client_email" |> to_string in
             { email ; private_key = pk }
-        | _ -> raise (UnexpectedError "Cannot read private key from service account file")
+        | _ -> raise (Errors.UnexpectedError "Cannot read private key from service account file")
 
     let request_token = fun (sa : service_account) : token Lwt.t ->
         let open JSON.Util in
@@ -71,22 +71,22 @@ module Make (External : External.EXTERNAL) (Jwt : Jwt.JWT) : TOKEN_REFRESHER = s
 
     let get_token = fun (request : Dream.request) : string Lwt.t ->
         match Dream.field request get_token_field with
-        | None -> raise (UnexpectedError "get_token_field not set, the middleware is probably missing")
+        | None -> raise (Errors.UnexpectedError "get_token_field not set, the middleware is probably missing")
         | Some f -> f ()
 
     let header = fun (request : Dream.request) : Cohttp.Header.t Lwt.t ->
         let* token = get_token request in
         Lwt.return (Cohttp.Header.of_list [DreamUtils.authorization_header token])
 
-    let middleware = fun (service_account_file : string) : Dream.middleware ->
+    let middleware = fun (service_account_file : string) (emulator : bool) : Dream.middleware ->
         let service_account =
-            if !Options.emulator = false
-            then Some (read_service_account_from_file service_account_file)
-            else None in
+            if emulator
+            then None
+            else Some (read_service_account_from_file service_account_file) in
         let token_ref = ref None in
         (fun handler request ->
              Dream.set_field request get_token_field (fun () ->
-                 if !Options.emulator then
+                 if emulator then
                      (* No need to fetch a google token if we're dealing with the emulator, the string "owner" is sufficient *)
                      Lwt.return "owner"
                  else

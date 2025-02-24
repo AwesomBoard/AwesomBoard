@@ -1,0 +1,6 @@
+(library
+ (name utils)
+ (public_name everyboard.utils)
+ (libraries lwt yojson mirage-crypto-pk x509 dream sqids cohttp cohttp-lwt-unix)
+ (modules Utils JSON Caqti Crypto Errors Id DreamUtils External GameId)
+ (preprocess (pps lwt_ppx ppx_deriving_yojson ppx_deriving.show)))

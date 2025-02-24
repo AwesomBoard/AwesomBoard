@@ -1,205 +1,140 @@
 import { Injectable } from '@angular/core';
-import { MGPValidation, MGPOptional, JSONValue, Utils, MGPFallible } from '@everyboard/lib';
-import { PartDAO } from '../dao/PartDAO';
-import { Part } from '../domain/Part';
+import { JSONValue } from '@everyboard/lib';
+import { GameEvent, Game } from '../domain/Part';
 import { Subscription } from 'rxjs';
-import { MinimalUser } from '../domain/MinimalUser';
-import { FirestoreTime } from '../domain/Time';
-import { BackendService } from './BackendService';
-import { Player, PlayerOrNone } from '../jscaip/Player';
-import { PlayerNumberMap } from '../jscaip/PlayerMap';
+import { WebSocketManagerService, WebSocketMessage } from './BackendService';
 import { Debug } from '../utils/Debug';
-import { ConnectedUserService } from './ConnectedUserService';
-
-export interface StartingPartConfig extends Partial<Part> {
-    playerZero: MinimalUser,
-    playerZeroElo: number,
-    playerOne: MinimalUser,
-    turn: number,
-    beginning?: FirestoreTime,
-}
+import { Player, PlayerOrNone } from '../jscaip/Player';
 
 @Injectable({
     providedIn: 'root',
 })
 @Debug.log
-export class GameService extends BackendService {
+export class GameService {
 
-    public constructor(protected readonly partDAO: PartDAO,
-                       connectedUserService: ConnectedUserService)
-    {
-        super(connectedUserService);
+    public constructor(private readonly webSocketManager: WebSocketManagerService) {
     }
 
-    public subscribeToChanges(partId: string, callback: (part: MGPOptional<Part>) => void): Subscription {
-        return this.partDAO.subscribeToChanges(partId, callback);
+    public async subscribeTo(gameId: string,
+                             gameUpdate: (game: Game) => Promise<void>,
+                             gameEvent: (event: GameEvent) => Promise<void>)
+    : Promise<Subscription> {
+        const gameUpdateSubscription: Subscription =
+            this.webSocketManager.setCallback('GameUpdate', (message: WebSocketMessage): void => {
+                console.log('gameUpdate')
+                void gameUpdate(message.getArgument('game'));
+            });
+        const gameEventSubscription: Subscription =
+            this.webSocketManager.setCallback('GameEvent', (message: WebSocketMessage): void => {
+                console.log('gameEvent')
+                void gameEvent(message.getArgument('event'));
+            });
+        const gameSubscription: Subscription = await this.webSocketManager.subscribeToGame(gameId);
+        return new Subscription(() => {
+            gameSubscription.unsubscribe();
+            gameUpdateSubscription.unsubscribe();
+            gameEventSubscription.unsubscribe();
+        });
     }
 
-    /** Create a game, its config room and chat. Return the id of the created game. */
+    /** Create a game. Return the id of the created game. */
     public async createGame(gameName: string): Promise<string> {
-        const result: MGPFallible<JSONValue> =
-            await this.performRequestWithJSONResponse('POST', `game?gameName=${gameName}`);
-        this.assertSuccess(result);
-        // eslint-disable-next-line dot-notation
-        return Utils.getNonNullable(Utils.getNonNullable(result.get())['id']) as string;
-    }
-
-    /** Retrieve the name of the game with the given id. If there is no corresponding game, returns an empty option. */
-    public async getGameName(gameId: string): Promise<MGPOptional<string>> {
-        const result: MGPFallible<JSONValue> =
-            await this.performRequestWithJSONResponse('GET', `game/${gameId}?onlyGameName`);
-        if (result.isSuccess()) {
-            // eslint-disable-next-line dot-notation
-            const gameName: string = Utils.getNonNullable(Utils.getNonNullable(result.get())['gameName']) as string;
-            return MGPOptional.of(gameName);
-        } else {
-            return MGPOptional.empty();
-        }
-    }
-
-    /** Get a full game description */
-    public async getExistingGame(gameId: string): Promise<Part> {
-        const result: MGPFallible<JSONValue> = await this.performRequestWithJSONResponse('GET', `game/${gameId}`);
-        this.assertSuccess(result);
-        return result.get() as Part;
-    }
-
-    /** Delete a game */
-    public async deleteGame(gameId: string): Promise<void> {
-        const result: MGPFallible<Response> = await this.performRequest('DELETE', `game/${gameId}`);
-        this.assertSuccess(result);
+        const response: WebSocketMessage =
+            await this.webSocketManager.sendAndWaitForReply(['Create', { gameName }], 'GameCreated');
+        return response.getArgument('gameId');
     }
 
     /** Perform a specific game action and asserts that it has succeeded */
-    private async gameAction(gameId: string, action: string): Promise<void> {
-        const endpoint: string = `game/${gameId}?action=${action}`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
-    }
-
-    /** Accept a game config */
-    public async acceptConfig(gameId: string): Promise<void> {
-        const endpoint: string = `config-room/${gameId}?action=accept`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
+    private async gameAction(action: JSONValue): Promise<void> {
+        return this.webSocketManager.send(action);
     }
 
     /** Give the current player resignation in a game */
-    public async resign(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'resign');
+    public async resign(): Promise<void> {
+        return this.gameAction(['Resign']);
     }
 
     /** Notify the timeout of a player in a game */
-    public async notifyTimeout(gameId: string, winner: MinimalUser, loser: MinimalUser): Promise<void> {
-        const winnerURLEncoded: string = encodeURIComponent(JSON.stringify(winner));
-        const loserURLEncoded: string = encodeURIComponent(JSON.stringify(loser));
-        const endpoint: string = `game/${gameId}?action=notifyTimeout&winner=${winnerURLEncoded}&loser=${loserURLEncoded}`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
+    public async notifyTimeout(winner: Player): Promise<void> {
+        return this.gameAction(['NotifyTimeout', { winner: winner.getValue() }]);
+    }
+
+    private async propose(proposition: 'TakeBack' | 'Draw' | 'Rematch'): Promise<void> {
+        return this.gameAction(['Propose', { proposition }]);
+    }
+
+    private async accept(proposition: 'TakeBack' | 'Draw' | 'Rematch'): Promise<void> {
+        return this.gameAction(['Accept', { proposition }]);
+    }
+
+    private async reject(proposition: 'TakeBack' | 'Draw' | 'Rematch'): Promise<void> {
+        return this.gameAction(['Reject', { proposition }]);
     }
 
     /** Propose a draw to the opponent */
-    public async proposeDraw(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'proposeDraw');
+    public async proposeDraw(): Promise<void> {
+        return this.propose('Draw');
     }
 
     /** Accept the draw request of the opponent */
-    public async acceptDraw(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'acceptDraw');
+    public async acceptDraw(): Promise<void> {
+        return this.accept('Draw');
     }
 
     /** Refuse a draw request from the opponent */
-    public async refuseDraw(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'refuseDraw');
+    public async refuseDraw(): Promise<void> {
+        return this.reject('Draw');
     }
 
     /** Propose a rematch to the opponent */
-    public async proposeRematch(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'proposeRematch');
+    public async proposeRematch(): Promise<void> {
+        return this.propose('Rematch');
     }
 
     /** Accept a rematch request from the opponent */
-    public async acceptRematch(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'acceptRematch');
+    public async acceptRematch(): Promise<void> {
+        return this.accept('Rematch');
     }
 
     /** Reject a rematch request from the opponent */
-    public async rejectRematch(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'rejectRematch');
+    public async rejectRematch(): Promise<void> {
+        return this.reject('Rematch');
     }
 
     /** Ask to take back one of our moves */
-    public async askTakeBack(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'askTakeBack');
+    public async askTakeBack(): Promise<void> {
+        return this.propose('TakeBack');
     }
 
     /** Accept that opponent takes back a move */
-    public async acceptTakeBack(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'acceptTakeBack');
+    public async acceptTakeBack(): Promise<void> {
+        return this.accept('TakeBack');
     }
 
     /** Refuse that opponent takes back a move */
-    public async refuseTakeBack(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'refuseTakeBack');
+    public async refuseTakeBack(): Promise<void> {
+        return this.reject('TakeBack');
     }
 
     /** Add global time to the opponent */
-    public async addGlobalTime(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'addGlobalTime');
+    public async addGlobalTime(): Promise<void> {
+        return this.gameAction(['AddTime', { kind: ['Global'] }]);
     }
 
     /** Add turn time to the opponent */
-    public async addTurnTime(gameId: string): Promise<void> {
-        return this.gameAction(gameId, 'addTurnTime');
+    public async addTurnTime(): Promise<void> {
+        return this.gameAction(['AddTime', { kind: ['Turn'] }]);
     }
 
     /** Play a move */
-    public async addMove(gameId: string,
-                         move: JSONValue,
-                         scores: MGPOptional<PlayerNumberMap>)
-    : Promise<void>
-    {
-        const moveURLEncoded: string = encodeURIComponent(JSON.stringify(move));
-        let endpoint: string = `game/${gameId}?action=move&move=${moveURLEncoded}`;
-        if (scores.isPresent()) {
-            const score0: number = scores.get().get(Player.ZERO);
-            const score1: number = scores.get().get(Player.ONE);
-            endpoint += `&score0=${score0}&score1=${score1}`;
-        }
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
+    public async addMove(move: JSONValue): Promise<void> {
+        return this.gameAction(['Move', { move }]);
     }
 
-    /** Play a final move */
-    public async addMoveAndEndGame(gameId: string,
-                                   move: JSONValue,
-                                   scores: MGPOptional<PlayerNumberMap>,
-                                   winner: PlayerOrNone)
-    : Promise<void>
+    /** End the game after a move */
+    public async endGame(winner: PlayerOrNone): Promise<void>
     {
-        const moveURLEncoded: string = encodeURIComponent(JSON.stringify(move));
-        let endpoint: string = `game/${gameId}?action=moveAndEnd&move=${moveURLEncoded}`;
-        if (scores.isPresent()) {
-            const score0: number = scores.get().get(Player.ZERO);
-            const score1: number = scores.get().get(Player.ONE);
-            endpoint += `&score0=${score0}&score1=${score1}`;
-        }
-        if (winner.isPlayer()) {
-            endpoint += `&winner=${winner.getValue()}`;
-        }
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
-    }
-
-    public async getGameValidity(gameId: string, gameName: string): Promise<MGPValidation> {
-        const realGameName: MGPOptional<string> = await this.getGameName(gameId);
-        if (realGameName.isAbsent()) {
-            return MGPValidation.failure($localize`This game does not exist!`);
-        } else if (realGameName.get() !== gameName) {
-            return MGPValidation.failure($localize`This is the wrong game type!`);
-        } else {
-            return MGPValidation.SUCCESS;
-        }
+        return this.gameAction(['EndGame', { winner: winner.getValue() }]);
     }
 
 }

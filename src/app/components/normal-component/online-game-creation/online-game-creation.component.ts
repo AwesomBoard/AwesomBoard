@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 
@@ -20,14 +20,18 @@ export class OnlineGameCreationComponent implements OnInit {
                        private readonly connectedUserService: ConnectedUserService,
                        private readonly currentGameService: CurrentGameService,
                        private readonly messageDisplayer: MessageDisplayer,
-                       private readonly gameService: GameService) {
+                       private readonly gameService: GameService)
+    {
     }
+
     public async ngOnInit(): Promise<void> {
         await this.createGameAndRedirectOrShowError(this.extractGameFromURL());
     }
+
     private extractGameFromURL(): string {
         return Utils.getNonNullable(this.route.snapshot.paramMap.get('compo'));
     }
+
     private async createGameAndRedirectOrShowError(game: string): Promise<boolean> {
         const authUser: AuthUser = this.connectedUserService.user.get();
         Utils.assert(authUser.isConnected(), 'User must be connected and have a username to reach this page');
@@ -46,8 +50,10 @@ export class OnlineGameCreationComponent implements OnInit {
             return false;
         }
     }
+
     private gameExists(gameName: string): boolean {
         const optionalGameInfo: MGPOptional<GameInfo> = GameInfo.getByUrlName(gameName);
         return optionalGameInfo.isPresent();
     }
+
 }

@@ -1,94 +1,64 @@
 import { Injectable } from '@angular/core';
-import { FirstPlayer, ConfigRoom, PartStatus, PartType } from '../domain/ConfigRoom';
-import { ConfigRoomDAO } from '../dao/ConfigRoomDAO';
-import { FirestoreJSONObject, MGPFallible, MGPOptional, MGPValidation, Utils } from '@everyboard/lib';
 import { Subscription } from 'rxjs';
+
+import { MGPOptional } from '@everyboard/lib';
+
+import { FirstPlayer, ConfigRoom, PartType } from '../domain/ConfigRoom';
 import { MinimalUser } from '../domain/MinimalUser';
-import { FirestoreCollectionObserver } from '../dao/FirestoreCollectionObserver';
-import { FirestoreDocument, IFirestoreDAO } from '../dao/FirestoreDAO';
 import { RulesConfig } from '../jscaip/RulesConfigUtil';
-import { BackendService } from './BackendService';
+import { WebSocketManagerService, WebSocketMessage } from './BackendService';
 import { Debug } from '../utils/Debug';
-import { ConnectedUserService } from './ConnectedUserService';
 import { Localized } from '../utils/LocaleUtils';
 
 export class ConfigRoomServiceFailure {
     public static readonly GAME_DOES_NOT_EXIST: Localized = () => $localize`This game does not exist!`;
 }
 
-
 @Injectable({
     providedIn: 'root',
 })
 @Debug.log
-export class ConfigRoomService extends BackendService {
+export class ConfigRoomService {
 
-    public constructor(protected readonly configRoomDAO: ConfigRoomDAO,
-                       connectedUserService: ConnectedUserService)
+    public constructor(private readonly webSocketManager: WebSocketManagerService)
     {
-        super(connectedUserService);
     }
 
-    public subscribeToChanges(gameId: string, callback: (doc: MGPOptional<ConfigRoom>) => void): Subscription {
-        return this.configRoomDAO.subscribeToChanges(gameId, callback);
-    }
-
-    public subscribeToCandidates(gameId: string, callback: (candidates: MinimalUser[]) => void): Subscription {
-        let candidates: MinimalUser[] = [];
-        const observer: FirestoreCollectionObserver<MinimalUser> = new FirestoreCollectionObserver(
-            (created: FirestoreDocument<MinimalUser>[]) => {
-                for (const candidate of created) {
-                    candidates.push(candidate.data);
-                }
-                callback(candidates);
-            },
-            (modified: FirestoreDocument<MinimalUser>[]) => {
-                // This should never happen, but we can still update the candidates list just in case
-                for (const modifiedCandidate of modified) {
-                    candidates = candidates.map((candidate: MinimalUser) => {
-                        if (candidate.id === modifiedCandidate.data.id) {
-                            return modifiedCandidate.data;
-                        } else {
-                            return candidate;
-                        }
-                    });
-                }
-                callback(candidates);
-            },
-            (deleted: FirestoreDocument<MinimalUser>[]) => {
-                for (const deletedCandidate of deleted) {
-                    candidates = candidates.filter((candidate: MinimalUser) =>
-                        candidate.id !== deletedCandidate.data.id);
-                }
-                callback(candidates);
+    public async join(gameId: string,
+                      configRoomUpdate: (configRoom: ConfigRoom) => void,
+                      candidateJoined: (candidate: MinimalUser) => void,
+                      candidateLeft: (candidate: MinimalUser) => void,
+                      error: (reason: string) => void)
+    : Promise<Subscription>
+    {
+        const gameSubscription: Subscription = await this.webSocketManager.subscribeToConfigRoom(gameId);
+        const configRoomSubscription: Subscription =
+            this.webSocketManager.setCallback('ConfigRoomUpdate', (message: WebSocketMessage): void => {
+                configRoomUpdate(message.getArgument('configRoom'));
             });
-        const subCollection: IFirestoreDAO<FirestoreJSONObject> =
-            this.configRoomDAO.subCollectionDAO(gameId, 'candidates');
-        return subCollection.observingWhere([], observer);
-    }
-
-    /** Join a game */
-    public async joinGame(gameId: string): Promise<MGPValidation> {
-        const endpoint: string = `config-room/${gameId}/candidates`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        if (result.isSuccess()) {
-            return MGPValidation.SUCCESS;
-        } else {
-            Utils.assert(result.getReason() === 'not_found', `Unexpected failure from backend: ${result.getReason()}`);
-            return MGPValidation.failure(ConfigRoomServiceFailure.GAME_DOES_NOT_EXIST());
-        }
-    }
-
-    /** Remove a candidate from a config room (it can be ourselves or someone else) */
-    public async removeCandidate(gameId: string, candidateId: string): Promise<void> {
-        const endpoint: string = `config-room/${gameId}/candidates/${candidateId}`;
-        const result: MGPFallible<Response> = await this.performRequest('DELETE', endpoint);
-        this.assertSuccess(result);
+        const candidateJoinedSubscription: Subscription =
+            this.webSocketManager.setCallback('CandidateJoined', (message: WebSocketMessage): void => {
+                candidateJoined(message.getArgument('candidate'));
+            });
+        const candidateLeftSubscription: Subscription =
+            this.webSocketManager.setCallback('CandidateLeft', (message: WebSocketMessage): void => {
+                candidateLeft(message.getArgument('candidate'));
+            });
+        const errorSubscription: Subscription =
+            this.webSocketManager.setCallback('Error', (message: WebSocketMessage): void => {
+                error(message.getArgument('reason'));
+            });
+        return new Subscription(() => {
+            configRoomSubscription.unsubscribe();
+            candidateJoinedSubscription.unsubscribe();
+            candidateLeftSubscription.unsubscribe();
+            errorSubscription.unsubscribe();
+            gameSubscription.unsubscribe();
+        });
     }
 
     /** Propose a config to the opponent */
-    public async proposeConfig(gameId: string,
-                               partType: PartType,
+    public async proposeConfig(partType: PartType,
                                maximalMoveDuration: number,
                                firstPlayer: FirstPlayer,
                                totalPartDuration: number,
@@ -96,39 +66,29 @@ export class ConfigRoomService extends BackendService {
     : Promise<void>
     {
         const config: Partial<ConfigRoom> = {
-            partStatus: PartStatus.CONFIG_PROPOSED.value,
             partType: partType.value,
             maximalMoveDuration,
             totalPartDuration,
             firstPlayer: firstPlayer.value,
             rulesConfig: rulesConfig.getOrElse({}),
         };
-        const configEncoded: string = encodeURIComponent(JSON.stringify(config));
-        const endpoint: string = `config-room/${gameId}?action=propose&config=${configEncoded}`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
+        await this.webSocketManager.send(['ProposeConfig', { config }]);
     }
 
     /** Select an opponent */
-    public async selectOpponent(gameId: string, opponent: MinimalUser): Promise<void> {
-        const opponentEncoded: string = encodeURIComponent(JSON.stringify(opponent));
-        const endpoint: string = `config-room/${gameId}?action=selectOpponent&opponent=${opponentEncoded}`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
+    public async selectOpponent(opponent: MinimalUser): Promise<void> {
+        await this.webSocketManager.send(['SelectOpponent', { opponent }]);
     }
 
     /** Review a config proposed to the opponent */
-    public async reviewConfig(gameId: string): Promise<void> {
-        const endpoint: string = `config-room/${gameId}?action=review`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
+    public async reviewConfig(): Promise<void> {
+        await this.webSocketManager.send(['ReviewConfig']);
     }
 
-    /** Review a config proposed to the opponent, who just left */
-    public async reviewConfigAndRemoveChosenOpponent(gameId: string): Promise<void> {
-        const endpoint: string = `config-room/${gameId}?action=reviewConfigAndRemoveOpponent`;
-        const result: MGPFallible<Response> = await this.performRequest('POST', endpoint);
-        this.assertSuccess(result);
+    /** Accept a game config */
+    public async acceptConfig(): Promise<void> {
+        await this.webSocketManager.send(['AcceptConfig']);
     }
+
 
 }

@@ -1,0 +1,8 @@
+(library
+ (name firestore)
+ (public_name everyboard.firestore)
+ (libraries everyboard.utils
+            everyboard.models
+            dream)
+ (modules Stats FirestorePrimitives FirestoreOps GoogleCertificates Jwt TokenRefresher Auth)
+ (preprocess (pps ppx_deriving_yojson)))

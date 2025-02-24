@@ -1,4 +1,4 @@
-open Backend
+open Everyboard
 
 let arguments_spec = [
     ("-project", Arg.Set_string Options.project_name, "Firebase project name");

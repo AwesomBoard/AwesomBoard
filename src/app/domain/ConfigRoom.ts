@@ -7,20 +7,24 @@ import { RulesConfig } from '../jscaip/RulesConfigUtil';
 // On top of these fields, a config room has a subcollection of candidates, which are MinimalUsers
 export type ConfigRoom = {
     readonly creator: MinimalUser;
+    readonly creatorElo: number;
+
     readonly chosenOpponent: MinimalUser | null;
-    readonly partStatus: IPartStatus;
+    readonly partStatus: IPartStatus; // TODO: rename to "status" simply
 
     readonly firstPlayer: IFirstPlayer;
-    readonly partType: IPartType;
+    readonly partType: IPartType; // TODO: rename gameType
     readonly maximalMoveDuration: number;
     readonly totalPartDuration: number;
     readonly rulesConfig: RulesConfig;
+    readonly gameName: string;
 };
 
 export type ConfigRoomDocument = FirestoreDocument<ConfigRoom>;
 
 export type IFirstPlayer = 'CREATOR' | 'RANDOM' | 'CHOSEN_PLAYER';
 
+// TODO: get rid of this class and keep only the utility function?
 export class FirstPlayer {
 
     private constructor(public value: IFirstPlayer) {}
@@ -67,18 +71,18 @@ export class PartType {
     }
 }
 
-export type IPartStatus = number;
+export type IPartStatus = 'Created' | 'ConfigProposed' | 'Started' | 'Finished';
 
 export class PartStatus {
-    private constructor(public value: IPartStatus) {}
+    private constructor(public readonly value: IPartStatus) {}
     // part created, no ChosenOpponent => waiting for acceptable candidate
-    public static PART_CREATED: PartStatus = new PartStatus(0);
+    public static PART_CREATED: PartStatus = new PartStatus('Created');
     // part created, ChosenOpponent selected, config proposed by the creator
     // => waiting the config room to accept them
-    public static CONFIG_PROPOSED: PartStatus = new PartStatus(2);
+    public static CONFIG_PROPOSED: PartStatus = new PartStatus('ConfigProposed');
     // part created, ChosenOpponent selected, config proposed by the created, accepted by the config room
     // => part started
-    public static PART_STARTED: PartStatus = new PartStatus(3);
+    public static PART_STARTED: PartStatus = new PartStatus('Started');
 
-    public static PART_FINISHED: PartStatus = new PartStatus(4);
+    public static PART_FINISHED: PartStatus = new PartStatus('Finished');
 }

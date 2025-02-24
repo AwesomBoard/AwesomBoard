@@ -55,7 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     public async navigateToPart(): Promise<boolean> {
-        return this.router.navigate(['/play', this.currentGame.get().typeGame, this.currentGame.get().id]);
+        return this.router.navigate(['/play', this.currentGame.get().gameName, this.currentGame.get().id]);
     }
 
     public ngOnDestroy(): void {
@@ -64,6 +64,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     public getCurrentGameName(): string {
-        return GameInfo.getByUrlName(this.currentGame.get().typeGame).get().name;
+        return GameInfo.getByUrlName(this.currentGame.get().gameName).get().name;
     }
 }

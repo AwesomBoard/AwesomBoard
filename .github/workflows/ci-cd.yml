@@ -310,7 +310,7 @@ jobs:
             npm install @angular-devkit/architect
             npx ng deploy --base-href=/ --repo=https://github.com/EveryBoard/master --cname=everyboard.org --message="Deployment from action (commit $GITHUB_SHA)" --name acieroid --email 'everyboard@everyboard.org' --configuration=production --dir dist/everyboard
             # deploy backend
-            if ./scripts/backend_needs_deployment.sh server.everyboard.org; then
+            if ./scripts/backend_needs_deployment.sh https://server.everyboard.org; then
                 mkdir -p ~/.ssh/
                 cat > ~/.ssh/known_hosts <<< "$SSH_KNOWN_HOSTS"
                 cat > ~/.ssh/id_rsa <<< "$SSH_KEY"
@@ -336,7 +336,7 @@ jobs:
             npm install @angular-devkit/architect
             npx ng deploy --base-href=/ --repo=https://github.com/EveryBoard/develop --cname=dev.everyboard.org --message="Deployment from action (commit $GITHUB_SHA)" --name acieroid --email 'everyboard@everyboard.org' --configuration=dev --dir dist/everyboard
             # deploy backend
-            if ./scripts/backend_needs_deployment.sh server-dev.everyboard.org; then
+            if ./scripts/backend_needs_deployment.sh https://server-dev.everyboard.org; then
                 mkdir -p ~/.ssh/
                 cat > ~/.ssh/known_hosts <<< "$SSH_KNOWN_HOSTS"
                 cat > ~/.ssh/id_rsa <<< "$SSH_KEY"
@@ -408,7 +408,7 @@ jobs:
             npm install netlify-cli
             netlify deploy --dir=dist/everyboard --alias="$GITHUB_HEAD_REF" --message="Deployment from github ($GITHUB_HEAD_REF, commit $GITHUB_SHA)"
             # deploy backend
-            if ./scripts/backend_needs_deployment.sh server-test.everyboard.org; then
+            if ./scripts/backend_needs_deployment.sh https://server-test.everyboard.org; then
                 mkdir -p ~/.ssh/
                 cat > ~/.ssh/known_hosts <<< "$SSH_KNOWN_HOSTS"
                 cat > ~/.ssh/id_rsa <<< "$SSH_KEY"

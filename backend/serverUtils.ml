@@ -26,13 +26,13 @@ module Make (External : External.EXTERNAL) : SERVER_UTILS = struct
                     [] in
             let* suggested_body = Dream.body suggested_response in
             let response = match error.condition with
-                | `Exn (BadInput reason) ->
+                | `Exn (Errors.BadInput reason) ->
                     Dream.set_status suggested_response `Bad_Request;
                     [("reason", `String reason)]
-                | `Exn (DocumentNotFound document) ->
+                | `Exn (Errors.DocumentNotFound document) ->
                     Dream.set_status suggested_response `Not_Found;
                     [("reason", `String "not_found"); ("document", `String document)]
-                | `Exn (DocumentInvalid document) ->
+                | `Exn (Errors.DocumentInvalid document) ->
                     Dream.set_status suggested_response `Internal_Server_Error;
                     [("reason", `String "invalid_doc"); ("document", `String document)]
                 | _ ->

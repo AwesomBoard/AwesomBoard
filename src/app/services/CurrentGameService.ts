@@ -11,6 +11,7 @@ import { Localized } from '../utils/LocaleUtils';
 @Injectable({
     providedIn: 'root',
 })
+// TODO: don't do validation here, only rely on server checking this
 export class CurrentGameService implements OnDestroy {
 
     public static roleToMessage: MGPMap<UserRoleInPart, Localized> = new MGPMap([
@@ -79,7 +80,7 @@ export class CurrentGameService implements OnDestroy {
             const fakeCurrentGame: CurrentGame = {
                 id: 'id',
                 role: 'Candidate',
-                typeGame: 'P4',
+                gameName: 'P4',
             };
             const keys: string[] = Object.keys(fakeCurrentGame);
             for (const key of keys) {
